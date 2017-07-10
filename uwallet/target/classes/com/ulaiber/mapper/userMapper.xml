@@ -36,8 +36,8 @@
    </resultMap>
   
 	<insert id="save" parameterType="User">
-		insert into tbl_users(user_name, login_password, pay_password, mobile1, mobile2, cardType, cardNo, bankNo, bankCardNo, role_id, createTime)
-		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile1}, #{mobile2}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{role_id}, #{createTime})
+		insert into tbl_users(user_name, login_password, pay_password, mobile1, mobile2, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime)
+		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile1}, #{mobile2}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime})
 	</insert>
 	
 	<update id="update" parameterType="User">

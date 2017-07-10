@@ -9,6 +9,7 @@ com\ulaiber\dao\UserDao.class
 com\ulaiber\utils\Test.class
 com\ulaiber\controller\BankController.class
 com\ulaiber\utils\CaptchaUtil.class
+com\ulaiber\utils\SPDBUtil.class
 com\ulaiber\model\UserOperaDetail.class
 com\ulaiber\controller\LoginController.class
 com\ulaiber\utils\DateTimeUtil.class
@@ -20,10 +21,13 @@ com\ulaiber\model\User.class
 com\ulaiber\utils\UUIDGenerator.class
 com\ulaiber\service\BankService.class
 com\ulaiber\service\BaseService.class
+com\ulaiber\controller\ManagerController.class
 com\ulaiber\service\impl\UserServiceImpl.class
 com\ulaiber\filter\LoginFilter.class
 com\ulaiber\model\Bank.class
+com\ulaiber\model\Payee.class
 com\ulaiber\controller\UserController.class
+com\ulaiber\model\SalaryInfo.class
 com\ulaiber\utils\StringUtil.class
 com\ulaiber\dao\BankDao.class
 com\ulaiber\utils\HttpsUtil$2.class

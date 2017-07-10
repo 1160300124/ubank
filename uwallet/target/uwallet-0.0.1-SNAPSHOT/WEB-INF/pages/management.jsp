@@ -5,15 +5,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>U钱包后台管理系统</title>
-    <script src="js/jquery-1.10.2.js"></script>
+    <script src="../js/jquery/jquery-1.12.3.min.js"></script>
     
-    <link href="css/Content/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/Content/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
-    <link href="css/Content/bootstrap-table/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+    <link href="../css/bootstrap-table/bootstrap-theme.min.css" rel="stylesheet" />
 
-    <script src="js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
-    <script src="js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
-    <script src="js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
+    <script src="../js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
+    <script src="../js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
+    <script src="../js/bootstrap-table/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
+    <script src="../js/management.js" type="text/javascript"></script>
 </head>
 <body>
 <h1>U钱包后台管理系统</h1>
@@ -29,7 +30,7 @@
 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 		</button>
 	</div>
-	<table id="tb_departments"></table>
+	<table id="tb_managetments"></table>
 	</div>
 </body>
 </html>
