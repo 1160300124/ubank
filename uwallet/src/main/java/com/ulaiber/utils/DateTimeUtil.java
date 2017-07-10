@@ -229,4 +229,10 @@ public class DateTimeUtil {
 	}
 	
 	
+	public static String getfutureDay(int days){
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(calendar.DATE, days);//把日期往前减少一天，若想把日期向后推一天则将负数改为正数
+		return date2Str(calendar.getTime(), DATE_FORMAT_SHORTDAY);
+	}
 }

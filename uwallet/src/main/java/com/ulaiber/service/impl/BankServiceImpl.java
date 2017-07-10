@@ -16,11 +16,13 @@ public class BankServiceImpl implements BankService {
 	@Resource
 	private BankDao mapper;
 	
+	@Override
 	public Bank getBankByBankNo(String bankNo) {
 		
 		return mapper.getBankByBankNo(bankNo);
 	}
 
+	@Override
 	public List<Bank> getAllBanks() {
 		
 		return mapper.getAllBanks();

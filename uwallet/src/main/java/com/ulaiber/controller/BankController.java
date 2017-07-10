@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ulaiber.conmon.IConstants;
 import com.ulaiber.model.Bank;
+import com.ulaiber.model.ResultInfo;
 import com.ulaiber.service.BankService;
 
 @Controller
@@ -39,9 +41,13 @@ public class BankController extends BaseController {
 	
 	@RequestMapping(value = "queryAllBanks", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Bank> queryAllBanks(){
-		logger.info("hahaha---------------------------");
-		return bankservice.getAllBanks();
+	public ResultInfo queryAllBanks(){
+		
+		ResultInfo retInfo = new ResultInfo();
+		List<Bank> banks = bankservice.getAllBanks();
+		retInfo.setCode(IConstants.QT_CODE_OK);
+		retInfo.setData(banks);
+		return retInfo;
 	}
 
 }

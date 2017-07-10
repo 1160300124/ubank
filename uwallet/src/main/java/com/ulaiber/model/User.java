@@ -38,6 +38,9 @@ public class User {
 	//绑定银行卡号
 	private String bankCardNo;
 	
+	//二类户账号
+	private String secondBankCardNo;
+	
 	//邮箱
 	private String email;
 	
@@ -231,6 +234,14 @@ public class User {
 
 	public void setLogin_fail_time(String login_fail_time) {
 		this.login_fail_time = login_fail_time;
+	}
+
+	public String getSecondBankCardNo() {
+		return secondBankCardNo;
+	}
+
+	public void setSecondBankCardNo(String secondBankCardNo) {
+		this.secondBankCardNo = secondBankCardNo;
 	}
 
 }

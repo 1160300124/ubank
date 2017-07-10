@@ -50,7 +50,7 @@ import org.apache.http.util.EntityUtils;
 public class HttpsUtil {  
     private static PoolingHttpClientConnectionManager connMgr;  
     private static RequestConfig requestConfig;  
-    private static final int MAX_TIMEOUT = 7000;  
+    private static final int MAX_TIMEOUT = 10000;  
   
     static {  
         // 设置连接池  

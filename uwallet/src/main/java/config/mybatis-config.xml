@@ -12,6 +12,8 @@
 	<typeAliases>
 		<typeAlias alias="User" type="com.ulaiber.model.User" />
 		<typeAlias alias="Bank" type="com.ulaiber.model.Bank" />
+		<typeAlias alias="Salary" type="com.ulaiber.model.Salary" />
+		<typeAlias alias="SalaryDetail" type="com.ulaiber.model.SalaryDetail" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
 	
@@ -21,6 +23,8 @@
 	<mappers>
 		<mapper resource="com/ulaiber/mapper/userMapper.xml" />
 		<mapper resource="com/ulaiber/mapper/bankMapper.xml" />
+		<mapper resource="com/ulaiber/mapper/salaryMapper.xml" />
+		<mapper resource="com/ulaiber/mapper/salaryDetailMapper.xml" />
 	</mappers>
 
 </configuration>  

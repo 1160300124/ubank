@@ -1,11 +1,21 @@
 package com.ulaiber.model;
 
-public class SalaryInfo {
+public class SalaryDetail {
 	
 	/**
 	 * 流水编号
 	 */
+	private long did;
+	
+	/**
+	 * 工资流水号  对应salaryInfo的sid
+	 */
 	private long sid;
+	
+	/**
+	 * 对应excel导入的编号,没有实际作用
+	 */
+	private String eid;
 	
 	/**
 	 * 员工姓名
@@ -20,7 +30,7 @@ public class SalaryInfo {
 	/**
 	 * 工资金额
 	 */
-	private String salaries;
+	private double salaries;
 	
 	/**
 	 * 工资发放时间
@@ -31,6 +41,14 @@ public class SalaryInfo {
 	 * 备注
 	 */
 	private String remark;
+	
+	public long getDid() {
+		return did;
+	}
+
+	public void setDid(long did) {
+		this.did = did;
+	}
 
 	public long getSid() {
 		return sid;
@@ -38,6 +56,14 @@ public class SalaryInfo {
 
 	public void setSid(long sid) {
 		this.sid = sid;
+	}
+
+	public String getEid() {
+		return eid;
+	}
+
+	public void setEid(String eid) {
+		this.eid = eid;
 	}
 
 	public String getUserName() {
@@ -56,11 +82,11 @@ public class SalaryInfo {
 		this.cardNo = cardNo;
 	}
 
-	public String getSalaries() {
+	public double getSalaries() {
 		return salaries;
 	}
 
-	public void setSalaries(String salaries) {
+	public void setSalaries(double salaries) {
 		this.salaries = salaries;
 	}
 

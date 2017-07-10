@@ -4,6 +4,12 @@ import java.util.List;
 
 import com.ulaiber.model.User;
 
+/**
+ * user数据库接口
+ * 
+ * @author huangguoqing
+ *
+ */
 public interface UserDao {
 
 	/**

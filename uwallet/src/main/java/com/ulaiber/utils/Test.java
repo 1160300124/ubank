@@ -41,14 +41,15 @@ public class Test {
         System.out.println(DateTimeUtil.str2Date("2017-07-01 10:59:30", "yyyy-MM-dd HH:mm:ss"));
         String apiUrl = "http://localhost:8080/uwallet/api/v1/register";
         Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-	    params.put("userName", "huangguoqing");
+	    params.put("userName", "lisi");
 	    params.put("login_password", "1234567");
 	    params.put("pay_password", "1234567");
-	    params.put("mobile1", "591947707");
+	    params.put("mobile1", "15919477089");
 	    params.put("mobile2", "12345678910");
 	    params.put("cardType", 1);
 	    params.put("bankNo", "305100000013");
 	    params.put("bankCardNo", "1234567890");
+	    params.put("secondBankCardNo", "6224080600234");
 	    params.put("cardNo", "12312412341234124");
 	    params.put("createTime", data);
 	    params.put("remark", "hahahahahahahahahaha");

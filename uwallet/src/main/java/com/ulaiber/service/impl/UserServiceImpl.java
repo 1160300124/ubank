@@ -20,17 +20,20 @@ public class UserServiceImpl extends BaseService implements UserService {
 	@Resource
 	private UserDao mapper;
 
+	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean delete(String mobile) {
 		
 		return mapper.delete(mobile);
 	}
 
+	@Override
 	public List<User> findAll() {
 		List<User> findAllList = mapper.findAll();
 		return findAllList;
 	}
 
+	@Override
 	public User findByMobile(String mobile) {
 
 		User user = mapper.getUserByMobile(mobile);
@@ -38,6 +41,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		return user;
 	}
 
+	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean save(User user) {
 		
@@ -47,12 +51,14 @@ public class UserServiceImpl extends BaseService implements UserService {
 		return mapper.save(user);
 	}
 
+	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
 
 		return mapper.update(user);
 	}
 
+	@Override
 	public User getUserByTicketAndToken(String ticket, String token) {
 		
 		return mapper.getUserByTicketAndToken(ticket, token);
@@ -68,6 +74,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		
 	}
 
+	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean updatePayPwd(String mobile, String password) {
 		
@@ -78,6 +85,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		
 	}
 
+	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean updateForBankCard(User user) {
 		
