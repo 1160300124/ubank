@@ -11,7 +11,8 @@ public class Test {
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception{
+	@org.junit.Test
+	public  void register() {
 		UUID uuid = UUID.randomUUID();
         System.out.println(uuid.toString().replaceAll("-", ""));
 //        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【应用小宝你的验证码是12314345", "15919477086");
@@ -55,14 +56,18 @@ public class Test {
         String response = HttpsUtil.doPost(apiUrl, params);
         System.out.println(response);
         
-//      String apiUrl = "http://localhost:8080/uwallet/api/v1/login";
-//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//      params.put("mobile1", "");
-//      params.put("login_password", "1234567");
-//      String response = HttpsUtil.doPost1(apiUrl, params);
-//      System.out.println(response);
+
 	}
 	
+	//@org.junit.Test
+	public void login(){
+	      String apiUrl = "http://localhost:8080/uwallet/api/v1/login";
+	      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+	      params.put("mobile1", "");
+	      params.put("login_password", "1234567");
+	      String response = HttpsUtil.doPost1(apiUrl, params);
+	      System.out.println(response);
+	}
 	/* 单条短信发送,智能匹配短信模板
 	 *
 	 * @param apikey 成功注册后登录云片官网,进入后台可查看
