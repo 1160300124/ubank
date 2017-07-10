@@ -12,7 +12,7 @@ public class Test {
 	 * @throws Exception
 	 */
 	@org.junit.Test
-	public  void register() {
+	public void register() {
 		UUID uuid = UUID.randomUUID();
         System.out.println(uuid.toString().replaceAll("-", ""));
 //        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【应用小宝你的验证码是12314345", "15919477086");

@@ -148,7 +148,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		//将list转换成json
 		String json = JSON.toJSONString(resultList);
 		//加密。将 PLAIN 中的数据加密，并封装到SIGNATUREH中。
-		//o_List.get(0).get("PLAIN");
+		//String json = o_List.get(0).get("PLAIN");
 		
 		//发送请求
 		String apiUrl = "https://10.17.2.93:8080/sendRegister";
