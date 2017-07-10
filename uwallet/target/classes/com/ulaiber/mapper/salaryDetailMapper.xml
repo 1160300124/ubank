@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.dao.SalaryDetailDao">
+
+    <resultMap id="SalaryDetailMap" type="SalaryDetail" >
+    	<id column="did" property="did" jdbcType="BIGINT" />
+    	<result column="sid" property="sid" jdbcType="BIGINT" />
+    	<result column="userName" property="userName" jdbcType="VARCHAR" />
+    	<result column="cardNo" property="cardNo" jdbcType="VARCHAR" />
+    	<result column="salaries" property="salaries" jdbcType="DOUBLE" />
+    	<result column="salaryDate" property="salaryDate" jdbcType="VARCHAR" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+   </resultMap>
+   
+  	<!-- 批量插入生成的兑换码 -->
+    <insert id ="saveBatch" parameterType="java.util.List" useGeneratedKeys="true">
+         insert into tbl_salaries_detail(sid, userName, cardNo, salaries, salaryDate, remark) values
+         <foreach collection ="list" item="detail" index= "index" separator =",">
+             (#{detail.sid}, #{detail.userName}, #{detail.cardNo}, #{detail.salaries}, #{detail.salaryDate}, #{detail.remark})
+         </foreach >
+    </insert >
+  
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="getDetailsBySid" parameterType="Long" resultMap="SalaryDetailMap">
+		select * from tbl_salaries_detail where sid=#{sid}
+	</select>
+	
+</mapper>

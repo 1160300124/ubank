@@ -157,17 +157,14 @@ public class ManagerController extends BaseController{
     
     @RequestMapping(value = "details", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> details(String sid, HttpServletRequest request, HttpServletResponse response){
-    	Map<String, Object> data = new HashMap<String, Object>();
+    public List<SalaryDetail> details(String sid, HttpServletRequest request, HttpServletResponse response){
     	if (StringUtils.isEmpty(sid)){
     		return null;
     	}
     	
     	List<SalaryDetail> details = salaryDetailService.getDetailsBySid(Long.valueOf(sid));
     	
-    	data.put("total", details.size());
-    	data.put("rows", details);
-    	return data;
+    	return details;
     }
     
 }

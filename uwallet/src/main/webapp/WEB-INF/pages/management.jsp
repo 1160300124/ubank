@@ -84,21 +84,20 @@
 								</div>  
 	                    
 	                </div>
-	                哈哈哈哈哈
-	                <table id="tb_salary" data-toggle="table" data-url="" data-method="get"
-			           data-pagination="true" data-side-pagination="client" data-page-size="10" data-page-list="[10,15,20]">
-			           <thead>
-			           <tr>
-			           	   <th data-checkbox="true"></th>
-			               <th data-field="eid">编号</th>
-			               <th data-field="userName">姓名</th>
-			               <th data-field="cardNo">身份证号码</th>
-			               <th data-field="salaries">金额</th>
-			               <th data-field="remark">备注</th>
-			           </tr>
-			          </thead>
-				</table>
-	哈哈哈哈
+	                
+		              <table id="tb_salary" data-toggle="table"
+				           data-pagination="true" data-side-pagination="client" data-page-size="10" data-page-list="[10,15,20]">
+				           <thead>
+				           <tr>
+				           	   <th data-checkbox="true"></th>
+				               <th data-field="eid">编号</th>
+				               <th data-field="userName">姓名</th>
+				               <th data-field="cardNo">身份证号码</th>
+				               <th data-field="salaries">金额</th>
+				               <th data-field="remark">备注</th>
+				           </tr>
+				          </thead>
+					</table>
 				
 	            </div>
 	            <div class="modal-footer">
@@ -120,7 +119,7 @@
 	                <h4 class="modal-title" id="myModalLabel"> 详情 </h4>
 	            </div>
 	            <div class="modal-body">
-	               <table id="tb_salary_detail" data-toggle="table" data-url="" data-method="get"
+	               <table id="tb_salary_detail" data-toggle="table"
 			           data-pagination="true" data-side-pagination="client" data-page-size="10" data-page-list="[10,15,20]">
 			           <thead>
 			           <tr>

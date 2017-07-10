@@ -11,10 +11,9 @@ public class Test {
 	 * @param args
 	 * @throws Exception
 	 */
-	@org.junit.Test
-	public void register() {
-		UUID uuid = UUID.randomUUID();
-        System.out.println(uuid.toString().replaceAll("-", ""));
+	public static void main(String[] args) throws Exception{
+//		UUID uuid = UUID.randomUUID();
+//        System.out.println(uuid.toString().replaceAll("-", ""));
 //        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【应用小宝你的验证码是12314345", "15919477086");
 //        System.out.println(s);
 //        int n = 0 ;
@@ -24,7 +23,8 @@ public class Test {
 //		
 //		System.out.println(n);
 //		System.out.println(Math.random());
-//		System.out.println((int)((Math.random()*9+1)*100000));
+		System.out.println(CaptchaUtil.getCaptcha());
+        
 //		
 //        
 //        String tt = MD5Util.getEncryptedPwd("123456");
@@ -37,38 +37,49 @@ public class Test {
 //        System.out.println("MD5加密后：" + MD5Util.getEncryptedPwd(s));
         
 //      -----------------------------------------------------------------
-        String data = DateTimeUtil.date2Str(new Date());
-        System.out.println(data);
-        System.out.println(DateTimeUtil.str2Date("2017-07-01 10:59:30", "yyyy-MM-dd HH:mm:ss"));
-        String apiUrl = "http://localhost:8080/uwallet/api/v1/register";
-        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-	    params.put("userName", "lisi");
-	    params.put("login_password", "1234567");
-	    params.put("pay_password", "1234567");
-	    params.put("mobile1", "15919477089");
-	    params.put("mobile2", "12345678910");
-	    params.put("cardType", 1);
-	    params.put("bankNo", "305100000013");
-	    params.put("bankCardNo", "1234567890");
-	    params.put("secondBankCardNo", "6224080600234");
-	    params.put("cardNo", "12312412341234124");
-	    params.put("createTime", data);
-	    params.put("remark", "hahahahahahahahahaha");
-        String response = HttpsUtil.doPost(apiUrl, params);
-        System.out.println(response);
+//        String data = DateTimeUtil.date2Str(new Date());
+//        System.out.println(data);
+//        System.out.println(DateTimeUtil.str2Date("2017-07-01 10:59:30", "yyyy-MM-dd HH:mm:ss"));
+//        String apiUrl = "http://localhost:8080/uwallet/api/v1/register";
+//        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//	    params.put("userName", "lisi");
+//	    params.put("login_password", "1234567");
+//	    params.put("pay_password", "1234567");
+//	    params.put("mobile1", "15919477089");
+//	    params.put("mobile2", "12345678910");
+//	    params.put("cardType", 1);
+//	    params.put("bankNo", "305100000013");
+//	    params.put("bankCardNo", "1234567890");
+//	    params.put("secondBankCardNo", "6224080600234");
+//	    params.put("cardNo", "12312412341234124");
+//	    params.put("createTime", data);
+//	    params.put("remark", "hahahahahahahahahaha");
+//        String response = HttpsUtil.doPost(apiUrl, params);
+//        System.out.println(response);
         
-
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/login";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile1", "");
+//      params.put("login_password", "1234567");
+//      String response = HttpsUtil.doPost1(apiUrl, params);
+//      System.out.println(response);
+        
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/sendCaptcha";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "15919477086");
+//      String response = HttpsUtil.doPost1(apiUrl, params);
+//      System.out.println(response);
+		
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/validate";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "15919477086");
+//      params.put("captcha", "123456");
+//      params.put("password", "123456");
+//      params.put("confirm_password", "123456");
+//      String response = HttpsUtil.doPost1(apiUrl, params);
+//      System.out.println(response);
 	}
 	
-	//@org.junit.Test
-	public void login(){
-	      String apiUrl = "http://localhost:8080/uwallet/api/v1/login";
-	      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-	      params.put("mobile1", "");
-	      params.put("login_password", "1234567");
-	      String response = HttpsUtil.doPost1(apiUrl, params);
-	      System.out.println(response);
-	}
 	/* 单条短信发送,智能匹配短信模板
 	 *
 	 * @param apikey 成功注册后登录云片官网,进入后台可查看

@@ -281,10 +281,29 @@
 			<version>${jsp.api.version}</version>
 			<type>jar</type>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
+		<resources>
+			  <resource>
+				  <directory>src/main/java/</directory>
+				  <includes>
+				  	  <include>**/*.properties</include>
+					  <include>**/*.xml</include>
+				  </includes>
+				  <filtering>false</filtering>
+			  </resource>
+			<resource>
+                 <directory>src/main/resources</directory>
+                 <includes>
+				  	  <include>**/*.properties</include>
+					  <include>**/*.xml</include>
+				  </includes>
+                 <filtering>true</filtering>
+             </resource>
+		</resources>
+		
 		<plugins>
 			<plugin>  
 			    <artifactId>maven-compiler-plugin</artifactId>  
@@ -303,7 +322,8 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<warName>uwallet</warName>
+			        <warName>uwallet</warName>
+					<warSourceDirectory>src/main/webapp</warSourceDirectory>
 				</configuration>
 			</plugin>
 
