@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.conmon.IConstants;
 import com.ulaiber.model.Bank;
+import com.ulaiber.model.MSGContent;
+import com.ulaiber.model.Message;
 import com.ulaiber.model.ResultInfo;
 import com.ulaiber.model.User;
 import com.ulaiber.service.UserService;
