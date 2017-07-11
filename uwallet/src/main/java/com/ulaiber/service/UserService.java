@@ -2,6 +2,7 @@ package com.ulaiber.service;
 
 import java.util.List;
 
+import com.ulaiber.model.Message;
 import com.ulaiber.model.User;
 
 public interface UserService {
@@ -79,5 +80,12 @@ public interface UserService {
 	 * @return boolean
 	 */
 	boolean updateForBankCard(User user);
+	
+	/**
+	 * 银行开户接口
+	 * @param user
+	 * @return Message
+	 */
+	Message sendInfo(User user);
 
 }

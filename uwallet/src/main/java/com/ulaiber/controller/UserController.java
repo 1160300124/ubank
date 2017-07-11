@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.conmon.IConstants;
 import com.ulaiber.model.Bank;
+import com.ulaiber.model.MSGContent;
+import com.ulaiber.model.Message;
 import com.ulaiber.model.ResultInfo;
 import com.ulaiber.model.User;
 import com.ulaiber.service.UserService;
@@ -78,6 +80,15 @@ public class UserController extends BaseController{
 		
 		//TODO调银行开户接口
 		boolean isSuccessed = true;
+		//TODO调银行开户接口		
+		Message result = userService.sendInfo(user);
+		List<MSGContent> msg = result.getMsgContent();
+		//判断响应的status判断是否开户成功。00 - 成功；01 - 失败
+		if(msg.get(0).getStatus().equals("00")){
+			isSuccessed = true;
+		}else{
+			isSuccessed = false;
+		}
 		if (isSuccessed){
 			user.setBank(bank);
 			if (userService.save(user)){
