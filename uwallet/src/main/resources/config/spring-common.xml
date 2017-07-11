@@ -10,6 +10,9 @@
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
+	<!-- 加载资源文件  其中包含变量信息，必须在Spring配置文件的最前面加载，即第一个加载-->
+    <context:property-placeholder location="classpath:config/jdbcConfig.properties" />
+    
 	<!-- 1. 数据源 : DriverManagerDataSource 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -23,10 +26,10 @@
    <!--配置数据源 -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-		<property name="url" value="jdbc:mysql://10.17.2.136:3306/ulaiber?characterEncoding=utf8"></property>
-		<property name="username" value="root"></property>
-		<property name="password" value="123456"></property>
+		<property name="driverClassName" value="${jdbc.driverClassName}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
 		<property name="maxActive" value="100"></property>
 		<property name="maxIdle" value="30"></property>
 		<property name="maxWait" value="500"></property>
