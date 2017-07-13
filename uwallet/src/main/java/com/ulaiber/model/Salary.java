@@ -33,6 +33,29 @@ public class Salary {
 	private String salary_createTime;
 	
 	/**
+	 * 企业名称
+	 */
+	private String company;
+	
+	/**
+	 * 状态  调银企直联接口会返回7种状态, 状态5代表成功
+	 * 0-未处理数据文件
+	 * 1-正在处理数据文件
+	 * 2-数据文件处理成功
+	 * 3-数据文件有误，不能进行
+	 * 4-正在处理业务数据
+	 * 5-业务数据处理成功
+	 * 6-业务数据处理失败
+	 * 7-撤销
+	 */
+	private String status;
+	
+	/**
+	 * 业务委托编号
+	 */
+	private String entrustSeqNo;
+	
+	/**
 	 * 备注
 	 */
 	private String remark;
@@ -84,6 +107,14 @@ public class Salary {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
 
 	public String getSalary_createTime() {
 		return salary_createTime;
@@ -92,5 +123,21 @@ public class Salary {
 	public void setSalary_createTime(String salary_createTime) {
 		this.salary_createTime = salary_createTime;
 	}
-	
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getEntrustSeqNo() {
+		return entrustSeqNo;
+	}
+
+	public void setEntrustSeqNo(String entrustSeqNo) {
+		this.entrustSeqNo = entrustSeqNo;
+	}
+
 }

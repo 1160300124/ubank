@@ -1,9 +1,11 @@
 package com.ulaiber.utils;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
+import com.ulaiber.model.User;
 
 public class Test {
 
@@ -23,18 +25,21 @@ public class Test {
 //		
 //		System.out.println(n);
 //		System.out.println(Math.random());
-		System.out.println(CaptchaUtil.getCaptcha());
+//		System.out.println(CaptchaUtil.getCaptcha());
         
 //		
 //        
-//        String tt = MD5Util.getEncryptedPwd("123456");
+//        String tt = MD5Util.getEncryptedPwd("ubank123456!");
 //        System.out.println(tt);
 //
 //        //MD5加密
-//        String s = new String("123456"); 
+//        String s = new String("ubank123456!"); 
 //        System.out.println("原始：" + s); 
 //        System.out.println("-------------：" + MD5Util.validatePwd(s, MD5Util.getEncryptedPwd(s))); 
 //        System.out.println("MD5加密后：" + MD5Util.getEncryptedPwd(s));
+		
+//		String s = "/uwallet/backend/tomanager";
+//		System.out.println(s.substring("/uwallet".length()));
         
 //      -----------------------------------------------------------------
 //        String data = DateTimeUtil.date2Str(new Date());
@@ -64,11 +69,11 @@ public class Test {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
         
-//      String apiUrl = "http://localhost:8080/uwallet/api/v1/sendCaptcha";
-//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//      params.put("mobile", "15919477086");
-//      String response = HttpsUtil.doPost1(apiUrl, params);
-//      System.out.println(response);
+      String apiUrl = "http://localhost:8080/uwallet/api/v1/sendCaptcha";
+      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+      params.put("mobile", "15919477086");
+      String response = HttpsUtil.doPost1(apiUrl, params);
+      System.out.println(response);
 		
 //      String apiUrl = "http://localhost:8080/uwallet/api/v1/validate";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
@@ -78,6 +83,7 @@ public class Test {
 //      params.put("confirm_password", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
+		
 	}
 	
 	/* 单条短信发送,智能匹配短信模板

@@ -21,10 +21,10 @@ public class User {
 	private String access_token;
 	
 	//手机号码
-	private String mobile1;
+	private String mobile;
 	
 	//银行预留手机号码
-	private String mobile2;
+	private String reserve_mobile;
 	
 	//证件类型 1:身份证;2:护照;3:港澳通行证;21:工作证;99:其它
 	private String cardType;
@@ -116,20 +116,20 @@ public class User {
 		this.access_token = access_token;
 	}
 
-	public String getMobile1() {
-		return mobile1;
+	public String getMobile() {
+		return mobile;
 	}
 
-	public void setMobile1(String mobile1) {
-		this.mobile1 = mobile1;
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
-	public String getMobile2() {
-		return mobile2;
+	public String getReserve_mobile() {
+		return reserve_mobile;
 	}
 
-	public void setMobile2(String mobile2) {
-		this.mobile2 = mobile2;
+	public void setReserve_mobile(String reserve_mobile) {
+		this.reserve_mobile = reserve_mobile;
 	}
 
 	public String getCardType() {

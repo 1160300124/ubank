@@ -2,7 +2,6 @@ package com.ulaiber.service;
 
 import java.util.List;
 
-import com.ulaiber.model.Message;
 import com.ulaiber.model.User;
 
 public interface UserService {
@@ -82,10 +81,10 @@ public interface UserService {
 	boolean updateForBankCard(User user);
 	
 	/**
-	 * 银行开户接口
-	 * @param user
-	 * @return Message
+	 * 根据用户名获取用户信息
+	 * @param uesrName
+	 * @return User
 	 */
-	Message sendInfo(User user);
+	User getUserByName(String uesrName);
 
 }

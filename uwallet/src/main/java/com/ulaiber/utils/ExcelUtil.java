@@ -171,13 +171,17 @@ public class ExcelUtil {
                 if(xssfSheet == null){  
                     continue;  
                 }  
-                //读取Row,从第3行开始  
-                for(int rowNum = 2; rowNum <= xssfSheet.getLastRowNum(); rowNum++){  
+                Salary sa = new Salary();
+                //读取Row,从第2行开始  
+                for(int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++){  
                     XSSFRow xssfRow = xssfSheet.getRow(rowNum);  
                     if(xssfRow != null){  
-                       //读取列，从第一列开始  
+                        //读取列，从第一列开始  
+                    	if (rowNum == 1){
+                    		sa.setCompany(getXValue(xssfRow.getCell(1)));
+                    		continue;
+                    	}
                     	if (rowNum == 2){
-                    		Salary sa = new Salary();
                     		sa.setTotalNumber(Integer.valueOf(getXValue(xssfRow.getCell(1))));
                     		sa.setTotalAmount(Double.valueOf(getXValue(xssfRow.getCell(3))));
                     		sa.setSalaryDate(getXValue(xssfRow.getCell(4)));
@@ -248,12 +252,16 @@ public class ExcelUtil {
                 if(hssfSheet == null){  
                     continue;  
                 }  
-                //读取Row,从第3行开始,第三行是总笔数，总金额，发放时间
-                for (int rowNum = 2; rowNum <= hssfSheet.getLastRowNum(); rowNum++){  
+                Salary sa = new Salary();
+                //读取Row,从第2行开始,第三行是总笔数，总金额，发放时间
+                for (int rowNum = 1; rowNum <= hssfSheet.getLastRowNum(); rowNum++){  
                     HSSFRow hssfRow = hssfSheet.getRow(rowNum);
                     if (hssfRow != null){  
+                       	if (rowNum == 1){
+                    		sa.setCompany(getHValue(hssfRow.getCell(0)));
+                    		continue;
+                    	}
                     	if (rowNum == 2){
-                    		Salary sa = new Salary();
                     		sa.setTotalNumber(Integer.valueOf(getHValue(hssfRow.getCell(1))));
                     		sa.setTotalAmount(Double.valueOf(getHValue(hssfRow.getCell(3))));
                     		sa.setSalaryDate(getHValue(hssfRow.getCell(4)));

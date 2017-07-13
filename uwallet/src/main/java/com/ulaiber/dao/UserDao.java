@@ -16,9 +16,9 @@ public interface UserDao {
 	 * 新增用户
 	 * 
 	 * @param user User
-	 * @return boolean true/flase
+	 * @return int 
 	 */
-	boolean save(User user);
+	int save(User user);
 	
 	/**
 	 * 更新ticket和token
@@ -83,5 +83,12 @@ public interface UserDao {
 	 * @return boolean
 	 */
 	boolean updateForBankCard(User user);
+	
+	/**
+	 * 根据用户名获取用户信息
+	 * @param uesrName
+	 * @return User
+	 */
+	User getUserByName(String uesrName);
 	
 }

@@ -7,7 +7,10 @@ package com.ulaiber.conmon;
  */
 public class IConstants
 {
-	
+
+    //后台用户SESSION常量名
+    public final static String UBANK_BACKEND_USERSESSION = "BACKENDUSER";
+    
     //成功
     public final static int QT_CODE_OK = 1000;
     

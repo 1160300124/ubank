@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.conmon.IConstants;
 import com.ulaiber.model.Bank;
-import com.ulaiber.model.MSGContent;
-import com.ulaiber.model.Message;
 import com.ulaiber.model.ResultInfo;
 import com.ulaiber.model.User;
 import com.ulaiber.service.UserService;
@@ -66,12 +64,12 @@ public class UserController extends BaseController{
 			retInfo.setMessage("register failed: user or bank is empty.");
 			return retInfo;
 		}
-		if (!ObjUtil.notEmpty(user.getMobile1()) || !ObjUtil.notEmpty(user.getMobile2()) || !ObjUtil.notEmpty(bank.getBankNo())){
+		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(bank.getBankNo())){
 			retInfo.setMessage("register failed: mobile or bankNo is empty.");
 			return retInfo;
 		}
 		//查询手机号是否已被注册
-		User user1 = userService.findByMobile(user.getMobile1());
+		User user1 = userService.findByMobile(user.getMobile());
 		if (ObjUtil.notEmpty(user1)){
 			retInfo.setCode(IConstants.QT_MOBILE_EXISTS);
 			retInfo.setMessage("register failed: mobile is already exists.");
@@ -80,15 +78,6 @@ public class UserController extends BaseController{
 		
 		//TODO调银行开户接口
 		boolean isSuccessed = true;
-		//TODO调银行开户接口		
-		Message result = userService.sendInfo(user);
-		List<MSGContent> msg = result.getMsgContent();
-		//判断响应的status判断是否开户成功。00 - 成功；01 - 失败
-		if(msg.get(0).getStatus().equals("00")){
-			isSuccessed = true;
-		}else{
-			isSuccessed = false;
-		}
 		if (isSuccessed){
 			user.setBank(bank);
 			if (userService.save(user)){
@@ -103,7 +92,7 @@ public class UserController extends BaseController{
 		return retInfo;
 	}
 	/**
-	 * 鑾峰彇鎵�鏈夌敤鎴峰垪琛�
+	 * 获取所有用户
 	 * @param request
 	 * @return
 	 */
@@ -138,8 +127,8 @@ public class UserController extends BaseController{
 			User tempUser = new User();
 			tempUser.setId(user.getId());
 			tempUser.setUserName(user.getUserName());
-			tempUser.setMobile1(user.getMobile1());
-			tempUser.setMobile2(user.getMobile2());
+			tempUser.setMobile(user.getMobile());
+			tempUser.setReserve_mobile(user.getReserve_mobile());
 			tempUser.setBank(user.getBank());
 			tempUser.setCardNo(user.getCardNo());
 			retInfo.setData(tempUser);
@@ -187,7 +176,7 @@ public class UserController extends BaseController{
 	}
 	
 	/**
-	 * 
+	 * validate
 	 * 
 	 * @param mobile
 	 * @param captcha
@@ -233,6 +222,7 @@ public class UserController extends BaseController{
 	 * @return
 	 */
 	@RequestMapping(value = "forgetLoginPassword", method = RequestMethod.POST)
+	@ResponseBody
 	public ResultInfo forgetPassword(String mobile, String captcha, String password, String confirm_password,
 			HttpServletRequest request, HttpServletResponse response){
 		
@@ -276,6 +266,7 @@ public class UserController extends BaseController{
 	 * @return
 	 */
 	@RequestMapping(value = "forgetPayPassword", method = RequestMethod.POST)
+	@ResponseBody
 	public ResultInfo forgetPayPassword(String mobile, String captcha, String password, String confirm_password,
 			HttpServletRequest request, HttpServletResponse response){
 		
