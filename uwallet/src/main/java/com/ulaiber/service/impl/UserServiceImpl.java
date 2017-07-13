@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSONArray;
+import com.ulaiber.utils.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,42 +162,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 		//发送请求
 		String apiUrl = "https://10.17.2.93:8080/sendRegister";
 		String response = HttpsUtil.doPost(apiUrl, json);
-		//解析响应的json数据
-		net.sf.json.JSONArray jsonArray = net.sf.json.JSONArray.fromObject(response);
-		List<List<Map<String, Object>>> plain_list = null;
-		for (int i = 0; i < jsonArray.size(); i++) {
-			net.sf.json.JSONObject obj = jsonArray.getJSONObject(i);
-			List<List<Map<String, Object>>> plain =  (List<List<Map<String, Object>>>) obj.get("PLAIN");
-			//需要解密签名
-			//String signature = (String) obj.get("SIGNATURE");
-			for (int j = 0; j < plain.size(); j++) {
-				plain_list = (List<List<Map<String, Object>>>) plain.get(j).get(j);
-  			}
-		}
-		List<Map<String, Object>> head = (List<Map<String, Object>>) plain_list.get(0).get(0).get("HEAD");
-		List<Map<String, Object>> body = (List<Map<String, Object>>) plain_list.get(0).get(1).get("BODY");
-		Message msg = new Message();
-		//获取head数据
-		for (Map<String, Object> map : head) {
-			msg.setTransId(map.get("transId").toString()); 
-			msg.setReturnCode(map.get("returnCode").toString());
-			msg.setReturnMsg(map.get("returnMsg").toString());
-			msg.setTimeStamp(map.get("timeStamp").toString());
-		}
-		//获取body数据
-		List<MSGContent> body_list = new ArrayList<>();
-		MSGContent info = new MSGContent();
-		for (Map<String, Object> map : body) {
-			info.setUserId(map.get("userId").toString());
-			info.setIdType(map.get("idType").toString());
-			info.setStatus(map.get("status").toString());
-			info.setOpenId(map.get("openId").toString());
-			info.setReturnCode(map.get("returnCode").toString());
-			info.setReturnMsg(map.get("returnMsg").toString());
-		}
-		body_list.add(info);
-		msg.setMsgContent(body_list);
-		return msg;
+
+		return StringUtil.parserJson(response);
 	}
+
+
 
 }

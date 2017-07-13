@@ -4,8 +4,13 @@
 package com.ulaiber.utils;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.ulaiber.model.MSGContent;
+import com.ulaiber.model.Message;
 import sun.misc.BASE64Encoder;
 
 
@@ -300,5 +305,45 @@ public class StringUtil {
 			cs[i]=t.toCharArray()[0];
 		}
 		return new String(cs);
+	}
+
+	//解密json字符串，并解析json数据
+	public static Message parserJson(String json){
+		//解析响应的json数据
+		net.sf.json.JSONArray jsonArray = net.sf.json.JSONArray.fromObject(json);
+		List<List<Map<String, Object>>> plain_list = null;
+		for (int i = 0; i < jsonArray.size(); i++) {
+			net.sf.json.JSONObject obj = jsonArray.getJSONObject(i);
+			List<List<Map<String, Object>>> plain =  (List<List<Map<String, Object>>>) obj.get("PLAIN");
+			//需要解密签名
+			//String signature = (String) obj.get("SIGNATURE");
+			for (int j = 0; j < plain.size(); j++) {
+				plain_list = (List<List<Map<String, Object>>>) plain.get(j).get(j);
+			}
+		}
+		List<Map<String, Object>> head = (List<Map<String, Object>>) plain_list.get(0).get(0).get("HEAD");
+		List<Map<String, Object>> body = (List<Map<String, Object>>) plain_list.get(0).get(1).get("BODY");
+		Message msg = new Message();
+		//获取head数据
+		for (Map<String, Object> map : head) {
+			msg.setTransId(map.get("transId").toString());
+			msg.setReturnCode(map.get("returnCode").toString());
+			msg.setReturnMsg(map.get("returnMsg").toString());
+			msg.setTimeStamp(map.get("timeStamp").toString());
+		}
+		//获取body数据
+		List<MSGContent> body_list = new ArrayList<>();
+		MSGContent info = new MSGContent();
+		for (Map<String, Object> map : body) {
+			info.setUserId(map.get("userId").toString());
+			info.setIdType(map.get("idType").toString());
+			info.setStatus(map.get("status").toString());
+			info.setOpenId(map.get("openId").toString());
+			info.setReturnCode(map.get("returnCode").toString());
+			info.setReturnMsg(map.get("returnMsg").toString());
+		}
+		body_list.add(info);
+		msg.setMsgContent(body_list);
+		return msg;
 	}
 }
