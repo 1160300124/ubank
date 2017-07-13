@@ -1,6 +1,8 @@
 package com.ulaiber.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -30,4 +32,28 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		return this.mapper.getAllSalaries();
 	}
 
+	@Override
+	public List<Salary> getSalaries(int limit, int offset, String search) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("limit", limit);
+		params.put("offset", offset);
+		params.put("search", search);
+		return this.mapper.getSalaries(params);
+	}
+
+	@Override
+	public int getTotalNum() {
+		
+		return this.mapper.getTotalNum();
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public boolean updateStatusBySeqNo(Salary sa) {
+		
+		return this.mapper.updateStatusBySeqNo(sa);
+	}
+
+	
 }

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
+import com.ulaiber.conmon.IConstants;
+import com.ulaiber.model.User;
 import com.ulaiber.utils.DateTimeUtil;
 import com.ulaiber.utils.ObjUtil;
 import com.ulaiber.utils.StringUtil;
@@ -19,6 +21,30 @@ import com.ulaiber.utils.StringUtil;
  *
  */
 public class BaseController {
+	
+	/**
+	 * 得到后台当前登陆的账户
+	 * 
+	 * @param request
+	 * @return
+	 * @Author 
+	 */
+	protected User getUserFromSession(HttpServletRequest request){
+		User user = null;
+		if(ObjUtil.notEmpty(request)){
+			user = (User) request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION);
+		}
+		return user;
+	}
+	/**
+	 * 是否登录
+	 *	@param request
+	 *	@return 
+	 *  @author 
+	 */
+	protected boolean isLogin(HttpServletRequest request){
+		return null != getUserFromSession(request);
+	}
 
 	/**
 	 * 控制器级别的公共日志输出

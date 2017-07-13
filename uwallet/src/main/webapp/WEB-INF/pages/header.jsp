@@ -9,7 +9,7 @@
 	<link href="<%=request.getContextPath()%>/css/font-awesome/font-awesome.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap-table/bootstrap-theme.min.css" rel="stylesheet" />
-	<link href="<%=request.getContextPath()%>/css/index.css?v=10" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/index.css" rel="stylesheet" />
     <script src="<%=request.getContextPath()%>/js/jquery/jquery-1.12.3.min.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/jquery/ajaxfileupload.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
@@ -19,7 +19,7 @@
 <body >
 	<!-- 公共banner -->
 	<div class="header">
-		<div><h3>uboss钱包</h3></div>
+		<div ><a class="index_title" href="<%=request.getContextPath()%>"><h3>uboss钱包</h3></a></div>
 	</div>
 	<!-- 公共导航菜单 -->
 	<div class="nav">
@@ -27,7 +27,7 @@
 	        <li>
 	            <span class="first-menu">业务管理</span>
 	            <ul class="second-menu">
-	                <li><a href="<%=request.getContextPath()%>/manager/tomanager">转账记录</a></li>
+	                <li><a href="<%=request.getContextPath()%>/backend/tomanager">转账记录</a></li>
 	            </ul>
 	        </li>
 	    </ul>

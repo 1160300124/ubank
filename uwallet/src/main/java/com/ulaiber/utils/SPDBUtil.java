@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.jsoup.Jsoup;
@@ -22,18 +23,29 @@ import com.ulaiber.model.Payee;
  */
 public class SPDBUtil {
 	
+	/**
+	 * 日志对象
+	 */
+	private static Logger logger = Logger.getLogger(SPDBUtil.class);
+	
 	private static final String BISAFE_IP = "10.17.1.41";
 	private static final int BISAFE_SIGN_PORT = 4437;
 	private static final int BISAFE_HTTP_PORT = 5777;
 	
 	//单位编号
-	private static final String UNIT_NUM = "95018201";
+	public static final String UNIT_NUM = "19630031";
 
 	//指定授权客户号
-	private static final String CLIENT_NUM = "2000040752";
+	public static final String CLIENT_MASTER_ID = "2013632264";
 	
 	//付款账号
-	private static final String CLIENT_USER = "6224080600234";
+	public static final String CLIENT_ACCT_NO = "19630155200001772";
+	
+	//代发工资的交易码
+	private static final String PAY_SALARY_TRANS_CODE= "5652";
+	
+	//查询代发工资信息交易码
+	private static final String PAY_RESULT_TRANS_CODE = "5635";
 	
 	/**
 	 * 获取签名报文
@@ -150,6 +162,31 @@ public class SPDBUtil {
 		return body.toString();
 	}
 	
+	
+	/**
+	 * 网银授权代发工资交易结果信息批量查询 body
+	 * 
+	 * @param authMasterID 指定授权客户号
+	 * @param acctNo 付款账号
+	 * @param seqNo 业务编号
+	 * @param beginDate 开始时间
+	 * @param endDate 结束时间
+	 *  
+	 * @return String
+	 */
+	private static String getRequestBody(String authMasterID, String acctNo, String seqNo, String beginDate, String endDate){
+		StringBuffer body = new StringBuffer();
+		body.append("<body>");
+		body.append("<authMasterID>" + authMasterID + "</authMasterID>");
+		body.append("<acctNo>" + acctNo + "</acctNo>");
+		body.append("<seqNo>" + seqNo + "</seqNo>");
+		body.append("<beginDate>" + beginDate + "</beginDate>");
+		body.append("<endDate>" + endDate + "</endDate>");
+		body.append("</body>");
+		
+		return body.toString();
+	}
+	
 	public static void queryBalance(){
 		StringBuffer balancebody = new StringBuffer();
 
@@ -210,72 +247,150 @@ public class SPDBUtil {
 		}
 	}
 	
-	public static boolean getPayResult(String entrustSeqNo){
-		StringBuffer body = new StringBuffer();
+	/**
+	 * 查询代发工资结果信息 5630
+	 * 
+	 * @param entrustSeqNo 业务委托编号
+	 * @return String 处理状态
+	 * 0-未处理数据文件
+	 * 1-正在处理数据文件
+	 * 2-数据文件处理成功
+     * 3-数据文件有误，不能进行
+	 * 4-正在处理业务数据
+	 * 5-业务数据处理成功
+     * 6-业务数据处理失败
+	 * 7-撤销
+	 */
+	public static String getPayResult(String entrustSeqNo){
+		logger.info("getPayResult start...");
 		
+		StringBuffer body = new StringBuffer();
 		body.append("<body>");
 		body.append("<entrustSeqNo>" + entrustSeqNo+ "</entrustSeqNo>");
 		body.append("</body>");
 
+		logger.info("getPayResult request body: " + body);
 		String sign = getSign(body.toString(), true);
 		
 		Document doc = Jsoup.parse(sign);
 		if (!StringUtils.equals("0", doc.getElementsByTag("result").get(0).text())){
-			System.out.println("sign failed.");
-			return false;
+			logger.error("getPayResult()--request body sign failed.");
+			return null;
 		}
 			
 		Elements eles = doc.getElementsByTag("sign");
 		String signbody = eles.get(0).text();
-		System.out.println(eles);
 		
-		String xml = getRequestXml(getRequestHeadStr("5630", "1", "2000040752", new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), 
+		String xml = getRequestXml(getRequestHeadStr(PAY_RESULT_TRANS_CODE, "1", CLIENT_MASTER_ID, new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), 
 				getRequestSignBody(signbody));
 		
-//		System.out.println(xml.length());
+		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位s
 		xml = String.format("%06d", xml.length() + 6) + xml;
-//		System.out.println(xml);
-		System.out.println("1------------------------------------------------------");
 		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
-//		System.out.println(res);
+		logger.info("getPayResult response: " + res);
 		String res1 = res.substring(6);
-		System.out.println("2------------------------------------------------------");
-		System.out.println(res1);
-		System.out.println("3------------------------------------------------------");
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
-//			System.out.println(root.element("head").elementTextTrim("returnCode"));
 			String returnCode = root.element("head").elementTextTrim("returnCode");
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
-				System.out.println(returnsign);
 				String res2 = getSign(returnsign, false);
-				System.out.println("4------------------------------------------------------");
-				System.out.println(res2);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
-					System.out.println("sign failed.");
-					return false;
+					logger.error("[getPayResult] response body sign failed.");
+					return null;
 				}
 				Elements eles1 = doc1.getElementsByTag("sic");
-//				System.out.println(eles1)body;
-				System.out.println("----------------------------------------------------------");
-				System.out.println(eles1.select("transstatus"));
-				System.out.println("----------------------------------------------------------");
-				if (StringUtils.equals(eles1.select("transstatus").text(), "5")){
-					return true;
-				}
+				return eles1.select("transstatus").text();
 			}
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("parse response failed.", e);
+
 		}
-		return false;
+		logger.info("getPayResult end");
+		return null;
 	}
 	
+	/**
+	 * 查询在代发工资交易时走授权路线的情况下，代发工资交易结果信息。 5635
+	 * 
+	 * @param params
+	 * @return String 处理状态
+	 * 0-未处理数据文件
+	 * 1-正在处理数据文件
+	 * 2-数据文件处理成功
+     * 3-数据文件有误，不能进行
+	 * 4-正在处理业务数据
+	 * 5-业务数据处理成功
+     * 6-业务数据处理失败
+	 * 7-撤销
+	 */
+	public static String getPayResult(Map<String, Object> params){
+		logger.info("getPayResult start...");
+		
+		String authMasterID = params.get("authMasterID").toString();
+		String acctNo = params.get("acctNo").toString();
+		String seqNo = params.get("seqNo").toString();
+		String beginDate = params.get("beginDate").toString();
+		String endDate = params.get("endDate").toString();
+		
+		String body = getRequestBody(authMasterID, acctNo, seqNo, beginDate, endDate);		
+		logger.info("getPayResult request body: " + body);
+		String sign = getSign(body.toString(), true);
+		
+		Document doc = Jsoup.parse(sign);
+		if (!StringUtils.equals("0", doc.getElementsByTag("result").get(0).text())){
+			logger.error("getPayResult()--request body sign failed.");
+			return null;
+		}
+			
+		Elements eles = doc.getElementsByTag("sign");
+		String signbody = eles.get(0).text();
+		
+		String xml = getRequestXml(getRequestHeadStr(PAY_RESULT_TRANS_CODE, "1", CLIENT_MASTER_ID, new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), 
+				getRequestSignBody(signbody));
+		
+		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位s
+		xml = String.format("%06d", xml.length() + 6) + xml;
+		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
+		String res = HttpsUtil.doPost(url, xml, true);
+		logger.info("getPayResult response: " + res);
+		String res1 = res.substring(6);
+		
+		try {
+			org.dom4j.Document document = DocumentHelper.parseText(res1);
+			org.dom4j.Element root = document.getRootElement();
+			String returnCode = root.element("head").elementTextTrim("returnCode");
+			if (StringUtils.equals(returnCode, "AAAAAAA")){
+				String returnsign = root.element("body").elementTextTrim("signature");
+				String res2 = getSign(returnsign, false);
+				logger.info("[getPayResult] response body: " + res2);
+				Document doc1 = Jsoup.parse(res2);
+				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
+					logger.error("[getPayResult] response body sign failed.");
+					return null;
+				}
+				Elements eles1 = doc1.getElementsByTag("sic");
+				return eles1.select("transstatus").text();
+			}
+		} catch (DocumentException e) {
+			logger.error("parse response failed.", e);
+
+		}
+		logger.info("getPayResult end");
+		return null;
+	}
+	
+	/**
+	 * 代发工资 5652
+	 * 
+	 * @param params 参数，详情见接口文档
+	 * @param payees 收款人集合
+	 * @return String 业务委托编号(entrustSeqNo)
+	 */
 	public static String paySalaries(Map<String, Object> params, List<Payee> payees){
 //		StringBuffer body = new StringBuffer();
 //		body.append("<body>");
@@ -304,6 +419,7 @@ public class SPDBUtil {
 //		body.append("</lists>");
 //		body.append("</body>");
 		
+		logger.info("paySalaries start...");
 		String elecChequeNo = params.get("elecChequeNo").toString();
 		String authMasterID = params.get("authMasterID").toString();
 		String unitNo = params.get("unitNo").toString();
@@ -316,59 +432,47 @@ public class SPDBUtil {
 		
 		//拼接5652 代发工资请求body
 		String body = getRequestBody(elecChequeNo, authMasterID, unitNo, businessType, acctNo, bespeakDate, totalNumber, totalAmount, flag, payees);
-//		System.out.println(body);
+		logger.info("paySalaries request body: " + body);
 		String sign = getSign(body.toString(), true);
-//		System.out.println(sign);
-		System.out.println("------------------------------------------------------");		
 		Document doc = Jsoup.parse(sign);
 		if (!StringUtils.equals("0", doc.getElementsByTag("result").get(0).text())){
-			System.out.println("sign failed.");
-			return "";
+			logger.error("[paySalaries] request body sign failed.");
+			return null;
 		}
 			
 		String signbody = doc.getElementsByTag("sign").get(0).text();
-//		System.out.println(doc.getElementsByTag("sign").get(0).text());
+		String xml = getRequestXml(getRequestHeadStr(PAY_SALARY_TRANS_CODE, "1", authMasterID, new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), getRequestSignBody(signbody));
 		
-		String xml = getRequestXml(getRequestHeadStr("5652", "1", "2000040752", new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), getRequestSignBody(signbody));
-		
-//		System.out.println(xml.length());
+		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位
 		xml = String.format("%06d", xml.length() + 6) + xml;
-//		System.out.println(xml);
-		System.out.println("------------------------------------------------------");
 		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
+		logger.info("paySalaries response: " + res);
 		String res1 = res.substring(6);
-		System.out.println("2------------------------------------------------------");
-		System.out.println(res1);
-		System.out.println("3------------------------------------------------------");
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
-			System.out.println(root.element("head").elementTextTrim("returnCode"));
 			String returnCode = root.element("head").elementTextTrim("returnCode");
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
-				System.out.println(returnsign);
+				//解签
 				String res2 = getSign(returnsign, false);
-				System.out.println("4------------------------------------------------------");
-				System.out.println(res2);
+				logger.info("[paySalaries] response body: " + res2);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
-					System.out.println("sign failed.");
-					return "";
+					logger.error("[paySalaries] response body sign failed.");
+					return null;
 				}
 				Elements eles1 = doc1.getElementsByTag("sic");
-				System.out.println("entrustSeqNo------------------------------------------------------");
-				System.out.println(eles1.select("elecChequeNo").text());
-				System.out.println("entrustSeqNo------------------------------------------------------");
-				return eles1.select("elecChequeNo").text();
+				return eles1.select("entrustSeqNo").text();
 			}
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("parse response failed.", e);
 		}
-		return "";
+		logger.info("paySalaries end");
+		return null;
 	} 
 	
 	public static void main(String[] args) throws Exception{
@@ -379,35 +483,45 @@ public class SPDBUtil {
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("elecChequeNo", String.valueOf(DateTimeUtil.getMillis(new Date())));
-		params.put("authMasterID", "2000040752");
-		params.put("unitNo", "82050095");
+		params.put("authMasterID", CLIENT_MASTER_ID);
+		params.put("unitNo", UNIT_NUM);
 		params.put("businessType", "1002");
-		params.put("acctNo", "001846554292003765");
-		params.put("bespeakDate", DateTimeUtil.getfutureDay(1));
-		params.put("totalNumber", 2);
-		params.put("totalAmount", 2.22);
+		params.put("acctNo", CLIENT_ACCT_NO);
+		params.put("bespeakDate", "");
+		params.put("totalNumber", 1);
+		params.put("totalAmount", 0.01);
 		params.put("flag", "1");
 		
 		List<Payee> payees = new ArrayList<Payee>();
 		Payee payee = new Payee();
-		payee.setPayeeName("张三");
-		payee.setPayeeAcctNo("6224080002395");
-		payee.setAmount(1.01);
-		payee.setNote("代发工资测试");
+		payee.setPayeeName("和俊杰");
+		payee.setPayeeAcctNo("6217921102903120");
+		payee.setAmount(0.01);
+		payee.setNote("代发工资");
 		
 		Payee payee1 = new Payee();
-		payee1.setPayeeName("李四");
-		payee1.setPayeeAcctNo("6224080600234");
-		payee1.setAmount(1.21);
-		payee1.setNote("代发工资测试");
-		payees.add(payee);
+		payee1.setPayeeName("李良");
+		payee1.setPayeeAcctNo("6235591104059580");
+		payee1.setAmount(0.01);
+		payee1.setNote("代发工资");
 		payees.add(payee1);
-		String entrustSeqNo = paySalaries(params, payees);
+		payees.add(payee);
+//		String entrustSeqNo = paySalaries(params, payees);
+//		System.out.println("-----------------------------------------------" + entrustSeqNo);
 		
 		
 		
-//		Thread.sleep(8000);
-//		getPayResult("19681013");
+		Map<String, Object> params1 = new HashMap<String, Object>();
+		params1.put("authMasterID", CLIENT_MASTER_ID);
+		params1.put("acctNo", CLIENT_ACCT_NO);
+		params1.put("seqNo", "5235133004");
+		params1.put("beginDate", "20170713");
+		params1.put("endDate", "20170713");
+		String transStatus = getPayResult(params1);
+		
+		System.out.println("-----------------------------------------------" + transStatus);
+		
+
 		
 		
 		

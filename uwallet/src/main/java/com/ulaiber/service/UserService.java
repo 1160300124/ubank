@@ -82,6 +82,13 @@ public interface UserService {
 	boolean updateForBankCard(User user);
 	
 	/**
+	 * 根据用户名获取用户信息
+	 * @param uesrName
+	 * @return User
+	 */
+	User getUserByName(String uesrName);
+
+	/**
 	 * 银行开户接口
 	 * @param user
 	 * @return Message

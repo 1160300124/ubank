@@ -1,4 +1,4 @@
-package com.ulaiber.controller;
+package com.ulaiber.controller.backend;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.conmon.IConstants;
+import com.ulaiber.controller.BaseController;
 import com.ulaiber.model.ResultInfo;
 import com.ulaiber.model.User;
 import com.ulaiber.service.UserService;
@@ -19,37 +20,42 @@ import com.ulaiber.utils.ObjUtil;
 import com.ulaiber.utils.UUIDGenerator;
 
 /**
- * 登录控制器
+ * 后台登录控制器
  * 
  * @author huangguoqing
  *
  */
 @Controller
-@RequestMapping("/api/v1/")
-public class LoginController extends BaseController{
+@RequestMapping("/backend/")
+public class BackendLoginController extends BaseController {
 	
 	/**
 	 * 日志对象
 	 */
-	private static Logger logger = Logger.getLogger(LoginController.class);
+	private static Logger logger = Logger.getLogger(BackendLoginController.class);
 	
 	@Autowired
 	private UserService userService;
+	
+	@RequestMapping("tologin")
+	public String toLogin(HttpServletRequest request, HttpServletResponse response){
+		return "login";
+	}
 	
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo login(User user, HttpServletRequest request, HttpServletResponse response){
 		logger.info("Start to login...");
 		ResultInfo retInfo = new ResultInfo();
-		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getLogin_password())){
+		if (!ObjUtil.notEmpty(user.getUserName()) || !ObjUtil.notEmpty(user.getLogin_password())){
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("mobile or password is empty.");
+			retInfo.setMessage("userName or password is empty.");
 			return retInfo;
 		}
-		User dbuser = userService.findByMobile(user.getMobile());
+		User dbuser = userService.getUserByName(user.getUserName());
 		if (!ObjUtil.notEmpty(dbuser)){
 			retInfo.setCode(IConstants.QT_MOBILE_NOT_EXISTS);
-			retInfo.setMessage("mobile not exists.");
+			retInfo.setMessage("user not exists.");
 			return retInfo;
 		}
 		
@@ -59,27 +65,11 @@ public class LoginController extends BaseController{
 			return retInfo;
 		}
 		
-		String login_ticket = UUIDGenerator.getUUID();
-		String access_token = UUIDGenerator.getUUID();
-		user.setLogin_ticket(login_ticket);
-		user.setAccess_token(access_token);
-		boolean flag = userService.update(user);
-		if (flag){
-
-			User tempUser = new User();
-			tempUser.setId(dbuser.getId());
-			tempUser.setUserName(dbuser.getUserName());
-			tempUser.setMobile(dbuser.getMobile());
-			tempUser.setLogin_ticket(login_ticket);
-			tempUser.setAccess_token(access_token);
-			tempUser.setReserve_mobile(dbuser.getReserve_mobile());
-			tempUser.setCardNo(dbuser.getCardNo());
-			tempUser.setBank(dbuser.getBank());
-			retInfo.setData(tempUser);
-			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("login successed.");
-		}
+		//放入session
+		request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, dbuser);
+		
+		retInfo.setCode(IConstants.QT_CODE_OK);
+		retInfo.setMessage("login successed.");
 		return retInfo;
 	}
-
 }

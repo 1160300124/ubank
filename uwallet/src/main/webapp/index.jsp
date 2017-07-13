@@ -3,7 +3,7 @@
 <%@ include file="../WEB-INF/pages/header.jsp" %>
 <!-- 中间页面 -->
 	<div class="page-content">
-		66666666~~~中文中文~~~~~~~~~~~~~~~~
+		后台管理首页
 	</div>
 
 <%@ include file="../WEB-INF/pages/footer.jsp" %>

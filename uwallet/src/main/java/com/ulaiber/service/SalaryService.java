@@ -24,5 +24,24 @@ public interface SalaryService {
 	 * @return
 	 */
 	List<Salary> getAllSalaries(); 
+	
+	/**
+	 * 分页模糊查询
+	 * @return
+	 */
+	List<Salary> getSalaries(int limit, int offset, String search); 
+	
+	/**
+	 * 查询总条数
+	 * @return
+	 */
+	int getTotalNum();
+	
+	/**
+	 * 根据业务委托编号更新工资流水状态
+	 * 
+	 * @return
+	 */
+	boolean updateStatusBySeqNo(Salary sa);
 
 }

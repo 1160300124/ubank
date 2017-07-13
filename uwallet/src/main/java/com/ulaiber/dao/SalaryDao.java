@@ -1,6 +1,7 @@
 package com.ulaiber.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.model.Salary;
 
@@ -24,5 +25,23 @@ public interface SalaryDao {
 	 * @return
 	 */
 	List<Salary> getAllSalaries(); 
-
+	
+	/**
+	 * 分页模糊查询
+	 * @return
+	 */
+	List<Salary> getSalaries(Map<String, Object> params); 
+	
+	/**
+	 * 查询总条数
+	 * @return
+	 */
+	int getTotalNum();
+	
+	/**
+	 * 根据业务委托编号更新工资流水状态
+	 * 
+	 * @return
+	 */
+	boolean updateStatusBySeqNo(Salary sa);
 }
