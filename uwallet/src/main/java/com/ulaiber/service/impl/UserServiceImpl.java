@@ -1,7 +1,9 @@
 package com.ulaiber.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -65,8 +67,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	@Override
 	public User getUserByTicketAndToken(String ticket, String token) {
-		
-		return mapper.getUserByTicketAndToken(ticket, token);
+		User user = new User();
+		user.setLogin_ticket(ticket);
+		user.setAccess_token(token);
+		return mapper.getUserByTicketAndToken(user);
 	}
 
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)

@@ -44,4 +44,11 @@ public interface SalaryDao {
 	 * @return
 	 */
 	boolean updateStatusBySeqNo(Salary sa);
+	
+	/**
+	 * 根据id批量删除
+	 * @param sids
+	 * @return
+	 */
+	int batchDeleteSalaries(List<Long> sids);
 }

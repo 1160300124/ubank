@@ -55,5 +55,11 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		return this.mapper.updateStatusBySeqNo(sa);
 	}
 
+	@Override
+	public boolean batchDeleteSalaries(List<Long> sids) {
+		
+		return this.mapper.batchDeleteSalaries(sids) > 0;
+	}
+
 	
 }

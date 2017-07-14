@@ -30,12 +30,12 @@
 	                    <a href="#" class="fa fa-question-circle"></a>
 	                </div>
 	                <div class="form-group">
-	                    <div class="main-checkbox">
+<!--  	                    <div class="main-checkbox">
 	                        <input type="checkbox" value="None" id="checkbox1" name="check"/>
 	                        <label for="checkbox1"></label>
-	                    </div>
-	                    <span class="text">记住密码</span>
-	                    <button type="submit" class="btn btn-default" id="btn_login">登录</button>
+	                    </div> -->
+	                    <span class="error" id="errormsg"></span> 
+	                    <button type="submit" class="btn btn-default" id="btn_login" >登录</button>
 	                </div>
 	            </form>
 	        </div>

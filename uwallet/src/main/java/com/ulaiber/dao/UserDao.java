@@ -54,11 +54,10 @@ public interface UserDao {
 	/**
 	 * 根据ticket和token获取用户
 	 * 
-	 * @param ticket ticket
-	 * @param token token
+	 * @param user user
 	 * @return User User
 	 */
-	User getUserByTicketAndToken(String ticket, String token);
+	User getUserByTicketAndToken(User user);
 	
 	/**
 	 * 更新登录密码

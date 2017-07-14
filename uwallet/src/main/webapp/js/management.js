@@ -22,12 +22,22 @@ $(function () {
 			return;
 		}
 		
-		Ewin.confirm({ message: "请确认数据是否正确，确定要提交吗？" }).on(function (e) {
+		var data = [];
+		$.each(arrselections, function(index, item){
+			data.push(item.sid);
+		});
+		
+		Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
+			
+			if (!e) {
+				return;
+			}
 			
 			$.ajax({
-				url : "delete",
+				url : "batchDelete",
 				type: "post",
-				data : {},
+				contentType : 'application/json;charset=utf-8',
+				data : JSON.stringify(data),
 				dataType : "json",
 				success : function(data, status) {
 					var code = data['code'];
@@ -39,18 +49,20 @@ $(function () {
 					}
 				},
 				error : function(data, status, e) {
-					Ewin.alert("处理异常");
+					Ewin.alert("系统异常");
 				}
 			})	
 			
 		});
-		alert(arrselections);
+		
 	});
 
 	
 	$("#btn_import").unbind().bind("click", function(){
-
+		$("#file_tmp").val("");
+		$("#tb_salary").bootstrapTable("load", []);
 		$("#import_modal").modal("show");
+		$("#btn_pay").attr("disabled", true);
 	});
 
 
@@ -69,13 +81,15 @@ $(function () {
 				data = $.parseJSON(data.replace(/<.*?>/ig,""));
 				var code = data['code'];
 				if (code == 1000) {
+					Ewin.alert("上传成功！");
 					$("#tb_salary").bootstrapTable("load", data["data"]);
+					$("#btn_pay").attr("disabled", false);
 				}else{
-					alert("处理异常！");
+					Ewin.alert("上传失败！" + data['message']);
 				}
 			},
 			error : function(data, status, e) {
-				alert("上传发生异常");
+				Ewin.alert("上传发生异常");
 			}
 		})
 
@@ -102,13 +116,13 @@ $(function () {
 					if (code == 1000) {
 						$("#import_modal").modal("hide");
 						$("#tb_managetments").bootstrapTable("refresh");
-						alert("处理成功");
+						Ewin.alert("操作成功！");
 					}else{
 						Ewin.alert(data['message']);
 					}
 				},
 				error : function(data, status, e) {
-					Ewin.alert("处理异常");
+					Ewin.alert("系统错误！");
 				}
 			})
 			

@@ -8,5 +8,7 @@ import com.ulaiber.model.SalaryDetail;
 public interface ManagerService {
 	
 	boolean save(Salary sa, List<SalaryDetail> details);
+	
+	boolean batchDelete(List<Long> sids);
 
 }

@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,7 +28,8 @@ import com.ulaiber.utils.ObjUtil;
  */  
 public class LoginFilter extends OncePerRequestFilter {
 	
-	private UserService userService = new UserServiceImpl();
+	@Autowired
+	private UserService userService;
 
 	/**
 	 * (non-Javadoc)
@@ -82,21 +84,23 @@ public class LoginFilter extends OncePerRequestFilter {
 				}  
 			} else if (uri.contains("/api/v1/")){
 				//根据ticket和token获取用户
-				String login_ticket = request.getHeader("login_ticket");
-				String access_token = request.getHeader("access_token");
-				if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
-					response.setCharacterEncoding("UTF-8");  
-					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您还没有登录，请先登录");  
-					return ;  
-				}
-				User user = userService.getUserByTicketAndToken(login_ticket, access_token);
-				if (null == user) {  
-					response.setCharacterEncoding("UTF-8");
-					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");  
-					return ;  
-				} else {  
-					filterChain.doFilter(request, response);  
-				} 
+//				String login_ticket = request.getHeader("login_ticket");
+//				String access_token = request.getHeader("access_token");
+//				if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
+//					response.setCharacterEncoding("UTF-8");  
+//					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您还没有登录，请先登录");  
+//					return ;  
+//				}
+//				
+//				User user = userService.getUserByTicketAndToken(login_ticket, access_token);
+//				if (null == user) {  
+//					response.setCharacterEncoding("UTF-8");
+//					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");  
+//					return ;  
+//				} else {  
+//					filterChain.doFilter(request, response);  
+//				} 
+				filterChain.doFilter(request, response);
 			}  else {
 				response.setCharacterEncoding("UTF-8");  
 				response.sendError(HttpStatus.FORBIDDEN.value(), "您还没有登录，请先登录");

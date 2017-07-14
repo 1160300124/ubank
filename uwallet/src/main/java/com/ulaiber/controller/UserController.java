@@ -112,7 +112,7 @@ public class UserController extends BaseController{
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping("/getUserInfo")
+	@RequestMapping("getUserInfo")
 	@ResponseBody
 	public ResultInfo getUserInfo(String mobile,HttpServletRequest request, HttpServletResponse response){
 		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
@@ -146,6 +146,7 @@ public class UserController extends BaseController{
 	 * @param response
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "sendCaptcha", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo sendCaptcha(String mobile, HttpServletRequest request, HttpServletResponse response){
@@ -162,7 +163,7 @@ public class UserController extends BaseController{
 		captchaMap.put(mobile, captcha);
 		String text = "【优融UBOSS】您的验证码是#code#".replace("#code#", captcha);
 		String result = CaptchaUtil.singleSend(CaptchaUtil.API_KEY, text, mobile);
-		logger.info(result);
+		logger.info("------------------------" + result);
 		Map<String, Object> resultMap = (Map<String, Object>)JSONObject.parse(result);
 		if (resultMap.get("code").toString().equals("0")){
 			retInfo.setCode(IConstants.QT_CODE_OK);

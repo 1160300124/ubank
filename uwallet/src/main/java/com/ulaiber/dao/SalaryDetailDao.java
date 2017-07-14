@@ -26,4 +26,11 @@ public interface SalaryDetailDao {
 	 */
 	List<SalaryDetail> getDetailsBySid(long sid);
 	
+	/**
+	 * 根据id批量删除
+	 * @param sids
+	 * @return
+	 */
+	int batchDeleteSalaryDetails(List<Long> sids);
+	
 }

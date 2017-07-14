@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -83,20 +84,24 @@ public class ManagerController extends BaseController{
 		for (Salary sa : list){
 			if (StringUtils.isNotEmpty(sa.getEntrustSeqNo())){
 				String oldStatus = sa.getStatus();
-				if (StringUtils.isEmpty(oldStatus) || !oldStatus.equals("5")){
+				String newStatus = "";
+				if (!StringUtils.equals(oldStatus, "5")){
 					Map<String, Object> params = new HashMap<String, Object>();
 					params.put("authMasterID", SPDBUtil.CLIENT_MASTER_ID);
 					params.put("acctNo", SPDBUtil.CLIENT_ACCT_NO);
 					params.put("seqNo", sa.getEntrustSeqNo());
 					params.put("beginDate", sa.getSalaryDate());
 					params.put("endDate", sa.getSalaryDate());
-					String status = SPDBUtil.getPayResult(params);
-					sa.setStatus(status);
+				    newStatus = SPDBUtil.getPayResult(params);
+					sa.setStatus(newStatus);
 					//if new status != old status 更新工资流水状态
-					if (StringUtils.equals(oldStatus, status)){
+					if (!StringUtils.equals(oldStatus, newStatus)){
 						salaryService.updateStatusBySeqNo(sa);
 					}
 				}
+				//状态转换
+				String status = StringUtils.isEmpty(newStatus) ? oldStatus : newStatus;
+				sa.setStatus(IConstants.TRANS_STATUS.get(status));
 			}
 		}
 		
@@ -111,7 +116,7 @@ public class ManagerController extends BaseController{
     @ResponseBody
     public ResultInfo uploadFile(MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
     	
-    	ResultInfo retInfo = new ResultInfo();
+    	ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
     	try {
     		// 取得request中的所有文件名
         	Iterator<String> iter = multiRequest.getFileNames();
@@ -121,6 +126,10 @@ public class ManagerController extends BaseController{
         		if (file != null) {
         			// 取得当前上传文件的文件名称
         			String myFileName = file.getOriginalFilename();
+        			if (!myFileName.endsWith(ExcelUtil.OFFICE_EXCEL_2003_POSTFIX) && !myFileName.endsWith(ExcelUtil.OFFICE_EXCEL_2010_POSTFIX)){
+        				retInfo.setMessage("请上传xls文件或xlsx文件！");
+        				return retInfo;
+        			}
         			// 如果名称不为“”,说明该文件存在，否则说明该文件不存在
         			if (myFileName.trim() != "") {
         				logger.info("upload file name: " + myFileName.trim());
@@ -165,6 +174,10 @@ public class ManagerController extends BaseController{
     	//从sesison获取当前用户
     	User currentUser = getUserFromSession(request);
     	Map<String, Object> emap = payMap.get(String.valueOf(currentUser.getId()));
+    	if (null != emap){
+    		info.setCode(IConstants.QT_CODE_ERROR);
+    		info.setMessage("请上传正确格式的Excel！");
+    	}
     	
     	//收款人集合
     	double amount = 0;
@@ -199,12 +212,12 @@ public class ManagerController extends BaseController{
 		params.put("unitNo", SPDBUtil.UNIT_NUM);
 		params.put("businessType", "1001");
 		params.put("acctNo", SPDBUtil.CLIENT_ACCT_NO);
-		params.put("bespeakDate", "");
+		params.put("bespeakDate", bespearkDate);
 		params.put("totalNumber", totalNumber);
 		params.put("totalAmount", totalAmount);
 		params.put("flag", "1");
-    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
-//		String entrustSeqNo = "12345678910";
+//    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
+		String entrustSeqNo = "12345678910";
     	if (StringUtils.isNotEmpty(entrustSeqNo)){
     		sa.setEntrustSeqNo(entrustSeqNo);
     		
@@ -226,7 +239,7 @@ public class ManagerController extends BaseController{
 				info.setCode(IConstants.QT_CODE_OK);
 				logger.info("save salary and salary detail successed.");
 			}
-			
+			payMap.remove(currentUser.getId() + "");
     	} else {
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("操作失败：代发工资失败！");
@@ -249,4 +262,24 @@ public class ManagerController extends BaseController{
     	return details;
     }
     
+    @RequestMapping(value = "batchDelete", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo batchDelete(@RequestBody List<Long> sids, HttpServletRequest request, HttpServletResponse response){
+    	
+    	ResultInfo info = new ResultInfo();
+    	
+    	if (null == sids || sids.size() == 0){
+    		return info;
+    	}
+    	boolean flag = managerService.batchDelete(sids);
+    	if (flag){
+    		info.setCode(IConstants.QT_CODE_OK);
+    		info.setMessage("batch delete successed.");
+    	} else {
+    		info.setCode(IConstants.QT_CODE_ERROR);
+    		info.setMessage("batch delete failed.");
+    	}
+    	
+    	return info;
+    }
 }

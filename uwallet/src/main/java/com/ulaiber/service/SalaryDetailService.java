@@ -25,4 +25,11 @@ public interface SalaryDetailService {
 	 * @return
 	 */
 	List<SalaryDetail> getDetailsBySid(long sid);
+	
+	/**
+	 * 根据id批量删除
+	 * @param sids
+	 * @return
+	 */
+	boolean batchDeleteSalaryDetails(List<Long> sids);
 }

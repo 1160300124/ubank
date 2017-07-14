@@ -68,12 +68,18 @@ public class Test {
 //      params.put("login_password", "1234567");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
-        
-      String apiUrl = "http://localhost:8080/uwallet/api/v1/sendCaptcha";
+		
+      String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
       Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-      params.put("mobile", "15919477086");
-      String response = HttpsUtil.doPost1(apiUrl, params);
+      params.put("mobile", "18503036206");
+      String response = HttpsUtil.doPost(apiUrl, params);
       System.out.println(response);
+        
+//      String apiUrl = "http://10.17.1.136:8080/uwallet/api/v1/sendCaptcha";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "15919477086");
+//      String response = HttpsUtil.doPost1(apiUrl, params);
+//      System.out.println(response);
 		
 //      String apiUrl = "http://localhost:8080/uwallet/api/v1/validate";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合

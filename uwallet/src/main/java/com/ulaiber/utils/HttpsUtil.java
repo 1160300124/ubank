@@ -102,8 +102,8 @@ public class HttpsUtil {
         String result = null;  
         HttpClient httpclient = new DefaultHttpClient();  
         try {  
-            HttpGet httpPost = new HttpGet(apiUrl);  
-            HttpResponse response = httpclient.execute(httpPost);  
+            HttpGet httpGet = new HttpGet(apiUrl);  
+            HttpResponse response = httpclient.execute(httpGet);  
             int statusCode = response.getStatusLine().getStatusCode();  
   
             System.out.println("执行状态码 : " + statusCode);  
@@ -130,7 +130,8 @@ public class HttpsUtil {
         String httpStr = null;  
         HttpPost httpPost = new HttpPost(apiUrl);
         HttpResponse response = null;  
-        
+        httpPost.setHeader("login_ticket", "c77e4c3f87f0434fa47f7829b471df0b");
+        httpPost.setHeader("access_token", "3967bcb611aa40189e6ca742fbe11ec3");
         try {  
             List<NameValuePair> pairList = new ArrayList<NameValuePair>(params.size());  
             for (Map.Entry<String, Object> entry : params.entrySet()) {  
@@ -177,8 +178,6 @@ public class HttpsUtil {
         CloseableHttpClient httpClient = HttpClients.createDefault();  
         String httpStr = null;  
         HttpPost httpPost = new HttpPost(apiUrl);
-//        httpPost.setHeader("Accept", "application/json;charset=utf-8");
-//        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         CloseableHttpResponse response = null;  
   
         try {  

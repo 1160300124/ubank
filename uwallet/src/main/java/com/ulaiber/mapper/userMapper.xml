@@ -60,7 +60,7 @@
 		delete from tbl_users where mobile=#{mobile}
 	</delete>
 	
-	<select id="getUserByTicketAndToken" parameterType="String" resultMap="UserMap">
+	<select id="getUserByTicketAndToken" parameterType="User" resultMap="UserMap">
 		select * from tbl_users where login_ticket=#{login_ticket} and access_token=#{access_token}
 	</select>
 	

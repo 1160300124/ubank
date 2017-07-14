@@ -27,16 +27,24 @@ public class ManagerServiceImpl extends BaseService implements ManagerService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean save(Salary sa, List<SalaryDetail> details) {
-		long sid = 0;
-		int num = salaryDao.save(sa);
-		if (num > 0){
-			sid = sa.getSid();
+		if (salaryDao.save(sa) > 0){
+			long sid = sa.getSid();
 			for (SalaryDetail detail : details){
 				detail.setSid(sid);
 			}
 			return detailDao.saveBatch(details) > 0;
 		}
 		
+		return false;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public boolean batchDelete(List<Long> sids) {
+		if (salaryDao.batchDeleteSalaries(sids) > 0){
+			
+			return detailDao.batchDeleteSalaryDetails(sids) > 0;
+		}
 		return false;
 	}
 

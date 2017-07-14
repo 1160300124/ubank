@@ -43,5 +43,12 @@ public interface SalaryService {
 	 * @return
 	 */
 	boolean updateStatusBySeqNo(Salary sa);
+	
+	/**
+	 * 根据sids批量删除
+	 * @param sids
+	 * @return
+	 */
+	boolean batchDeleteSalaries(List<Long> sids);
 
 }

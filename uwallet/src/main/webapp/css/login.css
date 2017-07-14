@@ -33,6 +33,7 @@ body{
     padding: 0 20px 0 45px;
     height: 40px;
     transition: all 0.3s ease 0s;
+    font-size: 16px;
 }
 .form-horizontal .form-control:focus{
     background: #e0e0e0;
@@ -43,7 +44,7 @@ body{
     position: absolute;
     top: 12px;
     left: 60px;
-    font-size: 17px;
+    font-size: 16px;
     transition : all 0.5s ease 0s;
 }
 .form-horizontal .form-control:focus + i{
@@ -100,22 +101,24 @@ body{
 .form-horizontal .main-checkbox input[type=checkbox]:checked + label:after{
     opacity: 1;
 }
-.form-horizontal .text{
+.form-horizontal .error{
     float: left;
     margin-left: 7px;
     line-height: 20px;
     padding-top: 5px;
     text-transform: capitalize;
+    color: red;
+    font-size: 16px;
 }
 .form-horizontal .btn{
     float: right;
-    font-size: 14px;
+    font-size: 16px;
     color: #fff;
     background: #00b4ef;
     border-radius: 30px;
     padding: 10px 25px;
     border: none;
-    text-transform: capitalize;
+    text-transform: capitalize; 
     transition: all 0.5s ease 0s;
 }
 @media only screen and (max-width: 479px){

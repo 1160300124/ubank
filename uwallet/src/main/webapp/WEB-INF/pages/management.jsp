@@ -43,7 +43,7 @@
            data-page-size="10" data-page-list="[10,15,20]">
            <thead>
            <tr>
-           		<th data-checkbox="true"></th>
+           	   <th data-checkbox="true"></th>
                <th data-field="userName">操作人</th>
                <th data-field="totalNumber">总笔数</th>
                <th data-field="totalAmount">总金额</th>

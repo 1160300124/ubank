@@ -1,5 +1,8 @@
 package com.ulaiber.conmon;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 公共常量类
  * @author huangguoqing
@@ -56,4 +59,26 @@ public class IConstants
     //短信模板
 	public final static String SMS_TEMPLATE = "【U钱包】您的验证码是#code#";
 	
+	//银企直联交易状态
+	public static Map<String, String> TRANS_STATUS = new HashMap<String, String>();
+	static{
+		TRANS_STATUS.put("0", "未处理数据文件");
+		TRANS_STATUS.put("1", "正在处理数据文件");
+		TRANS_STATUS.put("2", "数据文件处理成功");
+		TRANS_STATUS.put("3", "数据文件有误，不能进行");
+		TRANS_STATUS.put("4", "正在处理业务数据");
+		TRANS_STATUS.put("5", "业务数据处理成功");
+		TRANS_STATUS.put("6", "业务数据处理失败");
+		TRANS_STATUS.put("7", "撤销");
+		TRANS_STATUS.put("E", "通讯失败");
+		TRANS_STATUS.put("G", "主机拒绝");
+		TRANS_STATUS.put("H", "网银拒绝");
+		TRANS_STATUS.put("I", "授权拒绝");
+		TRANS_STATUS.put("J", "交易录入，待授权");
+		TRANS_STATUS.put("K", "待处理");
+		TRANS_STATUS.put("Y", "交易提交不成功 ");
+		TRANS_STATUS.put("A", "等待进一步授权");
+	}
+	
+
 }
