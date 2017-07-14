@@ -3,7 +3,7 @@
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-   <title>U钱包后台管理系统</title>
+   <title>U钱包管理系统</title>
     <link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/font-awesome/font-awesome.min.css" rel="stylesheet" />
@@ -15,6 +15,8 @@
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/common.js" type="text/javascript"></script>
+
 </head>
 <body >
 	<!-- 公共banner -->
@@ -33,12 +35,15 @@
 	    </ul>
 	</div>
 
-<script>
+<script type="text/javascript">
+
+	//根据当前页面的url，给左边菜单栏选中的样式
 	var menu_url=window.location.pathname;
 	$('.second-menu a').each(function(){
-	    if($(this).attr('href')==menu_url){
-	        $(this).addClass('on');
-	        $(this).parents('ul').show();
+		if($(this).attr('href')==menu_url){
+            $(this).addClass('on');
+			$(this).parents('ul').show();
 		}
-	})
+	});
+
 </script>

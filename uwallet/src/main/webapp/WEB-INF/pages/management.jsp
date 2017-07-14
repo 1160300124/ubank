@@ -126,5 +126,4 @@
 	</div>
 </div>
 <script src="<%=request.getContextPath()%>/js/management.js" type="text/javascript" ></script>
-<script src="<%=request.getContextPath()%>/js/common.js" type="text/javascript"></script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>
