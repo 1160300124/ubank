@@ -10,7 +10,7 @@
 	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
 	<!-- 注解扫描包 -->
-	<context:component-scan base-package="com.ulaiber" />
+	<context:component-scan base-package="com.ulaiber.web" />
 
 	<!-- 开启注解 -->
 	<mvc:annotation-driven />
@@ -24,6 +24,18 @@
 	<mvc:resources mapping="/js/**" location="/js/" />
 	<mvc:resources mapping="/css/**" location="/css/" />
 	<mvc:resources mapping="/html/**" location="/html/" />
+
+	<mvc:interceptors>
+		<!-- 使用bean定义一个Interceptor，直接定义在mvc:interceptors根下面的Interceptor将拦截所有的请求 -->
+		<mvc:interceptor>
+			<!-- 进行拦截：/**表示拦截所有controller -->
+			<mvc:mapping path="/**" />
+			<!-- 不进行拦截 -->
+			<mvc:exclude-mapping path="/index.html" />
+
+			<bean class="com.ulaiber.web.interceptor.SessionInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors> 
 
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="defaultEncoding" value="utf-8"></property> 
