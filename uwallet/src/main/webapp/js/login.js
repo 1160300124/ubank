@@ -46,7 +46,7 @@ $(function () {
 				error : function(data, status, e) {
 					$("#errormsg").text("系统内部错误！");
 				}
-			})
+			});
 		}
 		$("#btn_login").attr("disabled", false);
 		return false;
