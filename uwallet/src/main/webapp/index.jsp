@@ -3,7 +3,7 @@
 <%@ include file="../WEB-INF/pages/header.jsp" %>
 <!-- 中间页面 -->
 	<div class="page-content">
-		后台管理首页
+		欢迎登录U钱包后台管理系统
 	</div>
 
 <%@ include file="../WEB-INF/pages/footer.jsp" %>

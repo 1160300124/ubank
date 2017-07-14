@@ -36,7 +36,7 @@
 		var generateId = function () {
 			var date = new Date();
 			return 'mdl' + date.valueOf();
-		}
+		};
 		var init = function (options) {
 			options = $.extend({}, {
 				title: "操作提示",
@@ -66,7 +66,7 @@
 				$('body').find('#' + modalId).remove();
 			});
 			return modalId;
-		}
+		};
 
 		return {
 			alert: function (options) {
@@ -151,4 +151,6 @@
 			}
 		}
 	}();
+
 })(jQuery);
+
