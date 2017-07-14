@@ -11,8 +11,9 @@
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
 	<!-- 加载资源文件  其中包含变量信息，必须在Spring配置文件的最前面加载，即第一个加载-->
-    
-	<!-- 1. 数据源 : DriverManagerDataSource 
+	<context:property-placeholder location="classpath:config/jdbcConfig.properties"/>
+
+	<!-- 1. 数据源 : DriverManagerDataSource
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -23,16 +24,24 @@
 	-->
 	
    <!--配置数据源 -->
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-		<property name="url" value="jdbc:mysql://10.17.1.136:3306/ulaiber?characterEncoding=utf8"></property>
-		<property name="username" value="root"></property>
-		<property name="password" value="123456"></property>
-		<property name="maxActive" value="100"></property>
-		<property name="maxIdle" value="30"></property>
-		<property name="maxWait" value="500"></property>
-		<property name="defaultAutoCommit" value="true"></property>
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${driverClassName}"></property>
+		<!-- 数据库地址 -->
+		<property name="url" value="${url}"></property>
+		<!-- 数据库用户名 -->
+		<property name="username" value="${username}"></property>
+		<!-- 密码 -->
+		<property name="password" value="${password}"></property>
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="${initialSize}"></property>
+		<!-- 连接池最大数量 -->
+		<property name="maxActive" value="${maxActive}"></property>
+		<!-- 连接池最大空闲 -->
+		<property name="maxIdle" value="${maxIdle}"></property>
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="${minIdle}"></property>
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="${maxWait}"></property>
 	</bean>
 		
 
@@ -51,9 +60,10 @@
 
 		basePackage:指定sql映射文件/接口所在的包（自动扫描）
 	-->
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.ulaiber.web.dao"></property>
-		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
 	</bean>
 
 	<!--

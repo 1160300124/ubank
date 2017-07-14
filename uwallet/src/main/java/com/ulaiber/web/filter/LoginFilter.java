@@ -42,7 +42,7 @@ public class LoginFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		// 不过滤的uri  
-		String[] notFilter = new String[] {"/","/images", "/js", "/css", "/api/v1/validate", "/api/v1/login", "/api/v1/register",
+		String[] notFilter = new String[] {"/images", "/js", "/css", "/api/v1/validate", "/api/v1/login", "/api/v1/register",
 						"/api/v1/sendCaptcha", "/api/v1/forgetLoginPassword", "/backend/tologin", "/backend/login"};
 
 		// 请求的uri  
@@ -78,7 +78,7 @@ public class LoginFilter extends OncePerRequestFilter {
 //						
 //					}
 					// 如果session中存在登录者实体，则继续  
-					filterChain.doFilter(request, response);  
+					filterChain.doFilter(request, response);
 				}  
 			} else if (uri.contains("/api/v1/")){
 				//根据ticket和token获取用户
