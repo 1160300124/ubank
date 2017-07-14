@@ -21,7 +21,7 @@
 <body >
 	<!-- 公共banner -->
 	<div class="header">
-		<div ><a class="index_title" href="<%=request.getContextPath()%>"><h3>uboss钱包</h3></a></div>
+		<div ><a class="index_title" href="<%=request.getContextPath()%>/backend/index"><h3>uboss钱包</h3></a></div>
 	</div>
 	<!-- 公共导航菜单 -->
 	<div class="nav">
