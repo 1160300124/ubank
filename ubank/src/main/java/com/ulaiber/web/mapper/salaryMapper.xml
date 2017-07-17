@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.SalaryDao">
+
+    <resultMap id="SalaryMap" type="Salary" >
+       	<id column="sid" property="sid" jdbcType="BIGINT" />
+    	<result column="userName" property="userName" jdbcType="VARCHAR" />
+    	<result column="totalNumber" property="totalNumber" jdbcType="INTEGER" />
+    	<result column="totalAmount" property="totalAmount" jdbcType="DOUBLE" />
+    	<result column="salaryDate" property="salaryDate" jdbcType="VARCHAR" />
+    	<result column="salary_createTime" property="salary_createTime" jdbcType="VARCHAR" />
+    	<result column="company" property="company" jdbcType="VARCHAR" />
+    	<result column="status" property="status" jdbcType="VARCHAR" />
+    	<result column="entrustSeqNo" property="entrustSeqNo" jdbcType="VARCHAR" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+   </resultMap>
+  
+   <insert id="save" parameterType="Salary" useGeneratedKeys="true" keyProperty="sid">
+   		insert into tbl_salaries(userName, totalNumber, totalAmount, salaryDate, salary_createTime, company, status, entrustSeqNo, remark) values
+   			(#{userName}, #{totalNumber}, #{totalAmount}, #{salaryDate}, #{salary_createTime}, #{company}, #{status}, #{entrustSeqNo}, #{remark})
+   </insert>
+	
+	<select id="getAllSalaries" resultMap="SalaryMap">
+		select * from tbl_salaries
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_salaries
+	</select>
+	
+	<select id="getSalaries" parameterType="Map" resultMap="SalaryMap">
+		select * from tbl_salaries 
+		<if test="search != null and search != ''">
+			where userName like concat('%',#{search},'%') or company like concat('%',#{search},'%')
+		</if>
+		order by salary_createTime desc limit #{offset},#{limit}
+	</select>
+	
+	<update id="updateStatusBySeqNo" parameterType="Salary">
+		update tbl_salaries set status=#{status} where entrustSeqNo=#{entrustSeqNo}
+	</update>
+	
+	<delete id="batchDeleteSalaries" parameterType="java.util.List">  
+		delete from tbl_salaries where sid in
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+</mapper>
