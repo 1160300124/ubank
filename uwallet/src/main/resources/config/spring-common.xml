@@ -11,17 +11,16 @@
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
 	<!-- 加载资源文件  其中包含变量信息，必须在Spring配置文件的最前面加载，即第一个加载-->
-	<context:property-placeholder location="classpath:config/jdbcConfig.properties"/>
+<!-- 	<context:property-placeholder location="classpath:config/jdbcConfig.properties"/> -->
 
-	<!-- 1. 数据源 : DriverManagerDataSource
-	<bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/test" />
-		<property name="username" value="root" />
-		<property name="password" value="ulaiber" />
-	</bean>
-	-->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/jdbcConfig.properties</value>
+			</list>
+		</property>
+	</bean> 	
 	
    <!--配置数据源 -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

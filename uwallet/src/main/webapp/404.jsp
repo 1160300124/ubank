@@ -10,12 +10,12 @@
 
 
 </head>
-<body style="background-image:url(../images/bg/bodyBg.jpg);background-size:cover;">
+<body style="background-image:url(<%request.getContextPath(); %>/images/bg/bodyBg.jpg);background-size:cover;">
 
 <div class="body">
     <div class="zBodyK" style="box-shadow:2px 2px 10px rgba(0,0,0,.3);margin-top:30px">
 		<div class="error">
-        	<div class="pic error404" style="background-image:url(../images/bg/error404.gif)"></div>
+        	<div class="pic error404" style="background-image:url()"></div>
             <div class="text">
             	<div class="text1">很遗憾！没找到您所访问的页面！</div>
                 <div class="text2">错误类型：404，文件没有找到。</div>

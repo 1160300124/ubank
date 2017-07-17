@@ -37,7 +37,7 @@ $(function () {
 					$("#btn_login").attr("disabled", false);
 					var code = data['code'];
 					if (code == 1000) {
-						window.location = "../backend/index";
+						window.location = "index";
 						
 					}else{
 						$("#errormsg").text("用户名或密码错误！");

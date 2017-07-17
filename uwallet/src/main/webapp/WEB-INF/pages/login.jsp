@@ -17,7 +17,7 @@
 <body>
 	<div class="container">
 	    <div class="row">
-	        <div class="col-md-offset-3 col-md-6">
+	        <div class="col-md-offset-4 col-md-5">
 	            <form class="form-horizontal">
 	                <span class="heading">用户登录</span>
 	                <div class="form-group">

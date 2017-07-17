@@ -38,36 +38,32 @@ public class Test {
 //		System.out.println(s.substring("/uwallet".length()));
         
 //      -----------------------------------------------------------------
-//        String data = DateTimeUtil.date2Str(new Date());
-//        System.out.println(data);
-//        System.out.println(DateTimeUtil.str2Date("2017-07-01 10:59:30", "yyyy-MM-dd HH:mm:ss"));
 //        String apiUrl = "http://localhost:8080/uwallet/api/v1/register";
 //        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //	    params.put("userName", "lisi");
 //	    params.put("login_password", "1234567");
 //	    params.put("pay_password", "1234567");
-//	    params.put("mobile1", "15919477089");
-//	    params.put("mobile2", "12345678910");
+//	    params.put("mobile", "15919477089");
+//	    params.put("reserve_mobile", "12345678910");
 //	    params.put("cardType", 1);
 //	    params.put("bankNo", "305100000013");
 //	    params.put("bankCardNo", "1234567890");
 //	    params.put("secondBankCardNo", "6224080600234");
 //	    params.put("cardNo", "12312412341234124");
-//	    params.put("createTime", data);
 //	    params.put("remark", "hahahahahahahahahaha");
 //        String response = HttpsUtil.doPost(apiUrl, params);
 //        System.out.println(response);
         
 //      String apiUrl = "http://localhost:8080/uwallet/api/v1/login";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//      params.put("mobile1", "");
+//      params.put("mobile", "15919477089");
 //      params.put("login_password", "1234567");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
       String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
       Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-      params.put("mobile", "18503036206");
+      params.put("mobile", "15919477089");
       String response = HttpsUtil.doPost(apiUrl, params);
       System.out.println(response);
         

@@ -10,11 +10,11 @@
 
 
 </head>
-<body style="background-image:url(../images/bg/bodyBg.jpg);background-size:cover;">
+<body style="background-image:url(<% request.getContextPath(); %>/images/bg/bodyBg.jpg);background-size:cover;">
 <div class="body">
     <div class="zBodyK" style="box-shadow:2px 2px 10px rgba(0,0,0,.3);margin-top:30px">
 		<div class="error">
-        	<div class="pic error400" style="background-image:url(${path}/resources/images/bg/error400.gif)"></div>
+        	<div class="pic error400" style="background-image:url()"></div>
             <div class="text">
             	<div class="text1">很遗憾！网页无法显示，请稍后再试！！</div>
                 <div class="text2">错误类型：400，服务器繁忙。</div>

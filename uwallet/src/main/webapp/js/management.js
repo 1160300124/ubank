@@ -59,11 +59,16 @@ $(function () {
 
 	
 	$("#btn_import").unbind().bind("click", function(){
+		$("#file").val("");
 		$("#file_tmp").val("");
 		$("#tb_salary").bootstrapTable("load", []);
 		$("#import_modal").modal("show");
 		$("#btn_pay").attr("disabled", true);
 	});
+	
+//	$("#file").unbind().bind("change focus blur", function(){
+//		$("#file_tmp").val($(this).val());
+//	});
 
 
 	$("#upload_file").unbind().bind("click", function(){

@@ -31,7 +31,13 @@
 			<!-- 进行拦截：/**表示拦截所有controller -->
 			<mvc:mapping path="/**" />
 			<!-- 不进行拦截 -->
-			<mvc:exclude-mapping path="/index.html" />
+		 	<mvc:exclude-mapping path="/backend/tologin" />
+		 	<mvc:exclude-mapping path="/backend/login" />
+		 	<mvc:exclude-mapping path="/api/v1/validate" />
+		 	<mvc:exclude-mapping path="/api/v1/login" />
+		 	<mvc:exclude-mapping path="/api/v1/register" />
+		 	<mvc:exclude-mapping path="/api/v1/sendCaptcha" />
+		 	<mvc:exclude-mapping path="/api/v1/forgetLoginPassword" />
 
 			<bean class="com.ulaiber.web.interceptor.SessionInterceptor" />
 		</mvc:interceptor>
