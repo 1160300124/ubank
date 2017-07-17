@@ -1,9 +1,3 @@
-/**
-* 首页样式
-* @Creater daiqingwen
-* @date 2017-7-12
-*/
-
 * {
     padding: 0px;
     margin: 0px;
@@ -24,6 +18,10 @@ a:active, a:hover, a:focus, a:visited {
     list-style: none;
     text-decoration: none;
 }
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+.clearfix{*height:1%;}
+.fl{float:left;}
+.fr{float:right;}
 
 .header {
     position: fixed;
@@ -31,30 +29,31 @@ a:active, a:hover, a:focus, a:visited {
     left: 0px;
     padding: 0px 20px;
     width: 100%;
-    height: 60px;
-    line-height: 60px;
+    height: 90px;
+    line-height: 90px;
     background: #f9703a;
     border-bottom: 1px solid #ccc;
     z-index: 2;
     color: #fff;
+    font-size:16px;
 }
 
 .nav {
     position: fixed;
-    top: 60px;
+    top: 90px;
     left: 0px;
     width: 200px;
     height: 100%;
-    background: #eef1f6;
-    border-right: 1px solid #ccc;
+    background: #e9eaec;
     z-index: 2;
 }
 
 .nav > ul > li {
     position: relative;
-    height: 50px;
     line-height: 50px;
     border-bottom: 1px solid #f8f8f8;
+    font-size:18px;
+    color:#999;
 }
 
 .first-menu {
@@ -65,18 +64,18 @@ a:active, a:hover, a:focus, a:visited {
 
 .second-menu {
     display: none;
-    height: 40px;
     line-height: 40px;
 }
 
 .second-menu a {
     display: block;
     padding-left: 40px;
+    font-size:16px;
 }
 
 .second-menu a:hover, .second-menu a.on {
-    background: #fbc2ac;
-    color: #fff;
+    background: #fff;
+    color: #333;
     text-decoration: none;
 }
 
@@ -84,12 +83,25 @@ a:active, a:hover, a:focus, a:visited {
     width: 100%;
     height: 100%;
     padding-left: 200px;
-    padding-top: 60px;
+    padding-top: 90px;
     overflow-y: auto;
-    background: #f2f4fa;
+    background: #fff;
 }
 
-.index_title{
+.index_title {
     color: #fff;
 }
+
+.logo{width:86px;height:86px;background:url("../images/logo.png") no-repeat;}
+.logo+h1{margin:0px;line-height:90px;font-size:24px;font-weight:400;}
+.icon-user-one{width:23px;height:23px;background:url("../images/user.png") no-repeat;}
+.icon-arrows-bottom{width:23px;height:23px;background:url("../images/path.png") no-repeat center;}
+.icon-recond{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/date.png") no-repeat center;background-size:100%;}
+.icon-other{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/others.png") no-repeat center;background-size:100%;}
+.header-user{position:relative;cursor:pointer;margin:0 20px;}
+.header-user i{margin:33px 5px;}
+.header-user-menu{display:none;position:absolute;width:100%;top:90px;left:0px;background:#f1f1f1;color:#555;line-height: 40px;text-align: center;}
+.header-user:hover .header-user-menu{display:block;}
+
+
 
