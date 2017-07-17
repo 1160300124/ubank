@@ -2,6 +2,7 @@ package com.ulaiber.web.dao;
 
 import java.util.List;
 
+import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.User;
 
 /**
@@ -89,5 +90,11 @@ public interface UserDao {
 	 * @return User
 	 */
 	User getUserByName(String uesrName);
+
+	/**
+	 * 获取系统所有菜单
+	 * @return
+	 */
+	List<Menu> getAllMenu();
 	
 }

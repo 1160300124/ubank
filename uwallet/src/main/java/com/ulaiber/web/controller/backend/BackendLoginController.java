@@ -3,6 +3,7 @@ package com.ulaiber.web.controller.backend;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.model.Menu;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
+
+import java.util.List;
 
 /**
  * 后台登录控制器
@@ -71,4 +74,17 @@ public class BackendLoginController extends BaseController {
 		retInfo.setMessage("login successed.");
 		return retInfo;
 	}
+
+	/**
+	 * 获取系统所有菜单
+	 * @return menu
+	 */
+	@RequestMapping(value = "getAllMenu")
+	@ResponseBody
+	public List<Menu> getAllMenu(HttpServletRequest request){
+		List<Menu> menu = userService.getAllMenu();
+		return menu;
+
+	};
+
 }

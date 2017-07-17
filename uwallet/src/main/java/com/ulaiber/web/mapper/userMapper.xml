@@ -76,5 +76,9 @@
 	<select id="getUserByName" resultMap="UserMap">
 		select * from tbl_users where user_name=#{userName}
 	</select>
-	
+
+	<!--获取系统所有菜单-->
+	 <select id="getAllMenu" resultType="com.ulaiber.web.model.Menu">
+		 select id,name,url,code,father,icon,sorting from tbl_menu order by sorting;
+	 </select>
 </mapper>
