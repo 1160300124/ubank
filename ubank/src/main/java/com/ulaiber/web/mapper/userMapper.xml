@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.UserDao">
+
+	<resultMap id="BankMap" type="Bank" >
+    	<id column="bankNo" property="bankNo" jdbcType="VARCHAR" />
+    	<result column="bankName" property="bankName" jdbcType="VARCHAR" />
+	</resultMap>
+    <resultMap id="UserMap" type="User" >
+    	<id property="id" column="user_id" jdbcType="BIGINT" />
+    	<result property="userName" column="user_name" jdbcType="VARCHAR" />
+    	<result property="login_password" column="login_password" jdbcType="VARCHAR" />
+    	<result property="pay_password" column="pay_password" jdbcType="VARCHAR" />
+    	<result property="login_ticket" column="login_ticket" jdbcType="VARCHAR" />
+    	<result property="access_token" column="access_token" jdbcType="VARCHAR" />
+    	<result property="mobile" column="mobile" jdbcType="VARCHAR" />
+    	<result property="reserve_mobile" column="reserve_mobile" jdbcType="VARCHAR" />
+    	<result property="cardType" column="cardType" jdbcType="VARCHAR" />
+    	<result property="cardNo" column="cardNo" jdbcType="VARCHAR" />
+    	<result property="email" column="email" jdbcType="VARCHAR" />
+    	<result property="status" column="status" jdbcType="INTEGER" />
+    	<result property="role_id" column="role_id" jdbcType="INTEGER" />
+    	<result property="createTime" column="createTime" jdbcType="VARCHAR" />
+    	<result property="expiredTime" column="expiredTime" jdbcType="VARCHAR" />
+    	<result property="loginTime" column="loginTime" jdbcType="VARCHAR" />
+    	<result property="remark" column="remark" jdbcType="VARCHAR" />
+    	<result property="login_fail_num" column="login_fail_num" jdbcType="INTEGER" />
+    	<result property="login_fail_time" column="login_fail_time" jdbcType="VARCHAR" />
+    	<association property="bank" column="bankNo" javaType="Bank" select="com.ulaiber.web.dao.BankDao.getBankByBankNo" />
+   </resultMap>
+  
+	<insert id="save" parameterType="User">
+		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime)
+		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime})
+	</insert>
+	
+	<update id="update" parameterType="User">
+		update tbl_users set login_ticket=#{login_ticket}, access_token=#{access_token}, loginTime=#{loginTime} where mobile=#{mobile}
+	</update>
+	
+	<update id="updateLoginPwd" parameterType="User">
+		update tbl_users set login_password=#{login_password} where mobile=#{mobile}
+	</update>
+	
+	<update id="updatePayPwd" parameterType="User">
+		update tbl_users set pay_password=#{pay_password} where mobile=#{mobile}
+	</update>
+	
+	<update id="updateForBankCard" parameterType="User">
+		update tbl_users set bankNo=#{bank.bankNo}, bankCardNo=#{bankCardNo}, reserve_mobile=#{reserve_mobile} where mobile=#{mobile}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+		delete from tbl_users where mobile=#{mobile}
+	</delete>
+	
+	<select id="getUserByTicketAndToken" parameterType="User" resultMap="UserMap">
+		select * from tbl_users where login_ticket=#{login_ticket} and access_token=#{access_token}
+	</select>
+	
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="getUserByMobile" parameterType="String" resultMap="UserMap">
+		select * from tbl_users where mobile=#{mobile}
+	</select>
+	
+	<select id="findAll" resultMap="UserMap">
+		select * from tbl_users
+	</select>
+	
+	<select id="getUserByName" resultMap="UserMap">
+		select * from tbl_users where user_name=#{userName}
+	</select>
+
+	<!--获取系统所有菜单-->
+	 <select id="getAllMenu" resultType="com.ulaiber.web.model.Menu">
+		 select id,name,url,code,father,icon,sorting from tbl_menu order by sorting;
+	 </select>
+</mapper>
