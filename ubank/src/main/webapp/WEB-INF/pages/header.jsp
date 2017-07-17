@@ -5,6 +5,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>优发展银行管理系统</title>
+	<link rel="shortcut icon" href="<%=request.getContextPath()%>/images/logo.png" type="image/x-icon">
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/font-awesome/font-awesome.min.css" rel="stylesheet" />
@@ -41,36 +42,78 @@
 <!-- 公共导航菜单 -->
 <div class="nav">
 	<ul>
-		<li>
-			<span class="first-menu">业务管理</span>
-			<ul class="second-menu">
-				<li><a href="<%=request.getContextPath()%>/backend/tomanager"><i class="icon-recond"></i>转账记录</a></li>
-				<%--<li><a href=""><i class="icon-recond"></i>二级菜单</a></li>--%>
-				<%--<li><a href=""><i class="icon-other"></i>二级菜单</a></li>--%>
-			</ul>
+		<%--<li>--%>
+			<%--<span class="first-menu">业务管理</span>--%>
+			<%--<ul class="second-menu">--%>
+				<%--<li><a href="<%=request.getContextPath()%>/backend/tomanager"><i class="icon-recond"></i>转账记录</a></li>--%>
+			<%--</ul>--%>
 
-		</li>
-		<li>
-			<span class="first-menu">权限管理</span>
-			<ul class="second-menu">
-				<li><a href="#"><i class="icon-recond"></i></a></li>
-			</ul>
+		<%--</li>--%>
+		<%--<li>--%>
+			<%--<span class="first-menu">权限管理</span>--%>
+			<%--<ul class="second-menu">--%>
+				<%--<li><a href="#"><i class="icon-other"></i></a></li>--%>
+			<%--</ul>--%>
 
-		</li>
+		<%--</li>--%>
 	</ul>
-
 </div>
 
 
 <script type="text/javascript">
 
-    //根据当前页面的url，给左边菜单栏选中的样式
-    var menu_url=window.location.pathname;
-    $('.second-menu a').each(function(){
-        if($(this).attr('href')==menu_url){
-            $(this).addClass('on');
-            $(this).parents('ul').show();
-        }
-    });
+	$(function () {
+
+        //获取系统菜单
+        $.ajax({
+            url : 'getAllMenu',
+            type: 'post',
+            dataType : 'json',
+            data : {},
+            success : function (data) {
+				var html = "";
+                var fatherMenu = "";
+                var childrenMenu = "";
+                if(data.length <= 0 ){
+                    Ewin.alert("系统菜单加载异常，请联系管理员。");
+                    return
+                }
+                for (var i = 0; i<data.length; i++){
+                    if(data[i].father == "" ){
+                        fatherMenu = "<span onclick='nav.navClick($(this))' class='first-menu'>"+data[i].name+"</span>";
+                    } else {
+                        for (var j = 0 ; j < data.length ; j++ ){
+                            if(data[j].father == data[i].father){
+                                childrenMenu = "<li><a href='<%=request.getContextPath()%>"+data[j].url+"'><i class='"+data[j].icon+"'></i>"+data[j].name+"</a></li>";
+                            }
+                        }
+                        html += "<li> "+fatherMenu+"<ul class='second-menu'>"+childrenMenu+"</ul></li>";
+					}
+
+                }
+                $(".nav>ul").html(html);
+                //根据当前页面的url，给左边菜单栏选中的样式
+                var menu_url=window.location.pathname;
+                $('.second-menu a').each(function(index){
+                    if($(this).attr('href')==menu_url){
+                        $(this).addClass('on');
+                        $(this).parents('ul').show();
+                    }
+                });
+
+            },
+            error : function () {
+                Ewin.alert("系统菜单加载异常，请联系管理员。");
+
+            }
+
+
+        });
+
+
+
+
+    })
+
 
 </script>

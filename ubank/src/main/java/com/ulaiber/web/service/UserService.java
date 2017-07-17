@@ -2,6 +2,7 @@ package com.ulaiber.web.service;
 
 import java.util.List;
 
+import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.Message;
 import com.ulaiber.web.model.User;
 
@@ -94,5 +95,11 @@ public interface UserService {
 	 * @return Message
 	 */
 	Message sendInfo(User user);
+
+	/**
+	 * 获取系统所有菜单
+	 * @return
+	 */
+	List<Menu> getAllMenu();
 
 }

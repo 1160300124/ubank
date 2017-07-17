@@ -1,7 +1,10 @@
 <script>
-	$('.first-menu').click(function(){
-	    $(this).siblings('ul').stop().slideToggle();
-	})
+    var nav = {
+        navClick : function(_this){
+            _this.siblings('ul').stop().slideToggle();
+        }
+    };
+
 </script>
 </body>
 </html>

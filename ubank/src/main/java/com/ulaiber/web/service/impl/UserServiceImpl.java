@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ulaiber.web.model.Menu;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,9 +177,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 		return mapper.getUserByName(uesrName);
 	}
-	
-	
 
-
-
+	@Override
+	public List<Menu> getAllMenu() {
+		return mapper.getAllMenu();
+	}
 }
