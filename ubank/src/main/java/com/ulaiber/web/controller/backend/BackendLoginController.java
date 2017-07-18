@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
-import com.ulaiber.web.controller.api.BaseController;
+import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;

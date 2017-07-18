@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.BankService;

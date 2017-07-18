@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ulaiber.web.conmon.IConstants;
-import com.ulaiber.web.controller.api.BaseController;
+import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Payee;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.Salary;

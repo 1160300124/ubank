@@ -1,4 +1,4 @@
-package com.ulaiber.web.controller.api;
+package com.ulaiber.web.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
