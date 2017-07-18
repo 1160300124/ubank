@@ -6,7 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>登录</title>
-    <script src="../js/jquery/jquery-1.12.3.min.js"></script>
+	<link rel="shortcut icon" href="<%=request.getContextPath()%>/images/logo.png" type="image/x-icon">
+	<script src="../js/jquery/jquery-1.12.3.min.js"></script>
     
     <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="../css/font-awesome/font-awesome.min.css" rel="stylesheet" />
