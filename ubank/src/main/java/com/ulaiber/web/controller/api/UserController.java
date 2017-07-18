@@ -1,4 +1,4 @@
-package com.ulaiber.web.controller;
+package com.ulaiber.web.controller.api;
 
 import java.util.List;
 import java.util.Map;

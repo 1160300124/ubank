@@ -1,4 +1,4 @@
-package com.ulaiber.web.controller;
+package com.ulaiber.web.controller.api;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
