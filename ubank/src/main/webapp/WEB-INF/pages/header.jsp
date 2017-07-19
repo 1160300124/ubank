@@ -74,23 +74,31 @@
 				var html = "";
                 var fatherMenu = "";
                 var childrenMenu = "";
+                var father = [];
+                var children = [];
                 if(data.length <= 0 ){
                     Ewin.alert("系统菜单加载异常，请联系管理员。");
                     return
                 }
                 for (var i = 0; i<data.length; i++){
                     if(data[i].father == "" ){
-                        fatherMenu = "<span onclick='nav.navClick($(this))' class='first-menu'>"+data[i].name+"</span>";
-                    } else {
-                        for (var j = 0 ; j < data.length ; j++ ){
-                            if(data[j].father == data[i].father){
-                                childrenMenu = "<li><a href='<%=request.getContextPath()%>"+data[j].url+"'><i class='"+data[j].icon+"'></i>"+data[j].name+"</a></li>";
-                            }
-                        }
-                        html += "<li> "+fatherMenu+"<ul class='second-menu'>"+childrenMenu+"</ul></li>";
+                        father.push(data[i]);
+					}else{
+                        children.push(data[i]);
 					}
-
                 }
+                for (var j = 0 ; j < father.length ; j++){
+                    fatherMenu = "<span onclick='nav.navClick($(this))' class='first-menu'>"+father[j].name+"</span>";
+                    for (var k = 0 ; k < children.length ; k++){
+                        if(father[j].code == children[k].father){
+                            childrenMenu += "<li><a href='<%=request.getContextPath()%>"+children[k].url+"'><i class='"+children[k].icon+"'></i>"+children[k].name+"</a></li>";
+						}
+					}
+                    html += "<li> "+fatherMenu+"<ul class='second-menu'>"+childrenMenu+"</ul></li>";
+                    fatherMenu = "";
+                    childrenMenu = "";
+
+				}
                 $(".nav>ul").html(html);
                 //根据当前页面的url，给左边菜单栏选中的样式
                 var menu_url=window.location.pathname;

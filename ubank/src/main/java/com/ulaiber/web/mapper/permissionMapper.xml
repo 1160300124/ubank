@@ -15,7 +15,28 @@
               VALUES (#{name},#{registeredCapital},#{legalPerson},#{contacts},#{contactsTelephone},#{details},#{remark})
     </insert>
 
+    <!--根据集团名查找对应集团-->
     <select id="searchGroupByName" parameterType="String" resultType="com.ulaiber.web.model.Group">
         select * FROM tbl_group where name = #{name}
     </select>
+
+    <!--查询所有集团-->
+    <select id="groupQuery" resultType="com.ulaiber.web.model.Group">
+          select name,contacts,contactsTelephone,details,registeredCapital,groupNumber,remark,legalPerson FROM tbl_group
+    </select>
+
+    <!--修改集团信息-->
+    <update id="modifyGroup" parameterType="com.ulaiber.web.model.Group">
+        update tbl_group set name = #{name},registeredCapital =#{registeredCapital} ,legalPerson = #{legalPerson},
+            contacts = #{contacts},contactsTelephone = #{contactsTelephone},details = #{details},remark = #{remark}
+            WHERE groupNumber = #{groupNumber}
+    </update>
+
+    <!--删除集团-->
+    <delete id="deleteGroup" parameterType="String">
+        DELETE FROM tbl_group where groupNumber in
+        <foreach collection="array" item="numbers" open="(" separator="," close=")">
+            #{numbers}
+        </foreach>
+    </delete>
 </mapper>

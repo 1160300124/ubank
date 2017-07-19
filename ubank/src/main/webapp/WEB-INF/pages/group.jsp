@@ -5,16 +5,16 @@
 <div class="page-content">
     <%--工具栏--%>
     <div id="group_Toolbar" class="btn-group">
-        <button id="group_add" type="button" class="btn btn-default">
+        <button  onclick="GroupFun.openAdd()" type="button" class="btn btn-default">
             <span class="fa icon-plus" aria-hidden="true"></span>新增
         </button>
-        <button id="group_edit" type="button" class="btn btn-default">
+        <button onclick="GroupFun.openModify()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
-        <button id="group_delete" type="button" class="btn btn-default">
+        <button onclick="GroupFun.gropDelete()" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button id="group_search" type="button" class="btn btn-default">
+        <button onclick="GroupFun.groupQuery()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>
@@ -39,13 +39,13 @@
 
     </table>
 
-        <!-- 模态框（Modal） -->
+        <!-- 弹出框（Modal） -->
         <div id="group_add_modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h4 class="modal-title">新增集团</h4>
+                        <h4 class="modal-title" ></h4>
                     </div>
                     <div class="modal-body">
                         <div class="form-inline base-form clearfix">
@@ -53,7 +53,8 @@
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">集团名称</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="name" id="" >
+                                        <input type="text" class="form-control" name="name"  >
+                                        <input type="text" class="form-control" style="display: none;" name="groupNumber" >
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
@@ -83,14 +84,14 @@
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">详情</label>
                                     <div class="col-md-9">
-                                        <textarea class="form-control" name="details"  rows="3"></textarea>
+                                        <textarea class="form-control" name="details" id="group_details"  rows="3"></textarea>
                                     </div>
                                 </div>
 
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">备注</label>
                                     <div class="col-md-9">
-                                        <textarea class="form-control" name="remark" rows="3"></textarea>
+                                        <textarea class="form-control" name="remark" id="group_remark" rows="3"></textarea>
                                     </div>
                                 </div>
                             </form>
@@ -99,7 +100,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        <button type="button" id="group_save" class="btn btn-primary">保存</button>
+                        <button type="button" onclick="GroupFun.groupSave()" class="btn btn-primary">保存</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -107,56 +108,151 @@
 
 </div>
 <script type="text/javascript">
-    $("#group_table").bootstrapTable({
-            url : '',
-            method : 'post',// get,post
-            toolbar : '#group_Toolbar', // 工具栏
-            striped : true, // 是否显示行间隔色
-            cache : false, // 是否使用缓存，默认为true
-            pagination : true, // 是否显示分页
-            queryParams : {},// 传递参数
-            pageNumber : 1, // 初始化加载第一页，默认第一页
-            pageSize : 20, // 每页的记录行数
-            pageList : [20,30,40], // 可供选择的每页的行数
-            columns : [
-                {field : 'name', title : '集团名称', width: 130, align : 'center'},
-                {field : 'contacts', title : '负责联系人', width: 100 , align : 'center'},
-                {field : 'contactsTelephone', title : '负责联系人号码', width: 100 , align : 'center'},
-                {field : 'details', title : '详情', width: 150 , align : 'center'},
-                {field : 'groupNumber', title : '集团编号', width: 100 , align : 'center',visible : false}
 
-            ]
-    });
+    var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
-    //打开新增dialog
-    $("#group_add").click(function(){
-        $("#group_add_modal").modal("show");
-    });
+    //all function
+    var GroupFun = {
+        //打开新增dialog
+        openAdd : function () {
+            flag = 0;
+            $(".modal-title").html("新增");
+            $("#group_add_modal").modal("show");
 
-    //新增操作
-    $("#group_save").click(function () {
-        $.ajax({
-            url : 'addGroup',
-            dataType : 'json',
-            type : 'post',
-            data:  $("#group_form").serialize(),
-            success : function (data) {
-                debugger;
-                if(data.code == 300){
-                    Ewin.alert(data.msg);
-                }else if(data.code == 500){
+        },
+        //新增操作
+        groupSave : function () {
+            $.ajax({
+                url : 'addGroup?flag=' + flag ,
+                dataType : 'json',
+                type : 'post',
+                data:  $("#group_form").serialize(),
+                success : function (data) {
+                    if(data.code == 300){
+                        Ewin.alert(data.message);
+                    }else if(data.code == 500){
+                        Ewin.alert("操作异常，请联系管理员");
+                    }else{
+                        Ewin.alert(data.message);
+                        $("#group_form")[0].reset();
+                        $("#group_add_modal").modal("hide");
+                        $('#group_table').bootstrapTable('refresh');
+                    }
+
+                },
+                error : function () {
                     Ewin.alert("操作异常，请联系管理员");
-                }else{
-                    Ewin.alert(data.msg);
-                    $("#group_add_modal").modal("hide");
                 }
+            })
+        },
+        //查询
+        groupQuery : function () {
+            $("#group_table").bootstrapTable({
+                url : 'groupQuery',
+                method : 'post',// get,post
+                toolbar : '#group_Toolbar', // 工具栏
+                striped : true, // 是否显示行间隔色
+                cache : false, // 是否使用缓存，默认为true
+                pagination : true, // 是否显示分页
+                queryParams : {},// 传递参数
+                pageNumber : 1, // 初始化加载第一页，默认第一页
+                pageSize : 20, // 每页的记录行数
+                pageList : [20,30,40], // 可供选择的每页的行数
+                showRefresh : true, //刷新按钮
+                showToggle :true,   //切换试图（table/card）按钮
+                search : true, //搜索框
+                clickToSelect : true,
+                columns : [
+                    {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
+                    {field : 'name', title : '集团名称', width: 130, align : 'center'},
+                    {field : 'contacts', title : '负责联系人', width: 100 , align : 'center'},
+                    {field : 'contactsTelephone', title : '负责联系人号码', width: 100 , align : 'center'},
+                    {field : 'details', title : '详情', width: 150 , align : 'center'},
+                    {field : 'groupNumber', title : '集团编号', width: 100 , align : 'center',visible : false},
+                    {field : 'registeredCapital', title : '', width: 100 , align : 'center',visible : false},
+                    {field : 'groupNumber', title : '', width: 100 , align : 'center',visible : false},
+                    {field : 'remark', title : '', width: 100 , align : 'center',visible : false},
+                    {field : 'legalPerson', title : '', width: 100 , align : 'center',visible : false}
 
-            },
-            error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+
+                ]
+            });
+        },
+        //打开弹出框
+        openModify : function () {
+            flag = 1;
+            $(".modal-title").html("修改");
+            var row = $('#group_table').bootstrapTable('getSelections');
+            if(row.length > 1){
+                Ewin.alert("不能多选，请重新选择");
+                return;
+            }else if(row.length <= 0){
+                Ewin.alert("请选中需要修改的数据");
+                return;
             }
-        })
-    })
+            $('input[name=name]').val(row[0].name);
+            $('input[name=legalPerson]').val(row[0].legalPerson);
+            $('input[name=registeredCapital]').val(row[0].registeredCapital);
+            $('input[name=contacts]').val(row[0].contacts);
+            $('input[name=contactsTelephone]').val(row[0].contactsTelephone);
+            $('input[name=groupNumber]').val(row[0].groupNumber);
+            $('#group_details').val(row[0].details);
+            $('#group_remark').val(row[0].remark);
+            $("#group_add_modal").modal("show");
+
+        },
+        //删除
+        gropDelete : function () {
+            var row = $('#group_table').bootstrapTable('getSelections');
+            if(row.length <= 0){
+                Ewin.alert("请选中需要删除的数据");
+                return;
+            }
+            var numbers = ""; //存放多个集团编号
+            for (var i = 0 ; i < row.length ;i++){
+                if(i > 0 ){
+                    numbers += "," + row[i].groupNumber;
+                }else{
+                    numbers += row[i].groupNumber;
+                }
+            }
+            $.ajax({
+                url : 'deleteGroup',
+                dataType : 'json',
+                type : 'post',
+                data:  {
+                    "numbers" : numbers
+                },
+                success : function (data) {
+                    if(data.code == 300){
+                        Ewin.alert(data.message);
+                    }else if(data.code == 500){
+                        Ewin.alert("操作异常，请联系管理员");
+                    }else{
+                        Ewin.alert(data.message);
+                        $("#group_form")[0].reset();
+                        $("#group_add_modal").modal("hide");
+                        $('#group_table').bootstrapTable('refresh');
+                    }
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
+
+        }
+
+
+    };
+
+    $(function () {
+       GroupFun.groupQuery();
+    });
+
+
+
+
 
 </script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>
