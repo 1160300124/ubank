@@ -6,49 +6,46 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>登录</title>
-	<link rel="shortcut icon" href="<%=request.getContextPath()%>/images/logo.png" type="image/x-icon">
-	<script src="../js/jquery/jquery-1.12.3.min.js"></script>
-    
-    <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="../css/font-awesome/font-awesome.min.css" rel="stylesheet" />
-    <link href="../css/login.css" rel="stylesheet" />
-    
-    <script src="../js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
-    <script src="../js/login.js" type="text/javascript" ></script>
-    <script language=JavaScript>	
-	<%
-		if(null != request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION)){
-			response.sendRedirect("index");
-		}
-	%>
+<link rel="shortcut icon" href="<%=request.getContextPath()%>/images/logo.png" type="image/x-icon">
+<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="<%=request.getContextPath()%>/css/font-awesome/font-awesome.min.css" rel="stylesheet" />
+<link href="<%=request.getContextPath()%>/css/login.css" rel="stylesheet" />
+<script type="type/javascript">
+<%
+    if(null != request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION)){
+        response.sendRedirect("index");
+    }
+%>
 </script>
 </head>
 <body>
-	<div class="container">
-	    <div class="row">
-	        <div class="col-md-offset-4 col-md-5">
-	            <form class="form-horizontal">
-	                <span class="heading">用户登录</span>
-	                <div class="form-group">
-	                    <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名">
-	                    <i class="fa icon-user"></i>
-	                </div>
-	                <div class="form-group help">
-	                    <input type="password" class="form-control" id="password" placeholder="请输入密码">
-	                    <i class="fa icon-lock"></i>
-	                    <a href="#" class="fa fa-question-circle"></a>
-	                </div>
-	                <div class="form-group">
-<!--  	                    <div class="main-checkbox">
-	                        <input type="checkbox" value="None" id="checkbox1" name="check"/>
-	                        <label for="checkbox1"></label>
-	                    </div> -->
-	                    <span class="error" id="errormsg"></span> 
-	                    <button type="submit" class="btn btn-default" id="btn_login" >登录</button>
-	                </div>
-	            </form>
-	        </div>
-	    </div>
-	</div>
+<div class="login-header clearfix">
+    <i class="login-logo fl"></i>
+    <span class="fl">优发展银行后台登录</span>
+</div>
+<div class="login-wrap">
+    <div class="login-wrap-logo"></div>
+    <div class="login-box">
+        <h3>用户登录</h3>
+        <form class="login-form">
+            <div class="login-form-input">
+                <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名">
+                <i class="icon-user-one"></i>
+            </div>
+            <div class="login-form-input">
+                <input type="password" class="form-control" id="password" placeholder="请输入密码">
+                <i class="icon-psd"></i>
+            </div>
+
+            <div class="form-error"></div>
+            <button type="submit" class="login-form-btn" id="btn_login">登录</button>
+        </form>
+    </div>
+
+</div>
+
+<script src="<%=request.getContextPath()%>/js/jquery/jquery-1.12.3.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
+<script src="<%=request.getContextPath()%>/js/login.js" type="text/javascript" ></script>
 </body>
 </html>

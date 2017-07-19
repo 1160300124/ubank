@@ -25,6 +25,7 @@
 		<mapper resource="com/ulaiber/web/mapper/bankMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/salaryMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/salaryDetailMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/permissionMapper.xml" />
 	</mappers>
 
 </configuration>  

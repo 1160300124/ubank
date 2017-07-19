@@ -1,134 +1,47 @@
-body{
-	background-image:url(../images/bodyBg.jpg);
-	background-size:cover;
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
 }
-.form-bg{
-    background: #00b4ef;
+
+html, body {
+    width: 100%;
+    height: 100%;
 }
-.form-horizontal{
-	margin-top: 20%;
-   /*  background: #fff; */
-    padding-bottom: 40px;
-    border-radius: 15px;
-    text-align: center;
+
+ul, ol {
+    list-style: none
 }
-.form-horizontal .heading{
-    display: block;
-    font-size: 35px;
-    font-weight: 700;
-    padding: 35px 0;
-    /* border-bottom: 1px solid #f0f0f0; */
-    margin-bottom: 30px;
+
+a:active, a:hover, a:focus, a:visited {
+    color: inherit;
+    list-style: none;
+    text-decoration: none;
 }
-.form-horizontal .form-group{
-    padding: 0 40px;
-    margin: 0 0 25px 0;
-    position: relative;
-}
-.form-horizontal .form-control{
-    background: #f0f0f0;
-    border: none;
-    border-radius: 20px;
-    box-shadow: none;
-    padding: 0 20px 0 45px;
-    height: 40px;
-    transition: all 0.3s ease 0s;
-    font-size: 16px;
-}
-.form-horizontal .form-control:focus{
-    background: #e0e0e0;
-    box-shadow: none;
-    outline: 0 none;
-}
-.form-horizontal .form-group i{
-    position: absolute;
-    top: 12px;
-    left: 60px;
-    font-size: 16px;
-    transition : all 0.5s ease 0s;
-}
-.form-horizontal .form-control:focus + i{
-    color: #00b4ef;
-}
-.form-horizontal .fa-question-circle{
-    display: inline-block;
-    position: absolute;
-    top: 12px;
-    right: 60px;
-    font-size: 20px;
-    color: #808080;
-    transition: all 0.5s ease 0s;
-}
-.form-horizontal .fa-question-circle:hover{
-    color: #000;
-}
-.form-horizontal .main-checkbox{
-    float: left;
-    width: 20px;
-    height: 20px;
-    background: #11a3fc;
-    border-radius: 50%;
-    position: relative;
-    margin: 5px 0 0 5px;
-    border: 1px solid #11a3fc;
-}
-.form-horizontal .main-checkbox label{
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: pointer;
-}
-.form-horizontal .main-checkbox label:after{
-    content: "";
-    width: 10px;
-    height: 5px;
-    position: absolute;
-    top: 5px;
-    left: 4px;
-    border: 3px solid #fff;
-    border-top: none;
-    border-right: none;
-    background: transparent;
-    opacity: 0;
-    -webkit-transform: rotate(-45deg);
-    transform: rotate(-45deg);
-}
-.form-horizontal .main-checkbox input[type=checkbox]{
-    visibility: hidden;
-}
-.form-horizontal .main-checkbox input[type=checkbox]:checked + label:after{
-    opacity: 1;
-}
-.form-horizontal .error{
-    float: left;
-    margin-left: 7px;
-    line-height: 20px;
-    padding-top: 5px;
-    text-transform: capitalize;
-    color: red;
-    font-size: 16px;
-}
-.form-horizontal .btn{
-    float: right;
-    font-size: 16px;
-    color: #fff;
-    background: #00b4ef;
-    border-radius: 30px;
-    padding: 10px 25px;
-    border: none;
-    text-transform: capitalize; 
-    transition: all 0.5s ease 0s;
-}
-@media only screen and (max-width: 479px){
-    .form-horizontal .form-group{
-        padding: 0 25px;
-    }
-    .form-horizontal .form-group i{
-        left: 45px;
-    }
-    .form-horizontal .btn{
-        padding: 10px 20px;
-    }
-}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+.clearfix{*height:1%;}
+.fl{float:left;}
+.fr{float:right;}
+
+
+.login-header{position:relative;background:#fff;height:100px;line-height: 100px;padding:0px 20px;z-index:10;}
+.login-logo{margin-top:7px;width:85px;height:85px;background:url("../images/login_logo.png") no-repeat;}
+.login-header span{font-size:30px;}
+.login-wrap{position:fixed;top:100px;left:0px;width:100%;height:100%;background:url("../images/bg.png") no-repeat center top;z-index:9;}
+.login-wrap-logo{position:absolute;top:50%;left:50%;margin:-240px 0 0 -550px;width:450px;height:400px;background:url("../images/login-wrap-logo.png") no-repeat;}
+.login-box{position:absolute;top:50%;left:50%;padding:45px 55px;margin:-250px 0px 0px 100px;width:423px;height:423px;background:#fff;border-radius:10px;}
+.login-box h3{ text-align: center;font-size:24px;color:#FB702F;}
+.login-form{margin-top:40px;}
+.login-form-input{position:relative;width:100%;height:44px;margin-bottom:25px;overflow:hidden;}
+.login-form-input i{position:absolute;width:20px;height:25px;top:9px;left:10px;transition:background .3s;}
+.login-form-input input{width:100%;height:42px;line-height:42px;padding:0px 10px 0px 40px;font-size:14px;border:1px solid #999;border-radius:3px;transition:border .3s;}
+.login-form-input input:focus{outline:none;border:1px solid #FB702F;}
+.login-form-input input:focus + .icon-user-one{background:url("../images/icon_yonghu_selected.png") no-repeat;}
+.login-form-input input:focus + .icon-psd{background:url("../images/icon_key_selected.png") no-repeat;}
+.input-check{width:18px;height:18px;border:1px solid #ccc;border-radius:2px;}
+.input-check.checked{background:url("../images/icon_checked.png") no-repeat;border:none;}
+.input-check+span{margin-left:5px;color:#555;line-height: 18px;}
+.login-form-btn{margin-top:20px;width:100%;height:44px;line-height: 44px;text-align: center;background:#FB702F;border-radius:3px;border:none;color:#fff;font-size:16px;cursor:pointer;}
+.form-error{margin-top:10px;line-height: 30px;color: #ff431a;font-size:14px;}
+.icon-user-one{background:url("../images/icon_yonghu_default.png") no-repeat;}
+.icon-psd{background:url("../images/icon_key_default.png") no-repeat;}
