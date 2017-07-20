@@ -21,8 +21,18 @@
     </select>
 
     <!--查询所有集团-->
-    <select id="groupQuery" resultType="com.ulaiber.web.model.Group">
-          select name,contacts,contactsTelephone,details,registeredCapital,groupNumber,remark,legalPerson FROM tbl_group
+    <select id="groupQuery" parameterType="Map" resultType="com.ulaiber.web.model.Group">
+          select name,contacts,contactsTelephone,details,registeredCapital,groupNumber,remark,legalPerson
+          FROM tbl_group
+           <if test="search != null and search != ''">
+               where name like concat('%',#{search},'%')
+           </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--获取集团总数-->
+    <select id="getTotal" resultType="int">
+        select COUNT(name) total from tbl_group;
     </select>
 
     <!--修改集团信息-->
@@ -37,6 +47,51 @@
         DELETE FROM tbl_group where groupNumber in
         <foreach collection="array" item="numbers" open="(" separator="," close=")">
             #{numbers}
+        </foreach>
+    </delete>
+
+    <!--获取所有公司信息-->
+    <select id="companyQuery" resultType="com.ulaiber.web.model.Company">
+        select name,com_bankNum,com_bank,companyNumber,details,group_num,legalPerson from tbl_company
+    </select>
+
+    <!--根据部门编号获取对应部门-->
+    <select id="getDeptByNum" parameterType="String" resultType="com.ulaiber.web.model.Departments">
+        SELECT dept_number FROM tbl_departments where dept_number = #{deptNum}
+    </select>
+
+    <!--新增部门-->
+    <insert id="addDept" parameterType="com.ulaiber.web.model.Departments">
+        INSERT into tbl_departments(name,company_num,remark)
+            VALUES (#{name},#{company_num},#{remark})
+    </insert>
+
+    <!--获取所有部门信息-->
+    <select id="departmentQuery" parameterType="Map" resultType="com.ulaiber.web.model.Departments">
+        SELECT company_num,count,dept_number,name,remark
+        from tbl_departments
+        <if test="search != null and search != ''">
+            where name like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--获取部门总数-->
+    <select id="getDeptTotal" resultType="int">
+        select COUNT(name) total from tbl_departments;
+    </select>
+
+    <!--修改部门信息-->
+    <update id="editDept" parameterType="com.ulaiber.web.model.Departments" >
+        UPDATE tbl_departments set name = #{name},company_num = #{company_num}, remark = #{remark}
+          where dept_number = #{dept_number}
+    </update>
+
+    <!--删除部门-->
+    <delete id="deptDelete" parameterType="String">
+        DELETE FROM  tbl_departments WHERE dept_number in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
         </foreach>
     </delete>
 </mapper>

@@ -84,7 +84,7 @@
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">详情</label>
                                     <div class="col-md-9">
-                                        <textarea class="form-control" name="details" id="group_details"  rows="3"></textarea>
+                                         <textarea class="form-control" name="details" id="group_details"  rows="3"></textarea>
                                     </div>
                                 </div>
 
@@ -109,6 +109,10 @@
 </div>
 <script type="text/javascript">
 
+    //初始化数据
+    $(function () {
+        GroupFun.groupQuery();
+    });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
     //all function
@@ -149,18 +153,21 @@
         groupQuery : function () {
             $("#group_table").bootstrapTable({
                 url : 'groupQuery',
-                method : 'post',// get,post
+                method : 'POST',// get,post
                 toolbar : '#group_Toolbar', // 工具栏
                 striped : true, // 是否显示行间隔色
                 cache : false, // 是否使用缓存，默认为true
                 pagination : true, // 是否显示分页
-                queryParams : {},// 传递参数
+                queryParams : this.queryParams,
+                contentType : "application/x-www-form-urlencoded",
                 pageNumber : 1, // 初始化加载第一页，默认第一页
                 pageSize : 20, // 每页的记录行数
                 pageList : [20,30,40], // 可供选择的每页的行数
+                sidePagination : "server", // 分页方式：client客户端分页，server服务端分页
                 showRefresh : true, //刷新按钮
                 showToggle :true,   //切换试图（table/card）按钮
                 search : true, //搜索框
+                searchText : ' ', //初始化搜索文字
                 clickToSelect : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
@@ -174,9 +181,17 @@
                     {field : 'remark', title : '', width: 100 , align : 'center',visible : false},
                     {field : 'legalPerson', title : '', width: 100 , align : 'center',visible : false}
 
-
                 ]
             });
+        },
+        //查询参数定义
+        queryParams : function (params) {
+            var paramData = {
+                pageSize : params.limit,
+                pageNum : params.offset,
+                search : params.search
+            };
+            return paramData;
         },
         //打开弹出框
         openModify : function () {
@@ -246,9 +261,7 @@
 
     };
 
-    $(function () {
-       GroupFun.groupQuery();
-    });
+
 
 
 
