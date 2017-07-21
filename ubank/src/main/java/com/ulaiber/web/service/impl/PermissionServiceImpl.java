@@ -1,10 +1,7 @@
 package com.ulaiber.web.service.impl;
 
 import com.ulaiber.web.dao.PermissionDao;
-import com.ulaiber.web.model.Company;
-import com.ulaiber.web.model.Departments;
-import com.ulaiber.web.model.Group;
-import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
 import org.springframework.stereotype.Service;
@@ -59,8 +56,12 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> companyQuery() {
-        List<Company> result = permissionDao.companyQuery();
+    public List<Company> companyQuery(String search, int pageSize, int pageNum) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("search" ,search );
+        map.put("pageSize" , pageSize);
+        map.put("pageNum" , pageNum);
+        List<Company> result = permissionDao.companyQuery(map);
         return result;
     }
 
@@ -108,5 +109,35 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     public int deptDelete(String[] number) {
         int result = permissionDao.deptDelete(number);
         return result;
+    }
+
+    @Override
+    public List<Group> getAllGroup() {
+        List<Group> list = permissionDao.getAllGroup();
+        return list;
+    }
+
+    @Override
+    public int addCom(Company company) {
+        int com = permissionDao.addCom(company);
+        return com;
+    }
+
+    @Override
+    public List<Bank> getAllBank() {
+        List<Bank> list = permissionDao.getAllBank();
+        return list;
+    }
+
+    @Override
+    public int addBankAccount(List<Map<String, Object>> list) {
+        int  account = permissionDao.addBankAccount(list);
+        return account;
+    }
+
+    @Override
+    public int getCompanyTotal() {
+        int comTotal = permissionDao.getCompanyTotal();
+        return comTotal;
     }
 }

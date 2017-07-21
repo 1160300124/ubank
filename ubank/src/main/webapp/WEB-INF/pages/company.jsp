@@ -43,7 +43,8 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">公司名称</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" name="name"  >
+                                    <input type="text" class="form-control" id="companyName" name="name"  >
+                                    <input type="text" class="form-control" style="display: none;" id="allAccount" name="account"  >
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
@@ -53,13 +54,12 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
-                                <%--用于多个银行数据 start--%>
-                                    <div id="" style="display: none;" name="com_bank" ></div>
-                                    <div id="" style="display: none;" name="com_account" ></div>
-                                    <div id="" style="display: none;" name="com_customer" ></div>
-                                    <div id="" style="display: none;" name="certificateNumber" ></div>
-                                    <div id="" style="display: none;" name="authorizationCode" ></div>
-                                <%--用于多个银行数据 end--%>
+                                <label class="col-md-3" for="exampleInputName2">备注</label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control" id="com_area" name="details"  rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
 
                                 <label class="col-md-3" for="exampleInputName2">公司账户</label>
                                 <div class="col-md-9">
@@ -77,23 +77,25 @@
                                         </div>
                                         <div class="base-form clearfix">
                                             <span class="base-form-label">公司账户银行</span>
-                                            <input type="text" name="user" class="base-form-input" placeholder="请输入公司账户银行" value="">
+                                            <%--<input type="text" name="com_bank" class="base-form-input" placeholder="" value="">--%>
+                                            <select class="combobox form-control base-form-input base-request" id="company_select" name="bankNo" >
+                                            </select>
                                         </div>
                                         <div class="base-form clearfix">
                                             <span class="base-form-label">公司账户号</span>
-                                            <input type="text" name="email" class="base-form-input" placeholder="请输入公司账户号" value="">
+                                            <input type="text" name="accounts" class="base-form-input base-request" placeholder="" value="">
                                         </div>
                                         <div class="base-form clearfix">
                                             <span class="base-form-label">公司账户客户号</span>
-                                            <input type="text" name="phone" class="base-form-input" placeholder="请输入公司账户客户号" value="">
+                                            <input type="text" name="customer" class="base-form-input base-request" placeholder="" value="">
                                         </div>
                                         <div class="base-form clearfix">
                                             <span class="base-form-label">证书序号</span>
-                                            <input type="text" name="phone" class="base-form-input" placeholder="请输入证书序号" value="">
+                                            <input type="text" name="certificateNumber" class="base-form-input base-request" placeholder="" value="">
                                         </div>
                                         <div class="base-form clearfix">
                                             <span class="base-form-label">银行数字证书授权码</span>
-                                            <input type="text" name="phone" class="base-form-input" placeholder="请输入银行数字证书授权码" value="">
+                                            <input type="text" name="authorizationCode" class="base-form-input base-request" placeholder="" value="">
                                         </div>
                                         <div class="base-offset-label">
                                             <button type="button" class="base-sure-btn" data-click="sureForm">确定</button>
@@ -110,7 +112,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" onclick="" class="btn btn-primary">保存</button>
+                    <button type="button" onclick="CompanyFun.companyAdd()" class="btn btn-primary">保存</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -121,6 +123,7 @@
 
     $(function () {
         CompanyFun.getAllGroup();
+        CompanyFun.getAllBank();
         CompanyFun.companyQuery();
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
@@ -137,7 +140,7 @@
         //获取所有集团
         getAllGroup : function () {
             $.ajax({
-                url : 'groupQuery',
+                url : 'getAllGroup',
                 dataType : 'json',
                 type : 'post',
                 data:  {},
@@ -158,10 +161,34 @@
                 }
             })
         },
+        //获取所有银行信息
+        getAllBank : function () {
+            $.ajax({
+                url : 'getAllBank',
+                dataType : 'json',
+                type : 'post',
+                data:  {},
+                success : function (data) {
+                    if(data.length <= 0){
+                        Ewin.alert("获取银行失败，请联系管理员");
+                        return;
+                    }
+                    var option = "";
+                    for (var i = 0; i < data.length; i++){
+                        option += "<option value='"+data[i].bankNo+"'>"+data[i].bankName+"</option>";
+                    }
+                    $("#company_select").append(option);
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
+        },
         //查询
         companyQuery : function () {
             $("#company_table").bootstrapTable({
-                url : '',
+                url : 'comQuery',
                 method : 'post',// get,post
                 toolbar : '#company_Toolbar', // 工具栏
                 striped : true, // 是否显示行间隔色
@@ -177,16 +204,60 @@
                 clickToSelect : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                    {field : '', title : '', width: 130, align : 'center'},
+                    {field : '', title : '', width: 130, align : 'center'}
 
 
 
                 ]
             });
+        },
+        //新增
+        companyAdd : function () {
+            //获取所有账户信息
+            var arr=[];
+            var allBankAccount = [];
+            var account = "";
+            var str='';
+            $('.form-box .add-form-item').each(function(){
+                $(this).find('.base-request').each(function(){
+                    var _value=$(this).val();
+                    str += _value + "/";
+
+                });
+                allBankAccount.push($(this).find("input[name=accounts]").val());
+                str= str.substr(0,str.length-1);
+                str+=',';
+            });
+            str = str.substr(0,str.length-1);
+            account = allBankAccount.join(",");
+            $("#allAccount").val(account);
+            $.ajax({
+                url : 'addCom?items= ' + str,
+                dataType : 'json',
+                type : 'post',
+                data:  $("#company_form").serialize(),
+                success : function (data) {
+                    if(data.code == 300){
+                        Ewin.alert(data.message);
+                    }else if(data.code == 500){
+                        Ewin.alert("操作异常，请联系管理员");
+                    }else{
+                        Ewin.alert(data.message);
+                        $("#company")[0].reset();
+                        $("#company_modal").modal("hide");
+                        $('#company_table').bootstrapTable('refresh');
+                    }
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
         }
 
     };
 
+    //添加账户样式
     $(document).on('click','[data-click]',function(e){
         e.stopPropagation();
         e.preventDefault();
@@ -205,21 +276,25 @@
                 self.parents('.add-form-item').addClass('check-form');
                 self.parents('.add-form-item').children('.base-form:gt(0)').slideUp();
                 self.parents('.add-form-item').find('input').attr('readonly',true);
+                self.parents('.add-form-item').find('select').attr('disabled',true);
                 break;
 
             case 'editForm': //编辑操作
                 self.parents('.add-form-item').removeClass('check-form');
                 self.parents('.add-form-item').children('.base-form:gt(0)').slideDown();
                 self.parents('.add-form-item').find('input').removeAttr('readonly');
+                self.parents('.add-form-item').find('select').removeAttr('disabled');
                 break;
 
             case 'toggleForm': //点击展开收缩表格
                 self.parents('.add-form-item').children('.base-form:gt(0)').slideToggle();
                 self.find('input').attr('readonly',true);
+                self.find('select').attr('disabled',true);
                 break;
 
             case 'deleteForm': //删除操作
                 self.parents('.add-form-item').remove();
+
                 break;
 
 

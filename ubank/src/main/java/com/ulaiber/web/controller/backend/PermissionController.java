@@ -4,12 +4,15 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.StringUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +86,7 @@ public class PermissionController extends BaseController {
     }
 
     /**
-     * 查询所有集团
+     * 分页查询集团
      * @param request
      * @return
      */
@@ -129,19 +132,7 @@ public class PermissionController extends BaseController {
     }
 
     /**
-     * 获取所有公司信息
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "companyQuery", method = RequestMethod.POST)
-    @ResponseBody
-    public List<Company> companyQuery(HttpServletRequest request){
-        List<Company> company = permissionService.companyQuery();
-        return  company;
-    }
-
-    /**
-     * 获取所有部门信息
+     * 分页查询部门信息
      * @return
      */
     @RequestMapping(value = "departmentQuery", method = RequestMethod.POST)
@@ -218,4 +209,83 @@ public class PermissionController extends BaseController {
         return resultInfo;
 
     }
+
+    /**
+     * 获取所有集团信息
+     */
+    @RequestMapping(value = "getAllGroup", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Group> getAllGroup(){
+        List<Group> list = permissionService.getAllGroup();
+        return list;
+    }
+
+    /**
+     * 获取所有银行信息
+     */
+    @RequestMapping(value = "getAllBank", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Bank> getAllBank(){
+        List<Bank> list = permissionService.getAllBank();
+        return list;
+    }
+
+    /**
+     * 新增公司信息
+     * @param company
+     */
+    @RequestMapping(value = "addCom", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo addCom(Company company,@Param("items") String items){
+        String[] rows = items.split(",");
+        List<Map<String,Object>> list = new ArrayList<>();
+        for(int i = 0; i < rows.length ; i++){
+            String[] data = rows[i].split("/");
+            Map<String,Object> map = new HashMap<String,Object>();
+            for (int j = 0 ; j< data.length; j++){
+                map.put("bankNo" , data[0]);
+                map.put("accounts" , data[1]);
+                map.put("customer" , data[2]);
+                map.put("certificateNumber" , data[3]);
+                map.put("authorizationCode" , data[4]);
+                list.add(map);
+                break;
+            }
+        }
+        int acc = permissionService.addBankAccount(list); //插入银行账户信息
+        int com = permissionService.addCom(company);  // 插入公司基本信息
+        ResultInfo resultInfo = new ResultInfo();
+        if(acc > 0 && com > 0 ){
+            resultInfo.setMessage("删除成功");
+            resultInfo.setCode(200);
+        }else{
+            resultInfo.setCode(500);
+            resultInfo.setMessage("删除失败，请联系管理员");
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 获取所有公司信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "comQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> comQuery(@Param("search") String search,@Param("pageSize") int pageSize,
+                                      @Param("pageNum") int pageNum ,HttpServletRequest request){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        int deptTotal = permissionService.getCompanyTotal();   //获取公司总数
+        List<Company> list = permissionService.companyQuery(search,pageSize,pageNum);
+        map.put("total",deptTotal);
+        map.put("rows",list);
+        return map;
+    }
+
 }

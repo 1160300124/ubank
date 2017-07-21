@@ -8,9 +8,11 @@ public class BankAccount {
     private int id;
     private String bankNumber;
     private String account;
+    private String bankName;
     private String customer;
     private String certificateNumber;
     private String authorizationCode;
+
 
     public int getId() {
         return id;
@@ -26,6 +28,14 @@ public class BankAccount {
 
     public void setBankNumber(String bankNumber) {
         this.bankNumber = bankNumber;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
     public String getAccount() {

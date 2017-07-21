@@ -50,11 +50,6 @@
         </foreach>
     </delete>
 
-    <!--获取所有公司信息-->
-    <select id="companyQuery" resultType="com.ulaiber.web.model.Company">
-        select name,com_bankNum,com_bank,companyNumber,details,group_num,legalPerson from tbl_company
-    </select>
-
     <!--根据部门编号获取对应部门-->
     <select id="getDeptByNum" parameterType="String" resultType="com.ulaiber.web.model.Departments">
         SELECT dept_number FROM tbl_departments where dept_number = #{deptNum}
@@ -94,4 +89,38 @@
             #{number}
         </foreach>
     </delete>
+
+    <!--获取所有集团信息-->
+    <select id="getAllGroup" resultType="com.ulaiber.web.model.Group">
+        select name,groupNumber from tbl_group
+    </select>
+
+    <!--新增公司基本信息-->
+    <insert id="addCom" parameterType="com.ulaiber.web.model.Company" >
+        INSERT into tbl_company(name,legalPerson,account,group_num,details)
+        VALUES (#{name},#{legalPerson},#{account},#{group_num},#{details})
+    </insert>
+
+    <!--新增银行账户信息-->
+    <insert id="addBankAccount" parameterType="java.util.List">
+        INSERT INTO tbl_bankAccount(bankNumber,account,customer,certificateNumber,authorizationCode) VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+            (#{items.bankNo},#{items.accounts},#{items.customer},#{items.certificateNumber},#{items.authorizationCode})
+        </foreach>
+    </insert>
+
+    <!--获取所有银行信息-->
+    <select id="getAllBank" resultType="com.ulaiber.web.model.Bank">
+        SELECT * FROM tbl_banks
+    </select>
+
+    <!--获取公司总数-->
+    <select id="getCompanyTotal" resultType="int">
+        select COUNT(name) total from tbl_company;
+    </select>
+
+    <!--获取所有公司信息-->
+    <select id="companyQuery" parameterType="Map" resultType="com.ulaiber.web.model.Company" >
+        select name,account,companyNumber,details,group_num,legalPerson from tbl_company
+    </select>
 </mapper>

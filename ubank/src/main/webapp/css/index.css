@@ -133,6 +133,6 @@ a:active, a:hover, a:focus, a:visited {
 .base-sure-btn:hover,.base-cancel-btn:hover{opacity:.8;}
 .check-form{height:auto !important;}
 .check-form{border:1px solid #ccc;border-radius:3px;}
-.check-form input{border-color:#fff;}
+.check-form input,.check-form select{border-color:#fff;background:#fff;}
 .check-form .base-offset-label{display:none;}
 .check-form .base-right-btn,.check-form .toggle-form{display:block;}

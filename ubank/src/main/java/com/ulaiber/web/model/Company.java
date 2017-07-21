@@ -8,8 +8,7 @@ public class Company {
     private int companyNumber;
     private String name;
     private String legalPerson;
-    private String com_bank;
-    private String com_bankNum;
+    private String account;
     private int group_num;
     private String details;
 
@@ -34,16 +33,16 @@ public class Company {
         return legalPerson;
     }
 
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
     public void setLegalPerson(String legalPerson) {
         this.legalPerson = legalPerson;
-    }
-
-    public String getCom_bank() {
-        return com_bank;
-    }
-
-    public void setCom_bank(String com_bank) {
-        this.com_bank = com_bank;
     }
 
     public int getGroup_num() {

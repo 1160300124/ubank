@@ -1,10 +1,12 @@
 package com.ulaiber.web.service;
 
+import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.Group;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 权限管理业务层
@@ -22,7 +24,7 @@ public interface PermissionService {
 
     int deleteGroup(String[] numberArr);  //删除集团
 
-    List<Company> companyQuery();   //获取所有公司信息
+    List<Company> companyQuery(String search, int pageSize, int pageNum);   //获取所有公司信息
 
     Departments getDeptByNum(String deptNum);   //根据部门编号获取对应部门
 
@@ -37,4 +39,14 @@ public interface PermissionService {
     int editDept(Departments dept); //修改部门
 
     int deptDelete(String[] number);
+
+    List<Group> getAllGroup();   // 获取所有集团信息
+
+    int addCom(Company company);  //插入公司基本信息
+
+    List<Bank> getAllBank();  //获取所有银行信息
+
+    int addBankAccount(List<Map<String, Object>> list); //插入银行账户信息
+
+    int getCompanyTotal();  //获取公司总数
 }

@@ -1,9 +1,6 @@
 package com.ulaiber.web.dao;
 
-import com.ulaiber.web.model.Company;
-import com.ulaiber.web.model.Departments;
-import com.ulaiber.web.model.Group;
-import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +22,7 @@ public interface PermissionDao {
 
     int deleteGroup(String[] numberArr);    //删除集团
 
-    List<Company> companyQuery();   //获取所有公司信息
+    List<Company> companyQuery(Map<String,Object> map);   //获取所有公司信息
 
     Departments getDeptByNum(String deptNum);  //根据部门编号获取对应部门
 
@@ -40,6 +37,16 @@ public interface PermissionDao {
     int editDept(Departments dept); //修改部门
 
     int deptDelete(String[] number);  // 删除部门
+
+    List<Group> getAllGroup();  //获取所有集团信息
+
+    int addCom(Company company);  //插入公司基本信息
+
+    List<Bank> getAllBank(); //获取所有银行信息
+
+    int addBankAccount(List<Map<String, Object>> list);  //插入银行账户信息
+
+    int getCompanyTotal();   //获取公司总数
 }
 
 
