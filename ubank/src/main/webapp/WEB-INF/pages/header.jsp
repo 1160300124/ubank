@@ -87,7 +87,6 @@
                         children.push(data[i]);
 					}
                 }
-                debugger;
                 for (var j = 0 ; j < father.length ; j++){
                     fatherMenu = "<span onclick='nav.navClick($(this))' class='first-menu'>"+father[j].name+"</span>";
                     for (var k = 0 ; k < children.length ; k++){
