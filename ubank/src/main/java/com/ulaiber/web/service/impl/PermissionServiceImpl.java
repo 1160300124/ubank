@@ -1,5 +1,6 @@
 package com.ulaiber.web.service.impl;
 
+import com.ulaiber.web.dao.CompanyDao;
 import com.ulaiber.web.dao.PermissionDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
@@ -20,6 +21,9 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Resource
     private PermissionDao permissionDao;
+
+    @Resource
+    private CompanyDao companyDao;
 
     @Override
     public int addGroup(Group group) {
@@ -139,5 +143,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     public int getCompanyTotal() {
         int comTotal = permissionDao.getCompanyTotal();
         return comTotal;
+    }
+
+    @Override
+    public List<BankAccount> getBankAccountByNum(String[] accounts) {
+        List<BankAccount> data = companyDao.getBankAccountByNum(accounts);
+        return data;
     }
 }

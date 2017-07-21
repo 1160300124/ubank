@@ -1,9 +1,6 @@
 package com.ulaiber.web.service;
 
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.model.Company;
-import com.ulaiber.web.model.Departments;
-import com.ulaiber.web.model.Group;
+import com.ulaiber.web.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -49,4 +46,6 @@ public interface PermissionService {
     int addBankAccount(List<Map<String, Object>> list); //插入银行账户信息
 
     int getCompanyTotal();  //获取公司总数
+
+    List<BankAccount> getBankAccountByNum(String[] accounts);  //根据银行账户编号获取账户信息
 }

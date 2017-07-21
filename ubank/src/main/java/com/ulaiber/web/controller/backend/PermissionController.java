@@ -288,4 +288,17 @@ public class PermissionController extends BaseController {
         return map;
     }
 
+    /**
+     * 根据银行账户编号获取账户信息
+     * @param accountNum
+     * @return
+     */
+    @RequestMapping(value = "getBankAccountByNum", method = RequestMethod.POST)
+    @ResponseBody
+    public List<BankAccount> getBankAccountByNum(@Param("accountNum") String accountNum){
+        String[] accounts = accountNum.split(",");
+        List<BankAccount> data = permissionService.getBankAccountByNum(accounts);
+        return data;
+    }
+
 }

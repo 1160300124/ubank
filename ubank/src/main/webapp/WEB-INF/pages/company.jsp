@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
-                                <label class="col-md-3" for="exampleInputName2">备注</label>
+                                <label class="col-md-3" for="exampleInputName2">详情</label>
                                 <div class="col-md-9">
                                     <textarea class="form-control" id="com_area" name="details"  rows="3"></textarea>
                                 </div>
@@ -194,22 +194,44 @@
                 striped : true, // 是否显示行间隔色
                 cache : false, // 是否使用缓存，默认为true
                 pagination : true, // 是否显示分页
-                queryParams : {},// 传递参数
+                queryParams : this.queryParams,// 传递参数
+                contentType : "application/x-www-form-urlencoded",
+                sidePagination : "server", // 分页方式：client客户端分页，server服务端分页
+                search : true, //搜索框
+                searchText : ' ', //初始化搜索文字
                 pageNumber : 1, // 初始化加载第一页，默认第一页
                 pageSize : 20, // 每页的记录行数
                 pageList : [20,30,40], // 可供选择的每页的行数
                 showRefresh : true, //刷新按钮
                 showToggle :true,   //切换试图（table/card）按钮
-                search : true, //搜索框
                 clickToSelect : true,
                 columns : [
-                    {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                    {field : '', title : '', width: 130, align : 'center'}
-
+                    {field : 'checkbox',checkbox :true, width: 10, align : 'left'},
+                    {field : 'name', title : '公司名称', width: 130, align : 'left'},
+                    {field : 'account', title : '银行账户', width: 130, align : 'left',
+                        formatter : function (value,row,index) {
+                            var arr = [];
+                            arr.push(value.split(","));
+                            return ""+arr[0].length+"";
+                        }
+                    },
+                    {field : 'details', title : '详情', width: 130, align : 'left'},
+                    {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                    {field : 'legalPerson', title : '公司法人', width: 130, align : 'left',visible : false},
+                    {field : 'group_num', title : '集团编号', width: 130, align : 'left',visible : false}
 
 
                 ]
             });
+        },
+        //查询参数
+        queryParams : function (params) {
+            var paramData = {
+                pageSize : params.limit,
+                pageNum : params.offset,
+                search : params.search
+            };
+            return paramData;
         },
         //新增
         companyAdd : function () {
@@ -247,6 +269,36 @@
                         $("#company_modal").modal("hide");
                         $('#company_table').bootstrapTable('refresh');
                     }
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
+        },
+        //打开修改框
+        openEdit : function () {
+            flag = 1;
+            $(".modal-title").html("修改");
+            var row = $('#company_table').bootstrapTable('getSelections');
+            if(row.length > 1){
+                Ewin.alert("不能多选，请重新选择");
+                return;
+            }else if(row.length <= 0){
+                Ewin.alert("请选中需要修改的数据");
+                return;
+            }
+            //根据银行账户编号获取银行账户信息
+            $.ajax({
+                url : 'getBankAccountByNum',
+                dataType : 'json',
+                type : 'post',
+                data:  {
+                    "accountNum" : row[0].account
+                },
+                success : function (data) {
+                    debugger;
+                    $("#department_modal").modal("show");
 
                 },
                 error : function () {

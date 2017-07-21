@@ -81,12 +81,13 @@
                     return
                 }
                 for (var i = 0; i<data.length; i++){
-                    if(data[i].father == "" ){
+                    if(data[i].father == "" || data[i].father == null){
                         father.push(data[i]);
 					}else{
                         children.push(data[i]);
 					}
                 }
+                debugger;
                 for (var j = 0 ; j < father.length ; j++){
                     fatherMenu = "<span onclick='nav.navClick($(this))' class='first-menu'>"+father[j].name+"</span>";
                     for (var k = 0 ; k < children.length ; k++){

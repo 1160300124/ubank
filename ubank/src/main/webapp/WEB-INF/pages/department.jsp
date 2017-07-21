@@ -99,12 +99,12 @@
                 showToggle :true,   //切换试图（table/card）按钮
                 clickToSelect : true,
                 columns : [
-                    {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                    {field : 'name', title : '部门名称', width: 130, align : 'center'},
-                    {field : 'dept_number', title : '部门编号', width: 130, align : 'center',visible : false},
-                    {field : 'company_num', title : '公司编号', width: 130, align : 'center',visible : false},
-                    {field : 'count', title : '部门人数', width: 60, align : 'center'},
-                    {field : 'remark', title : '备注', width: 150, align : 'center'}
+                    {field : 'checkbox',checkbox :true, width: 10, align : 'left'},
+                    {field : 'name', title : '部门名称', width: 130, align : 'left'},
+                    {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
+                    {field : 'company_num', title : '公司编号', width: 130, align : 'left',visible : false},
+                    {field : 'count', title : '部门人数', width: 60, align : 'left'},
+                    {field : 'remark', title : '备注', width: 150, align : 'left'}
                 ]
             });
         },
