@@ -46,6 +46,12 @@ public class PermissionController extends BaseController {
         return "department";
     }
 
+    //跳转员工管理页面
+    @RequestMapping("employee")
+    public String employee(HttpServletRequest request){
+        return "employee";
+    }
+
     /**
      * 新增集团
      * @param group
