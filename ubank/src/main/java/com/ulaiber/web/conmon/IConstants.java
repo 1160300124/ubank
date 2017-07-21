@@ -80,5 +80,35 @@ public class IConstants
 		TRANS_STATUS.put("A", "等待进一步授权");
 	}
 	
+	
+	//上传目录
+	public static String UPLOAD_PATH = "/images";
+	
+	//临时目录
+	public static String TEMP_PATH = "/temp";
+	
+	//图标路径
+	public static String ICON_PATH = "/icon";
+	
+	//bunner路径
+	public static String BUNNER_PATH = "/bunner";
+	
+	//上传临时目录
+	public static String TEMP_UPLOAD_PATH = UPLOAD_PATH + TEMP_PATH;
+	
+	//图标上传临时目录
+	public static String ICON_TEMP_UPLOAD_PATH = TEMP_UPLOAD_PATH + ICON_PATH;
+	
+	//图标上传目录
+	public static String ICON_UPLOAD_PATH = UPLOAD_PATH + ICON_PATH;
+	
+	//bunner上传临时目录
+	public static String BUNNER_TEMP_UPLOAD_PATH = TEMP_UPLOAD_PATH + BUNNER_PATH;
+	
+	//bunner上传目录
+	public static String BUNNER_UPLOAD_PATH = UPLOAD_PATH + BUNNER_PATH;
+	
+	//文件操作的缓存大小
+	public static final int FILE_OPERA_BUFFER = 1024 ;
 
 }

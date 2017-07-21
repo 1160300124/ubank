@@ -14,6 +14,9 @@
 		<typeAlias alias="Bank" type="com.ulaiber.web.model.Bank" />
 		<typeAlias alias="Salary" type="com.ulaiber.web.model.Salary" />
 		<typeAlias alias="SalaryDetail" type="com.ulaiber.web.model.SalaryDetail" />
+		<typeAlias alias="ThirdUrl" type="com.ulaiber.web.model.ThirdUrl" />
+		<typeAlias alias="Page" type="com.ulaiber.web.model.Page" />
+		<typeAlias alias="Module" type="com.ulaiber.web.model.Module" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
 	
@@ -25,6 +28,9 @@
 		<mapper resource="com/ulaiber/web/mapper/bankMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/salaryMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/salaryDetailMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/thirdUrlMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/pageMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/moduleMapper.xml" />
 	</mappers>
 
 </configuration>  

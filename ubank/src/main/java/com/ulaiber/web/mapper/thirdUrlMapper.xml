@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.ThirdUrlDao">
+
+    <resultMap id="ThirdUrlMap" type="ThirdUrl" >
+    	<id column="uid" property="uid" jdbcType="BIGINT" />
+    	<result column="url_name" property="urlName" jdbcType="VARCHAR" />
+    	<result column="url" property="url" jdbcType="VARCHAR" />
+    	<result column="pic_path" property="picPath" jdbcType="VARCHAR" />
+    	<result column="orderby" property="orderby" jdbcType="VARCHAR" />
+    	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+  		<result column="remark" property="remark" jdbcType="VARCHAR" />	
+    	<association property="page" column="url_pid" javaType="Page" select="com.ulaiber.web.dao.PageDao.getPageByPid" />
+    	<association property="module" column="url_mid" javaType="Module" select="com.ulaiber.web.dao.ModuleDao.getModuleByMid" />
+   </resultMap>
+   
+   <insert id="save" parameterType="ThirdUrl">
+   		insert into tbl_third_party_urls(url_name, url, pic_path, url_pid, url_mid, orderby, createTime, remark) values
+   			(#{urlName}, #{url}, #{picPath}, #{page.pid},  #{module.mid}, #{orderby}, #{createTime}, #{remark})
+   </insert>
+  
+	<select id="getAllUrls" parameterType="Map" resultMap="ThirdUrlMap">
+		select * from tbl_third_party_urls
+		<if test="search != null and search != ''">
+			where url_name like concat('%',#{search},'%') or url like concat('%',#{search},'%')
+		</if>
+		order by createTime desc limit #{offset},#{limit}
+	</select>
+	
+	<delete id="deleteByUids" parameterType="java.util.List">  
+		delete from tbl_third_party_urls where uid in
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+	<update id="updateByUid" parameterType="ThirdUrl">
+		update tbl_third_party_urls set url_name=#{urlName}, url=#{url}, pic_path=#{picPath}, url_pid=#{page.pid}, url_mid=#{module.mid},
+			orderby=#{orderby}, updateTime=#{updateTime}, remark=#{remark} where uid=#{uid}
+	</update>
+	
+	<select id="getAllUrlsforApi" resultMap="ThirdUrlMap">
+		select * from tbl_third_party_urls order by orderby
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_third_party_urls
+	</select>
+	
+</mapper>

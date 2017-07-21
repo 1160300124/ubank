@@ -1,5 +1,6 @@
 package com.ulaiber.web.utils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public class Test {
 	public static void main(String[] args) throws Exception{
 //		UUID uuid = UUID.randomUUID();
 //        System.out.println(uuid.toString().replaceAll("-", ""));
-//        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【应用小宝你的验证码是12314345", "15919477086");
+//        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【优融UBOSS】您的验证码是：123143", "15919477086");
 //        System.out.println(s);
 //        int n = 0 ;
 //
@@ -61,11 +62,11 @@ public class Test {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
-      String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
-      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-      params.put("mobile", "18503036206");
-      String response = HttpsUtil.doPost(apiUrl, params);
-      System.out.println(response);
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "18503036206");
+//      String response = HttpsUtil.doPost(apiUrl, params);
+//      System.out.println(response);
         
 //      String apiUrl = "http://10.17.1.136:8080/uwallet/api/v1/sendCaptcha";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
@@ -81,6 +82,10 @@ public class Test {
 //      params.put("confirm_password", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
+		
+		
+//		FileUtil.copy(new File("C:\\tools\\test\\haha\\body.jpg"), new File("C:\\tools\\test\\"));
+		FileUtil.delFile("C:\\tools\\test\\haha\\body.jpg");
 		
 	}
 	

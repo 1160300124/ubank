@@ -32,7 +32,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	private UserDao mapper;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean delete(String mobile) {
 		
 		return mapper.delete(mobile);
@@ -53,7 +53,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean save(User user) {
 	
 		user.setRole_id(2);
@@ -65,7 +65,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
 
 		user.setLoginTime(DateTimeUtil.date2Str(new Date()));
@@ -80,7 +80,8 @@ public class UserServiceImpl extends BaseService implements UserService {
 		return mapper.getUserByTicketAndToken(user);
 	}
 
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean updateLoginPwd(String mobile, String password) {
 		
 		User user = new User();

@@ -2,6 +2,7 @@ package com.ulaiber.web.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,10 +72,10 @@ public class BaseController {
 	}
 	/**
 	 * 得到项目部署的路径
-	 * 2012-12-19 下午6:24:16
+	 * 
 	 * @param request
 	 * @return a/b
-	 * @author xiaopo
+	 * @author 
 	 */
 	protected String getWarAbsoluteURL(HttpServletRequest request){
 		if (ObjUtil.notEmpty(request)){
@@ -94,37 +95,43 @@ public class BaseController {
 	 * @return 重命名后的文件，路径是相对地址+重命名的文件名
 	 * @throws Exception
 	 */
-	protected String upload(HttpServletRequest request,String basePath,byte[] bytes,String... filename) throws Exception{
-		Date currDate = new Date();
+	protected String upload(HttpServletRequest request, String basePath, byte[] bytes, String filename){
 		//取得项目根地址
 		String realpath = getProjectAbsoluteURL(request);
-		//根据当前时间建立目录
-        String urlPath  = basePath.concat("/").concat( DateTimeUtil.date2Str(currDate, DateTimeUtil.DATE_FORMAT_SHORTDAY) );
         String filesavepaths = null;
         
-        if (realpath.endsWith(File.separator))
-            filesavepaths = realpath.concat(urlPath);
-        else
-            filesavepaths = realpath.substring(0,realpath.lastIndexOf(File.separator)).concat(urlPath);
-        //目录是否存在，否则创建文档夹
-        File file = new File(filesavepaths); 
-        if (!file.exists())
-            file.mkdirs();
-        
-        //文件重命名,可自定义传入，也可以不写，由系统自动生成
-        String newfile = "";
-        if (ObjUtil.notEmpty(filename)){
-        	newfile = DateTimeUtil.date2Str(currDate, DateTimeUtil.DATE_FORMAT_SIMPLEALLTIME).concat(".jpg");
+        if (realpath.endsWith(File.separator)){
+        	filesavepaths = realpath.concat(basePath);
         } else {
-        	newfile = filename[0].concat(".jpg");
+        	filesavepaths = realpath.concat("/").concat(basePath);
         }
-        FileOutputStream fos = new FileOutputStream(new File( filesavepaths.concat(File.separator).concat(newfile)));
-        fos.write(bytes);
-        fos.flush();
-        fos.close();
+        
+        FileOutputStream fos = null;
+        try {
+			
+        	//目录是否存在，否则创建文档夹
+        	File file = new File(filesavepaths); 
+        	if (!file.exists())
+        		file.mkdirs();
+        	
+        	fos = new FileOutputStream(new File( filesavepaths.concat(File.separator).concat(filename)));
+        	fos.write(bytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}finally {
+			try {
+				if (null != fos){
+					fos.flush();
+					fos.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
         
         //返回文件的相对地址
-        return urlPath.concat("/").concat(newfile);
+        return basePath.concat("/").concat(filename);
     } 
 	
 	/**

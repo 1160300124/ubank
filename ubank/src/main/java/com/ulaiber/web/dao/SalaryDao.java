@@ -43,7 +43,7 @@ public interface SalaryDao {
 	 * 
 	 * @return
 	 */
-	boolean updateStatusBySeqNo(Salary sa);
+	int updateStatusBySeqNo(Salary sa);
 	
 	/**
 	 * 根据id批量删除
