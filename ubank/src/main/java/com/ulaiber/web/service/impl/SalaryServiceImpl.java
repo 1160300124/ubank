@@ -22,7 +22,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	private SalaryDao mapper;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean save(Salary sa) {
 		return this.mapper.save(sa) > 0;
 	}
@@ -49,13 +49,14 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean updateStatusBySeqNo(Salary sa) {
 		
-		return this.mapper.updateStatusBySeqNo(sa);
+		return this.mapper.updateStatusBySeqNo(sa) > 0;
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean batchDeleteSalaries(List<Long> sids) {
 		
 		return this.mapper.batchDeleteSalaries(sids) > 0;
