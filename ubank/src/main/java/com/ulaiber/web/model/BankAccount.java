@@ -6,6 +6,7 @@ package com.ulaiber.web.model;
  */
 public class BankAccount {
     private int id;
+    private String companyNumber;
     private String bankNumber;
     private String account;
     private String bankName;
@@ -16,6 +17,14 @@ public class BankAccount {
 
     public int getId() {
         return id;
+    }
+
+    public String getCompanyNumber() {
+        return companyNumber;
+    }
+
+    public void setCompanyNumber(String companyNumber) {
+        this.companyNumber = companyNumber;
     }
 
     public void setId(int id) {

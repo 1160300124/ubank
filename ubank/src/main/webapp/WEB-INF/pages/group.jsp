@@ -54,7 +54,7 @@
                                     <label class="col-md-3" for="exampleInputName2">集团名称</label>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control" name="name"  >
-                                        <input type="text" class="form-control" style="display: none;" name="groupNumber" >
+                                        <%--<input type="text" class="form-control" style="display: none;" name="groupNumber" >--%>
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
@@ -170,14 +170,13 @@
                 searchText : ' ', //初始化搜索文字
                 clickToSelect : true,
                 columns : [
-                    {field : 'checkbox',checkbox :true, width: 10, align : 'left'},
+                    {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '集团名称', width: 130, align : 'left'},
                     {field : 'contacts', title : '负责联系人', width: 100 , align : 'left'},
                     {field : 'contactsTelephone', title : '负责联系人号码', width: 100 , align : 'left'},
                     {field : 'details', title : '详情', width: 150 , align : 'left'},
                     {field : 'groupNumber', title : '集团编号', width: 100 , align : 'left',visible : false},
                     {field : 'registeredCapital', title : '', width: 100 , align : 'left',visible : false},
-                    {field : 'groupNumber', title : '', width: 100 , align : 'left',visible : false},
                     {field : 'remark', title : '', width: 100 , align : 'left',visible : false},
                     {field : 'legalPerson', title : '', width: 100 , align : 'left',visible : false}
 

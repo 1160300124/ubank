@@ -44,9 +44,9 @@ public interface PermissionDao {
 
     List<Bank> getAllBank(); //获取所有银行信息
 
-    int addBankAccount(List<Map<String, Object>> list);  //插入银行账户信息
-
     int getCompanyTotal();   //获取公司总数
+
+    int updateCompany(Company company);   //更新银行信息表
 }
 
 

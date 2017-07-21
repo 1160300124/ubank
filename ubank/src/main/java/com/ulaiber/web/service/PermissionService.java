@@ -48,4 +48,10 @@ public interface PermissionService {
     int getCompanyTotal();  //获取公司总数
 
     List<BankAccount> getBankAccountByNum(String[] accounts);  //根据银行账户编号获取账户信息
+
+    Company getComByName(String comName);  //根据公司名称获取公司信息
+
+    int deleteComByNum(String comNum); //根据公司编号删除银行账户信息表中的数据
+
+    int updateCompany(Company company);  //更新银行信息表
 }

@@ -236,7 +236,9 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "addCom", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo addCom(Company company,@Param("items") String items){
+    public ResultInfo addCom(Company company,@Param("items") String items,
+                             @Param("flag") String flag,@Param("comNum") String comNum){
+        ResultInfo resultInfo = new ResultInfo();
         String[] rows = items.split(",");
         List<Map<String,Object>> list = new ArrayList<>();
         for(int i = 0; i < rows.length ; i++){
@@ -248,19 +250,50 @@ public class PermissionController extends BaseController {
                 map.put("customer" , data[2]);
                 map.put("certificateNumber" , data[3]);
                 map.put("authorizationCode" , data[4]);
+                map.put("companyNumber" , "");
                 list.add(map);
                 break;
             }
         }
-        int acc = permissionService.addBankAccount(list); //插入银行账户信息
-        int com = permissionService.addCom(company);  // 插入公司基本信息
-        ResultInfo resultInfo = new ResultInfo();
-        if(acc > 0 && com > 0 ){
-            resultInfo.setMessage("删除成功");
-            resultInfo.setCode(200);
-        }else{
-            resultInfo.setCode(500);
-            resultInfo.setMessage("删除失败，请联系管理员");
+        if(flag.equals("0")){ //新增
+            String comName = company.getName();
+            Company co = permissionService.getComByName(comName); //根据公司名称获取公司信息
+            if(StringUtil.isEmpty(co)){
+                int com = permissionService.addCom(company);  // 插入公司基本信息
+                String com_num = company.getCompanyNumber() + "";
+                for (int i = 0;i <list.size();i++){
+                     list.get(i).put("companyNumber",com_num);
+                }
+                int acc = permissionService.addBankAccount(list); //插入银行账户信息
+                if(acc > 0 && com > 0 ){
+                    resultInfo.setMessage("新增成功");
+                    resultInfo.setCode(200);
+                }else{
+                    resultInfo.setCode(500);
+                    resultInfo.setMessage("新增失败，请联系管理员");
+                }
+            }else{
+                resultInfo.setMessage("公司已存在，请重新添加");
+                resultInfo.setCode(300);
+            }
+
+        }else{   //修改
+            if(StringUtil.isEmpty(comNum)){
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改失败，请联系管理员");
+                return resultInfo;
+            }
+            int msg = permissionService.deleteComByNum(comNum); //根据公司编号删除银行账户信息表中的数据
+            int result = permissionService.updateCompany(company); //更新银行信息表
+            int acc = permissionService.addBankAccount(list); //插入银行账户信息
+            if(result >0 && acc > 0){
+                resultInfo.setMessage("修改成功");
+                resultInfo.setCode(200);
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改失败，请联系管理员");
+            }
+
         }
         return resultInfo;
     }

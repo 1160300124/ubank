@@ -135,7 +135,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     public int addBankAccount(List<Map<String, Object>> list) {
-        int  account = permissionDao.addBankAccount(list);
+        int  account = companyDao.addBankAccount(list);
         return account;
     }
 
@@ -149,5 +149,23 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     public List<BankAccount> getBankAccountByNum(String[] accounts) {
         List<BankAccount> data = companyDao.getBankAccountByNum(accounts);
         return data;
+    }
+
+    @Override
+    public Company getComByName(String comName) {
+        Company company = companyDao.getComByName(comName);
+        return company;
+    }
+
+    @Override
+    public int deleteComByNum(String comNum) {
+        int msg = companyDao.deleteComByNum(comNum);
+        return msg;
+    }
+
+    @Override
+    public int updateCompany(Company company) {
+        int result = permissionDao.updateCompany(company);
+        return result;
     }
 }
