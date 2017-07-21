@@ -77,7 +77,7 @@ public class ManagerController extends BaseController{
 	@RequestMapping(value = "getManagement", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> getManagement(int limit, int offset, String search, HttpServletRequest request, HttpServletResponse response){
-		
+
 		if (limit <= 0){
 			limit = 10;
 		}

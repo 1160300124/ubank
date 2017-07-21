@@ -82,8 +82,7 @@ a:active, a:hover, a:focus, a:visited {
 .page-content {
     width: 100%;
     height: 100%;
-    padding-left: 200px;
-    padding-top: 90px;
+    padding:110px 20px 20px 220px;
     overflow-y: auto;
     background: #fff;
 }
@@ -98,10 +97,42 @@ a:active, a:hover, a:focus, a:visited {
 .icon-arrows-bottom{width:23px;height:23px;background:url("../images/path.png") no-repeat center;}
 .icon-recond{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/date.png") no-repeat center;background-size:100%;}
 .icon-other{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/others.png") no-repeat center;background-size:100%;}
+.icon_banner_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_banner_default.png") no-repeat center;background-size:100%;}
+.icon_bumen_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_bumen_default.png") no-repeat center;background-size:100%;}
+.icon_company_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_company_default.png") no-repeat center;background-size:100%;}
+.icon_jituan_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_jituan_default.png") no-repeat center;background-size:100%;}
+.icon_juese_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_juese_default.png") no-repeat center;background-size:100%;}
+.icon_other_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_other_default.png") no-repeat center;background-size:100%;}
+.icon_record_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_record_default.png") no-repeat center;background-size:100%;}
+.icon_url_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_url_default.png") no-repeat center;background-size:100%;}
+.icon_yg_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_yg_default.png") no-repeat center;background-size:100%;}
 .header-user{position:relative;cursor:pointer;margin:0 20px;}
 .header-user i{margin:33px 5px;}
 .header-user-menu{display:none;position:absolute;width:100%;top:90px;left:0px;background:#f1f1f1;color:#555;line-height: 40px;text-align: center;}
 .header-user:hover .header-user-menu{display:block;}
 
+/*----- form -------*/
+.base-form .form-group {margin-bottom:15px;}
+.base-form .form-group label{line-height:34px;}
+.base-form .form-group input,.base-form .form-group textarea{width:100%;}
+.form-error{margin-top:10px;line-height: 30px;color: #ff431a;font-size:14px;}
 
 
+/*--------  -------------*/
+.add-form-item{position:relative;width:100%;padding:10px 20px;margin-bottom:20px;}
+.base-right-btn span{margin-left:15px;cursor:pointer;}
+.base-right-btn{display:none;position:absolute;right:10px;top:10px;font-size:12px;}
+.toggle-form{display:none;position:absolute;right: -60px;top: -1px;width:60px;line-height:26px;border:solid #ccc;border-width: 1px 1px 1px 0px;font-size:12px;text-align: center;border-radius:3px;cursor:pointer;}
+.base-form{margin-bottom:10px ;line-height: 34px;font-size:12px;}
+.base-form-label{float:left;width:25%;}
+.base-form-input{float:left;width:75% !important;height:34px;padding:0 10px;border:1px solid #ccc;border-radius:3px;}
+.base-offset-label{padding-left:25%;}
+.base-sure-btn,.base-cancel-btn{width:100px;line-height: 34px;border:1px solid #FB702F;background:#FB702F;color:#fff;cursor:pointer;border-radius:3px;margin-right:10px;font-size:14px;}
+.base-cancel-btn{border:1px solid #ccc;background:#ccc;color:#fff;}
+.base-sure-btn:focus,.base-cancel-btn:focus{outline:none;}
+.base-sure-btn:hover,.base-cancel-btn:hover{opacity:.8;}
+.check-form{height:auto !important;}
+.check-form{border:1px solid #ccc;border-radius:3px;}
+.check-form input{border-color:#fff;}
+.check-form .base-offset-label{display:none;}
+.check-form .base-right-btn,.check-form .toggle-form{display:block;}

@@ -31,6 +31,7 @@
 		<mapper resource="com/ulaiber/web/mapper/thirdUrlMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/pageMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/moduleMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/permissionMapper.xml" />
 	</mappers>
 
 </configuration>  
