@@ -121,4 +121,14 @@
         UPDATE tbl_company SET name= #{name}, legalPerson = #{legalPerson} ,
          account = #{account} , group_num = #{group_num} , details = #{details} WHERE name = #{name}
     </update>
+
+    <!--获取所有公司信息-->
+    <select id="getAllCompany" resultType="com.ulaiber.web.model.Company">
+        select companyNumber,name from tbl_company
+    </select>
+
+    <!--获取所有公司信息-->
+    <select id="getAllDept" resultType="com.ulaiber.web.model.Departments">
+        SELECT dept_number,name from tbl_departments
+    </select>
 </mapper>

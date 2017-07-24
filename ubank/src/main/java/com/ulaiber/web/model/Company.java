@@ -1,10 +1,12 @@
 package com.ulaiber.web.model;
 
+import java.io.Serializable;
+
 /**
  * 公司信息实体类
  * Created by daiqingwen on 2017/7/19.
  */
-public class Company {
+public class Company implements Serializable {
     private int companyNumber;
     private String name;
     private String legalPerson;

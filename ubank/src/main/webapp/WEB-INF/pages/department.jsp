@@ -36,8 +36,7 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属公司</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control" id="dept_select" name="company_num" >
-                                        <option value="10009">优发展公司</option>
+                                    <select class="combobox form-control" id="dept_select" name="companyNumber" >
                                     </select>
                                 </div>
                             </div>
@@ -72,7 +71,7 @@
 
     $(function () {
         DepartmentFun.departmentQuery();
-       // DepartmentFun.getAllCompany()
+        DepartmentFun.getAllCompany()
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
@@ -99,7 +98,7 @@
                 showToggle :true,   //切换试图（table/card）按钮
                 clickToSelect : true,
                 columns : [
-                    {field : 'checkbox',checkbox :true, width: 10, align : 'left'},
+                    {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '部门名称', width: 130, align : 'left'},
                     {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
                     {field : 'company_num', title : '公司编号', width: 130, align : 'left',visible : false},
@@ -126,7 +125,7 @@
         //获取所有公司
         getAllCompany : function () {
             $.ajax({
-                url : '',
+                url : 'getAllCom',
                 dataType : 'json',
                 type : 'post',
                 data:  {},
@@ -139,7 +138,7 @@
                     for (var i = 0; i < data.length; i++){
                         option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
                     }
-                    $("#group_select").append(option);
+                    $("#dept_select").append(option);
 
                 },
                 error : function () {

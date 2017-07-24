@@ -1,10 +1,12 @@
 package com.ulaiber.web.model;
 
+import java.io.Serializable;
+
 /**
  * 集团实体类
  * Created by daiqingwen on 2017/7/18.
  */
-public class Group {
+public class Group implements Serializable {
     private int groupNumber;
     private String name;
     private String registeredCapital;

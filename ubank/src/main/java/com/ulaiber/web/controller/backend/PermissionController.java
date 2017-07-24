@@ -305,7 +305,7 @@ public class PermissionController extends BaseController {
     }
 
     /**
-     * 获取所有公司信息
+     * 分页查询公司信息
      * @param request
      * @return
      */
@@ -338,6 +338,64 @@ public class PermissionController extends BaseController {
         String[] accounts = accountNum.split(",");
         List<BankAccount> data = permissionService.getBankAccountByNum(accounts);
         return data;
+    }
+
+    /**
+     * 获取所有公司信息
+     * @return
+     */
+    @RequestMapping(value = "getAllCom", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Company> getAllCom(){
+        List<Company> list = permissionService.getAllCompany();
+        return list;
+    }
+
+    /**
+     * 获取所有部门信息
+     * @return
+     */
+    @RequestMapping(value = "getAllDept", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Departments> getAllDept(){
+        List<Departments> list = permissionService.getAllDept();
+        return list;
+    }
+
+    /**
+     * 新增和修改员工信息
+     * @param employee
+     * @param flag
+     * @return
+     */
+    @RequestMapping(value = "addEmployee", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo addEmployee(Employee employee,@Param("flag") String flag){
+        ResultInfo resultInfo = new ResultInfo();
+        if(flag.equals("0")){  //新增
+            String empName = employee.getName();
+            Employee emp = permissionService.getEmpByName(empName);  //根据员工姓名查询对应的信息
+            if(!StringUtil.isEmpty(emp)){
+                resultInfo.setMessage("员工已存在，请重新添加");
+                resultInfo.setCode(300);
+                return resultInfo;
+            }
+            int result = permissionService.addEmployee(employee);
+            if(result > 0){
+                resultInfo.setMessage("新增成功");
+                resultInfo.setCode(200);
+            }else{
+                resultInfo.setMessage("新增失败，请联系管理员");
+                resultInfo.setCode(500);
+            }
+
+
+        }else{
+
+        }
+
+        return resultInfo;
+
     }
 
 }

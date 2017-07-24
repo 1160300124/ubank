@@ -33,6 +33,7 @@
 		<mapper resource="com/ulaiber/web/mapper/moduleMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/permissionMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/companyMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/employeeMapper.xml" />
 	</mappers>
 
 </configuration>  

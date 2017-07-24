@@ -54,4 +54,12 @@ public interface PermissionService {
     int deleteComByNum(String comNum); //根据公司编号删除银行账户信息表中的数据
 
     int updateCompany(Company company);  //更新银行信息表
+
+    List<Company> getAllCompany();  // 获取所有公司信息
+
+    List<Departments> getAllDept(); //获取所有部门信息
+
+    Employee getEmpByName(String empName);  //根据员工姓名查询对应的信息
+
+    int addEmployee(Employee employee);  //新增员工信息
 }

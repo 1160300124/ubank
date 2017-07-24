@@ -47,6 +47,10 @@ public interface PermissionDao {
     int getCompanyTotal();   //获取公司总数
 
     int updateCompany(Company company);   //更新银行信息表
+
+    List<Company> getAllCompany();  // 获取所有公司信息
+
+    List<Departments> getAllDept(); //获取所有部门信息
 }
 
 

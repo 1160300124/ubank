@@ -1,12 +1,13 @@
 package com.ulaiber.web.model;
 
 import javax.print.DocFlavor;
+import java.io.Serializable;
 
 /**
  * 部门信息实体类
  * Created by daiqingwen on 2017/7/19.
  */
-public class Departments {
+public class Departments implements Serializable {
     private String dept_number;
     private String name;
     private String company_num;

@@ -1,11 +1,14 @@
 package com.ulaiber.web.service.impl;
 
 import com.ulaiber.web.dao.CompanyDao;
+import com.ulaiber.web.dao.EmployeeDao;
 import com.ulaiber.web.dao.PermissionDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -24,6 +27,9 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Resource
     private CompanyDao companyDao;
+
+    @Resource
+    private EmployeeDao employeeDao;
 
     @Override
     public int addGroup(Group group) {
@@ -122,6 +128,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int addCom(Company company) {
         int com = permissionDao.addCom(company);
         return com;
@@ -134,6 +141,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int addBankAccount(List<Map<String, Object>> list) {
         int  account = companyDao.addBankAccount(list);
         return account;
@@ -158,14 +166,43 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int deleteComByNum(String comNum) {
         int msg = companyDao.deleteComByNum(comNum);
         return msg;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int updateCompany(Company company) {
         int result = permissionDao.updateCompany(company);
         return result;
     }
+
+    @Override
+    public List<Company> getAllCompany() {
+        List<Company> list = permissionDao.getAllCompany();
+        return list;
+    }
+
+    @Override
+    public List<Departments> getAllDept() {
+        List<Departments> list = permissionDao.getAllDept();
+        return list;
+    }
+
+    @Override
+    public Employee getEmpByName(String empName) {
+        Employee emp = employeeDao.getEmpByName(empName);
+        return emp;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int addEmployee(Employee employee) {
+        int result = employeeDao.addEmployee(employee);
+        return result;
+    }
+
+
 }

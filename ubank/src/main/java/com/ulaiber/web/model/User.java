@@ -1,6 +1,8 @@
 package com.ulaiber.web.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 	
 	//用户编号
 	private long id;

@@ -1,10 +1,12 @@
 package com.ulaiber.web.model;
 
+import java.io.Serializable;
+
 /**
  * 公司银行账户信息实体类
  * Created by daiqingwen on 2017/7/19.
  */
-public class BankAccount {
+public class BankAccount implements Serializable {
     private int id;
     private String companyNumber;
     private String bankNumber;
