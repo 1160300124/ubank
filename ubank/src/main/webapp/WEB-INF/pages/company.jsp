@@ -8,7 +8,7 @@
         <button  onclick="CompanyFun.openAdd()" type="button" class="btn btn-default">
             <span class="fa icon-plus" aria-hidden="true"></span>新增
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="CompanyFun.openEdit()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
         <button onclick="" type="button" class="btn btn-default">
@@ -80,6 +80,7 @@
                                             <%--<input type="text" name="com_bank" class="base-form-input" placeholder="" value="">--%>
                                             <select class="combobox form-control base-form-input base-request" id="company_select" name="bankNo" >
                                             </select>
+                                            <i class="base-form-select-no"></i>
                                         </div>
                                         <div class="base-form clearfix">
                                             <span class="base-form-label">公司账户号</span>
@@ -119,6 +120,7 @@
     </div><!-- /.modal -->
 
 </div>
+<%--<script src="<%=request.getContextPath()%>/js/company.js" type="text/javascript"></script>--%>
 <script type="text/javascript">
 
     $(function () {
@@ -127,6 +129,8 @@
         CompanyFun.companyQuery();
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
+    var bankInfo = ""; //全局变量，存放所有银行信息
+    var comNum = ""; //全局变量，存放公司编号
 
     //all function
     var CompanyFun = {
@@ -146,7 +150,7 @@
                 data:  {},
                 success : function (data) {
                     if(data.length <= 0){
-                        Ewin.alert("获取集团失败，请联系管理员");
+                        Ewin.alert("没有集团数据，，请联系管理员");
                         return;
                     }
                     var option = "";
@@ -178,6 +182,7 @@
                         option += "<option value='"+data[i].bankNo+"'>"+data[i].bankName+"</option>";
                     }
                     $("#company_select").append(option);
+                    bankInfo = data;
 
                 },
                 error : function () {
@@ -206,7 +211,7 @@
                 showToggle :true,   //切换试图（table/card）按钮
                 clickToSelect : true,
                 columns : [
-                    {field : 'checkbox',checkbox :true, width: 10, align : 'left'},
+                    {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '公司名称', width: 130, align : 'left'},
                     {field : 'account', title : '银行账户', width: 130, align : 'left',
                         formatter : function (value,row,index) {
@@ -247,6 +252,7 @@
 
                 });
                 allBankAccount.push($(this).find("input[name=accounts]").val());
+                str += $("#companyName").val();
                 str= str.substr(0,str.length-1);
                 str+=',';
             });
@@ -254,7 +260,7 @@
             account = allBankAccount.join(",");
             $("#allAccount").val(account);
             $.ajax({
-                url : 'addCom?items= ' + str,
+                url : 'addCom?items= ' + str + "&flag=" + flag + "&comNum=" + comNum,
                 dataType : 'json',
                 type : 'post',
                 data:  $("#company_form").serialize(),
@@ -278,9 +284,10 @@
         },
         //打开修改框
         openEdit : function () {
-            flag = 1;
-            $(".modal-title").html("修改");
             var row = $('#company_table').bootstrapTable('getSelections');
+            flag = 1;
+            comNum = row[0].companyNumber;
+            $(".modal-title").html("修改");
             if(row.length > 1){
                 Ewin.alert("不能多选，请重新选择");
                 return;
@@ -297,9 +304,65 @@
                     "accountNum" : row[0].account
                 },
                 success : function (data) {
-                    debugger;
-                    $("#department_modal").modal("show");
+                    $("#group_select").find("option[value="+row[0].group_num+"]").attr("selected",true);
+                    $("#companyName").val(row[0].name);
+                    $("input[name=legalPerson]").val(row[0].legalPerson);
+                    $("#com_area").val(row[0].details);
+                    //拼接元素
+                    var html = "";
+                    for (var i = 0 ; i < data.length ; i++) {
+                        var option = "";
+                        for (var j = 0 ; j <bankInfo.length ; j++){
+                            if($.trim(bankInfo[j].bankNo) == $.trim(data[i].bankNumber)){
+                                option += "<option value='"+bankInfo[j].bankNo+"' selected='selected'>"+bankInfo[j].bankName+"</option>";
+                            }else{
+                                option += "<option value='"+bankInfo[j].bankNo+"'>"+bankInfo[j].bankName+"</option>";
+                            }
 
+                        }
+                        html += "<div class='add-form-item check-form' >" +
+                            "<span class='toggle-form' data-click='toggleForm'>展开</span>" +
+                            "<div class='base-right-btn'>" +
+                            "<span class='fl edit-form' data-click='editForm'>编辑</span>" +
+                            "<span class='fl delete-form' data-click='deleteForm'>删除</span>" +
+                            "</div>" +
+                            "<div class='base-form clearfix'>" +
+                            "<span class='base-form-label'>公司账户银行</span>" +
+                            "<select class='combobox form-control base-form-input base-request sele"+i+"' value="+data[i].bankNumber+" id='company_select' name='bankNo' >"+option+"</select>" +
+                            "<i class='base-form-select-no'></i>" +
+                            "</div>" +
+                            "<div class='base-form clearfix'>" +
+                            "<span class='base-form-label'>公司账户号</span>" +
+                            "<input type='text' name='accounts' class='base-form-input base-request' value='" + data[i].account + "'>" +
+                            "</div>" +
+                            "<div class='base-form clearfix'>" +
+                            "<span class='base-form-label'>公司账户客户号</span>" +
+                            "<input type='text' name='customer' class='base-form-input base-request' value='" + data[i].customer + "'>" +
+                            "</div>" +
+                            "<div class='base-form clearfix'>" +
+                            "<span class='base-form-label'>证书序号</span>" +
+                            "<input type='text' name='certificateNumber' class='base-form-input base-request' value='" + data[i].certificateNumber + "'>" +
+                            "</div>" +
+                            "<div class='base-form clearfix'>" +
+                            "<span class='base-form-label'>银行数字证书授权码</span>" +
+                            "<input type='text' name='authorizationCode' class='base-form-input base-request' value='" + data[i].authorizationCode + "'>" +
+                            "</div>" +
+                            "<div class='base-offset-label'>" +
+                            "<button type='button' class='base-sure-btn' data-click='sureForm'>确定</button>" +
+                            "<button type='button' class='base-cancel-btn' data-click='deleteForm'>取消</button>" +
+                            "</div>" +
+                            "</div>";
+                        //插入银行信息
+                        $(".sele"+i+"").find("option[]").attr("selected",true);
+
+                    }
+                    $(".form-box").html(html);
+                    $(".form-box .add-form-item").each(function(){
+                        $(this).children('.base-form:gt(0)').slideUp();
+                        $(this).find('input').attr('readonly',true);
+                        $(this).find('select').attr('disabled',true);
+                    });
+                    $("#company_modal").modal("show");
                 },
                 error : function () {
                     Ewin.alert("操作异常，请联系管理员");
@@ -352,6 +415,6 @@
 
         }
     });
-    
+
 </script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

@@ -48,4 +48,26 @@ public interface PermissionService {
     int getCompanyTotal();  //获取公司总数
 
     List<BankAccount> getBankAccountByNum(String[] accounts);  //根据银行账户编号获取账户信息
+
+    Company getComByName(String comName);  //根据公司名称获取公司信息
+
+    int deleteComByNum(String comNum); //根据公司编号删除银行账户信息表中的数据
+
+    int updateCompany(Company company);  //更新银行信息表
+
+    List<Company> getAllCompany();  // 获取所有公司信息
+
+    List<Departments> getAllDept(); //获取所有部门信息
+
+    User getEmpByName(String userName);  //根据员工姓名查询对应的信息
+
+    int addEmployee(User user);  //新增员工信息
+
+    int getEmpTotal(); //获取员工总数
+
+    List<User> empQuery(String search, int pageSize, int pageNum); //分页查询员工信息
+
+    int editEmp(User user); //修改员工信息
+
+    int empDelete(String[] number); //根据员工编号删除对应的员工
 }

@@ -1,6 +1,8 @@
 package com.ulaiber.web.model;
 
-public class Bank {
+import java.io.Serializable;
+
+public class Bank implements Serializable{
 	
 	//银行编号
 	private String bankNo;

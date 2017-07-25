@@ -1,10 +1,12 @@
 package com.ulaiber.web.model;
 
+import java.io.Serializable;
+
 /**
  * 系统菜单实体类
  * Created by daiqingwen on 2017/7/17.
  */
-public class Menu {
+public class Menu implements Serializable {
     private int id;         // ID
     private String name;    // 菜单名
     private String url;     // 菜单路径

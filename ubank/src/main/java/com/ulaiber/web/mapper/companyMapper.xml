@@ -13,4 +13,22 @@
             #{accounts}
         </foreach>
     </select>
+
+    <!--根据公司名称获取公司信息-->
+    <select id="getComByName" resultType="com.ulaiber.web.model.Company" parameterType="String">
+        SELECT name FROM tbl_company where name = #{comName}
+    </select>
+
+    <!--新增银行账户信息-->
+    <insert id="addBankAccount" parameterType="java.util.List" >
+        INSERT INTO tbl_bankAccount(bankNumber,companyNumber,account,customer,certificateNumber,authorizationCode) VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+            (#{items.bankNo},#{items.companyNumber},#{items.accounts},#{items.customer},#{items.certificateNumber},#{items.authorizationCode})
+        </foreach>
+    </insert>
+
+    <!--根据公司编号删除银行账户信息表中的数据-->
+    <delete id="deleteComByNum" parameterType="String">
+        DELETE FROM tbl_bankAccount where companyNumber = #{comNum}
+    </delete>
 </mapper>

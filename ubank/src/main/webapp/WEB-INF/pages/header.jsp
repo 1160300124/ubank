@@ -18,6 +18,7 @@
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/common.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/confirm.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		function logout(){
 			window.location = "<%=request.getContextPath()%>" + "/backend/logout";
@@ -87,7 +88,6 @@
                         children.push(data[i]);
 					}
                 }
-
                 for (var j = 0 ; j < father.length ; j++){
                     fatherMenu = "<span onclick='nav.navClick($(this))' class='first-menu'>"+father[j].name+"</span>";
                     for (var k = 0 ; k < children.length ; k++){

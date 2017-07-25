@@ -35,6 +35,7 @@
 		<mapper resource="com/ulaiber/web/mapper/bannerMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/permissionMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/companyMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/employeeMapper.xml" />
 	</mappers>
 
 </configuration>  
