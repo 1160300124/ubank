@@ -8,13 +8,13 @@
         <button  onclick="EmployeeFun.openAdd()" type="button" class="btn btn-default">
             <span class="fa icon-plus" aria-hidden="true"></span>新增
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="EmployeeFun.openModify()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="" id="three-button" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="EmployeeFun.employeeQuery()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>
@@ -36,44 +36,51 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属公司</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control" id="emp_select" name="companyNumber" ></select>
+                                    <select class="combobox form-control"  name="companyNumber"  id="emp_select"></select>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属部门</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control" id="emp_select_dept" name="dept_number" >
+                                    <select class="combobox form-control" name="dept_number"  id="emp_select_dept" >
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="col-md-3" for="exampleInputName2">角色</label>
+                                <div class="col-md-9">
+                                    <select class="combobox form-control" name="role_id" id=""  >
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">姓名</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="name" class="base-form-input base-request" value="">
+                                    <input type="text" name="userName" class="base-form-input base-request" value="">
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">身份证号码</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="idCard" class="base-form-input base-request" value="">
+                                    <input type="text" name="cardNo" class="base-form-input base-request" value="">
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">绑定银行</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control" id="emp_select_bank" name="bankNo" ></select>
+                                    <select class="combobox form-control" name="bankNo" id="emp_select_bank"  ></select>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">银行卡号</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="bankCard" class="base-form-input base-request" value="">
+                                    <input type="text" name="bankCardNo" class="base-form-input base-request" value="">
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">预留手机</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="telephone" class="base-form-input base-request" value="">
+                                    <input type="text" name="mobile" class="base-form-input base-request" value="">
                                 </div>
                             </div>
 
@@ -82,7 +89,7 @@
                     </div>
 
                 </div>
-                <div class="modal-footer">
+                <div class="row container">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" onclick="EmployeeFun.addEmp() " class="btn btn-primary">保存</button>
                 </div>
@@ -93,16 +100,37 @@
 </div>
 <script type="text/javascript">
 
+
+    //arr function
+
+
     $(function () {
-       //EmployeeFun.employeeQuery()
         EmployeeFun.emp_getCompany();
         EmployeeFun.emp_getDept();
         EmployeeFun.getAllBank();
+        EmployeeFun.employeeQuery();
+
+        var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
+
+        $('#three-button').bind('click', function(e) {
+            e.preventDefault();
+            var row = $('#employee_table').bootstrapTable('getSelections');
+            if(row.length <= 0){
+                Ewin.alert("请选中需要删除的数据");
+                return;
+            }
+            Confirm.show('提示', '确定删除该员工吗？', {
+                'Delete': {
+                    'primary': true,
+                    'callback': function() {
+                        EmployeeFun.emp_delete();
+                        Confirm.hide();
+                    }
+                }
+            });
+        });
+
     });
-    var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
-
-
-    //arr function
     var EmployeeFun = {
         //查询
         employeeQuery : function () {
@@ -119,24 +147,36 @@
                 search : true, //搜索框
                 searchText : ' ', //初始化搜索文字
                 pageNumber : 1, // 初始化加载第一页，默认第一页
-                pageSize : 20, // 每页的记录行数
-                pageList : [20,30,40], // 可供选择的每页的行数
+                pageSize : 10, // 每页的记录行数
+                pageList : [10,20,30,40], // 可供选择的每页的行数
                 showRefresh : true, //刷新按钮
                 showToggle :true,   //切换试图（table/card）按钮
                 clickToSelect : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                    {field : '', title : '', width: 130, align : 'left'},
-                    {field : '', title : '', width: 130, align : 'left'},
-                    {field : '', title : '', width: 130, align : 'left'},
-                    {field : '', title : '', width: 130, align : 'left'},
-                    {field : '', title : '', width: 130, align : 'left'},
-                    {field : '', title : '', width: 130, align : 'left'},
-                    {field : '', title : '', width: 130, align : 'left'}
-
+                    {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                    {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
+                    {field : 'id', title : '员工编号', width: 130, align : 'left',visible : false},
+                    {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
+                    {field : 'dept_name', title : '部门姓名', width: 130, align : 'left'},
+                    {field : 'com_name', title : '公司', width: 130, align : 'left'},
+                    {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
+                    {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false},
+                    {field : 'bank_name', title : '绑定银行', width: 130, align : 'left'},
+                    {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},
+                    {field : 'mobile', title : '预留手机号', width: 130, align : 'left'}
 
                 ]
             });
+        },
+        //查询参数定义
+        queryParams : function (params) {
+            var paramData = {
+                pageSize : params.limit,
+                pageNum : params.offset,
+                search : params.search
+            };
+            return paramData;
         },
         //打开新增dialog
         openAdd : function () {
@@ -219,11 +259,71 @@
         },
         //新增
         addEmp: function () {
+            var mobile = $("input[name=mobile]").val();
+            var pwd = mobile.substr(7,4);
             $.ajax({
-                url : 'addEmployee?flag=' + flag ,
+                url : 'addEmployee?flag=' + flag + "&pwd=" + pwd,
                 dataType : 'json',
                 type : 'post',
                 data:  $("#employee_form").serialize(),
+                success : function (data) {
+                    if(data.code == 300){
+                        Ewin.alert(data.message);
+                    }else if(data.code == 500){
+                        Ewin.alert("操作异常，请联系管理员");
+                    }else{
+                        Ewin.alert(data.message);
+                        $("#employee_form")[0].reset();
+                        $("#employee_modal").modal("hide");
+                        $('#employee_table').bootstrapTable('refresh');
+                    }
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
+        },
+        //修改操作
+        openModify : function () {
+            flag = 1;
+            $(".modal-title").html("修改");
+            var row = $('#employee_table').bootstrapTable('getSelections');
+            if(row.length > 1){
+                Ewin.alert("不能多选，请重新选择");
+                return;
+            }else if(row.length <= 0){
+                Ewin.alert("请选中需要修改的数据");
+                return;
+            }
+            $("input[name=bankCardNo]").val(row[0].bankCardNo);
+            $("input[name=mobile]").val(row[0].mobile);
+            $("input[name=userName]").val(row[0].userName);
+            $("input[name=cardNo]").val(row[0].cardNo);
+            $("#emp_select").find("option[value="+row[0].companyNumber+"]").attr("selected","selected");
+            $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").attr("selected","selected");
+            $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
+            $("#employee_modal").modal("show");
+
+        },
+        //删除
+        emp_delete : function () {
+            var row = $('#employee_table').bootstrapTable('getSelections');
+            var numbers = ""; //存放多个部门编号
+            for (var i = 0 ; i < row.length ;i++){
+                if(i > 0 ){
+                    numbers += "," + row[i].id;
+                }else{
+                    numbers += row[i].id;
+                }
+            }
+            $.ajax({
+                url : 'deleteEmployee',
+                dataType : 'json',
+                type : 'post',
+                data:  {
+                    "numbers" : numbers
+                },
                 success : function (data) {
                     if(data.code == 300){
                         Ewin.alert(data.message);

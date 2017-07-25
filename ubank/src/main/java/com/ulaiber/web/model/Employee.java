@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Created by daiqingwen on 2017/7/22.
  */
 public class Employee implements Serializable {
-    private int id;
+    private int emp_number;
     private String companyNumber;
     private String dept_number;
     private String name;
@@ -15,14 +15,20 @@ public class Employee implements Serializable {
     private String bankNo;
     private String bankCard;
     private String telephone;
+    private String bank_name;
+    private String dept_name;
+    private String com_name;
+
 
     //get set
-    public int getId() {
-        return id;
+
+
+    public int getEmp_number() {
+        return emp_number;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setEmp_number(int emp_number) {
+        this.emp_number = emp_number;
     }
 
     public String getCompanyNumber() {
@@ -81,5 +87,27 @@ public class Employee implements Serializable {
         this.telephone = telephone;
     }
 
+    public String getBank_name() {
+        return bank_name;
+    }
 
+    public void setBank_name(String bank_name) {
+        this.bank_name = bank_name;
+    }
+
+    public String getDept_name() {
+        return dept_name;
+    }
+
+    public void setDept_name(String dept_name) {
+        this.dept_name = dept_name;
+    }
+
+    public String getCom_name() {
+        return com_name;
+    }
+
+    public void setCom_name(String com_name) {
+        this.com_name = com_name;
+    }
 }

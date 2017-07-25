@@ -192,15 +192,43 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public Employee getEmpByName(String empName) {
-        Employee emp = employeeDao.getEmpByName(empName);
+    public User getEmpByName(String userName) {
+        User emp = employeeDao.getEmpByName(userName);
         return emp;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int addEmployee(Employee employee) {
-        int result = employeeDao.addEmployee(employee);
+    public int addEmployee(User user) {
+        int result = employeeDao.addEmployee(user);
+        return result;
+    }
+
+    @Override
+    public int getEmpTotal() {
+        int total = employeeDao.getEmpTotal();
+        return total;
+    }
+
+    @Override
+    public List<User> empQuery(String search, int pageSize, int pageNum) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("search" ,search );
+        map.put("pageSize" , pageSize);
+        map.put("pageNum" , pageNum);
+        List<User> result = employeeDao.empQuery(map);
+        return result;
+    }
+
+    @Override
+    public int editEmp(User user) {
+        int result = employeeDao.editEmp(user);
+        return result;
+    }
+
+    @Override
+    public int empDelete(String[] number) {
+        int result = employeeDao.empDlete(number);
         return result;
     }
 

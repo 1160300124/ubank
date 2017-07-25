@@ -59,7 +59,15 @@ public interface PermissionService {
 
     List<Departments> getAllDept(); //获取所有部门信息
 
-    Employee getEmpByName(String empName);  //根据员工姓名查询对应的信息
+    User getEmpByName(String userName);  //根据员工姓名查询对应的信息
 
-    int addEmployee(Employee employee);  //新增员工信息
+    int addEmployee(User user);  //新增员工信息
+
+    int getEmpTotal(); //获取员工总数
+
+    List<User> empQuery(String search, int pageSize, int pageNum); //分页查询员工信息
+
+    int editEmp(User user); //修改员工信息
+
+    int empDelete(String[] number); //根据员工编号删除对应的员工
 }

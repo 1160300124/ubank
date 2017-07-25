@@ -18,6 +18,7 @@
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/common.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/confirm.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		function logout(){
 			window.location = "<%=request.getContextPath()%>" + "/backend/logout";
