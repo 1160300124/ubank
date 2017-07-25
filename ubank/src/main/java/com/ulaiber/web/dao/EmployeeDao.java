@@ -1,7 +1,5 @@
 package com.ulaiber.web.dao;
 
-import com.ulaiber.web.model.Company;
-import com.ulaiber.web.model.Employee;
 import com.ulaiber.web.model.User;
 
 import java.util.List;

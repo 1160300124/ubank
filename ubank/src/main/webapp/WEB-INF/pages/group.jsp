@@ -20,24 +20,7 @@
     </div>
 
     <%--数据表格--%>
-    <table id="group_table" >
-        <%--<thead>--%>
-            <%--<tr>--%>
-                <%--<th data-checkbox="true"></th>--%>
-                <%--<th data-field="userName">操作人</th>--%>
-                <%--<th data-field="totalNumber">总笔数</th>--%>
-                <%--<th data-field="totalAmount">总金额</th>--%>
-                <%--<th data-field="company">企业名称</th>--%>
-                <%--<th data-field="salaryDate">工资发放时间</th>--%>
-                <%--<th data-field="salary_createTime">操作时间</th>--%>
-                <%--<th data-field="entrustSeqNo">业务委托编号</th>--%>
-                <%--<th data-field="status">状态</th>--%>
-                <%--<th data-field="remark">备注</th>--%>
-                <%--<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>--%>
-            <%--</tr>--%>
-        <%--</thead>--%>
-
-    </table>
+    <table id="group_table" ></table>
 
         <!-- 弹出框（Modal） -->
         <div id="group_add_modal" class="modal fade">
@@ -169,6 +152,7 @@
                 search : true, //搜索框
                 searchText : ' ', //初始化搜索文字
                 clickToSelect : true,
+                showColumns : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '集团名称', width: 130, align : 'left'},

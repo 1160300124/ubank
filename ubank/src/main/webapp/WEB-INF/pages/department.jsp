@@ -97,6 +97,7 @@
                 showRefresh : true, //刷新按钮
                 showToggle :true,   //切换试图（table/card）按钮
                 clickToSelect : true,
+                showColumns : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '部门名称', width: 130, align : 'left'},

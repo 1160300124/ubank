@@ -151,6 +151,7 @@
                 pageList : [10,20,30,40], // 可供选择的每页的行数
                 showRefresh : true, //刷新按钮
                 showToggle :true,   //切换试图（table/card）按钮
+                showColumns : true,
                 clickToSelect : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},

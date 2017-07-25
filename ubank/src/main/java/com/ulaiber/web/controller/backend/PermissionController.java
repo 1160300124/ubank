@@ -3,9 +3,8 @@ package com.ulaiber.web.controller.backend;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.PermissionService;
+import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.StringUtil;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +26,9 @@ public class PermissionController extends BaseController {
 
     @Resource
     private PermissionService permissionService;
+
+    @Resource
+    private UserService userService;
 
     //跳转集团管理页面
     @RequestMapping("group")
@@ -457,6 +459,49 @@ public class PermissionController extends BaseController {
 
         return resultInfo;
 
+    }
+
+    /**
+     * 获取菜单tree
+     * @return
+     */
+    @RequestMapping(value = "menuTree", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String,Object>> menuTree(){
+        List<Menu> list = userService.getAllMenu();
+        Map<String ,Object> map_one = new HashMap<String,Object>();
+        List<Map<String,Object>> list_one = new ArrayList<>();
+        Map<String , Object> _map = new HashMap<String,Object>();
+        for (int i = 0 ; i < list.size() ; i++){
+            Menu menus = list.get(i);
+            if(menus.getFather().equals("")){
+                if(!_map.containsKey(menus.getCode())){
+                    _map.put(menus.getCode(),menus);
+                }
+            }
+
+        }
+        for (Map.Entry<String,Object> entry : _map.entrySet()){
+            String key = entry.getKey();
+            Menu _map2 = (Menu) entry.getValue();
+            Map<String,Object> _map3 = new HashMap<String,Object>();
+            List<Map<String,Object>> list_two = new ArrayList<>();
+            _map3.put("id" , key);
+            _map3.put("text", _map2.getName());
+            _map3.put("nodes" , list_two);
+            for (int i = 0 ; i < list.size() ; i++){
+                Menu menus = list.get(i);
+                Map<String,Object> _map4 = new HashMap<String,Object>();
+                if(menus.getFather().equals(key) ){
+                    _map4.put("id" , menus.getCode());
+                    _map4.put("text" , menus.getName());
+                    list_two.add(_map4);
+                }
+
+            }
+            list_one.add(_map3);
+        }
+        return list_one;
     }
 
 
