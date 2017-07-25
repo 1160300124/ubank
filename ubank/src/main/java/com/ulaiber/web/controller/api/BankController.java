@@ -43,11 +43,12 @@ public class BankController extends BaseController {
 	@RequestMapping(value = "queryAllBanks", method = RequestMethod.GET)
 	@ResponseBody
 	public ResultInfo queryAllBanks(){
-		
+		logger.debug("queryAllBanks start...");
 		ResultInfo retInfo = new ResultInfo();
 		List<Bank> banks = bankservice.getAllBanks();
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(banks);
+		logger.debug("queryAllBanks end...");
 		return retInfo;
 	}
 

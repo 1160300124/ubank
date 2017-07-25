@@ -48,4 +48,10 @@ public interface ThirdUrlDao {
 	 * @return
 	 */
 	int getTotalNum();
+	
+	/**
+	 * 根据模块id和类别id查询url
+	 * @return
+	 */
+	List<ThirdUrl> getUrlsByMidAndCid(Map<String, Object> params);
 }

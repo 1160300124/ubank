@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.BannerDao">
+
+    <resultMap id="BannerMap" type="Banner" >
+    	<id column="bid" property="bid" jdbcType="BIGINT" />
+    	<result column="banner_name" property="bannerName" jdbcType="VARCHAR" />
+    	<result column="pic_path" property="picPath" jdbcType="VARCHAR" />
+    	<result column="url" property="url" jdbcType="VARCHAR" />
+    	<result column="orderby" property="orderby" jdbcType="INTEGER" />
+    	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+    	<association property="module" column="banner_mid" javaType="Module" select="com.ulaiber.web.dao.ModuleDao.getModuleByMid" />
+   </resultMap>
+   
+   <insert id="save" parameterType="Banner">
+   		insert into tbl_banners(banner_name, pic_path, url, banner_mid, orderby, createTime, remark) values
+	        (#{bannerName}, #{picPath}, #{url}, #{module.mid}, #{orderby}, #{createTime}, #{remark})
+   </insert>
+  
+	<select id="getBanners" resultMap="BannerMap">
+		select * from tbl_banners 
+		<if test="search != null and search != ''">
+			where banner_name like concat('%',#{search},'%')
+		</if>
+		order by createTime desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getAllBannersforApi" resultMap="BannerMap">
+		select * from tbl_banners
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_banners
+	</select>
+	
+	<select id="getBannerByBid" parameterType="Integer" resultMap="BannerMap">
+		select * from tbl_banners where bid=#{bid}
+	</select>
+	
+	<update id="updateById" parameterType="Banner">
+		update tbl_banners set banner_name=#{bannerName}, url=#{url}, pic_path=#{picPath}, banner_mid=#{module.mid},
+			orderby=#{orderby}, updateTime=#{updateTime},  remark=#{remark} where bid=#{bid}
+	</update>
+	
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from tbl_banners where bid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+	<select id="getBannersByMid" parameterType="Integer" resultMap="BannerMap">
+		select bid,banner_name,pic_path,url,orderby,createTime,updateTime,remark from tbl_banners where banner_mid=#{mid} order by orderby
+	</select>
+</mapper>

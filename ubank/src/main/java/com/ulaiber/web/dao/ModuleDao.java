@@ -46,5 +46,19 @@ public interface ModuleDao {
 	 * @return
 	 */
 	Module getModuleByMid(int mid);
+	
+	/**
+	 * 根据id删除
+	 * @param mids
+	 * @return
+	 */
+	int deleteByIds(List<Integer> mids);
+	
+	/**
+	 * 根据id修改
+	 * @param module
+	 * @return
+	 */
+	int updateById(Module module);
 
 }

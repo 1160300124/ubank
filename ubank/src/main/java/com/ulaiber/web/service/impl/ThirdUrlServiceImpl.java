@@ -71,4 +71,13 @@ public class ThirdUrlServiceImpl extends BaseService implements ThirdUrlService 
 		return this.dao.updateByUid(url) > 0;
 	}
 
+	@Override
+	public List<ThirdUrl> getUrlsByMidAndCid(int mid, int cid) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("mid", mid);
+		params.put("cid", cid);
+		
+		return dao.getUrlsByMidAndCid(params);
+	}
+
 }

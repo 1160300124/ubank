@@ -22,38 +22,37 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
+import com.ulaiber.web.model.Banner;
 import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.model.ThirdUrl;
-import com.ulaiber.web.service.ThirdUrlService;
+import com.ulaiber.web.service.BannerService;
 import com.ulaiber.web.utils.FileUtil;
 
-/**
- * 第三方URL管理控制器
- * 
- * @author huangguoqing
+/** 
+ * <一句话概述功能>
  *
+ * @author  huangguoqing
+ * @date 创建时间：2017年7月24日 下午7:52:47
+ * @version 1.0 
+ * @since 
  */
 @Controller
 @RequestMapping("/backend/")
-public class UrlController extends BaseController {
+public class BackendBannerController extends BaseController {
 	
-	/**
-	 * 日志对象
-	 */
-	private static Logger logger = Logger.getLogger(UrlController.class);
+	private static Logger logger = Logger.getLogger(BackendBannerController.class);
 	
 	@Autowired
-	private ThirdUrlService service;
+	private BannerService service;
 	
-	@RequestMapping(value = "thirdUrl", method = RequestMethod.GET)
-	public String url(HttpServletRequest request, HttpServletResponse response){
-		return "url";
+	@RequestMapping(value = "banner", method = RequestMethod.GET)
+	public String banner(HttpServletRequest request, HttpServletResponse response){
+		return "banner";
 	}
 	
-	@RequestMapping(value = "thirdUrls", method = RequestMethod.GET)
+	@RequestMapping(value = "banners", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> queryThirdUrls(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
-		
+	public Map<String, Object> banners(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("banners start...");
 		if (limit <= 0){
 			limit = 10;
 		}
@@ -64,18 +63,19 @@ public class UrlController extends BaseController {
 			order = "desc";
 		}
 		
-		int total = service.getTotalNum();
-		List<ThirdUrl> urls = service.getAllUrls(limit, offset, order, search);
-		
+		int totalNUm = service.getTotalNum();
+		List<Banner> banners = service.getBanners(limit, offset, order, search);
+
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("total", total);
-		data.put("rows", urls);
+		data.put("total", totalNUm);
+		data.put("rows", banners);
+		logger.debug("banners end...");
 		return data;
 	}
 	
-	@RequestMapping(value = "uploadUrlPic", method = RequestMethod.POST)
+	@RequestMapping(value = "uploadBannerPic", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo picupload(MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo uploadBannerPic(MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		try {
     		// 取得request中的所有文件名
@@ -117,18 +117,18 @@ public class UrlController extends BaseController {
 		return info;
 	}
 	
-	@RequestMapping(value= "saveUrl", method = RequestMethod.POST)
+	@RequestMapping(value= "saveBanner", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo saveUrl(@RequestBody ThirdUrl url, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo saveBanner(@RequestBody Banner banner, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		
-		if (StringUtils.isEmpty(url.getPicPath())){
+		if (StringUtils.isEmpty(banner.getPicPath())){
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("请上传图标！");
+			info.setMessage("请上传图片！");
 			return info;
 		}
 		
-		String tempPath = url.getPicPath();
+		String tempPath = banner.getPicPath();
 		if (tempPath.contains(IConstants.TEMP_PATH)){
 			//copy临时路径的图标到正式目录
 			String path = tempPath.replace(IConstants.TEMP_PATH, "");
@@ -136,34 +136,34 @@ public class UrlController extends BaseController {
 			File file = new File(getProjectAbsoluteURL(request) + IConstants.ICON_UPLOAD_PATH);
 			if (!FileUtil.copy(tempFile, file)){
 				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("图标复制异常！");
+				info.setMessage("图片复制异常！");
 				return info;
 			}
-			url.setPicPath(IConstants.PICTURE_SERVER + path);
+			banner.setPicPath(IConstants.PICTURE_SERVER + path);
 		}
 
-		boolean flag = service.save(url);
+		boolean flag = service.save(banner);
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("新增第三方URL成功！");
+			info.setMessage("新增banner成功！");
 			if (tempPath.contains(IConstants.TEMP_PATH)){
 				//成功后删除temp下的临时图标，以后会加入定时任务，定时清理临时目录，防止异常情况下，临时目录图标删不掉导致目录越来越大
 				FileUtil.delFile(getProjectAbsoluteURL(request) + tempPath);
 			}
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("新增第三方URL失败！");
+			info.setMessage("新增banner失败！");
 		}
 		
 		return info;
 	}
 	
-	@RequestMapping(value= "deleteUrl", method = RequestMethod.POST)
+	@RequestMapping(value= "deleteBanners", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo deleteUrl(@RequestBody List<Long> uids, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo deleteBanners(@RequestBody List<Long> bids, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		
-		boolean flag = service.deleteByUids(uids);
+		boolean flag = service.deleteByIds(bids);
 		
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
@@ -177,19 +177,19 @@ public class UrlController extends BaseController {
 		
 	}
 	
-	@RequestMapping(value= "editUrl", method = RequestMethod.POST)
+	@RequestMapping(value= "editBanner", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo editUrl(@RequestBody ThirdUrl url, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo editBanner(@RequestBody Banner banner, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		
-		if (url.getUid() == 0)
+		if (banner.getBid() == 0)
 		{
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("无效的数据！");
 			return info;
 		}
 		
-		String tempPath = url.getPicPath();
+		String tempPath = banner.getPicPath();
 		if (tempPath.contains(IConstants.TEMP_PATH)){
 			//copy临时路径的图标到正式目录
 			String path = tempPath.replace(IConstants.TEMP_PATH, "");
@@ -200,10 +200,10 @@ public class UrlController extends BaseController {
 				info.setMessage("图标复制异常！");
 				return info;
 			}
-			url.setPicPath(IConstants.PICTURE_SERVER + path);
+			banner.setPicPath(IConstants.PICTURE_SERVER + path);
 		}
 		
-		boolean flag = service.updateByUid(url);
+		boolean flag = service.updateById(banner);
 		
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);

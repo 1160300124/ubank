@@ -1,39 +1,37 @@
 package com.ulaiber.web.model;
 
-/**
- * 第三方URL实体类
- * @author huangguoqing
+/** 
+ * <一句话概述功能>
  *
+ * @author  huangguoqing
+ * @date 创建时间：2017年7月24日 下午3:03:30
+ * @version 1.0 
+ * @since 
  */
-public class ThirdUrl {
-
-	/**
-	 * URL编号
-	 */
-	private long uid;
+public class Banner {
 	
 	/**
-	 * URL名称
+	 * banner编号
 	 */
-	private String urlName;
+	private long bid; 
 	
 	/**
-	 * URL链接
+	 * banner名称
 	 */
-	private String url;
+	private String bannerName;
 	
 	/**
-	 * 图片路径
+	 * banner图片地址
 	 */
 	private String picPath;
 	
 	/**
-	 * URL属于哪一类别
+	 * banner链接
 	 */
-	private Category category;
+	private String url;
 	
 	/**
-	 * URL模块
+	 * banner模块
 	 */
 	private Module module;
 	
@@ -48,7 +46,7 @@ public class ThirdUrl {
 	private String createTime;
 	
 	/**
-	 * 创建时间
+	 * 最近修改时间
 	 */
 	private String updateTime;
 	
@@ -57,28 +55,20 @@ public class ThirdUrl {
 	 */
 	private String remark;
 
-	public long getUid() {
-		return uid;
+	public long getBid() {
+		return bid;
 	}
 
-	public void setUid(long uid) {
-		this.uid = uid;
+	public void setBid(long bid) {
+		this.bid = bid;
 	}
 
-	public String getUrlName() {
-		return urlName;
+	public String getBannerName() {
+		return bannerName;
 	}
 
-	public void setUrlName(String urlName) {
-		this.urlName = urlName;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+	public void setBannerName(String bannerName) {
+		this.bannerName = bannerName;
 	}
 
 	public String getPicPath() {
@@ -89,12 +79,12 @@ public class ThirdUrl {
 		this.picPath = picPath;
 	}
 
-	public Category getCategory() {
-		return category;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setCategory(Category category) {
-		this.category = category;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public Module getModule() {

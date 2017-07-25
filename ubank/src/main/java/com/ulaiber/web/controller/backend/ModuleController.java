@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,7 +46,7 @@ public class ModuleController extends BaseController {
 	
 	@RequestMapping(value = "modules", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> pages(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
+	public Map<String, Object> modules(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("");
 		if (limit <= 0){
 			limit = 10;
@@ -68,13 +69,64 @@ public class ModuleController extends BaseController {
 	
 	@RequestMapping(value = "getAllModules", method = RequestMethod.GET)
 	@ResponseBody
-	public ResultInfo getAllpages( HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo getAllModules( HttpServletRequest request, HttpServletResponse response){
 		logger.debug("");
 		ResultInfo info = new ResultInfo();
 		List<Module> modules = service.getAllModulesforApi();
 		info.setCode(IConstants.QT_CODE_OK);
 		info.setData(modules);
 		
+		return info;
+	}
+	
+	@RequestMapping(value = "saveModule", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo saveModule(@RequestBody Module module, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("saveModule start...");
+		ResultInfo info = new ResultInfo();
+		boolean flag = service.save(module);
+		if (flag){
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("新增成功！");
+		} else {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("新增失败！");
+		}
+		logger.debug("saveModule end...");
+		return info;
+	}
+	
+	@RequestMapping(value = "editModule", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo editModule(@RequestBody Module module, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("editModule start...");
+		ResultInfo info = new ResultInfo();
+		boolean flag = service.updateById(module);
+		if (flag){
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("修改成功");;
+		} else {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("修改失败");
+		}
+		logger.debug("editModule end...");
+		return info;
+	}
+
+	@RequestMapping(value = "deleteModules", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo deleteModules(@RequestBody List<Integer> mids, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("deleteModules start...");
+		ResultInfo info = new ResultInfo();
+		boolean flag = service.deleteByIds(mids);
+		 if (flag){
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("删除成功");;
+			} else {
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("删除失败");
+			}
+		 logger.debug("deleteModules end...");
 		return info;
 	}
 

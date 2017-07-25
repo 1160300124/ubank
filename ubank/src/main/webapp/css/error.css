@@ -1,0 +1,88 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+	font-size: 12px;
+	margin: 0px;
+	padding: 0px;
+	font-family: "微软雅黑","宋体","黑体";
+	background-color: #333;
+}
+div,ul,li,h1,h2,h3,h4,h5,h6,img,p,dl,dt,dd,ol,th,td,form{
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+	border:0;
+}
+input{color:#666}
+.body a img:hover{
+	box-shadow:2px 2px 5px rgba(0,0,0,.3);
+	/*filter:alpha(opacity=90);  
+	-moz-opacity:0.9;  
+	-khtml-opacity: 0.9;  
+	opacity: 0.9;*/
+	}
+.clear {
+	clear: both;
+	font-size: 0px;
+	line-height: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+.zBodyK {
+	width: 1002px;
+	margin-right: auto;
+	margin-left: auto;
+	border: 1px solid #FFF;
+	background-repeat: repeat-x;
+	background-position: top;
+	background-color: #FFF;
+	margin-bottom: 10px;
+}
+.zBodyK .kTtl {
+	font-family: "微软雅黑", "黑体", "宋体";
+	font-size: 16px;
+	line-height: 66px;
+	color: #333;
+	height: 66px;
+	background-image: url(../images/bg/kTtlIcon.gif);
+	background-repeat: no-repeat;
+	background-position: 25px center;
+	padding-left: 50px;
+}
+.error {
+	height: 293px;
+	width: 770px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 80px;
+	margin-bottom: 80px;
+	background-repeat: no-repeat;
+	background-position: bottom;
+}
+.error .pic {
+	height: 198px;
+	width: 111px;
+	margin-left: 125px;
+	float: left;
+}
+.error .text {
+	float: left;
+	width: 490px;
+	padding-left: 40px;
+	margin-top: 30px;
+}
+.error>.text>.text1 {
+	font-size: 22px;
+	color: #B53311;
+	line-height: 46px;
+}
+.error>.text>.text2 {
+	font-size: 18px;
+	color: #333;
+	line-height: 32px;
+}
+.error>.text>.text3 {
+	font-size: 12px;
+	color: #666;
+	line-height: 26px;
+}

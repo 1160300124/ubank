@@ -12,13 +12,13 @@
     <resultMap id="ModuleMap" type="Module" >
     	<id column="mid" property="mid" jdbcType="INTEGER" />
     	<result column="module_name" property="moduleName" jdbcType="VARCHAR" />
-    	<result column="create_time" property="createTime" jdbcType="VARCHAR" />
-    	<result column="update_ime" property="updateTime" jdbcType="VARCHAR" />
+    	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
     	<result column="remark" property="remark" jdbcType="VARCHAR" />
    </resultMap>
    
    <insert id="save" parameterType="Module">
-   		insert into tbl_modules(module_name, create_time, remark) values(#{moduleName}, #{createTime}, #{remark});
+   		insert into tbl_modules(module_name, createTime, remark) values(#{moduleName}, #{createTime}, #{remark});
    </insert>
   
 	<select id="getAllModules" resultMap="ModuleMap">
@@ -40,5 +40,16 @@
 	<select id="getModuleByMid" parameterType="Integer" resultMap="ModuleMap">
 		select * from tbl_modules where mid=#{mid}
 	</select>
+	
+	<update id="updateById" parameterType="Module">
+		update tbl_modules set module_name=#{moduleName}, updateTime=#{updateTime},  remark=#{remark} where mid=#{mid}
+	</update>
+	
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from tbl_modules where mid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
 	
 </mapper>

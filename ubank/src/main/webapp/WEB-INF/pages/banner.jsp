@@ -17,17 +17,16 @@
 
 		</div>
 
-		<table id="tb_thirdUrls" data-toggle="table" data-url="thirdUrls" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
+		<table id="tb_banners" data-toggle="table" data-url="banners" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
 			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>
 				<th data-checkbox="true"></th>
-				<th data-field="urlName">URL名称</th>
-				<th data-field="url">URL链接</th>
+				<th data-field="bannerName">Banner名称</th>
+				<th data-field="url">Banner链接</th>
 				<th data-field="picPath">图片地址</th>
-				<th data-field="module.moduleName">URL模块</th>
-				<th data-field="category.categoryName">URL类别</th>
+				<th data-field="module.moduleName">Banner模块</th>
 				<th data-field="orderby">排序</th>
 				<th data-field="createTime" data-width="160px">创建时间</th>
 				<th data-field="updateTime" data-width="160px">最近修改时间</th>
@@ -41,34 +40,34 @@
 	
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog" style="width:45%">
+		<div class="modal-dialog" style="width:50%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 						&times;
 					</button>
-					<h4 class="modal-title" id="myModalLabel">新增 URL</h4>
+					<h4 class="modal-title" id="myModalLabel">新增 Banner</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form" id="add_form">
 						<div class="form-group">
-	                       <label class="col-sm-2 control-label" for="url_name">URL名称</label>
+	                       <label class="col-sm-2 control-label" for="banner_name">Banner名称</label>
 	                       <div class="col-sm-8">
-	                          <input class="form-control" id="url_name" type="text" placeholder="请输入..."/>
+	                          <input class="form-control" id="banner_name" type="text" placeholder="请输入..."/>
 	                       </div>
 	                    </div>
 	                    
 						<div class="form-group">
-	                        <label class="col-sm-2 control-label" for="ds_host">URL链接</label>
+	                        <label class="col-sm-2 control-label" for="banner_addr">Banner链接</label>
 	                        <div class="col-sm-8">
-	                           <input class="form-control" id="url_addr" type="text" placeholder="请输入..."/>
+	                           <input class="form-control" id="banner_addr" type="text" placeholder="请输入..."/>
 	                        </div>
 	                     </div>
 	                     
 	                     <div class="form-group">
-	                        <label class="col-sm-2 control-label" for="pic_upload">图标上传</label>
-	                        <div class="col-sm-5">
-	                            <img src="<%=request.getContextPath()%>/images/bodyBg.jpg" class="img-thumbnail" id="img_path" alt="Cinque Terre" width="50" height="50">
+	                        <label class="col-sm-2 control-label" for="pic_upload">图片上传</label>
+	                        <div class="col-sm-8">
+	                            <img src="<%=request.getContextPath()%>/images/bodyBg.jpg" class="img-thumbnail" id="img_path" alt="Cinque Terre" width="750" height="350">
 	                            <input type="hidden" id="pic_path" name="pic_path"/>
 	                        </div>
 	                     </div>
@@ -92,27 +91,18 @@
 	                     </div>
 	                     
 	                    <div class="form-group">
-	                       <label class="col-sm-2 control-label" for="url_module">模块</label>
+	                       <label class="col-sm-2 control-label" for="banner_module">模块</label>
 	                       <div class="col-sm-5">
-	                       	  <select class="form-control" id="url_module">
+	                       	  <select class="form-control" id="banner_module">
 	                       	  	 <option></option>
 	                       	  </select>
 	                       </div>
 	                    </div>
 	                    
-	                    <div class="form-group">
-	                       <label class="col-sm-2 control-label" for="url_page">类别</label>
-	                       <div class="col-sm-5">
-	                       	  <select class="form-control" id="url_page">
-	                       	  	 <option></option>
-	                       	  </select>
-	                       </div>
-	                    </div>
-	                       						
 						<div class="form-group">
-	                        <label class="col-sm-2 control-label" for="url_sort">排序</label>
+	                        <label class="col-sm-2 control-label" for="banner_sort">排序</label>
 	                        <div class="col-sm-5">
-	                           <input class="form-control" id="url_sort" type="text" placeholder="请输入..."/>
+	                           <input class="form-control" id="banner_sort" type="text" placeholder="请输入..."/>
 	                        </div>
 					    </div>
 					    
@@ -136,7 +126,7 @@
 	
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" id="edit_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog" style="width:45%">
+		<div class="modal-dialog" style="width:50%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -147,25 +137,25 @@
 				<div class="modal-body">
 
 				<form class="form-horizontal" role="form" id="edit_form">
-						<input type="hidden" id="url_id" name="url_id" value="" />
+						<input type="hidden" id="banner_id" name="banner_id" value="" />
 						<div class="form-group">
-	                       <label class="col-sm-2 control-label" for="url_name">URL名称</label>
+	                       <label class="col-sm-2 control-label" for="banner_name">Banner名称</label>
 	                       <div class="col-sm-8">
-	                          <input class="form-control" id="url_name" type="text" placeholder="请输入..."/>
+	                          <input class="form-control" id="banner_name" type="text" placeholder="请输入..."/>
 	                       </div>
 	                    </div>
 	                    
 						<div class="form-group">
-	                        <label class="col-sm-2 control-label" for="ds_host">URL链接地址</label>
+	                        <label class="col-sm-2 control-label" for="banner_addr">Banner链接</label>
 	                        <div class="col-sm-8">
-	                           <input class="form-control" id="url_addr" type="text" placeholder="请输入..."/>
+	                           <input class="form-control" id="banner_addr" type="text" placeholder="请输入..."/>
 	                        </div>
 	                     </div>
 	                     
 	                     <div class="form-group">
-	                        <label class="col-sm-2 control-label" for="pic_upload">图标上传</label>
-	                        <div class="col-sm-5">
-	                            <img src="<%=request.getContextPath()%>/images/bodyBg.jpg" class="img-thumbnail" id="img_path" alt="请上传图标" width="50" height="50">
+	                        <label class="col-sm-2 control-label" for="pic_upload">图片上传</label>
+	                        <div class="col-sm-8">
+	                            <img src="<%=request.getContextPath()%>/images/bodyBg.jpg" class="img-thumbnail" id="img_path" alt="请上传图标" width="750" height="350">
 	                            <input type="hidden" id="pic_path" name="pic_path"/>
 	                        </div>
 	                     </div>
@@ -188,28 +178,19 @@
 	                        </div>
 	                     </div>
 	                     
-	                    <div class="form-group">
-	                       <label class="col-sm-2 control-label" for="url_module">模块</label>
+	                     <div class="form-group">
+	                       <label class="col-sm-2 control-label" for="banner_module">模块</label>
 	                       <div class="col-sm-5">
-	                       	  <select class="form-control" id="url_module">
-	                       	  	 <option></option>
-	                       	  </select>
-	                       </div>
-	                    </div>
-	                     
-	                    <div class="form-group">
-	                       <label class="col-sm-2 control-label" for="url_page">类别</label>
-	                       <div class="col-sm-5">
-	                       	  <select class="form-control" id="url_page">
+	                       	  <select class="form-control" id="banner_module">
 	                       	  	 <option></option>
 	                       	  </select>
 	                       </div>
 	                    </div>
 	                    
 						<div class="form-group">
-	                        <label class="col-sm-2 control-label" for="url_sort">排序</label>
+	                        <label class="col-sm-2 control-label" for="banner_sort">排序</label>
 	                        <div class="col-sm-5">
-	                           <input class="form-control" id="url_sort" type="text" placeholder="请输入..."/>
+	                           <input class="form-control" id="banner_sort" type="text" placeholder="请输入..."/>
 	                        </div>
 					    </div>
 					    
@@ -233,7 +214,7 @@
 
 	
 </div>
-<script src="<%=request.getContextPath()%>/js/url.js" type="text/javascript" ></script>
+<script src="<%=request.getContextPath()%>/js/banner.js" type="text/javascript" ></script>
 <script type="text/javascript">
 	var basePath = '<%=request.getContextPath()%>';
 </script>

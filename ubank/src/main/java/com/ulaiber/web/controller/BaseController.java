@@ -37,6 +37,7 @@ public class BaseController {
 		}
 		return user;
 	}
+	
 	/**
 	 * 是否登录
 	 *	@param request
