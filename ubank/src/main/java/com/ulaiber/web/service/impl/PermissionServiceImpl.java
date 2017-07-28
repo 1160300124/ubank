@@ -1,8 +1,6 @@
 package com.ulaiber.web.service.impl;
 
-import com.ulaiber.web.dao.CompanyDao;
-import com.ulaiber.web.dao.EmployeeDao;
-import com.ulaiber.web.dao.PermissionDao;
+import com.ulaiber.web.dao.*;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
@@ -11,6 +9,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,12 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Resource
     private EmployeeDao employeeDao;
+
+    @Resource
+    private RolesDao rolesDao;
+
+    @Resource
+    private RoleMenuDao roleMenuDao;
 
     @Override
     public int addGroup(Group group) {
@@ -230,6 +235,47 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     public int empDelete(String[] number) {
         int result = employeeDao.empDlete(number);
         return result;
+    }
+
+    @Override
+    public List<Roles> roleAllQuery() {
+        List<Roles> list = rolesDao.roleAllQuery();
+        return list;
+    }
+
+    @Override
+    public List<Roles> getRoleByName(String roleName) {
+        List<Roles> list = rolesDao.getRoleByName(roleName);
+        return list;
+    }
+
+    @Override
+    public int addRole(String com_numbers, String roleName) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("com_numbers" , com_numbers);
+        map.put("roleName" , roleName);
+        int result = rolesDao.addRole(map);
+        return result;
+    }
+
+    @Override
+    public int settingRoleMenu(String roleId, String menuId) {
+        List<Map<String,Object>> list = new ArrayList<>();
+        String[] arr = menuId.split(",");
+        for (int i = 0 ; i <arr.length ; i++){
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("menuId" , arr[i]);
+            map.put("roleId",roleId);
+            list.add(map);
+        }
+        int result = roleMenuDao.settingRoleMenu(list);
+        return result;
+    }
+
+    @Override
+    public List<RoleMenu> getRoleMenuByRoleid(String roleId) {
+        List<RoleMenu> list  = roleMenuDao.getRoleMenuByRoleid(roleId);
+        return list;
     }
 
 

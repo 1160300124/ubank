@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.RolesDao">
+
+    <!-- 获取所有角色信息-->
+    <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
+        SELECT role_id,role_name,companyNumber FROM tbl_roles
+    </select>
+
+    <!--根据角色名，获取角色信息-->
+    <select id="getRoleByName" parameterType="String" resultType="com.ulaiber.web.model.Roles">
+        SELECT * FROM tbl_roles where role_name = #{roleName}
+    </select>
+
+    <!--新增角色信息-->
+    <insert id="addRole" parameterType="Map" >
+        INSERT INTO tbl_roles(role_name,companyNumber)
+            VALUES (#{roleName},#{com_numbers})
+    </insert>
+
+</mapper>

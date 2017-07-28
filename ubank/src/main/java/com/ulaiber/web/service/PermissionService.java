@@ -70,4 +70,14 @@ public interface PermissionService {
     int editEmp(User user); //修改员工信息
 
     int empDelete(String[] number); //根据员工编号删除对应的员工
+
+    List<Roles> roleAllQuery();  //获取所有角色信息
+
+    List<Roles> getRoleByName(String roleName);  //根据角色名，获取角色信息
+
+    int addRole(String com_numbers, String roleName); //新增角色信息
+
+    int settingRoleMenu(String roleId, String menuId); //设置角色权限
+
+    List<RoleMenu> getRoleMenuByRoleid(String roleId);  // 根据角色id查询该角色是否被创建
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.RoleMenuDao">
+
+
+    <!--根据角色id查询该角色是否被创建-->
+    <select id="getRoleMenuByRoleid" resultType="com.ulaiber.web.model.RoleMenu" parameterType="String" >
+        select * from tbl_roleMenu where role_id = #{roleId}
+    </select>
+
+    <!--设置角色权限-->
+    <insert id="settingRoleMenu" parameterType="java.util.List">
+        INSERT INTO tbl_roleMenu(role_id,menuNumber) VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+            (#{items.roleId},#{items.menuId})
+        </foreach>
+    </insert>
+
+</mapper>

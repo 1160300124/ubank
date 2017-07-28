@@ -49,7 +49,7 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">角色</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control" name="role_id" id=""  >
+                                    <select class="combobox form-control" name="role_id" id="emp_select_role"  >
                                     </select>
                                 </div>
                             </div>
@@ -74,22 +74,20 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">银行卡号</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="bankCardNo" class="base-form-input base-request" value="">
+                                    <input type="text" name="bankCardNo" class="base-form-input base-request" value="" >
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">预留手机</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="mobile" class="base-form-input base-request" value="">
+                                    <input type="text" name="mobile" class="base-form-input base-request" value="" >
                                 </div>
                             </div>
 
-
                         </form>
                     </div>
-
                 </div>
-                <div class="row container">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" onclick="EmployeeFun.addEmp() " class="btn btn-primary">保存</button>
                 </div>
@@ -109,6 +107,7 @@
         EmployeeFun.emp_getDept();
         EmployeeFun.getAllBank();
         EmployeeFun.employeeQuery();
+        EmployeeFun.getAllRoles();
 
         var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
@@ -158,6 +157,7 @@
                     {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                     {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
                     {field : 'id', title : '员工编号', width: 130, align : 'left',visible : false},
+                    {field : 'role_id', title : '角色id', width: 60, align : 'left',visible : false},
                     {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
                     {field : 'dept_name', title : '部门姓名', width: 130, align : 'left'},
                     {field : 'com_name', title : '公司', width: 130, align : 'left'},
@@ -184,6 +184,7 @@
             flag = 0;
             $(".modal-title").html("新增");
             $("#employee_modal").modal("show");
+
 
         },
         //获取所有公司
@@ -227,6 +228,30 @@
                         option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
                     }
                     $("#emp_select_dept").append(option);
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
+        },
+        //获取所有角色信息
+        getAllRoles : function () {
+            $.ajax({
+                url : 'roleAllQuery',
+                dataType : 'json',
+                type : 'post',
+                data:  {},
+                success : function (data) {
+                    debugger;
+                    if(data.length <= 0){
+                        return;
+                    }
+                    var option = "";
+                    for (var i = 0; i < data.length; i++){
+                        option += "<option value='"+data[i].role_id+"'>"+data[i].role_name+"</option>";
+                    }
+                    $("#emp_select_role").html(option);
 
                 },
                 error : function () {
@@ -304,6 +329,7 @@
             $("#emp_select").find("option[value="+row[0].companyNumber+"]").attr("selected","selected");
             $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").attr("selected","selected");
             $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
+            $("#emp_select_role").find("option[value="+row[0].role_id+"]").attr("selected","selected");
             $("#employee_modal").modal("show");
 
         },

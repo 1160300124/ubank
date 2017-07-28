@@ -85,7 +85,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("集团已存在，请重新填写！");
             }
         }else{
-           // 1 修改操作
+            // 1 修改操作
             int flag = permissionService.modifyGroup(group);
             if(flag >0){
                 resultInfo.setMessage("修改成功");
@@ -152,7 +152,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "departmentQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> departmentQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                             @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                              @Param("pageNum") int pageNum ,HttpServletRequest request){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -276,7 +276,7 @@ public class PermissionController extends BaseController {
                 int com = permissionService.addCom(company);  // 插入公司基本信息
                 String com_num = company.getCompanyNumber() + "";
                 for (int i = 0;i <list.size();i++){
-                     list.get(i).put("companyNumber",com_num);
+                    list.get(i).put("companyNumber",com_num);
                 }
                 int acc = permissionService.addBankAccount(list); //插入银行账户信息
                 if(acc > 0 && com > 0 ){
@@ -320,7 +320,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "comQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> comQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                      @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                       @Param("pageNum") int pageNum ,HttpServletRequest request){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -462,7 +462,7 @@ public class PermissionController extends BaseController {
     }
 
     /**
-     * 获取菜单tree
+     * 获取所有菜单，以树节点形式返回
      * @return
      */
     @RequestMapping(value = "menuTree", method = RequestMethod.POST)
@@ -487,14 +487,16 @@ public class PermissionController extends BaseController {
             Map<String,Object> _map3 = new HashMap<String,Object>();
             List<Map<String,Object>> list_two = new ArrayList<>();
             _map3.put("id" , key);
-            _map3.put("text", _map2.getName());
-            _map3.put("nodes" , list_two);
+            _map3.put("name", _map2.getName());
+            _map3.put("children" , list_two);
+            _map3.put("isParent", true);//设置根节点为父节点
+            _map3.put("open", true); //根节点展开
             for (int i = 0 ; i < list.size() ; i++){
                 Menu menus = list.get(i);
                 Map<String,Object> _map4 = new HashMap<String,Object>();
                 if(menus.getFather().equals(key) ){
                     _map4.put("id" , menus.getCode());
-                    _map4.put("text" , menus.getName());
+                    _map4.put("name" , menus.getName());
                     list_two.add(_map4);
                 }
 
@@ -504,7 +506,100 @@ public class PermissionController extends BaseController {
         return list_one;
     }
 
+    /**
+     * 获取所有公司，以树节点形式返回
+     * @return
+     */
+    @RequestMapping(value = "getComTree", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String , Object>> getComTree(){
+        List<Company> list = permissionService.getAllCompany();
+        List<Map<String ,Object>> list_one = new ArrayList<>();
+        Map<String,Object> _map = new HashMap<String,Object>();
+        for (int i = 0 ;i < list.size(); i++){
+            Company com = list.get(i);
+            if(!_map.containsKey(String.valueOf(com.getCompanyNumber()))){
+                _map.put(String.valueOf(com.getCompanyNumber()),com);
+            }
+        }
+
+        for (Map.Entry<String,Object> entry : _map.entrySet()){
+            String key = entry.getKey();
+            Company company = (Company) entry.getValue();
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("id" , key);
+            map.put("text" , company.getName());
+            list_one.add(map);
+        }
+        return list_one;
+    }
+
+    /**
+     * 获取所有角色信息
+     * @return
+     */
+    @RequestMapping(value = "roleAllQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Roles> roleAllQuery(){
+        List<Roles> list = permissionService.roleAllQuery();
+        return list;
+    }
+
+    //新增角色信息
+    @RequestMapping(value = "addRole", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo addRole(@Param("com_numbers") String com_numbers,@Param("roleName") String roleName){
+        ResultInfo resultInfo = new ResultInfo();
+        List<Roles> list = permissionService.getRoleByName(roleName); //根据角色名，获取角色信息
+        if(list.size() >0){
+            resultInfo.setMessage("该角色已存在，请重新选择");
+            resultInfo.setCode(300);
+            return resultInfo;
+        }
+        int role = permissionService.addRole(com_numbers,roleName); //新增角色信息
+        if(role > 0){
+            resultInfo.setCode(200);
+            resultInfo.setMessage("新增成功");
+        }else{
+            resultInfo.setCode(500);
+            resultInfo.setMessage("新增失败，请联系管理员");
+        }
+        return  resultInfo;
+    }
 
 
+    /**
+     * 设置角色权限
+     * @param menuId
+     * @param roleId
+     * @param flag
+     * @return
+     */
+    @RequestMapping(value = "settingRoleMenu", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo settingRoleMenu(@Param("menuId") String menuId,@Param("roleId") String roleId,@Param("flag") String flag){
+        ResultInfo resultInfo = new ResultInfo();
+        // 根据角色id查询该角色是否被创建
+        List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
+        if(list.size() > 0 ){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该角色已存在，请重新创建");
+            return resultInfo;
+        }
+        if (flag.equals("0")){//新增
+            int result = permissionService.settingRoleMenu(roleId,menuId);
+            if(result > 0){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("新增角色权限成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("新增角色权限失败，请联系管理员");
+            }
+        }else{  //修改
+
+        }
+        return resultInfo;
+
+    }
 
 }

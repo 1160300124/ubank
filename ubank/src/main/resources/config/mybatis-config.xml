@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
-"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
-<!-- 	<settings>
-        <setting name="lazyLoadingEnabled" value="true"/>
-        <setting name="aggressiveLazyLoading" value="false"/>
-    </settings>
- -->
+	<!-- 	<settings>
+            <setting name="lazyLoadingEnabled" value="true"/>
+            <setting name="aggressiveLazyLoading" value="false"/>
+        </settings>
+     -->
 	<!-- 实体类,简称 -设置别名 -->
 	<typeAliases>
 		<typeAlias alias="User" type="com.ulaiber.web.model.User" />
@@ -20,7 +20,7 @@
 		<typeAlias alias="Banner" type="com.ulaiber.web.model.Banner" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
-	
+
 	<!--
 		说明：如果xxMapper.xml配置文件放在和xxMapper.java统一目录下，mappers也可以省略，因为org.mybatis.spring.mapper.MapperFactoryBean默认会去查找与xxMapper.java相同目录和名称的xxMapper.xml
 	-->
@@ -36,6 +36,8 @@
 		<mapper resource="com/ulaiber/web/mapper/permissionMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/companyMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/employeeMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/roleMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/roleMenuMapper.xml" />
 	</mappers>
 
 </configuration>  
