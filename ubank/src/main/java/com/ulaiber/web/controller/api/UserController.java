@@ -130,6 +130,7 @@ public class UserController extends BaseController{
 			tempUser.setUserName(user.getUserName());
 			tempUser.setMobile(user.getMobile());
 			tempUser.setReserve_mobile(user.getReserve_mobile());
+			tempUser.setBankCardNo(user.getBankCardNo());
 			tempUser.setBank(user.getBank());
 			tempUser.setCardNo(user.getCardNo());
 			retInfo.setData(tempUser);

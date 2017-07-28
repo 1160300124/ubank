@@ -75,6 +75,7 @@ public class LoginController extends BaseController{
 			tempUser.setAccess_token(access_token);
 			tempUser.setReserve_mobile(dbuser.getReserve_mobile());
 			tempUser.setCardNo(dbuser.getCardNo());
+			tempUser.setBankCardNo(dbuser.getBankCardNo());
 			tempUser.setBank(dbuser.getBank());
 			retInfo.setData(tempUser);
 			retInfo.setCode(IConstants.QT_CODE_OK);

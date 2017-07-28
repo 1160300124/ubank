@@ -47,5 +47,13 @@ public interface ThirdUrlService {
 	 * @return
 	 */
 	int getTotalNum();
+	
+	/**
+	 * 根据模块id和类别id查询url
+	 * @param mid
+	 * @param cid
+	 * @return
+	 */
+	List<ThirdUrl> getUrlsByMidAndCid(int mid, int cid);
 
 }

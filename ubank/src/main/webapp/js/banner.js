@@ -4,35 +4,7 @@ $(function(){
 		
 		var addModal = $("#add_modal");
 		addModal.find("#add_form")[0].reset();
-		addModal.find("#url_page").empty();
-		addModal.find("#url_module").empty();
-		
-		$.ajax({
-			url : "getAllCategories",
-			type: "get",
-			data : {},
-			async : true, 
-			dataType : "json",
-			success : function(data, status) {
-				var code = data['code'];
-				if (code == 1000) {
-					var categories = data['data'];
-					var select = $("#url_page");
-					for (var i in categories){
-						var option = "<option value='" + categories[i].cid + "'>" + categories[i].categoryName + "</option>";
-//						var option = new Option();
-//						option.value = pages[i].pid;
-//						option.text = pages[i].pageName;
-						select.append(option);
-					}
-				}else{
-					Ewin.alert(data['message']);
-				}
-			},
-			error : function(data, status, e) {
-				Ewin.alert("系统内部错误！");
-			}
-		});
+		addModal.find("#banner_module").empty();
 		
 		$.ajax({
 			url : "getAllModules",
@@ -44,7 +16,7 @@ $(function(){
 				var code = data['code'];
 				if (code == 1000) {
 					var modules = data['data'];
-					var select = $("#url_module");
+					var select = $("#banner_module");
 					for (var i in modules){
 						var option = "<option value='" + modules[i].mid + "'>" + modules[i].moduleName + "</option>";
 //						var option = new Option();
@@ -68,7 +40,7 @@ $(function(){
 	$("#btn_delete").unbind().bind("click", function(){
 
 		//取表格的选中行数据
-		var arrselections = $("#tb_thirdUrls").bootstrapTable('getSelections');
+		var arrselections = $("#tb_banners").bootstrapTable('getSelections');
 		if (arrselections.length <= 0) {
 			Ewin.alert("请选择有效数据");
 			return;
@@ -76,7 +48,7 @@ $(function(){
 		
 		var data = [];
 		$.each(arrselections, function(index, item){
-			data.push(item.uid);
+			data.push(item.bid);
 		});
 		
 		Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
@@ -86,7 +58,7 @@ $(function(){
 			}
 			
 			$.ajax({
-				url : "deleteUrl",
+				url : "deleteBanners",
 				type: "post",
 				contentType : 'application/json;charset=utf-8',
 				data : JSON.stringify(data),
@@ -95,7 +67,7 @@ $(function(){
 					var code = data['code'];
 					if (code == 1000) {
 						Ewin.alert("删除成功");
-						$("#tb_thirdUrls").bootstrapTable("refresh");
+						$("#tb_banners").bootstrapTable("refresh");
 					}else{
 						Ewin.alert(data['message']);
 					}
@@ -149,20 +121,17 @@ $(function(){
 		
 		var addModal = $("#add_modal");
 		var params = {};
-		var category ={};
 		var module ={};
-		params.urlName = addModal.find("#url_name").val();
-		params.url = addModal.find("#url_addr").val();
+		params.bannerName = addModal.find("#banner_name").val();
+		params.url = addModal.find("#banner_addr").val();
 		params.picPath = addModal.find("#pic_path").val();
-		category.cid = addModal.find("#url_page").val();
-		params.category = category
-		module.mid = addModal.find("#url_module").val();
+		module.mid = addModal.find("#banner_module").val();
 		params.module = module;
-		params.orderby = addModal.find("#url_sort").val();
+		params.orderby = addModal.find("#banner_sort").val();
 		params.remark = addModal.find("#remark").val();
 		
 		$.ajax({
-			url : "saveUrl",
+			url : "saveBanner",
 			type: "post",
 			data : JSON.stringify(params),
 			contentType : 'application/json;charset=utf-8',
@@ -173,7 +142,7 @@ $(function(){
 				var code = data['code'];
 				if (code == 1000) {
 					addModal.modal("hide");
-					$("#tb_thirdUrls").bootstrapTable("refresh");
+					$("#tb_banners").bootstrapTable("refresh");
 					Ewin.alert("新增成功！");
 				}else{
 					Ewin.alert(data['message']);
@@ -228,21 +197,18 @@ $(function(){
 		
 		var editModal = $("#edit_modal");
 		var params = {};
-		var category ={};
 		var module ={};
-		params.uid = editModal.find("#url_id").val();
-		params.urlName = editModal.find("#url_name").val();
-		params.url = editModal.find("#url_addr").val();
+		params.bid = editModal.find("#banner_id").val();
+		params.bannerName = editModal.find("#banner_name").val();
+		params.url = editModal.find("#banner_addr").val();
 		params.picPath = editModal.find("#pic_path").val();
-		category.cid = editModal.find("#url_page").val();
-		params.category = category
-		module.mid = editModal.find("#url_module").val();
+		module.mid = editModal.find("#banner_module").val();
 		params.module = module;
-		params.orderby = editModal.find("#url_sort").val();
+		params.orderby = editModal.find("#banner_sort").val();
 		params.remark = editModal.find("#remark").val();
 		
 		$.ajax({
-			url : "editUrl",
+			url : "editBanner",
 			type: "post",
 			data : JSON.stringify(params),
 			contentType : 'application/json;charset=utf-8',
@@ -253,7 +219,7 @@ $(function(){
 				var code = data['code'];
 				if (code == 1000) {
 					editModal.modal("hide");
-					$("#tb_thirdUrls").bootstrapTable("refresh");
+					$("#tb_banners").bootstrapTable("refresh");
 					Ewin.alert("修改成功！");
 				}else{
 					Ewin.alert(data['message']);
@@ -282,33 +248,7 @@ window.operateEvents = {
 			
 			var editModal = $("#edit_modal");
 			editModal.find("#edit_form")[0].reset();
-			editModal.find("#url_page").empty();
-			editModal.find("#url_module").empty();
-			
-			$.ajax({
-				url : "getAllCategories",
-				type: "get",
-				data : {},
-				async : true, 
-				dataType : "json",
-				success : function(data, status) {
-					var code = data['code'];
-					if (code == 1000) {
-						var categories = data['data'];
-						var select = editModal.find("#url_page");
-						for (var i in categories){
-							var option = "<option value='" + categories[i].cid + "'>" + categories[i].categoryName + "</option>";
-							select.append(option);
-						}
-						select.find("option[value='" + row.category.cid + "']").attr("selected", true);
-					}else{
-						Ewin.alert(data['message']);
-					}
-				},
-				error : function(data, status, e) {
-					Ewin.alert("系统内部错误！");
-				}
-			});
+			editModal.find("#banner_module").empty();
 			
 			$.ajax({
 				url : "getAllModules",
@@ -320,7 +260,7 @@ window.operateEvents = {
 					var code = data['code'];
 					if (code == 1000) {
 						var modules = data['data'];
-						var select = editModal.find("#url_module");
+						var select = editModal.find("#banner_module");
 						for (var i in modules){
 							var option = "<option value='" + modules[i].mid + "'>" + modules[i].moduleName + "</option>";
 							select.append(option);
@@ -335,12 +275,12 @@ window.operateEvents = {
 				}
 			});
 			
-			editModal.find("#url_id").val(row.uid);
-			editModal.find("#url_name").val(row.urlName);
-			editModal.find("#url_addr").val(row.url);
+			editModal.find("#banner_id").val(row.bid);
+			editModal.find("#banner_name").val(row.bannerName);
+			editModal.find("#banner_addr").val(row.url);
 			editModal.find("#img_path").attr("src", row.picPath);
 			editModal.find("#pic_path").val(row.picPath);
-			editModal.find("#url_sort").val(row.orderby);
+			editModal.find("#banner_sort").val(row.orderby);
 			editModal.find("#remark").val(row.remark);
 			editModal.modal("show");
 			

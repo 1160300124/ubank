@@ -39,4 +39,25 @@ public interface ModuleService {
 	 * @return
 	 */
 	int getTotalNum();
+	
+	/**
+	 * 根据mid获取模块
+	 * @param mid
+	 * @return
+	 */
+	Module getModuleByMid(int mid);
+	
+	/**
+	 * 根据id删除
+	 * @param mids
+	 * @return
+	 */
+	boolean deleteByIds(List<Integer> mids);
+	
+	/**
+	 * 根据id修改
+	 * @param module
+	 * @return
+	 */
+	boolean updateById(Module module);
 }

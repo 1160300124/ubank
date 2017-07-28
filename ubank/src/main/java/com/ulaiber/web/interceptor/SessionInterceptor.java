@@ -53,9 +53,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				
 			}  
 		} else if (uri.contains("/api/v1/")){
-//			String login_ticket = "7f1b63ee1e1e46fe841eaf3602a03dc0";
-//			String access_token = "0bb3b4fc4435417fbd7785c085a02a1a";
-			//根据ticket和token获取用户
+//			根据ticket和token获取用户
 			String login_ticket = request.getHeader("login_ticket");
 			String access_token = request.getHeader("access_token");
 			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {

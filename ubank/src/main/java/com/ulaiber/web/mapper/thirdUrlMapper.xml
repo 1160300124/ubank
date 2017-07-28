@@ -14,17 +14,17 @@
     	<result column="url_name" property="urlName" jdbcType="VARCHAR" />
     	<result column="url" property="url" jdbcType="VARCHAR" />
     	<result column="pic_path" property="picPath" jdbcType="VARCHAR" />
-    	<result column="orderby" property="orderby" jdbcType="VARCHAR" />
+    	<result column="orderby" property="orderby" jdbcType="INTEGER" />
     	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
     	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
   		<result column="remark" property="remark" jdbcType="VARCHAR" />	
-    	<association property="page" column="url_pid" javaType="Page" select="com.ulaiber.web.dao.PageDao.getPageByPid" />
     	<association property="module" column="url_mid" javaType="Module" select="com.ulaiber.web.dao.ModuleDao.getModuleByMid" />
+    	<association property="category" column="url_cid" javaType="Category" select="com.ulaiber.web.dao.CategoryDao.getCategoryByCid" />
    </resultMap>
    
    <insert id="save" parameterType="ThirdUrl">
-   		insert into tbl_third_party_urls(url_name, url, pic_path, url_pid, url_mid, orderby, createTime, remark) values
-   			(#{urlName}, #{url}, #{picPath}, #{page.pid},  #{module.mid}, #{orderby}, #{createTime}, #{remark})
+   		insert into tbl_third_party_urls(url_name, url, pic_path, url_cid, url_mid, orderby, createTime, remark) values
+   			(#{urlName}, #{url}, #{picPath}, #{category.cid}, #{module.mid}, #{orderby}, #{createTime}, #{remark})
    </insert>
   
 	<select id="getAllUrls" parameterType="Map" resultMap="ThirdUrlMap">
@@ -43,16 +43,23 @@
 	</delete>
 	
 	<update id="updateByUid" parameterType="ThirdUrl">
-		update tbl_third_party_urls set url_name=#{urlName}, url=#{url}, pic_path=#{picPath}, url_pid=#{page.pid}, url_mid=#{module.mid},
+		update tbl_third_party_urls set url_name=#{urlName}, url=#{url}, pic_path=#{picPath}, url_cid=#{category.cid}, url_mid=#{module.mid},
 			orderby=#{orderby}, updateTime=#{updateTime}, remark=#{remark} where uid=#{uid}
 	</update>
 	
 	<select id="getAllUrlsforApi" resultMap="ThirdUrlMap">
-		select * from tbl_third_party_urls order by orderby
+		select * from tbl_third_party_urls order by orderby 
 	</select>
 	
 	<select id="getTotalNum" resultType="Integer">
 		select count(1) from tbl_third_party_urls
+	</select>
+
+	<select id="getUrlsByMidAndCid" parameterType="Map" resultMap="ThirdUrlMap">
+		select uid,url_name,url,pic_path,orderby,createTime,updateTime,remark from tbl_third_party_urls where 1=1
+		<if test="mid != 0">and url_mid=#{mid}</if>
+		<if test="cid != 0">and url_cid=#{cid}</if>
+		order by orderby
 	</select>
 	
 </mapper>

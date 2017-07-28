@@ -6,15 +6,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>U钱包</title>
-<link href="../css/homyz.css" rel="stylesheet" type="text/css" />
+<link href="../css/error.css" rel="stylesheet" type="text/css" />
 
 
 </head>
-<body style="background-image:url(<% request.getContextPath(); %>/images/bg/bodyBg.jpg);background-size:cover;">
+<body style="background-image:url(<% request.getContextPath(); %>/images/bodyBg.jpg);background-size:cover;">
 <div class="body">
     <div class="zBodyK" style="box-shadow:2px 2px 10px rgba(0,0,0,.3);margin-top:30px">
 		<div class="error">
-        	<div class="pic error400" style="background-image:url()"></div>
+        	<div class="pic error400" style="background-image:url(<%=request.getContextPath()%>/images/error400.gif)"></div>
             <div class="text">
             	<div class="text1">很遗憾！网页无法显示，请稍后再试！！</div>
                 <div class="text2">错误类型：400，服务器繁忙。</div>

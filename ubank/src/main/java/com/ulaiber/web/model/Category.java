@@ -6,17 +6,17 @@ package com.ulaiber.web.model;
  * @author huangguoqing
  *
  */
-public class Page {
+public class Category {
 	
 	/**
 	 * id
 	 */
-	private int pid;
+	private int cid;
 	
 	/**
-	 * 页面名称
+	 * 类别名称
 	 */
-	private String pageName;
+	private String categoryName;
 	
 	/**
 	 * 创建时间
@@ -33,20 +33,20 @@ public class Page {
 	 */
 	private String remark;
 
-	public int getPid() {
-		return pid;
+	public int getCid() {
+		return cid;
 	}
 
-	public void setPid(int pid) {
-		this.pid = pid;
+	public void setCid(int cid) {
+		this.cid = cid;
 	}
 
-	public String getPageName() {
-		return pageName;
+	public String getCategoryName() {
+		return categoryName;
 	}
 
-	public void setPageName(String pageName) {
-		this.pageName = pageName;
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
 
 	public String getCreateTime() {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ulaiber.web.controller.BaseController;
+import com.ulaiber.web.model.User;
 
 @Controller
 @RequestMapping("/backend/")
@@ -23,10 +24,11 @@ public class BackendLogoutController extends BaseController {
 	public void logout(String userName, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
+			User user = getUserFromSession(request);
 			HttpSession session = request.getSession();
 			session.invalidate();
 			response.sendRedirect(request.getContextPath() + "/backend/tologin");
-			logger.info(userName + "logout");
+			logger.info(user.getUserName() + " logout successed.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

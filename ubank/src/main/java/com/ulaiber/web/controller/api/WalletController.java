@@ -56,7 +56,7 @@ public class WalletController extends BaseController {
 		ResultInfo retInfo = new ResultInfo();
 		
 		//TODO 调银行查询余额接口
-		String money = "19999.99";
+		String money = "0.00";
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		
 		retInfo.setData(JSONObject.parse("{" + "\"balance\":\"" + money + "\"}"));
@@ -128,7 +128,7 @@ public class WalletController extends BaseController {
 		ResultInfo retInfo = new ResultInfo();
 		
 		//TODO 调银行提现接口
-		String money = "4867.35";
+		String money = "0.00";
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(JSONObject.parse("{" + "\"money\":\"" + money + "\"}"));
 		return retInfo;
