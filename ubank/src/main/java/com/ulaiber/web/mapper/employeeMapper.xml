@@ -15,8 +15,8 @@
 
     <!--新增员工信息-->
     <insert id="addEmployee" >
-        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,companyNumber,dept_number,bankNo,bankCardNo,role_id)
-            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,groupNumber,companyNumber,dept_number,bankNo,bankCardNo,role_id)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{groupNumber},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
     </insert>
 
     <!--修改员工信息-->

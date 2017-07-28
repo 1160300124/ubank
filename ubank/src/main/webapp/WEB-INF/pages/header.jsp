@@ -67,7 +67,7 @@
 
 
 <script type="text/javascript">
-
+var GROUPNUMBER = ${BACKENDUSER.groupNumber}; //当前用户所属集团编号
     $(function () {
 
         //获取系统菜单

@@ -34,6 +34,12 @@
                     <div class="form-inline base-form clearfix">
                         <form id="employee_form" method="post" class="form-horizontal" >
                             <div class="form-group col-md-12">
+                                <label class="col-md-3" for="exampleInputName2">所属集团</label>
+                                <div class="col-md-9">
+                                    <select class="combobox form-control"  name="groupNumber"  id="emp_select_group"></select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属公司</label>
                                 <div class="col-md-9">
                                     <select class="combobox form-control"  name="companyNumber"  id="emp_select"></select>
@@ -105,6 +111,7 @@
     $(function () {
         EmployeeFun.emp_getCompany();
         EmployeeFun.emp_getDept();
+        EmployeeFun.emp_getAllGroup()
         EmployeeFun.getAllBank();
         EmployeeFun.employeeQuery();
         EmployeeFun.getAllRoles();
@@ -137,6 +144,7 @@
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                    {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false},
                     {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
                     {field : 'id', title : '员工编号', width: 130, align : 'left',visible : false},
                     {field : 'role_id', title : '角色id', width: 60, align : 'left',visible : false},
@@ -217,6 +225,30 @@
                 }
             })
         },
+        //获取所有集团
+        emp_getAllGroup : function () {
+            $.ajax({
+                url : 'getAllGroup',
+                dataType : 'json',
+                type : 'post',
+                data:  {},
+                success : function (data) {
+                    if(data.length <= 0){
+                        Ewin.alert("没有集团数据，，请联系管理员");
+                        return;
+                    }
+                    var option = "";
+                    for (var i = 0; i < data.length; i++){
+                        option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
+                    }
+                    $("#emp_select_group").html(option);
+
+                },
+                error : function () {
+                    Ewin.alert("操作异常，请联系管理员");
+                }
+            })
+        },
         //获取所有角色信息
         getAllRoles : function () {
             $.ajax({
@@ -225,7 +257,6 @@
                 type : 'post',
                 data:  {},
                 success : function (data) {
-                    debugger;
                     if(data.length <= 0){
                         return;
                     }
@@ -312,6 +343,7 @@
             $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").attr("selected","selected");
             $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
             $("#emp_select_role").find("option[value="+row[0].role_id+"]").attr("selected","selected");
+            $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").attr("selected","selected");
             $("#employee_modal").modal("show");
 
         },
