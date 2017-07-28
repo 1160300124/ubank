@@ -11,7 +11,7 @@
         <button onclick="EmployeeFun.openModify()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
-        <button onclick="" id="three-button" type="button" class="btn btn-default">
+        <button onclick="EmployeeFun.emp_delete(window.event)" id="three-button" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
         <button onclick="EmployeeFun.employeeQuery()" type="button" class="btn btn-default">
@@ -110,24 +110,6 @@
         EmployeeFun.getAllRoles();
 
         var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
-
-        $('#three-button').bind('click', function(e) {
-            e.preventDefault();
-            var row = $('#employee_table').bootstrapTable('getSelections');
-            if(row.length <= 0){
-                Ewin.alert("请选中需要删除的数据");
-                return;
-            }
-            Confirm.show('提示', '确定删除该员工吗？', {
-                'Delete': {
-                    'primary': true,
-                    'callback': function() {
-                        EmployeeFun.emp_delete();
-                        Confirm.hide();
-                    }
-                }
-            });
-        });
 
     });
     var EmployeeFun = {
@@ -334,40 +316,56 @@
 
         },
         //删除
-        emp_delete : function () {
+        emp_delete : function (e) {
+            e = window.event;
+            e.preventDefault();
             var row = $('#employee_table').bootstrapTable('getSelections');
-            var numbers = ""; //存放多个部门编号
-            for (var i = 0 ; i < row.length ;i++){
-                if(i > 0 ){
-                    numbers += "," + row[i].id;
-                }else{
-                    numbers += row[i].id;
-                }
+            if(row.length <= 0){
+                Ewin.alert("请选中需要删除的数据");
+                return;
             }
-            $.ajax({
-                url : 'deleteEmployee',
-                dataType : 'json',
-                type : 'post',
-                data:  {
-                    "numbers" : numbers
-                },
-                success : function (data) {
-                    if(data.code == 300){
-                        Ewin.alert(data.message);
-                    }else if(data.code == 500){
-                        Ewin.alert("操作异常，请联系管理员");
-                    }else{
-                        Ewin.alert(data.message);
-                        $("#employee_form")[0].reset();
-                        $("#employee_modal").modal("hide");
-                        $('#employee_table').bootstrapTable('refresh');
-                    }
+            Confirm.show('提示', '确定删除该员工吗？', {
+                'Delete': {
+                    'primary': true,
+                    'callback': function() {
+                        var numbers = ""; //存放多个部门编号
+                        for (var i = 0 ; i < row.length ;i++){
+                            if(i > 0 ){
+                                numbers += "," + row[i].id;
+                            }else{
+                                numbers += row[i].id;
+                            }
+                        }
+                        $.ajax({
+                            url : 'deleteEmployee',
+                            dataType : 'json',
+                            type : 'post',
+                            data:  {
+                                "numbers" : numbers
+                            },
+                            success : function (data) {
+                                if(data.code == 300){
+                                    Ewin.alert(data.message);
+                                }else if(data.code == 500){
+                                    Ewin.alert("操作异常，请联系管理员");
+                                }else{
+                                    Ewin.alert(data.message);
+                                    //$("#employee_form")[0].reset();
+                                    //$("#employee_modal").modal("hide");
+                                    $('#employee_table').bootstrapTable('refresh');
+                                    Confirm.hide();
+                                }
 
-                },
-                error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
+                            },
+                            error : function () {
+                                Ewin.alert("操作异常，请联系管理员");
+                            }
+                        })
+
+                    }
                 }
-            })
+            });
+
         }
 
 

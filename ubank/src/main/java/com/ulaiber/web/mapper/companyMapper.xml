@@ -27,8 +27,11 @@
         </foreach>
     </insert>
 
-    <!--根据公司编号删除银行账户信息表中的数据-->
-    <delete id="deleteComByNum" parameterType="String">
-        DELETE FROM tbl_bankAccount where companyNumber = #{comNum}
+    <!--删除公司信息-->
+    <delete id="deleteCompanys" parameterType="String">
+        DELETE FROM tbl_company where companyNumber in
+        <foreach collection="array" item="idsArr" open="(" separator="," close=")">
+            #{idsArr}
+        </foreach>
     </delete>
 </mapper>

@@ -36,6 +36,9 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     @Resource
     private RoleMenuDao roleMenuDao;
 
+    @Resource
+    private BankDao bankDao;
+
     @Override
     public int addGroup(Group group) {
         int resultInfo = permissionDao.addGroup(group);
@@ -173,7 +176,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int deleteComByNum(String comNum) {
-        int msg = companyDao.deleteComByNum(comNum);
+        int msg = bankDao.deleteComByNum(comNum);
         return msg;
     }
 
@@ -226,6 +229,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int editEmp(User user) {
         int result = employeeDao.editEmp(user);
         return result;
@@ -250,6 +254,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int addRole(String com_numbers, String roleName) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
@@ -259,6 +264,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int settingRoleMenu(String roleId, String menuId) {
         List<Map<String,Object>> list = new ArrayList<>();
         String[] arr = menuId.split(",");
@@ -276,6 +282,61 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     public List<RoleMenu> getRoleMenuByRoleid(String roleId) {
         List<RoleMenu> list  = roleMenuDao.getRoleMenuByRoleid(roleId);
         return list;
+    }
+
+    @Override
+    public int getRoleTotal() {
+        int total = roleMenuDao.getRoleTotal();
+        return total;
+    }
+
+    @Override
+    public List<Roles> roleQuery(String search, int pageSize, int pageNum) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("search" , search);
+        map.put("pageSize" , pageSize);
+        map.put("pageNum" , pageNum);
+        List<Roles> list = rolesDao.roleQuery(map);
+        return list;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int modifyRole(String com_numbers, String roleName,String roleId) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("com_numbers" , com_numbers);
+        map.put("roleName" , roleName);
+        map.put("roleId" , roleId);
+        int result = rolesDao.modifyRole(map);
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int deleteRoles(String[] idsArr) {
+        int result = rolesDao.deleteRoles(idsArr);
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int deleteRolesMenu(String[] idsArr) {
+        int result = roleMenuDao.deleteRolesMenu(idsArr);
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int deleteCompanys(String[] idsArr) {
+        int result = companyDao.deleteCompanys(idsArr);
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int deleteCompanyByNum(String[] idsArr) {
+        int result = bankDao.deleteCompanyByNum(idsArr);
+        return result;
     }
 
 

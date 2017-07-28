@@ -80,4 +80,19 @@ public interface PermissionService {
     int settingRoleMenu(String roleId, String menuId); //设置角色权限
 
     List<RoleMenu> getRoleMenuByRoleid(String roleId);  // 根据角色id查询该角色是否被创建
+
+    int getRoleTotal();  //获取角色总数
+
+    List<Roles> roleQuery(String search, int pageSize, int pageNum);  //分页查询角色信息
+
+    int modifyRole(String com_numbers, String roleName , String roleId);  //修改角色信息
+
+    int deleteRoles(String[] idsArr); //删除角色信息
+
+
+    int deleteRolesMenu(String[] idsArr);  //删除角色对应的权限菜单
+
+    int deleteCompanys(String[] idsArr);  //删除公司信息
+
+    int deleteCompanyByNum(String[] idsArr); //根据公司编号删除对应的银行账户
 }

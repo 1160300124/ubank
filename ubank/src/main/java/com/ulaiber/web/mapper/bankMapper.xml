@@ -22,5 +22,17 @@
 	<select id="getAllBanks" resultMap="BankMap">
 		select * from tbl_banks
 	</select>
-	
+
+	<!--根据公司编号删除银行账户信息表中的数据-->
+	<delete id="deleteComByNum" parameterType="String">
+		DELETE FROM tbl_bankAccount where companyNumber = #{comNum}
+	</delete>
+
+	<!--根据公司编号删除银行账户信息表中的数据-->
+	<delete id="deleteCompanyByNum" parameterType="String">
+		DELETE FROM tbl_bankAccount where companyNumber in
+		<foreach collection="array" item="idsArr" open="(" separator="," close=")">
+			#{idsArr}
+		</foreach>
+	</delete>
 </mapper>

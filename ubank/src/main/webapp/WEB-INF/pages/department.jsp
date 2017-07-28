@@ -11,7 +11,7 @@
         <button onclick="DepartmentFun.openModify()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
-        <button onclick="DepartmentFun.departmentDelete()" type="button" class="btn btn-default">
+        <button onclick="DepartmentFun.departmentDelete(window.event)" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
         <button onclick=" DepartmentFun.departmentQuery()" type="button" class="btn btn-default">
@@ -192,44 +192,54 @@
 
         },
         //删除
-        departmentDelete : function () {
+        departmentDelete : function (e) {
+            e = window.event;
+            e.preventDefault();
             var row = $('#department_table').bootstrapTable('getSelections');
             if(row.length <= 0){
                 Ewin.alert("请选中需要删除的数据");
                 return;
             }
-            var numbers = ""; //存放多个部门编号
-            for (var i = 0 ; i < row.length ;i++){
-                if(i > 0 ){
-                    numbers += "," + row[i].dept_number;
-                }else{
-                    numbers += row[i].dept_number;
-                }
-            }
-            $.ajax({
-                url : 'deleteDept',
-                dataType : 'json',
-                type : 'post',
-                data:  {
-                    "numbers" : numbers
-                },
-                success : function (data) {
-                    if(data.code == 300){
-                        Ewin.alert(data.message);
-                    }else if(data.code == 500){
-                        Ewin.alert("操作异常，请联系管理员");
-                    }else{
-                        Ewin.alert(data.message);
-                        $("#department_form")[0].reset();
-                        $("#department_modal").modal("hide");
-                        $('#department_table').bootstrapTable('refresh');
-                    }
+            Confirm.show('提示', '确定删除该部门吗？', {
+                'Delete': {
+                    'primary': true,
+                    'callback': function() {
+                        var numbers = ""; //存放多个部门编号
+                        for (var i = 0 ; i < row.length ;i++){
+                            if(i > 0 ){
+                                numbers += "," + row[i].dept_number;
+                            }else{
+                                numbers += row[i].dept_number;
+                            }
+                        }
+                        $.ajax({
+                            url : 'deleteDept',
+                            dataType : 'json',
+                            type : 'post',
+                            data:  {
+                                "numbers" : numbers
+                            },
+                            success : function (data) {
+                                if(data.code == 300){
+                                    Ewin.alert(data.message);
+                                }else if(data.code == 500){
+                                    Ewin.alert("操作异常，请联系管理员");
+                                }else{
+                                    $("#department_form")[0].reset();
+                                    $("#department_modal").modal("hide");
+                                    Ewin.alert(data.message);
+                                    $('#department_table').bootstrapTable('refresh');
+                                }
 
-                },
-                error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
+                            },
+                            error : function () {
+                                Ewin.alert("操作异常，请联系管理员");
+                            }
+                        })
+                    }
                 }
-            })
+            });
+
         }
 
 

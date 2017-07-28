@@ -25,4 +25,26 @@
             VALUES (#{roleName},#{com_numbers})
     </insert>
 
+    <!--分页查询角色信息-->
+    <select id="roleQuery" parameterType="Map" resultType="com.ulaiber.web.model.Roles">
+        select * from tbl_roles ORDER BY role_id
+        <if test="search != null and search != ''">
+            where role_name like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--修改角色信息-->
+    <update id="modifyRole" parameterType="Map">
+        UPDATE tbl_roles set role_name = #{roleName} , companyNumber = #{com_numbers}
+          where role_id = #{roleId}
+    </update>
+
+    <!---->
+    <delete id="deleteRoles" parameterType="String">
+        DELETE FROM tbl_roles where role_id in
+        <foreach collection="array" item="idsArr" open="(" separator="," close=")">
+            #{idsArr}
+        </foreach>
+    </delete>
 </mapper>

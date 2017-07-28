@@ -200,44 +200,57 @@
 
         },
         //删除
-        gropDelete : function () {
+        gropDelete : function (e) {
+            e = window.event;
+            e.preventDefault();
             var row = $('#group_table').bootstrapTable('getSelections');
             if(row.length <= 0){
                 Ewin.alert("请选中需要删除的数据");
                 return;
             }
-            var numbers = ""; //存放多个集团编号
-            for (var i = 0 ; i < row.length ;i++){
-                if(i > 0 ){
-                    numbers += "," + row[i].groupNumber;
-                }else{
-                    numbers += row[i].groupNumber;
-                }
-            }
-            $.ajax({
-                url : 'deleteGroup',
-                dataType : 'json',
-                type : 'post',
-                data:  {
-                    "numbers" : numbers
-                },
-                success : function (data) {
-                    if(data.code == 300){
-                        Ewin.alert(data.message);
-                    }else if(data.code == 500){
-                        Ewin.alert("操作异常，请联系管理员");
-                    }else{
-                        Ewin.alert(data.message);
-                        $("#group_form")[0].reset();
-                        $("#group_add_modal").modal("hide");
-                        $('#group_table').bootstrapTable('refresh');
-                    }
+            Confirm.show('提示', '确定删除该集团吗？', {
+                'Delete': {
+                    'primary': true,
+                    'callback': function() {
+                        var numbers = ""; //存放多个集团编号
+                        for (var i = 0 ; i < row.length ;i++){
+                            if(i > 0 ){
+                                numbers += "," + row[i].groupNumber;
+                            }else{
+                                numbers += row[i].groupNumber;
+                            }
+                        }
+                        $.ajax({
+                            url : 'deleteGroup',
+                            dataType : 'json',
+                            type : 'post',
+                            data:  {
+                                "numbers" : numbers
+                            },
+                            success : function (data) {
+                                if(data.code == 300){
+                                    Ewin.alert(data.message);
+                                }else if(data.code == 500){
+                                    Ewin.alert("操作异常，请联系管理员");
+                                }else{
+                                    Ewin.alert(data.message);
+                                    $("#group_add_modal").modal("hide");
+                                    //$("#group_form")[0].reset();
+                                    Confirm.hide();
+                                    $('#group_table').bootstrapTable('refresh');
 
-                },
-                error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
+                                }
+
+                            },
+                            error : function () {
+                                Ewin.alert("操作异常，请联系管理员");
+                            }
+                        })
+
+                    }
                 }
-            })
+            });
+
 
         }
 

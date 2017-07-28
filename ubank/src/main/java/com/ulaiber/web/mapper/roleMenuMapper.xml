@@ -23,4 +23,16 @@
         </foreach>
     </insert>
 
+    <!--获取角色总数-->
+    <select id="getRoleTotal" resultType="int">
+        SELECT count(role_id) as total FROM tbl_roles
+    </select>
+
+    <!--删除角色对应的权限菜单-->
+    <delete id="deleteRolesMenu" parameterType="String" >
+        DELETE FROM tbl_roleMenu WHERE role_id in
+        <foreach collection="array" item="idsArr" open="(" separator="," close=")">
+            #{idsArr}
+        </foreach>
+    </delete>
 </mapper>
