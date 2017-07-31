@@ -30,6 +30,7 @@
     	<result property="expiredTime" column="expiredTime" jdbcType="VARCHAR" />
     	<result property="loginTime" column="loginTime" jdbcType="VARCHAR" />
     	<result property="groupNumber" column="groupNumber" jdbcType="VARCHAR" />
+    	<result property="groupNumber" column="groupNumber" jdbcType="VARCHAR" />
     	<result property="remark" column="remark" jdbcType="VARCHAR" />
     	<result property="login_fail_num" column="login_fail_num" jdbcType="INTEGER" />
     	<result property="login_fail_time" column="login_fail_time" jdbcType="VARCHAR" />

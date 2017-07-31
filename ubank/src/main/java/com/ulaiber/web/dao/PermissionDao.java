@@ -51,6 +51,10 @@ public interface PermissionDao {
     List<Company> getAllCompany();  // 获取所有公司信息
 
     List<Departments> getAllDept(); //获取所有部门信息
+
+    List<User> queryUserByDeptid(String[] number);  //根据部门id查询该部门是否存在用户
+
+    List<Departments> queryDeptByCompanyNum(String[] idsArr); //根据公司编号查询该公司是否存在部门
 }
 
 

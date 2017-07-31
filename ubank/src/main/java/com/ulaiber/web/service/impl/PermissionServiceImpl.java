@@ -339,5 +339,29 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         return result;
     }
 
+    @Override
+    public List<User> queryUserByRoleid(String[] idsArr) {
+        List<User> userList = rolesDao.queryUserByRoleid(idsArr);
+        return userList;
+    }
+
+    @Override
+    public List<User> queryUserByDeptid(String[] number) {
+        List<User> deptList = permissionDao.queryUserByDeptid(number);
+        return deptList;
+    }
+
+    @Override
+    public List<Departments> queryDeptByCompanyNum(String[] idsArr) {
+        List<Departments> list = permissionDao.queryDeptByCompanyNum(idsArr);
+        return list;
+    }
+
+    @Override
+    public List<Company> queryComByGroupid(String[] numberArr) {
+        List<Company> comList = companyDao.queryComByGroupid(numberArr);
+        return comList;
+    }
+
 
 }

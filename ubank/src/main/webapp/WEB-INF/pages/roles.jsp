@@ -18,7 +18,7 @@
         <button onclick="RoleFun.role_delete(window.event)" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="RoleFun.role_query()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>

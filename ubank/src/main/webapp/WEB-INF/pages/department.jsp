@@ -36,7 +36,7 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属公司</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control" id="dept_select" name="companyNumber" >
+                                    <select class="combobox form-control" id="dept_select" name="company_num" >
                                     </select>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
                 showRefresh : true, //刷新按钮
                 showToggle :true,   //切换试图（table/card）按钮
                 clickToSelect : true,
-                showColumns : true,
+              //  showColumns : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '部门名称', width: 130, align : 'left'},
@@ -149,6 +149,19 @@
         },
         //新增操作
         departmentAdd : function () {
+            var name = $("input[name=name]").val();
+            var com = $("#dept_select").val();
+            if(name == ""){
+                Ewin.alert("部门名称不能为空")
+                return ;
+            }else if(Validate.regNumAndLetter(name)){
+                Ewin.alert("部门名称格式不合法，请重新输入")
+                return;
+            }
+            if(com == ""){
+                Ewin.alert("公司不能为空");
+                return ;
+            }
             $.ajax({
                 url : 'addDept?flag=' + flag ,
                 dataType : 'json',
@@ -221,12 +234,12 @@
                             },
                             success : function (data) {
                                 if(data.code == 300){
+                                    Confirm.hide();
                                     Ewin.alert(data.message);
                                 }else if(data.code == 500){
                                     Ewin.alert("操作异常，请联系管理员");
                                 }else{
-                                    $("#department_form")[0].reset();
-                                    $("#department_modal").modal("hide");
+                                    Confirm.hide();
                                     Ewin.alert(data.message);
                                     $('#department_table').bootstrapTable('refresh');
                                 }

@@ -34,4 +34,13 @@
             #{idsArr}
         </foreach>
     </delete>
+
+
+    <!--根据集团编号查询是否存在公司-->
+    <select id="queryComByGroupid" parameterType="String" resultType="com.ulaiber.web.model.Company">
+        select * from tbl_company where group_num in
+        <foreach collection="array" item="numberArr" open="(" separator="," close=")">
+            #{numberArr}
+        </foreach>
+    </select>
 </mapper>

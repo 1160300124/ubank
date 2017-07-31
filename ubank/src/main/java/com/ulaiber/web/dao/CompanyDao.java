@@ -19,4 +19,6 @@ public interface CompanyDao {
     int addBankAccount(List<Map<String, Object>> list);  //插入银行账户信息
 
     int deleteCompanys(String[] idsArr); //删除公司信息
+
+    List<Company> queryComByGroupid(String[] numberArr); //根据集团编号查询是否存在公司
 }

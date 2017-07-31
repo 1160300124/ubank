@@ -1,6 +1,7 @@
 package com.ulaiber.web.dao;
 
 import com.ulaiber.web.model.Roles;
+import com.ulaiber.web.model.User;
 
 import java.util.List;
 import java.util.Map;
@@ -22,4 +23,6 @@ public interface RolesDao {
     int modifyRole(Map<String, Object> map);  //修改角色信息
 
     int deleteRoles(String[] idsArr);  //删除角色信息
+
+    List<User> queryUserByRoleid(String[] idsArr);  //根据角色id，判断当前角色下是否有用户存在
 }

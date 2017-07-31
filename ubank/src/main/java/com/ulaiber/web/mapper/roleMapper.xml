@@ -40,11 +40,19 @@
           where role_id = #{roleId}
     </update>
 
-    <!---->
+    <!--删除角色-->
     <delete id="deleteRoles" parameterType="String">
         DELETE FROM tbl_roles where role_id in
         <foreach collection="array" item="idsArr" open="(" separator="," close=")">
             #{idsArr}
         </foreach>
     </delete>
+
+    <!--根据角色id，判断当前角色下是否有用户存在-->
+    <select id="queryUserByRoleid" parameterType="String" resultType="com.ulaiber.web.model.User">
+        SELECT role_id,user_name from tbl_users where role_id in
+        <foreach collection="array" item="idsArr" open="(" separator="," close=")">
+            #{idsArr}
+        </foreach>
+    </select>
 </mapper>

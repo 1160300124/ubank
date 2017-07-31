@@ -52,6 +52,9 @@ public class User implements Serializable {
 	//绑定银行
 	private Bank bank;
 
+	//银行名称
+	private String bankName;
+
 	//银行编号
 	private String bankNo;
 	
@@ -206,6 +209,14 @@ public class User implements Serializable {
 
 	public void setBank(Bank bank) {
 		this.bank = bank;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 
 	public String getDept_name() {

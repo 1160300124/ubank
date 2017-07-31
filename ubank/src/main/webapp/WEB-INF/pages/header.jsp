@@ -14,6 +14,7 @@
 	<script src="<%=request.getContextPath()%>/js/jquery/jquery-1.12.3.min.js" type="text/javascript" ></script>
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-treeview.css" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrapValidator.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/zTreeStyle.css" rel="stylesheet" />
 	<script src="<%=request.getContextPath()%>/js/jquery/ajaxfileupload.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
@@ -22,6 +23,7 @@
 	<script src="<%=request.getContextPath()%>/js/common.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/confirm.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-treeview.js" type="text/javascript"></script>
+
 
 
 	<script type="text/javascript">

@@ -95,4 +95,12 @@ public interface PermissionService {
     int deleteCompanys(String[] idsArr);  //删除公司信息
 
     int deleteCompanyByNum(String[] idsArr); //根据公司编号删除对应的银行账户
+
+    List<User> queryUserByRoleid(String[] idsArr);  //根据角色id，判断当前角色下是否有用户存在
+
+    List<User> queryUserByDeptid(String[] number); //根据部门id查询该部门是否存在用户
+
+    List<Departments> queryDeptByCompanyNum(String[] idsArr); //根据公司编号查询该公司是否存在部门
+
+    List<Company> queryComByGroupid(String[] numberArr); //根据集团编号查询是否存在公司
 }

@@ -86,7 +86,7 @@ var RoleFun = {
                 treeObj.checkAllNodes(false);   //清空tree
                 $("input[name=role_name]").val(row.role_name);
                 var arr = [];
-                arr = row.companyNumber
+                arr = row.companyNumber;
                 $("#combotree").bootstrapCombotree("setValue",arr);
 
                 $.ajax({
@@ -133,7 +133,7 @@ var RoleFun = {
             pageList : [10,20,30,40], // 可供选择的每页的行数
             showRefresh : true, //刷新按钮
             showToggle :true,   //切换试图（table/card）按钮
-            showColumns : true,
+            //showColumns : true,
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
@@ -141,6 +141,7 @@ var RoleFun = {
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '所属公司', width: 130, align : 'left',
                     formatter : function (value,row,index) {
+                        return value;
 
                     }
                 },
@@ -166,6 +167,17 @@ var RoleFun = {
         var com_numbers = $("#combotree").bootstrapCombotree("getValue");
         var roleName = $("input[name=role_name]").val();
         var numbers = com_numbers.join(",");
+        if(roleName == ""){
+            Ewin.alert("角色名不能为空");
+            return
+        }else if(!Validate.regNumAndLetter(roleName)){
+            Ewin.alert("角色名格式不合法，请重新输入");
+            return
+        }
+        if(com_numbers == ""){
+            Ewin.alert("所属公司不能为空");
+            return
+        }
         $.ajax({
             url : 'addRole?flag=' + flag + "&roleId=" + roleId,
             dataType : 'json',
@@ -307,12 +319,13 @@ var RoleFun = {
                         },
                         success : function (data) {
                             if(data.code == 300){
+                                Confirm.hide();
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
                                 Ewin.alert("操作异常，请联系管理员");
                             }else{
-                                Ewin.alert(data.message);
                                 Confirm.hide();
+                                Ewin.alert(data.message);
                                 $('#role_table').bootstrapTable('refresh');
                             }
 

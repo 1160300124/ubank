@@ -34,7 +34,6 @@ var CompanyFun = {
                     option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
                 }
                 $("#group_select").append(option);
-
             },
             error : function () {
                 Ewin.alert("操作异常，请联系管理员");
@@ -85,7 +84,7 @@ var CompanyFun = {
             pageList : [20,30,40], // 可供选择的每页的行数
             showRefresh : true, //刷新按钮
             showToggle :true,   //切换试图（table/card）按钮
-            showColumns : true,
+           // showColumns : true,
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
@@ -117,6 +116,66 @@ var CompanyFun = {
     },
     //新增
     companyAdd : function () {
+        var name = $("input[name=name]").val();
+        var group = $("#group_select").val();
+        var bankNo = $("#company_select").val();
+        var legalPerson = $("input[name=legalPerson]").val();
+        var accounts = $("input[name=accounts]").val();
+        var customer = $("input[name=customer]").val();
+        var certificateNumber = $("input[name=certificateNumber]").val();
+        var authorizationCode = $("input[name=authorizationCode]").val();
+        if(group == ""){
+            Ewin.alert("集团不能为空");
+            return
+        }
+        if(bankNo == ""){
+            Ewin.alert("公司银行账号不能为空");
+            return
+        }
+        if(name == ""){
+            Ewin.alert("公司名不能为空");
+            return
+        }else if(!Validate.regNumAndLetter(name)){
+            Ewin.alert("公司名格式不合法，请重新输入");
+            return
+        }
+        if(legalPerson == ""){
+            Ewin.alert("法人不能为空");
+            return;
+        }else if(!Validate.regNumAndLetter(legalPerson)){
+            Ewin.alert("法人格式不合法，请重新输入");
+            return;
+        }
+        if(accounts == ""){
+            Ewin.alert("公司账号不能为空");
+            return;
+        }else if(!Validate.regNumber(accounts)){
+            Ewin.alert("公司账号格式不合法，请重新输入");
+            return;
+        }
+        if(customer == ""){
+            Ewin.alert("公司客户号不能为空");
+            return;
+        }else if(Validate.NumberAndLetter(customer)){
+            Ewin.alert("公司客户号格式不合法，请重新输入");
+            return;
+        }
+        if(certificateNumber == ""){
+            Ewin.alert("证书编号不能为空");
+            return;
+        }else if(Validate.NumberAndLetter(certificateNumber)){
+            Ewin.alert("证书编号格式不合法，请重新输入");
+            return;
+        }
+        if(authorizationCode == ""){
+            Ewin.alert("银行数字证书授权码不能为空");
+            return;
+        }else if(Validate.NumberAndLetter(authorizationCode)){
+            Ewin.alert("银行数字证书授权码格式不合法，请重新输入");
+            return;
+
+        }
+
         //获取所有账户信息
         var arr=[];
         var allBankAccount = [];
@@ -276,6 +335,7 @@ var CompanyFun = {
                         },
                         success : function (data) {
                             if(data.code == 300){
+                                Confirm.hide();
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
                                 Ewin.alert("操作异常，请联系管理员");

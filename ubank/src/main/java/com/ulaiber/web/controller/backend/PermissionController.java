@@ -4,6 +4,7 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.UserService;
+import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ulaiber.web.utils.MD5Util.getEncryptedPwd;
 
 /**
  * 权限设置Controller
@@ -133,6 +136,12 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteGroup(@RequestParam String numbers ){
         ResultInfo resultInfo = new ResultInfo();
         String[] numberArr = numbers.split(",");
+        List<Company> comList = permissionService.queryComByGroupid(numberArr); //根据集团编号查询是否存在公司
+        if(comList.size() > 0 ){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该集团存在公司，请先删除该集团下的公司");
+            return resultInfo;
+        }
         int result = permissionService.deleteGroup(numberArr);
         if(result >0){
             resultInfo.setMessage("删除成功");
@@ -212,6 +221,12 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteDept(@Param("numbers") String numbers){
         ResultInfo resultInfo = new ResultInfo();
         String[] number = numbers.split(",");
+        List<User> deptList = permissionService.queryUserByDeptid(number); //根据部门id查询该部门是否存在用户
+        if(deptList.size() > 0){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该部门下存在员工，请先删除该部门下的员工");
+            return resultInfo;
+        }
         int result = permissionService.deptDelete(number);
         if(result > 0){
             resultInfo.setMessage("删除成功");
@@ -388,7 +403,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(300);
                 return resultInfo;
             }
-            user.setLogin_password(pwd);
+            String password = MD5Util.getEncryptedPwd(pwd);
+            user.setLogin_password(password);
             int result = permissionService.addEmployee(user);
             if(result > 0){
                 resultInfo.setMessage("新增成功");
@@ -663,6 +679,12 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteRoles(@Param("ids") String ids){
         ResultInfo resultInfo = new ResultInfo();
         String[] idsArr = ids.split(",");
+        List<User> userList = permissionService.queryUserByRoleid(idsArr); //根据角色id，判断当前角色下是否有用户存在
+        if (userList.size() > 0){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该角色存在用户，请先删除对应的用户");
+            return resultInfo;
+        }
         int result = permissionService.deleteRoles(idsArr); //删除角色信息
         if(result <= 0){
             resultInfo.setCode(500);
@@ -690,6 +712,12 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteCompanys(@Param("ids") String ids){
         ResultInfo resultInfo = new ResultInfo();
         String[] idsArr = ids.split(",");
+        List<Departments> deptList = permissionService.queryDeptByCompanyNum(idsArr); //根据公司编号查询该公司是否存在部门
+        if(deptList.size() > 0){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该公司存在部门，请先删除该公司下的部门");
+            return resultInfo;
+        }
         int result = permissionService.deleteCompanys(idsArr);  //删除公司信息
         if ( result <= 0 ){
             resultInfo.setCode(500);
