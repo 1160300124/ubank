@@ -1,11 +1,16 @@
 package com.ulaiber.web.utils;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
@@ -28,24 +33,61 @@ public class SPDBUtil {
 	 */
 	private static Logger logger = Logger.getLogger(SPDBUtil.class);
 	
-	private static final String BISAFE_IP = "10.17.1.41";
-	private static final int BISAFE_SIGN_PORT = 4437;
-	private static final int BISAFE_HTTP_PORT = 5777;
+	private static String BISAFE_IP = "192.168.1.242";
+	private static String BISAFE_SIGN_PORT = "4437";
+	private static String BISAFE_HTTP_PORT = "5777";
 	
 	//单位编号
-	public static final String UNIT_NUM = "19630031";
+	public static String UNIT_NUM = "19630031";
 
 	//指定授权客户号
-	public static final String CLIENT_MASTER_ID = "2013632264";
+	public static String CLIENT_MASTER_ID = "2013632264";
 	
 	//付款账号
-	public static final String CLIENT_ACCT_NO = "19630155200001772";
+	public static String CLIENT_ACCT_NO = "19630155200001772";
 	
 	//代发工资的交易码
-	private static final String PAY_SALARY_TRANS_CODE= "5652";
+	private static String PAY_SALARY_TRANS_CODE= "5652";
 	
 	//查询代发工资信息交易码
-	private static final String PAY_RESULT_TRANS_CODE = "5635";
+	private static String PAY_RESULT_TRANS_CODE = "5635";
+	
+	private static String BUSINESS_TYPE= "1001";
+	
+	private static Properties props = null;   
+	
+	static {
+		loadProps();
+	}
+	
+	private synchronized static void loadProps(){
+		props = new Properties();
+		InputStream is = null;
+		try {
+			is = SPDBUtil.class.getClassLoader().getResourceAsStream("config/spdb.properties");
+			props.load(is);
+		} catch (FileNotFoundException e) {
+			logger.error("cannot find spdb.properties", e);
+		} catch (IOException e) {
+			logger.error("read spdb.properties error.", e);
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
+	}
+	
+	public static String getProperty(String key){
+		if(null == props) {
+			loadProps();
+		}
+		return props.getProperty(key);
+	}
+
+	public static String getProperty(String key, String defaultValue) {
+		if(null == props) {
+			loadProps();
+		}
+		return props.getProperty(key, defaultValue);
+	}
 	
 	/**
 	 * 获取签名报文
@@ -56,7 +98,6 @@ public class SPDBUtil {
 	 * @return
 	 */
 	private static String getSign(String signBody, boolean signFlag){
-		
 		String signUrl = "http://" + BISAFE_IP + ":" + BISAFE_SIGN_PORT + "/";
 		String res = HttpsUtil.doPost(signUrl, signBody, signFlag);
 		return res;
@@ -288,19 +329,20 @@ public class SPDBUtil {
 		xml = String.format("%06d", xml.length() + 6) + xml;
 		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
-		logger.info("getPayResult response: " + res);
+		logger.debug("[getPayResult] response: " + res);
 		String res1 = res.substring(6);
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
 			String returnCode = root.element("head").elementTextTrim("returnCode");
+			logger.info("[getPayResult] response head: " + root.element("head"));
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
 				String res2 = getSign(returnsign, false);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
-					logger.error("[getPayResult] response body sign failed.");
+					logger.error("[getPayResult] response body sign failed, result code: " + doc1.getElementsByTag("result").get(0).text());
 					return null;
 				}
 				Elements eles1 = doc1.getElementsByTag("sic");
@@ -310,7 +352,7 @@ public class SPDBUtil {
 			logger.error("parse response failed.", e);
 
 		}
-		logger.info("getPayResult end");
+		logger.info("getPayResult end...");
 		return null;
 	}
 	
@@ -330,9 +372,14 @@ public class SPDBUtil {
 	 */
 	public static String getPayResult(Map<String, Object> params){
 		logger.info("getPayResult start...");
-		
-		String authMasterID = params.get("authMasterID").toString();
-		String acctNo = params.get("acctNo").toString();
+//		BISAFE_IP = getProperty("BISAFE_IP", BISAFE_IP); 
+//		BISAFE_SIGN_PORT = getProperty("BISAFE_SIGN_PORT", BISAFE_SIGN_PORT);
+//		BISAFE_HTTP_PORT = getProperty("BISAFE_HTTP_PORT", BISAFE_HTTP_PORT);
+//		UNIT_NUM = getProperty("UNIT_NUM", UNIT_NUM);
+//		CLIENT_MASTER_ID = getProperty("CLIENT_MASTER_ID", CLIENT_MASTER_ID);
+//		CLIENT_ACCT_NO = getProperty("CLIENT_ACCT_NO", CLIENT_ACCT_NO);
+		String authMasterID = getProperty("CLIENT_MASTER_ID", CLIENT_MASTER_ID); 
+		String acctNo = getProperty("CLIENT_ACCT_NO", CLIENT_ACCT_NO); 
 		String seqNo = params.get("seqNo").toString();
 		String beginDate = params.get("beginDate").toString();
 		String endDate = params.get("endDate").toString();
@@ -350,37 +397,39 @@ public class SPDBUtil {
 		Elements eles = doc.getElementsByTag("sign");
 		String signbody = eles.get(0).text();
 		
-		String xml = getRequestXml(getRequestHeadStr(PAY_RESULT_TRANS_CODE, "1", CLIENT_MASTER_ID, new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), 
+		String xml = getRequestXml(getRequestHeadStr(PAY_RESULT_TRANS_CODE, "1", authMasterID, new Date().getTime() + "", DateTimeUtil.date2Str(new Date())), 
 				getRequestSignBody(signbody));
 		
 		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位s
 		xml = String.format("%06d", xml.length() + 6) + xml;
 		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
-		logger.info("getPayResult response: " + res);
+		logger.debug("[getPayResult] response: " + res);
 		String res1 = res.substring(6);
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
 			String returnCode = root.element("head").elementTextTrim("returnCode");
+			logger.info("[getPayResult] response head: " + root.element("head"));
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
 				String res2 = getSign(returnsign, false);
-				logger.info("[getPayResult] response body: " + res2);
+				logger.debug("[getPayResult] response body: " + res2);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
-					logger.error("[getPayResult] response body sign failed.");
+					logger.error("[getPayResult] response body sign failed, result code: " + doc1.getElementsByTag("result").get(0).text());
 					return null;
 				}
 				Elements eles1 = doc1.getElementsByTag("sic");
+				logger.info("[getPayResult] sic body: " + doc1.getElementsByTag("sic"));
 				return eles1.select("transstatus").text();
 			}
 		} catch (DocumentException e) {
 			logger.error("parse response failed.", e);
 
 		}
-		logger.info("getPayResult end");
+		logger.info("getPayResult end...");
 		return null;
 	}
 	
@@ -418,18 +467,18 @@ public class SPDBUtil {
 //		body.append("</list>");
 //		body.append("</lists>");
 //		body.append("</body>");
-		
+
 		logger.info("paySalaries start...");
+		String authMasterID = getProperty("CLIENT_MASTER_ID", CLIENT_MASTER_ID); 
+		String unitNo = getProperty("UNIT_NUM", UNIT_NUM); 
+		String acctNo = getProperty("CLIENT_ACCT_NO", CLIENT_ACCT_NO); 
+		String businessType = getProperty("BUSINESS_TYPE", BUSINESS_TYPE); 
 		String elecChequeNo = params.get("elecChequeNo").toString();
-		String authMasterID = params.get("authMasterID").toString();
-		String unitNo = params.get("unitNo").toString();
-		String businessType = params.get("businessType").toString();
-		String acctNo = params.get("acctNo").toString();
 		String bespeakDate = null == params.get("bespeakDate") ? "" : params.get("bespeakDate").toString();
 		int totalNumber = (int)params.get("totalNumber");
 		double totalAmount = (double)params.get("totalAmount");
 		String flag = params.get("flag").toString();
-		
+
 		//拼接5652 代发工资请求body
 		String body = getRequestBody(elecChequeNo, authMasterID, unitNo, businessType, acctNo, bespeakDate, totalNumber, totalAmount, flag, payees);
 		logger.info("paySalaries request body: " + body);
@@ -447,31 +496,33 @@ public class SPDBUtil {
 		xml = String.format("%06d", xml.length() + 6) + xml;
 		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
-		logger.info("paySalaries response: " + res);
+		logger.debug("[paySalaries] response: " + res);
 		String res1 = res.substring(6);
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
 			String returnCode = root.element("head").elementTextTrim("returnCode");
+			logger.info("[paySalaries] response head: " + root.element("head"));
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
 				//解签
 				String res2 = getSign(returnsign, false);
-				logger.info("[paySalaries] response body: " + res2);
+				logger.debug("[paySalaries] response body: " + res2);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
-					logger.error("[paySalaries] response body sign failed.");
+					logger.error("[paySalaries] response body sign failed, result code: " + doc1.getElementsByTag("result").get(0).text());
 					return null;
 				}
 				Elements eles1 = doc1.getElementsByTag("sic");
+				logger.info("[getPayResult] sic body: " + doc1.getElementsByTag("sic"));
 				return eles1.select("entrustSeqNo").text();
 			}
 		} catch (DocumentException e) {
 			
 			logger.error("parse response failed.", e);
 		}
-		logger.info("paySalaries end");
+		logger.info("paySalaries end...");
 		return null;
 	} 
 	
@@ -511,19 +562,17 @@ public class SPDBUtil {
 		
 		
 		
-		Map<String, Object> params1 = new HashMap<String, Object>();
-		params1.put("authMasterID", CLIENT_MASTER_ID);
-		params1.put("acctNo", CLIENT_ACCT_NO);
-		params1.put("seqNo", "5235133004");
-		params1.put("beginDate", "20170713");
-		params1.put("endDate", "20170713");
-		String transStatus = getPayResult(params1);
+//		Map<String, Object> params1 = new HashMap<String, Object>();
+//		params1.put("authMasterID", CLIENT_MASTER_ID);
+//		params1.put("acctNo", CLIENT_ACCT_NO);
+//		params1.put("seqNo", "5235133004");
+//		params1.put("beginDate", "20170713");
+//		params1.put("endDate", "20170713");
+//		String transStatus = getPayResult(params1);
 		
-		System.out.println("-----------------------------------------------" + transStatus);
+//		System.out.println("-----------------------------------------------" + transStatus);
 		
-
-		
-		
+		System.err.println(getProperty("BISAFE_IP"));
 		
 	}
 }

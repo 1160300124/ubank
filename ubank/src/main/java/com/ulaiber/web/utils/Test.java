@@ -3,21 +3,19 @@ package com.ulaiber.web.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ulaiber.web.conmon.IConstants;
+
 public class Test {
 
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args) {
 //		UUID uuid = UUID.randomUUID();
 //        System.out.println(uuid.toString().replaceAll("-", ""));
-//        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【应用小宝你的验证码是12314345", "15919477086");
+//        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", IConstants.SMS_TEMPLATE.replace("#code#", CaptchaUtil.getCaptcha()), "15919477086");
 //        System.out.println(s);
+		
 //        int n = 0 ;
-//
-//		while(n < 100000)
-//			n = (int)(Math.random()*1000000);
+//		while(n < 10000)
+//			n = (int)(Math.random()*100000);
 //		
 //		System.out.println(n);
 //		System.out.println(Math.random());
@@ -61,11 +59,11 @@ public class Test {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
-      String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
-      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-      params.put("mobile", "18503036206");
-      String response = HttpsUtil.doPost(apiUrl, params);
-      System.out.println(response);
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "18503036206");
+//      String response = HttpsUtil.doPost(apiUrl, params);
+//      System.out.println(response);
         
 //      String apiUrl = "http://10.17.1.136:8080/uwallet/api/v1/sendCaptcha";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
@@ -81,6 +79,26 @@ public class Test {
 //      params.put("confirm_password", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
+		
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/updateForBankCard";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "15919477086");
+//      params.put("bankCardNo", "123456");
+//      params.put("bankNo", "123456");
+//      params.put("reserve_mobile", "123456");
+//      String response = HttpsUtil.doPost1(apiUrl, params);
+//      System.out.println(response);
+		
+		
+//		FileUtil.copy(new File("C:\\tools\\test\\haha\\body.jpg"), new File("C:\\tools\\test\\"));
+//		FileUtil.delFile("C:\\tools\\test\\haha\\body.jpg");
+		
+//		String filename = "fileaaaaa.aaaa.jpg";
+//		String uuid = UUIDGenerator.getUUID();
+//        String newFilename = uuid + filename.substring(filename.lastIndexOf("."), filename.length());
+//        System.out.println(uuid);
+//        System.out.println(newFilename);
+		System.out.println(SPDBUtil.CLIENT_MASTER_ID);
 		
 	}
 	
@@ -99,6 +117,11 @@ public class Test {
 	    return HttpsUtil.doPost("https://sms.yunpian.com/v2/sms/single_send.json", params);
 //	    return post("https://sms.yunpian.com/v2/sms/single_send.json", params);//请自行使用post方式请求,可使用Apache HttpClient
 	}
-	 
+
+	public static final String priKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKh7bxbe5dhwuZzNkeDXrpHx7o5k+uIWrbY1+8c6Oqgq2AfajnK5v10OfQW85xNUn/4TzoRcCOCaK2LZO4QJoQmgs41x45jZNvI/f8EGcJvt2oCs3S2Da98+v6VVfDXoSfgeHlNRcDSYlZF2E31KQLtdTGva9IeECx2CpPIkbVeXAgMBAAECgYA0QlUq2uigQhbQtFLTUxMq4cgFEv1es3oeUpBOM5mOH/vyM7CLlWHuE1hkNzvVmyIlRS+BjqqSQD/E4Wy8f+AbAznky5F8q5Afe5ZKxi+n2M4ZMgh9uryVMcAHCXu1RnOrtsnGjJvp23ku4wZtWCHLNAuQfI9zj6ncq4v50RKKQQJBAN8tSbcT37Mq3Y50zVnnmGxNEgUZKJXwPw/KnO6EeR/Nfpmzy40GQU8y+GGoq5cVY5NDOqYVi6nh21mLXQij9AsCQQDBQt0zU8zurSNaoRYsjhNrHJHQjBt0WuIxtluZz44CTbNQw5/3kA1jVvt1EXOE1hF+l2QVIuLgvgIeHDwvenYlAkAeiusgtAaUVZR2r4N+/1P71lxV+Eh2pKdsuNTbS6Pr90qRLGr6BNYhSZ92dgftqE61U6kOG7q+aBuF2K3FxfJbAkA1oCES4fjmbYJ23mXxvQakXQwU6xufIKzNEIXAWzhTaU4NZgrYPc+JNhSWOl5siJ3YG5f4yXJc3DxoMHt+zSNFAkEA25eGORpWtXERhGXHZR8f3nWIHTAF+EM1O8T7YXp+y7sWs8YvtNI3ZtzjzncHWk4YdScNqkXC1UJz2hokLUR7Aw==";
+	public static String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoe28W3uXYcLmczZHg166R8e6OZPriFq22NfvHOjqoKtgH2o5yub9dDn0FvOcTVJ/+E86EXAjgmiti2TuECaEJoLONceOY2TbyP3/BBnCb7dqArN0tg2vfPr+lVXw16En4Hh5TUXA0mJWRdhN9SkC7XUxr2vSHhAsdgqTyJG1XlwIDAQAB";
+
+
+
 
 }

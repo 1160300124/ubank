@@ -1,4 +1,4 @@
-package com.ulaiber.web.controller;
+package com.ulaiber.web.controller.api;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
@@ -43,19 +44,22 @@ public class LoginController extends BaseController{
 		ResultInfo retInfo = new ResultInfo();
 		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getLogin_password())){
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("mobile or password is empty.");
+			retInfo.setMessage("账号或密码不能为空。");
+			logger.error("mobile or password is empty.");
 			return retInfo;
 		}
 		User dbuser = userService.findByMobile(user.getMobile());
 		if (!ObjUtil.notEmpty(dbuser)){
 			retInfo.setCode(IConstants.QT_MOBILE_NOT_EXISTS);
-			retInfo.setMessage("mobile not exists.");
+			retInfo.setMessage("该账号不存在。");
+			logger.error("mobile not exists.");
 			return retInfo;
 		}
 		
 		if (!MD5Util.validatePwd(user.getLogin_password(), dbuser.getLogin_password())){
 			retInfo.setCode(IConstants.QT_NAME_OR_PWD_OEEOR);
-			retInfo.setMessage("mobile or password error.");
+			retInfo.setMessage("请输入正确密码。");
+			logger.error("mobile or password error.");
 			return retInfo;
 		}
 		
@@ -65,7 +69,6 @@ public class LoginController extends BaseController{
 		user.setAccess_token(access_token);
 		boolean flag = userService.update(user);
 		if (flag){
-
 			User tempUser = new User();
 			tempUser.setId(dbuser.getId());
 			tempUser.setUserName(dbuser.getUserName());
@@ -74,10 +77,16 @@ public class LoginController extends BaseController{
 			tempUser.setAccess_token(access_token);
 			tempUser.setReserve_mobile(dbuser.getReserve_mobile());
 			tempUser.setCardNo(dbuser.getCardNo());
+			tempUser.setBankCardNo(dbuser.getBankCardNo());
 			tempUser.setBank(dbuser.getBank());
 			retInfo.setData(tempUser);
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("login successed.");
+			retInfo.setMessage("登录成功。");
+			logger.info(dbuser.getUserName() + " login successed.");
+		} else {
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("登录失败。");
+			logger.error(dbuser.getUserName() + " login failed.");
 		}
 		return retInfo;
 	}

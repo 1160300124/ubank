@@ -1,0 +1,171 @@
+生产系统Apache与Tomcat整合配置   Ver:1.0
+Author:xiaokang.zh  2013.1.10
+
+背景：此安装方法仅适用于Apache2.2.x+Tomcat6.0.x+Windows系统
+
+1.安装Apache与Tomcat,要求：
+a.安装路径不能含有空格、中文字符等
+b.因程序会产生日志，需选择相对较大的磁盘空间
+c.做好安全防护，特别是Tomcat不能安装Document、Manager等包
+d.两者均要以服务开启,Apache开80端口，tomcat端口为8005(shutdown),8080(server),8009(ajp)
+e.应用分前、后台，需要安装两个TOMCAAT对应前后台程序，更新时不会相互影响
+
+
+2.Apache配置
+a. 将apache/conf/进行全目录备份，以防操作不当进行配置文件恢复
+b. 编辑apache/conf/httpd.conf文件，进行以下修改
+   将 #LoadModule deflate_module modules/mod_deflate.so 前面的#号去掉，以开启压缩服务 （约87行）
+   将 #LoadModule expires_module modules/mod_expires.so 前面的#号去掉，以开启过期服务 （约92行）
+   将 #LoadModule proxy_module modules/mod_proxy.so
+      #LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+      #LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
+      前面的#号去掉，以开启Tomcat代理服务、Tomcat ajp支持、及tomcat集群负载均衡支持 （约110-112行）
+   将#Include conf/extra/httpd-mpm.conf  前面的#号去掉，以开启Apache最大访问连接数配置 （约452行）
+   将#Include conf/extra/httpd-default.conf  前面的#号去掉，以开启Apache全局变量配置 （约479行）
+   在httpd.conf文件末尾，加入以下配置段 （约492行处）：
+        #用于配置Tomcat的代理与反项代理,其中servername依据时际情况配置
+	<VirtualHost *:80>
+	ProxyPass / ajp://127.0.0.1:8009/
+	ProxyPassReverse / ajp://127.0.0.1:8009/
+	ServerName www.jh.cn
+	</VirtualHost>
+
+	#只做HTML，CSS，JS的压缩，以JQUERY举例未开启前下载量74K，开启后约24K左右
+	<IfModule mod_deflate.c>
+		SetOutputFilter DEFLATE
+		DeflateCompressionLevel 9
+		AddOutputFilterByType DEFLATE text/html text/css application/x-javascript
+		# not gzip on IE6
+		BrowserMatch \bMSIE\s[1-6] no-gzip
+	</IfModule>
+
+	#分别设置css,gif,png,jpg,flash等文件的过期时长
+	<IfModule mod_expires.c>
+	ExpiresActive on
+	ExpiresDefault A0
+	ExpiresByType text/css  A86400
+	ExpiresByType image/gif A432000
+	ExpiresByType image/jpg A86400
+	ExpiresByType image/jpeg A86400
+	ExpiresByType image/png A86400
+	ExpiresByType images/ico A2592000
+	EXpiresByType application/x-shockwave-flash A2592000
+	EXpiresByType application/x-javascript      A432000
+	ExpiresByType video/x-flv A2592000
+	</IfModule>
+
+	#关闭httpd的ETAG请求
+	FileETag none 
+
+c. 编辑apache/conf/extra/httpd-mpm.conf，用于配置最大请求连接数，因为是windows系统，只需要配置以下段，并改为
+	<IfModule mpm_winnt_module>
+	    ThreadsPerChild      200  
+	    MaxRequestsPerChild    10000
+	    Win32DisableAcceptEx
+	</IfModule>
+   ThreadsPerChild 是指一个进程最多拥有的线程数（Windows版本，貌似不可以开启多个进程),一般100-500就可以
+   MaxRequestsPerChild，是指一个线程最多可以接受的连接数，默认是0，就是不限制的意思，但是网上有文章说，0会导致内存泄露。所以，可以根据实际情况，配置一个比较大的值,如10000。
+   设置Win32DisableAcceptEx参数是为了解决“指定的网络名不再可用”的问题的
+
+f. 编辑apache/conf/extra/httpd-default.conf，用于配置apache全局参数，其中调节以下参数
+	Timeout 15 （连接超时缺省为300，太大了，缩小会减少同时连接数，即上面占用的实际线程数）
+	KeepAlive On （开启可以提高性能，因为一个页面一般会有多个请求）
+	MaxKeepAliveRequests 100 （这个数目自己根据网页内容调节）
+	KeepAliveTimeout 5 （这个小于Timeout就行）
+
+g. 配置完成后，使用Apache程序集中的Test Configuration进行配置测试，如果没有错，则先停止服务，再重启服务，不要使用restart
+
+h. 以上配置成功完成后，再使用域名访问，会看到默认的tomcat页面（小猫）
+
+
+
+3. Tomcat配置
+a. 内存配置 
+   JAVA程序最重要一项就是内存配置，因为Tomcat是基于服务安装，需要在Configure Tomcat界面进行内存配置，切换到JAVA标签
+   在 Java Options 框中输入以下值
+	-XX:PermSize=256M
+	-XX:MaxPermSize=512M
+   将 Initial memory pool 设置为 1024
+   将 Maximum memory pool 设置为 2048
+   (具体依实际机器内存大小设置，设置不合法，Tomcat会启动失败
+
+b.将 tomcat/webapps 目录下的所有文件夹与文件删除，清空
+
+c.备份 tomcat/conf 目录，以防操作不当进行恢复
+
+
+4. 项目部署
+a. 在一个空间大的盘中部署项目，以下以D盘举例，新建目录D:\jhapps,将前台与后台的war包分别解压成文件夹放进目录
+   后台 v5ht 目录
+   前台 v5qt 目录
+
+b. 后台配置
+   编辑tomcat/conf/server.xml文件，找到被注释的以下代码段
+   <!-- <Executor name="tomcatThreadPool" namePrefix="catalina-exec-" 
+        maxThreads="150" minSpareThreads="4"/>  --> （约56行，将注释去掉，并改为以下）
+    <Executor name="tomcatThreadPool" namePrefix="catalina-exec-" 
+        maxThreads="250" minSpareThreads="25"/>  
+	具体值依据服务器性能，后台比前台配置值要少
+
+  将原：
+  <Connector port="88" protocol="HTTP/1.1" 
+               connectionTimeout="20000" 
+               redirectPort="8443" />
+  进行注释，开启以下内容
+   <Connector executor="tomcatThreadPool"
+               port="88" protocol="HTTP/1.1" 
+               connectionTimeout="20000"
+	       URIEncoding="UTF-8"
+	       enableLookups="false"
+               redirectPort="8443" /> 
+  以上配置是开启Tomcat线程池，以提高服务性能
+  
+
+  找到
+   <Host name="localhost"  appBase="webapps"
+            unpackWARs="true" autoDeploy="true"
+            xmlValidation="false" xmlNamespaceAware="false">
+  代码段，在<Host>节点后加入后台项目的配置
+  <Context docBase="D:\jhapps\v5ht" path="/v5ht" reloadable="true"/>
+  <Context docBase="D:\jhapps\slf_upload" path="/slf_upload" reloadable="true"/>
+
+ 日志配置 
+   修改classes/log4j.xml ，修改日志文件的存放路径
+
+ 重启后台服务器，通过URL访问即可登录后台
+
+
+c. 前台配置
+ 编辑tomcat/conf/server.xml文件，找到被注释的以下代码段
+   <!-- <Executor name="tomcatThreadPool" namePrefix="catalina-exec-" 
+        maxThreads="150" minSpareThreads="4"/>  --> （约56行，将注释去掉，并改为以下）
+    <Executor name="tomcatThreadPool" namePrefix="catalina-exec-" 
+        maxThreads="250" minSpareThreads="25"/>  
+	具体值依据服务器性能，前台配置值要高一些
+
+  将原：
+  <Connector port="88" protocol="HTTP/1.1" 
+               connectionTimeout="20000" 
+               redirectPort="8443" />
+  进行注释，开启以下内容
+   <Connector executor="tomcatThreadPool"
+               port="88" protocol="HTTP/1.1" 
+               connectionTimeout="20000"
+	       URIEncoding="UTF-8"
+	       enableLookups="false"
+               redirectPort="8443" /> 
+  以上配置是开启Tomcat线程池，以提高服务性能
+  
+
+  找到
+   <Host name="localhost"  appBase="webapps"
+            unpackWARs="true" autoDeploy="true"
+            xmlValidation="false" xmlNamespaceAware="false">
+  代码段，在<Host>节点后加入后台项目的配置
+  <Context docBase="D:\jhapps\v5qt" path="" reloadable="true"/>
+  <Context docBase="D:\jhapps\slf_upload" path="/slf_upload" reloadable="true"/>
+
+  日志配置 
+  修改classes/log4j.xml ，修改日志文件的存放路径
+
+ 重启后台服务器，通过URL访问即可登录后台

@@ -3,13 +3,13 @@ $(function () {
 	function validate(){
 		var name = $("#username").val();
 		if(name == "" || name.length == 0){
-			$("#errormsg").text("用户名不能为空！");
+			$(".form-error").text("用户名不能为空！");
 			return false;
 		}
 	    //检查密码
 		var pwd = $("#password").val();
 		if(pwd == "" || pwd.length==0){
-			$("#errormsg").text("密码不能为空！");	
+			$(".form-error").text("密码不能为空！");	
 			return false;
 		}
 	
@@ -17,7 +17,7 @@ $(function () {
 	}
 	
 	$("#btn_login").unbind().bind("click", function(){
-		$("#errormsg").text("");
+		$(".form-error").text("");
 		$("#btn_login").attr("disabled", true);
 		if (validate()){
 			
@@ -40,11 +40,11 @@ $(function () {
 						window.location = "index";
 						
 					}else{
-						$("#errormsg").text("用户名或密码错误！");
+						$(".form-error").text("用户名或密码错误！");
 					}
 				},
 				error : function(data, status, e) {
-					$("#errormsg").text("系统内部错误！");
+					$(".form-error").text("系统内部错误！");
 				}
 			});
 		}

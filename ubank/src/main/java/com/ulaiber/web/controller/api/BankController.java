@@ -1,4 +1,4 @@
-package com.ulaiber.web.controller;
+package com.ulaiber.web.controller.api;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.BankService;
@@ -42,11 +43,12 @@ public class BankController extends BaseController {
 	@RequestMapping(value = "queryAllBanks", method = RequestMethod.GET)
 	@ResponseBody
 	public ResultInfo queryAllBanks(){
-		
+		logger.debug("queryAllBanks start...");
 		ResultInfo retInfo = new ResultInfo();
 		List<Bank> banks = bankservice.getAllBanks();
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(banks);
+		logger.debug("queryAllBanks end...");
 		return retInfo;
 	}
 

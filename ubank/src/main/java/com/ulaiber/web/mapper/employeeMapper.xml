@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.EmployeeDao">
+
+    <!--根据员工姓名查询对应的信息-->
+    <select id="getEmpByName" parameterType="String" resultType="com.ulaiber.web.model.User">
+        SELECT * from tbl_users where user_name = #{userName}
+    </select>
+
+    <!--新增员工信息-->
+    <insert id="addEmployee" >
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,groupNumber,companyNumber,dept_number,bankNo,bankCardNo,role_id)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{groupNumber},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
+    </insert>
+
+    <!--修改员工信息-->
+    <update id="editEmp" parameterType="com.ulaiber.web.model.User">
+        UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo} ,
+        companyNumber = #{companyNumber},dept_number = #{dept_number},bankNo = #{bankNo}, bankCardNo = #{bankCardNo}
+          where user_name = #{userName}
+    </update>
+
+    <!--获取员工总数-->
+    <select id="getEmpTotal" resultType="int">
+        select count(user_name) as total from tbl_users
+    </select>
+
+    <!-- 分页查询员工信息-->
+    <select id="empQuery" parameterType="Map" resultType="com.ulaiber.web.model.User">
+        select b.name as com_name,c.name as dept_name,d.bankName ,a.companyNumber,
+        a.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,a.mobile,a.cardNo from tbl_users a
+        LEFT JOIN tbl_company b on a.companyNumber = b.companyNumber
+        left join tbl_departments c on a.dept_number = c.dept_number
+        left join tbl_banks d on a.bankNo = d.bankNo
+        <if test="search != null and search != ''">
+            where a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!-- 根据员工编号删除对应的员工-->
+    <delete id="empDlete" parameterType="String">
+        DELETE FROM tbl_users where user_id in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </delete>
+</mapper>

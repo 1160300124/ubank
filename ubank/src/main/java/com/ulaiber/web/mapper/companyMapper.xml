@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.CompanyDao">
+    <select id="getBankAccountByNum" parameterType="String" resultType="com.ulaiber.web.model.BankAccount">
+        select bankNumber,account,customer,certificateNumber,authorizationCode from tbl_bankAccount where account in
+        <foreach collection="array" item="accounts" open="(" separator="," close=")">
+            #{accounts}
+        </foreach>
+    </select>
+
+    <!--根据公司名称获取公司信息-->
+    <select id="getComByName" resultType="com.ulaiber.web.model.Company" parameterType="String">
+        SELECT name FROM tbl_company where name = #{comName}
+    </select>
+
+    <!--新增银行账户信息-->
+    <insert id="addBankAccount" parameterType="java.util.List" >
+        INSERT INTO tbl_bankAccount(bankNumber,companyNumber,account,customer,certificateNumber,authorizationCode) VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+            (#{items.bankNo},#{items.companyNumber},#{items.accounts},#{items.customer},#{items.certificateNumber},#{items.authorizationCode})
+        </foreach>
+    </insert>
+
+    <!--删除公司信息-->
+    <delete id="deleteCompanys" parameterType="String">
+        DELETE FROM tbl_company where companyNumber in
+        <foreach collection="array" item="idsArr" open="(" separator="," close=")">
+            #{idsArr}
+        </foreach>
+    </delete>
+
+
+    <!--根据集团编号查询是否存在公司-->
+    <select id="queryComByGroupid" parameterType="String" resultType="com.ulaiber.web.model.Company">
+        select * from tbl_company where group_num in
+        <foreach collection="array" item="numberArr" open="(" separator="," close=")">
+            #{numberArr}
+        </foreach>
+    </select>
+</mapper>

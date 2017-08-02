@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.CategoryDao">
+
+    <resultMap id="CategoryMap" type="Category" >
+    	<id column="cid" property="cid" jdbcType="INTEGER" />
+    	<result column="category_name" property="categoryName" jdbcType="VARCHAR" />
+    	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+   </resultMap>
+   
+   <insert id="save" parameterType="Category">
+   		insert into tbl_categories(category_name, createTime, remark) values(#{categoryName}, #{createTime}, #{remark});
+   </insert>
+  
+	<select id="getAllCategories" resultMap="CategoryMap">
+		select * from tbl_categories 
+		<if test="search != null and search != ''">
+			where category_name like concat('%',#{search},'%')
+		</if>
+		order by createTime desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getAllCategoriesforApi" resultMap="CategoryMap">
+		select * from tbl_categories
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_categories
+	</select>
+	
+	<select id="getCategoryByCid" parameterType="Integer" resultMap="CategoryMap">
+		select * from tbl_categories where cid=#{cid}
+	</select>
+	
+	<update id="updateById" parameterType="Category">
+		update tbl_categories set category_name=#{categoryName}, updateTime=#{updateTime},  remark=#{remark} where cid=#{cid}
+	</update>
+	
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from tbl_categories where cid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+
+	
+</mapper>

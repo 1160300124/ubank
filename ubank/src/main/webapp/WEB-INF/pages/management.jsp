@@ -43,7 +43,7 @@
 
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" id="import_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog" style="width:50%;height:50%">
+		<div class="modal-dialog" style="width:50%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -52,23 +52,29 @@
 					<h4 class="modal-title" id="myModalLabel"> 上传 </h4>
 				</div>
 				<div class="modal-body">
-					<div class="form-group" style="padding-bottom: 30px;">
-						<label for="upload_file" class="col-sm-2 control-label">上传文件</label>
-						<div class="col-sm-6">
-							<input type="file" class="form-control" id="file" name="file"
-								   style="display: none;" onchange="file_tmp.value=this.value;">
-							<input type="text" class="form-control" id="file_tmp" name="file_tmp"
-								   readonly="readonly" onclick="file.click(); ">
+					<form class="form-horizontal" role="form" id="add_form">
+						<div class="form-group">
+							<label for="upload_file" class="col-sm-2 control-label">上传文件</label>
+							<div class="col-sm-6">
+								<input type="file" class="form-control" id="file" name="file"
+									   style="display: none;" onchange="file_tmp.value=this.value;">
+								<input type="text" class="form-control" id="file_tmp" name="file_tmp"
+									   readonly="readonly" onclick="file.click(); ">
+							</div>
+	
+							<div class="col-sm-1">
+								<button type="button" class="btn btn-default" id="select_file" onclick="file.click();">
+									<span class="fa icon-folder-open" aria-hidden="true">浏览</span>
+								</button>
+							</div>
+							<div class="col-sm-1">
+								<button type="button" class="btn btn-default" id="upload_file">
+									<span class="fa icon-upload" aria-hidden="true">上传</span>
+								</button>
+							</div>
+	
 						</div>
-
-						<div class="col-sm-1">
-							<button type="button" class="btn btn-primary" id="select_file" onclick="file.click();">浏览   </button>
-						</div>
-						<div class="col-sm-1">
-							<button type="button" class="btn btn-primary" id="upload_file">上传 </button>
-						</div>
-
-					</div>
+					</form>
 
 					<table id="tb_salary" data-toggle="table" data-striped="true"
 						   data-pagination="true" data-side-pagination="client" data-page-size="10" data-page-list="[10,15,20]">

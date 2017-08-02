@@ -101,5 +101,13 @@ public interface UserService {
 	 * @return
 	 */
 	List<Menu> getAllMenu();
+	
+	/**
+	 * 校验支付密码是否正确
+	 * @param mobile
+	 * @param password
+	 * @return
+	 */
+	boolean validatePayPwd(String mobile, String password);
 
 }

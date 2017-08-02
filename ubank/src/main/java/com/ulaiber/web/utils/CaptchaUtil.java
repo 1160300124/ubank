@@ -36,6 +36,6 @@ public class CaptchaUtil {
 	 * @return
 	 */
 	public static String getCaptcha(){
-		return String.valueOf((int)((Math.random() * 9 + 1) * 100000));
+		return String.valueOf((int)((Math.random() * 9 + 1) * 10000));
 	}
 }

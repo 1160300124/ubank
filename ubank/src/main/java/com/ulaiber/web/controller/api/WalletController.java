@@ -1,4 +1,4 @@
-package com.ulaiber.web.controller;
+package com.ulaiber.web.controller.api;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.Bill;
 import com.ulaiber.web.model.ResultInfo;
@@ -51,11 +52,11 @@ public class WalletController extends BaseController {
 	@RequestMapping(value = "getBalance", method = RequestMethod.GET)
 	@ResponseBody
 	public ResultInfo getBalance(String mobile, HttpServletRequest request, HttpServletResponse response){
-		
+		logger.debug("");
 		ResultInfo retInfo = new ResultInfo();
 		
 		//TODO 调银行查询余额接口
-		String money = "19999.99";
+		String money = "0.00";
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		
 		retInfo.setData(JSONObject.parse("{" + "\"balance\":\"" + money + "\"}"));
@@ -102,10 +103,10 @@ public class WalletController extends BaseController {
 		
 		
 		List<Bill> bills = new ArrayList<Bill>();
-		bills.add(bill);
-		bills.add(bill2);
-		bills.add(bill3);
-		bills.add(bill4);
+//		bills.add(bill);
+//		bills.add(bill2);
+//		bills.add(bill3);
+//		bills.add(bill4);
 		
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(bills);
@@ -127,7 +128,7 @@ public class WalletController extends BaseController {
 		ResultInfo retInfo = new ResultInfo();
 		
 		//TODO 调银行提现接口
-		String money = "4867.35";
+		String money = "0.00";
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(JSONObject.parse("{" + "\"money\":\"" + money + "\"}"));
 		return retInfo;

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.ModuleDao">
+
+    <resultMap id="ModuleMap" type="Module" >
+    	<id column="mid" property="mid" jdbcType="INTEGER" />
+    	<result column="module_name" property="moduleName" jdbcType="VARCHAR" />
+    	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+   </resultMap>
+   
+   <insert id="save" parameterType="Module">
+   		insert into tbl_modules(module_name, createTime, remark) values(#{moduleName}, #{createTime}, #{remark});
+   </insert>
+  
+	<select id="getAllModules" resultMap="ModuleMap">
+		select * from tbl_modules 
+		<if test="search != null and search != ''">
+			where module_name like concat('%',#{search},'%')
+		</if>
+		order by createTime desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getAllModulesforApi" resultMap="ModuleMap">
+		select * from tbl_modules
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_modules
+	</select>
+	
+	<select id="getModuleByMid" parameterType="Integer" resultMap="ModuleMap">
+		select * from tbl_modules where mid=#{mid}
+	</select>
+	
+	<update id="updateById" parameterType="Module">
+		update tbl_modules set module_name=#{moduleName}, updateTime=#{updateTime},  remark=#{remark} where mid=#{mid}
+	</update>
+	
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from tbl_modules where mid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+</mapper>

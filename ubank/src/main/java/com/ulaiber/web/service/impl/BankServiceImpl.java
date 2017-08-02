@@ -9,9 +9,10 @@ import org.springframework.stereotype.Service;
 import com.ulaiber.web.dao.BankDao;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.service.BankService;
+import com.ulaiber.web.service.BaseService;
 
 @Service
-public class BankServiceImpl implements BankService {
+public class BankServiceImpl extends BaseService implements BankService {
 
 	@Resource
 	private BankDao mapper;

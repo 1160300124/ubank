@@ -1,6 +1,8 @@
 package com.ulaiber.web.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 	
 	//用户编号
 	private long id;
@@ -25,7 +27,22 @@ public class User {
 	
 	//银行预留手机号码
 	private String reserve_mobile;
-	
+
+	//集团编号
+	private String groupNumber;
+
+	//公司编号
+	private String companyNumber;
+
+	//公司名称
+	private String com_name;
+
+	//部门编号
+	private String dept_number;
+
+	//部门名称
+	private String dept_name;
+
 	//证件类型 1:身份证;2:护照;3:港澳通行证;21:工作证;99:其它
 	private String cardType;
 	
@@ -34,12 +51,21 @@ public class User {
 	
 	//绑定银行
 	private Bank bank;
+
+	//银行名称
+	private String bankName;
+
+	//银行编号
+	private String bankNo;
 	
 	//绑定银行卡号
 	private String bankCardNo;
 	
 	//二类户账号
 	private String secondBankCardNo;
+	
+	//账户余额
+	private double balance;
 	
 	//邮箱
 	private String email;
@@ -132,6 +158,38 @@ public class User {
 		this.reserve_mobile = reserve_mobile;
 	}
 
+	public String getGroupNumber() {
+		return groupNumber;
+	}
+
+	public void setGroupNumber(String groupNumber) {
+		this.groupNumber = groupNumber;
+	}
+
+	public String getCompanyNumber() {
+		return companyNumber;
+	}
+
+	public void setCompanyNumber(String companyNumber) {
+		this.companyNumber = companyNumber;
+	}
+
+	public String getCom_name() {
+		return com_name;
+	}
+
+	public void setCom_name(String com_name) {
+		this.com_name = com_name;
+	}
+
+	public String getDept_number() {
+		return dept_number;
+	}
+
+	public void setDept_number(String dept_number) {
+		this.dept_number = dept_number;
+	}
+
 	public String getCardType() {
 		return cardType;
 	}
@@ -156,12 +214,44 @@ public class User {
 		this.bank = bank;
 	}
 
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getDept_name() {
+		return dept_name;
+	}
+
+	public void setDept_name(String dept_name) {
+		this.dept_name = dept_name;
+	}
+
+	public String getBankNo() {
+		return bankNo;
+	}
+
+	public void setBankNo(String bankNo) {
+		this.bankNo = bankNo;
+	}
+
 	public String getBankCardNo() {
 		return bankCardNo;
 	}
 
 	public void setBankCardNo(String bankCardNo) {
 		this.bankCardNo = bankCardNo;
+	}
+
+	public double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(double balance) {
+		this.balance = balance;
 	}
 
 	public String getEmail() {

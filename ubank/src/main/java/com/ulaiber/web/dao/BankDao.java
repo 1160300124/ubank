@@ -26,4 +26,9 @@ public interface BankDao {
 	 * @return List<Bank> 银行信息集合
 	 */
 	List<Bank> getAllBanks();
+
+
+	int deleteComByNum(String comNum);  //根据公司编号删除银行账户信息表中的数据
+
+	int deleteCompanyByNum(String[] idsArr); //根据公司编号删除银行账户信息表中的数据
 }

@@ -216,11 +216,12 @@ public class HttpsUtil {
         CloseableHttpClient httpClient = HttpClients.createDefault();  
         String httpStr = null;  
         HttpPost httpPost = new HttpPost(apiUrl);
-        CloseableHttpResponse response = null;  
+        CloseableHttpResponse response = null;
   
         try {  
-            httpPost.setConfig(requestConfig);  
-            StringEntity stringEntity = new StringEntity(json.toString(),"UTF-8");//解决中文乱码问题  
+            httpPost.setConfig(requestConfig);
+            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+            StringEntity stringEntity = new StringEntity(json.toString(),"UTF-8");//解决中文乱码问题
             stringEntity.setContentEncoding("UTF-8");  
             stringEntity.setContentType("application/json");  
             httpPost.setEntity(stringEntity);  
@@ -245,7 +246,7 @@ public class HttpsUtil {
     /** 
      * 发送 POST 请求（HTTP）
      * @param apiUrl 
-     * @param String data 
+     * @param String data
      * @return 
      */  
     public static String doPost(String apiUrl, String data, boolean signFlag) {  
