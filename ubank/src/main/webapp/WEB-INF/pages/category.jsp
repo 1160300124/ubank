@@ -14,11 +14,14 @@
 			<button id="btn_delete" type="button" class="btn btn-default">
 				<span class="fa icon-remove" aria-hidden="true"></span>删除
 			</button>
+			<button id="btn_refresh" type="button" class="btn btn-default">
+				<span class="fa icon-refresh" aria-hidden="true"></span>刷新
+			</button>
 
 		</div>
 
 		<table id="tb_categories" data-toggle="table" data-url="categories" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
-			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
+			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>

@@ -9,13 +9,14 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ulaiber.web.model.Menu;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.ulaiber.web.dao.UserDao;
+import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.Message;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.BaseService;
@@ -23,6 +24,7 @@ import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.HttpsUtil;
 import com.ulaiber.web.utils.MD5Util;
+import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.StringUtil;
 
 @Service
@@ -182,5 +184,17 @@ public class UserServiceImpl extends BaseService implements UserService {
 	@Override
 	public List<Menu> getAllMenu() {
 		return mapper.getAllMenu();
+	}
+
+	@Override
+	public boolean validatePayPwd(String mobile, String password) {
+		User user = mapper.getUserByMobile(mobile);
+		if (ObjUtil.notEmpty(user)){
+			String pwd2MD5 = MD5Util.getEncryptedPwd(password);
+			if (StringUtils.equals(user.getPay_password(), pwd2MD5)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

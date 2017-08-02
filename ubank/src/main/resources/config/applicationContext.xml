@@ -10,9 +10,9 @@
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-	<!-- 加载资源文件  其中包含变量信息，必须在Spring配置文件的最前面加载，即第一个加载-->
-<!-- 	<context:property-placeholder location="classpath:config/jdbcConfig.properties"/> -->
-
+	<!-- 注解扫描包 -->
+	<context:component-scan base-package="com.ulaiber.web.service" />
+	
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">

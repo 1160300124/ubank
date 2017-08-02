@@ -94,13 +94,11 @@ public class ManagerController extends BaseController{
 				String newStatus = "";
 				if (!StringUtils.equals(oldStatus, "5")){
 					Map<String, Object> params = new HashMap<String, Object>();
-					params.put("authMasterID", SPDBUtil.CLIENT_MASTER_ID);
-					params.put("acctNo", SPDBUtil.CLIENT_ACCT_NO);
 					params.put("seqNo", sa.getEntrustSeqNo());
 					params.put("beginDate", sa.getSalaryDate());
 					params.put("endDate", sa.getSalaryDate());
-				    newStatus = SPDBUtil.getPayResult(params);
-//				    newStatus = "5";
+//				    newStatus = SPDBUtil.getPayResult(params);
+				    newStatus = "5";
 					sa.setStatus(newStatus);
 					//if new status != old status 更新工资流水状态
 					if (!StringUtils.equals(oldStatus, newStatus)){
@@ -216,16 +214,12 @@ public class ManagerController extends BaseController{
     	double totalAmount = sa.getTotalAmount();
     	Map<String, Object> params = new HashMap<String, Object>();
     	params.put("elecChequeNo", String.valueOf(DateTimeUtil.getMillis(new Date())));
-		params.put("authMasterID", SPDBUtil.CLIENT_MASTER_ID);
-		params.put("unitNo", SPDBUtil.UNIT_NUM);
-		params.put("businessType", "1001");
-		params.put("acctNo", SPDBUtil.CLIENT_ACCT_NO);
 		params.put("bespeakDate", bespearkDate);
 		params.put("totalNumber", totalNumber);
 		params.put("totalAmount", totalAmount);
 		params.put("flag", "1");
-    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
-//		String entrustSeqNo = "12345678910";
+//    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
+		String entrustSeqNo = "12345678910";
     	if (StringUtils.isNotEmpty(entrustSeqNo)){
     		sa.setEntrustSeqNo(entrustSeqNo);
     		

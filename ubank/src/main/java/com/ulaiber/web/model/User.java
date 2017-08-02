@@ -58,6 +58,9 @@ public class User implements Serializable {
 	//二类户账号
 	private String secondBankCardNo;
 	
+	//账户余额
+	private double balance;
+	
 	//邮箱
 	private String email;
 	
@@ -219,6 +222,14 @@ public class User implements Serializable {
 
 	public void setBankCardNo(String bankCardNo) {
 		this.bankCardNo = bankCardNo;
+	}
+
+	public double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(double balance) {
+		this.balance = balance;
 	}
 
 	public String getEmail() {

@@ -95,7 +95,7 @@ public class BackendBannerController extends BaseController {
         			if (fileName.trim() != "") {
         				logger.info("upload file name: " + fileName.trim());
         				
-        				String path = upload(request, IConstants.ICON_TEMP_UPLOAD_PATH, file.getBytes(), fileName);
+        				String path = upload(request, IConstants.BANNER_TEMP_UPLOAD_PATH, file.getBytes(), fileName);
         				logger.debug("upload temp path----" + path);
         				if (StringUtils.isEmpty(path)){
         					info.setCode(IConstants.QT_CODE_ERROR);
@@ -123,6 +123,7 @@ public class BackendBannerController extends BaseController {
 		ResultInfo info = new ResultInfo();
 		
 		if (StringUtils.isEmpty(banner.getPicPath())){
+			logger.error("请上传图片！");
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("请上传图片！");
 			return info;
@@ -133,8 +134,9 @@ public class BackendBannerController extends BaseController {
 			//copy临时路径的图标到正式目录
 			String path = tempPath.replace(IConstants.TEMP_PATH, "");
 			File tempFile = new File(getProjectAbsoluteURL(request) + tempPath);
-			File file = new File(getProjectAbsoluteURL(request) + IConstants.ICON_UPLOAD_PATH);
+			File file = new File(getProjectAbsoluteURL(request) + IConstants.BANNER_UPLOAD_PATH);
 			if (!FileUtil.copy(tempFile, file)){
+				logger.error("图片复制异常！");
 				info.setCode(IConstants.QT_CODE_ERROR);
 				info.setMessage("图片复制异常！");
 				return info;
@@ -144,6 +146,7 @@ public class BackendBannerController extends BaseController {
 
 		boolean flag = service.save(banner);
 		if (flag){
+			logger.info("新增banner成功！");
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("新增banner成功！");
 			if (tempPath.contains(IConstants.TEMP_PATH)){
@@ -151,6 +154,7 @@ public class BackendBannerController extends BaseController {
 				FileUtil.delFile(getProjectAbsoluteURL(request) + tempPath);
 			}
 		} else {
+			logger.error("新增banner失败！");
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("新增banner失败！");
 		}
@@ -194,10 +198,10 @@ public class BackendBannerController extends BaseController {
 			//copy临时路径的图标到正式目录
 			String path = tempPath.replace(IConstants.TEMP_PATH, "");
 			File tempFile = new File(getProjectAbsoluteURL(request) + tempPath);
-			File file = new File(getProjectAbsoluteURL(request) + IConstants.ICON_UPLOAD_PATH);
+			File file = new File(getProjectAbsoluteURL(request) + IConstants.BANNER_UPLOAD_PATH);
 			if (!FileUtil.copy(tempFile, file)){
 				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("图标复制异常！");
+				info.setMessage("图片复制异常！");
 				return info;
 			}
 			banner.setPicPath(IConstants.PICTURE_SERVER + path);

@@ -69,7 +69,7 @@ public class BannerServiceImpl extends BaseService implements BannerService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean updateById(Banner banner) {
-		
+		banner.setUpdateTime(DateTimeUtil.date2Str(new Date()));
 		return dao.updateById(banner) > 0;
 	}
 
@@ -78,6 +78,12 @@ public class BannerServiceImpl extends BaseService implements BannerService {
 	public boolean deleteByIds(List<Long> ids) {
 
 		return dao.deleteByIds(ids) > 0;
+	}
+
+	@Override
+	public int getCountByMids(List<Integer> mids) {
+
+		return dao.getCountByMids(mids);
 	}
 
 }

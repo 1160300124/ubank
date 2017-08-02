@@ -80,4 +80,16 @@ public class ThirdUrlServiceImpl extends BaseService implements ThirdUrlService 
 		return dao.getUrlsByMidAndCid(params);
 	}
 
+	@Override
+	public int getCountByMids(List<Integer> mids) {
+		
+		return dao.getCountByMids(mids);
+	}
+
+	@Override
+	public int getCountByCids(List<Integer> cids) {
+
+		return dao.getCountByCids(cids);
+	}
+
 }

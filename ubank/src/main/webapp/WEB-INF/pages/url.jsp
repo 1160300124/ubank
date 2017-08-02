@@ -14,23 +14,26 @@
 			<button id="btn_delete" type="button" class="btn btn-default">
 				<span class="fa icon-remove" aria-hidden="true"></span>删除
 			</button>
+			<button id="btn_refresh" type="button" class="btn btn-default">
+				<span class="fa icon-refresh" aria-hidden="true"></span>刷新
+			</button>
 
 		</div>
 
 		<table id="tb_thirdUrls" data-toggle="table" data-url="thirdUrls" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
-			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
+			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>
 				<th data-checkbox="true"></th>
 				<th data-field="urlName">URL名称</th>
-				<th data-field="url">URL链接</th>
-				<th data-field="picPath">图片地址</th>
+				<th data-field="url" >URL链接</th>
+				<th data-field="picPath" >图片地址</th>
 				<th data-field="module.moduleName">URL模块</th>
 				<th data-field="category.categoryName">URL类别</th>
 				<th data-field="orderby">排序</th>
-				<th data-field="createTime" data-width="160px">创建时间</th>
-				<th data-field="updateTime" data-width="160px">最近修改时间</th>
+				<th data-field="createTime" data-width="150px">创建时间</th>
+				<th data-field="updateTime" data-width="150px">最近修改时间</th>
 				<th data-field="remark">备注</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
@@ -68,7 +71,7 @@
 	                     <div class="form-group">
 	                        <label class="col-sm-2 control-label" for="pic_upload">图标上传</label>
 	                        <div class="col-sm-5">
-	                            <img src="<%=request.getContextPath()%>/images/bodyBg.jpg" class="img-thumbnail" id="img_path" alt="Cinque Terre" width="50" height="50">
+	                            <img src="" class="img-thumbnail" id="img_path" alt="请上传图标" width="120" height="120">
 	                            <input type="hidden" id="pic_path" name="pic_path"/>
 	                        </div>
 	                     </div>
@@ -76,17 +79,9 @@
 	                     <div class="form-group">
 	                        <label class="col-sm-2 control-label" for="ds_host"></label>
 	                        <div class="col-sm-5">
-	                          	<input id="lefile" name="lefile" type="file" style="display:none" onchange="pic_file.value=this.value">  
-							    <input id="pic_file" name="pic_file" class="form-control" type="text" onclick="$('input[id=lefile]').click();">  
-	                        </div>
-	                        <div class="col-sm-1">
-	                        	<button type="button" class="btn btn-default" onclick="$('input[id=lefile]').click();">
-									<span class="fa icon-folder-open" aria-hidden="true">浏览</span>
-								</button>  
-	                        </div>
-	                        <div class="col-sm-1">
-	                        	<button id="btn_add_pic_upload" type="button" class="btn btn-default">
-					                <span class="fa icon-upload" aria-hidden="true">上传</span>
+	                          	<input id="lefile" name="lefile" type="file" style="display:none" onchange="return addFileChange();">  
+	                        	<button id="btn_add_pic_upload" type="button" class="btn btn-default" onclick="$('input[id=lefile]').click();">
+					                <span class="fa icon-folder-open" aria-hidden="true">选择图标</span>
 					            </button>
 	                        </div>
 	                     </div>
@@ -156,7 +151,7 @@
 	                    </div>
 	                    
 						<div class="form-group">
-	                        <label class="col-sm-2 control-label" for="ds_host">URL链接地址</label>
+	                        <label class="col-sm-2 control-label" for="ds_host">URL链接</label>
 	                        <div class="col-sm-8">
 	                           <input class="form-control" id="url_addr" type="text" placeholder="请输入..."/>
 	                        </div>
@@ -165,7 +160,7 @@
 	                     <div class="form-group">
 	                        <label class="col-sm-2 control-label" for="pic_upload">图标上传</label>
 	                        <div class="col-sm-5">
-	                            <img src="<%=request.getContextPath()%>/images/bodyBg.jpg" class="img-thumbnail" id="img_path" alt="请上传图标" width="50" height="50">
+	                            <img src="" class="img-thumbnail" id="img_path" alt="请上传图标"  width="120" height="120">
 	                            <input type="hidden" id="pic_path" name="pic_path"/>
 	                        </div>
 	                     </div>
@@ -173,17 +168,9 @@
 	                     <div class="form-group">
 	                        <label class="col-sm-2 control-label" for="ds_host"></label>
 	                        <div class="col-sm-5">
-	                          	<input id="efile" name="efile" type="file" style="display:none" onchange="pic_file.value=this.value">  
-							    <input id="pic_file" name="pic_file" class="form-control" type="text" onclick="$('input[id=lefile]').click();">  
-	                        </div>
-	                        <div class="col-sm-1">
-	                        	<button type="button" class="btn btn-default" onclick="$('input[id=efile]').click();">
-									<span class="fa icon-folder-open" aria-hidden="true">浏览</span>
-								</button>  
-	                        </div>
-	                        <div class="col-sm-1">
-	                        	<button id="btn_edit_pic_upload" type="button" class="btn btn-default">
-					                <span class="fa icon-upload" aria-hidden="true">上传</span>
+	                          	<input id="efile" name="efile" type="file" style="display:none" onchange="return editFileChange();">  
+	                        	<button id="btn_edit_pic_upload" type="button" class="btn btn-default" onclick="$('input[id=efile]').click();">
+					                <span class="fa icon-folder-open" aria-hidden="true">选择图标</span>
 					            </button>
 	                        </div>
 	                     </div>

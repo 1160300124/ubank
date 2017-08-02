@@ -58,22 +58,24 @@ public class UserController extends BaseController{
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo register(User user, Bank bank, HttpServletRequest request, HttpServletResponse response){
-		logger.info("----------------:"+ user);
-		ResultInfo retInfo = new ResultInfo();
-		retInfo.setCode(IConstants.QT_CODE_ERROR);
+		logger.debug("register statrt...");
+		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
 		if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
-			retInfo.setMessage("register failed: user or bank is empty.");
+			logger.error("register failed: user or bank is empty.");
+			retInfo.setMessage("用户或银行信息不能为空。");
 			return retInfo;
 		}
 		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(bank.getBankNo())){
-			retInfo.setMessage("register failed: mobile or bankNo is empty.");
+			logger.error("register failed: mobile or bankNo is empty.");
+			retInfo.setMessage("手机号或，预留手机号或银行卡号不能为空。");
 			return retInfo;
 		}
 		//查询手机号是否已被注册
 		User user1 = userService.findByMobile(user.getMobile());
 		if (ObjUtil.notEmpty(user1)){
 			retInfo.setCode(IConstants.QT_MOBILE_EXISTS);
-			retInfo.setMessage("register failed: mobile is already exists.");
+			retInfo.setMessage("手机号已经被注册。");
+			logger.error("register failed: mobile is already exists.");
 			return retInfo;
 		}
 		
@@ -83,15 +85,20 @@ public class UserController extends BaseController{
 			user.setBank(bank);
 			if (userService.save(user)){
 				retInfo.setCode(IConstants.QT_CODE_OK);
-				retInfo.setMessage("register successed.");
+				retInfo.setMessage("注册成功。");
+				logger.info(user.getMobile() + " register successed.");
 			}
 		}
 		else{
 			retInfo.setCode(IConstants.QT_OPEN_ACCOUT_ERROR);
-			retInfo.setMessage("open an account in bank failed.");
+			retInfo.setMessage("银行开户失败。");
+			logger.info("open an account in bank failed.");
 		}
+		
+		logger.debug("register end...");
 		return retInfo;
 	}
+	
 	/**
 	 * 获取所有用户
 	 * @param request
@@ -116,15 +123,18 @@ public class UserController extends BaseController{
 	@RequestMapping("getUserInfo")
 	@ResponseBody
 	public ResultInfo getUserInfo(String mobile,HttpServletRequest request, HttpServletResponse response){
+		logger.debug("getUserInfo start...");
 		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
 		if (!ObjUtil.notEmpty(mobile)){
-			retInfo.setMessage("mobile is empty.");
+			retInfo.setMessage("手机号不能为空。");
+			logger.equals("mobile is empty.");
 			return retInfo;
 		}
 		User user = userService.findByMobile(mobile);
 		if (ObjUtil.notEmpty(user)){
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("get user information successed.");
+			retInfo.setMessage("获取用户信息成功。");
+			logger.info("get user information successed.");
 			User tempUser = new User();
 			tempUser.setId(user.getId());
 			tempUser.setUserName(user.getUserName());
@@ -133,12 +143,17 @@ public class UserController extends BaseController{
 			tempUser.setBankCardNo(user.getBankCardNo());
 			tempUser.setBank(user.getBank());
 			tempUser.setCardNo(user.getCardNo());
+			//TODO 调二类户接口查询余额
+			double balance = 0.00;
+			tempUser.setBalance(balance);
 			retInfo.setData(tempUser);
 		}
 		else {
-			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("get user information failed: mobile not exists.");
+			logger.error("get user information failed: mobile not exists.");
+			retInfo.setMessage("手机号不存在。");
 		}
+		
+		logger.debug("getUserInfo end...");
 		return retInfo;
 	}
 	
@@ -157,23 +172,26 @@ public class UserController extends BaseController{
 		retInfo.setCode(IConstants.QT_CODE_ERROR);
 		
 		if (StringUtils.isEmpty(mobile)){
-			retInfo.setMessage("mobile is empty.");
+			retInfo.setMessage("手机号不能为空。");
+			logger.error("mobile can not be empty.");
 			return retInfo;
 		}
 		logger.info("Start to send captcha...");
 		String captcha = CaptchaUtil.getCaptcha();
 		captchaMap.put(mobile, captcha);
-		String text = "【优融UBOSS】您的验证码是#code#".replace("#code#", captcha);
+		String text = IConstants.SMS_TEMPLATE.replace("#code#", captcha);
 		String result = CaptchaUtil.singleSend(CaptchaUtil.API_KEY, text, mobile);
-		logger.info("------------------------" + result);
+		logger.info("send captcha info: " + result);
 		Map<String, Object> resultMap = (Map<String, Object>)JSONObject.parse(result);
 		if (resultMap.get("code").toString().equals("0")){
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("send captcha successed.");
+			retInfo.setMessage("验证码发送成功。");
+			logger.info("send captcha successed.");
 		}
 		else {
 			retInfo.setCode(IConstants.QT_CAPTCHA_SEND_ERROR);
-			retInfo.setMessage("send captcha failed: " + result);
+			retInfo.setMessage("验证码发送失败：" + result);
+			logger.error("send captcha failed: " + result);
 		}
 		return retInfo;
 	}
@@ -195,16 +213,24 @@ public class UserController extends BaseController{
 			HttpServletRequest request, HttpServletResponse response){
 		
 		ResultInfo retInfo = new ResultInfo();
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password)){
+			logger.error("params can not be null.");
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("参数不能为空。");
+			return retInfo;
+		}
 		if (!StringUtils.equals(password, confirm_password)){
+			logger.error("confirmed password and new password do not match.");
 			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("confirmed password and new password do not match.");
+			retInfo.setMessage("新密码与确认密码不一致。");
 			return retInfo;
 		}
 		String cap = captchaMap.get(mobile);
 		captchaMap.remove(mobile);
 		if (!StringUtils.equals(captcha, cap)){
+			logger.error("captcha error.");
 			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("captcha error.");
+			retInfo.setMessage("验证码错误。");
 			return retInfo;
 		}
 		
@@ -228,17 +254,25 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public ResultInfo forgetPassword(String mobile, String captcha, String password, String confirm_password,
 			HttpServletRequest request, HttpServletResponse response){
-		
+		logger.debug("forgetLoginPassword start...");
 		ResultInfo retInfo = new ResultInfo();
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password)){
+			logger.error("params can not be null.");
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("参数不能为空。");
+			return retInfo;
+		}
 		if (!StringUtils.equals(password, confirm_password)){
+			logger.error("confirmed password and new password do not match.");
 			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("confirmed password and new password do not match.");
+			retInfo.setMessage("新密码与确认密码不一致。");
 			return retInfo;
 		}
 		String cap = captchaMap.get(mobile);
 		if (!StringUtils.equals(captcha, cap)){
+			logger.error("captcha error.");
 			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("captcha error.");
+			retInfo.setMessage("验证码错误。");
 			return retInfo;
 		}
 		
@@ -246,14 +280,16 @@ public class UserController extends BaseController{
 		if (flag){
 			captchaMap.remove(mobile);
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("find password successed.");
-			
+			retInfo.setMessage("找回登录密码成功。");
+			logger.info(mobile + "find login password successed.");
 		}
 		else {
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("find password failed.");
+			retInfo.setMessage("找回登录密码失败。");
+			logger.error(mobile + "find login password failed.");
 		}
 		
+		logger.debug("forgetLoginPassword end...");
 		return retInfo;
 	}
 	
@@ -272,17 +308,25 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public ResultInfo forgetPayPassword(String mobile, String captcha, String password, String confirm_password,
 			HttpServletRequest request, HttpServletResponse response){
-		
+		logger.debug("forgetPayPassword start...");
 		ResultInfo retInfo = new ResultInfo();
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password)){
+			logger.error("params can not be null.");
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("参数不能为空。");
+			return retInfo;
+		}
 		if (!StringUtils.equals(password, confirm_password)){
+			logger.error("confirmed password and new password do not match.");
 			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("confirmed password and new password do not match.");
+			retInfo.setMessage("新密码与确认密码不一致。");
 			return retInfo;
 		}
 		String cap = captchaMap.get(mobile);
 		if (!StringUtils.equals(captcha, cap)){
+			logger.error("captcha error.");
 			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("captcha error.");
+			retInfo.setMessage("验证码错误。");
 			return retInfo;
 		}
 		
@@ -290,14 +334,16 @@ public class UserController extends BaseController{
 		if (flag){
 			captchaMap.remove(mobile);
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("find password successed.");
-			
+			retInfo.setMessage("找回支付成功。");
+			logger.info(mobile + "find pay password successed.");
 		}
 		else {
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("find password failed.");
+			retInfo.setMessage("找回支付密码失败。");
+			logger.error(mobile +  "find pay password failed.");
 		}
 		
+		logger.debug("forgetPayPassword end...");
 		return retInfo;
 	}
 	
@@ -308,7 +354,7 @@ public class UserController extends BaseController{
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping("/updateUser")
+	@RequestMapping("updateUser")
 	@ResponseBody
 	public String updateUser(User user,HttpServletRequest request, HttpServletResponse response){
 		
@@ -325,7 +371,7 @@ public class UserController extends BaseController{
 	 * @param request
 	 * @param response
 	 */
-	@RequestMapping("/delUser")
+	@RequestMapping("delUser")
 	@ResponseBody
 	public String delUser(String mobile,HttpServletRequest request, HttpServletResponse response){
 		
@@ -335,4 +381,65 @@ public class UserController extends BaseController{
 		return "";
 		
 	}
+	
+	/**
+	 * 删除用户
+	 * @param id
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "validatePayPwd", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo validatePayPwd(String mobile, String password, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("validatePayPwd start...");
+		ResultInfo info = new ResultInfo();
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password)){
+			logger.error("mobile or password can not be null.");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数不能为空。");
+			return info;
+		}
+		if(userService.validatePayPwd(mobile, password)){
+			logger.info(mobile + " validate pay password successed.");
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("支付密码校验成功。");
+		} else {
+			logger.error(mobile + " validate pay password failed.");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("支付密码错误。");
+		}
+		logger.debug("validatePayPwd end...");
+		return info;
+	}
+	
+	/**
+	 * 删除用户
+	 * @param id
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "validateMobile", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo validateMobile(String mobile, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("validateMobile start...");
+		ResultInfo info = new ResultInfo();
+		if (StringUtils.isEmpty(mobile)){
+			logger.error("mobile can not be null.");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数不能为空。");
+			return info;
+		}
+		User user = userService.findByMobile(mobile);
+		if (ObjUtil.notEmpty(user)){
+			logger.error("mobile is already exists.");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("手机号已被注册。");
+		} else {
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("手机号没有被注册。");
+		}
+		logger.debug("validateMobile end...");
+		return info;
+	}
+	
 }

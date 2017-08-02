@@ -1,4 +1,8 @@
 $(function(){
+	
+	$("#btn_refresh").unbind().bind("click", function(){
+		$("#tb_modules").bootstrapTable("refresh");
+	});
 
 	$("#btn_add").unbind().bind("click", function(){
 

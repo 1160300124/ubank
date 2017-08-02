@@ -1,5 +1,9 @@
 $(function(){
 
+	$("#btn_refresh").unbind().bind("click", function(){
+		$("#tb_categories").bootstrapTable("refresh");
+	});
+	
 	$("#btn_add").unbind().bind("click", function(){
 
 		var addModal = $("#add_modal");

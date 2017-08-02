@@ -20,7 +20,10 @@ import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Module;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.service.BannerService;
 import com.ulaiber.web.service.ModuleService;
+import com.ulaiber.web.service.ThirdUrlService;
+import com.ulaiber.web.utils.ObjUtil;
 
 /** 
  * <一句话概述功能>
@@ -38,6 +41,12 @@ public class ModuleController extends BaseController {
 	
 	@Autowired
 	private ModuleService service;
+	
+	@Autowired
+	private BannerService bannerService;
+	
+	@Autowired
+	private ThirdUrlService urlService;
 	
 	@RequestMapping(value = "module", method = RequestMethod.GET)
 	public String toModule(HttpServletRequest request, HttpServletResponse response){
@@ -104,7 +113,7 @@ public class ModuleController extends BaseController {
 		boolean flag = service.updateById(module);
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("修改成功");;
+			info.setMessage("修改成功");
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("修改失败");
@@ -118,6 +127,24 @@ public class ModuleController extends BaseController {
 	public ResultInfo deleteModules(@RequestBody List<Integer> mids, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("deleteModules start...");
 		ResultInfo info = new ResultInfo();
+		if (!ObjUtil.notEmpty(mids)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数为空！");
+			return info;
+		}
+		
+		if (urlService.getCountByMids(mids) > 0){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("删除失败，您选中的模块有URL引用，请先删除引用的URL！");
+			return info;
+		}
+		
+		if (bannerService.getCountByMids(mids) > 0){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("删除失败，您选中的模块有Banner引用，请先删除引用的Banner！");
+			return info;
+		}
+		
 		boolean flag = service.deleteByIds(mids);
 		 if (flag){
 				info.setCode(IConstants.QT_CODE_OK);
