@@ -1,7 +1,3 @@
-/**
- * 公司管理页面js
- * Created by daiqingwen on 2017/7/21.
- */
 
 $(function () {
     CompanyFun.getAllGroup();
@@ -30,7 +26,7 @@ var CompanyFun = {
             data:  {},
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据，请重新添加集团信息");
+                    Ewin.alert("没有集团数据，，请联系管理员");
                     return;
                 }
                 var option = "";
@@ -38,7 +34,6 @@ var CompanyFun = {
                     option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
                 }
                 $("#group_select").append(option);
-
             },
             error : function () {
                 Ewin.alert("操作异常，请联系管理员");
@@ -89,6 +84,7 @@ var CompanyFun = {
             pageList : [20,30,40], // 可供选择的每页的行数
             showRefresh : true, //刷新按钮
             showToggle :true,   //切换试图（table/card）按钮
+           // showColumns : true,
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
@@ -120,6 +116,66 @@ var CompanyFun = {
     },
     //新增
     companyAdd : function () {
+        var name = $("input[name=name]").val();
+        var group = $("#group_select").val();
+        var bankNo = $("#company_select").val();
+        var legalPerson = $("input[name=legalPerson]").val();
+        var accounts = $("input[name=accounts]").val();
+        var customer = $("input[name=customer]").val();
+        var certificateNumber = $("input[name=certificateNumber]").val();
+        var authorizationCode = $("input[name=authorizationCode]").val();
+        if(group == ""){
+            Ewin.alert("集团不能为空");
+            return
+        }
+        if(bankNo == ""){
+            Ewin.alert("公司银行账号不能为空");
+            return
+        }
+        if(name == ""){
+            Ewin.alert("公司名不能为空");
+            return
+        }else if(!Validate.regNumAndLetter(name)){
+            Ewin.alert("公司名格式不合法，请重新输入");
+            return
+        }
+        if(legalPerson == ""){
+            Ewin.alert("法人不能为空");
+            return;
+        }else if(!Validate.regNumAndLetter(legalPerson)){
+            Ewin.alert("法人格式不合法，请重新输入");
+            return;
+        }
+        if(accounts == ""){
+            Ewin.alert("公司账号不能为空");
+            return;
+        }else if(!Validate.regNumber(accounts)){
+            Ewin.alert("公司账号格式不合法，请重新输入");
+            return;
+        }
+        if(customer == ""){
+            Ewin.alert("公司客户号不能为空");
+            return;
+        }else if(Validate.NumberAndLetter(customer)){
+            Ewin.alert("公司客户号格式不合法，请重新输入");
+            return;
+        }
+        if(certificateNumber == ""){
+            Ewin.alert("证书编号不能为空");
+            return;
+        }else if(Validate.NumberAndLetter(certificateNumber)){
+            Ewin.alert("证书编号格式不合法，请重新输入");
+            return;
+        }
+        if(authorizationCode == ""){
+            Ewin.alert("银行数字证书授权码不能为空");
+            return;
+        }else if(Validate.NumberAndLetter(authorizationCode)){
+            Ewin.alert("银行数字证书授权码格式不合法，请重新输入");
+            return;
+
+        }
+
         //获取所有账户信息
         var arr=[];
         var allBankAccount = [];
@@ -132,10 +188,10 @@ var CompanyFun = {
 
             });
             allBankAccount.push($(this).find("input[name=accounts]").val());
+            str += $("#companyName").val();
             str= str.substr(0,str.length-1);
             str+=',';
         });
-        console.log(str);
         str = str.substr(0,str.length-1);
         account = allBankAccount.join(",");
         $("#allAccount").val(account);
@@ -152,8 +208,8 @@ var CompanyFun = {
                 }else{
                     $("#company_form")[0].reset();
                     $("#company_modal").modal("hide");
-                    $('#company_table').bootstrapTable('refresh');
                     Ewin.alert(data.message);
+                    $('#company_table').bootstrapTable('refresh');
                 }
 
             },
@@ -248,7 +304,58 @@ var CompanyFun = {
                 Ewin.alert("操作异常，请联系管理员");
             }
         })
+    },
+    //删除公司
+    deleteCompany : function (e) {
+        e = window.event;
+        e.preventDefault();
+        var row = $('#company_table').bootstrapTable('getSelections');
+        if(row.length <= 0){
+            Ewin.alert("请选中需要删除的数据");
+            return;
+        }
+        Confirm.show('提示', '确定删除该公司吗？', {
+            'Delete': {
+                'primary': true,
+                'callback': function() {
+                    var ids = ""; //存放多个公司编号
+                    for (var i = 0 ; i < row.length ;i++){
+                        if(i > 0 ){
+                            ids += "," + row[i].companyNumber;
+                        }else{
+                            ids += row[i].companyNumber;
+                        }
+                    }
+                    $.ajax({
+                        url : 'deleteCompanys',
+                        dataType : 'json',
+                        type : 'post',
+                        data:  {
+                            "ids" : ids
+                        },
+                        success : function (data) {
+                            if(data.code == 300){
+                                Confirm.hide();
+                                Ewin.alert(data.message);
+                            }else if(data.code == 500){
+                                Ewin.alert("操作异常，请联系管理员");
+                            }else{
+                                Confirm.hide();
+                                Ewin.alert(data.message);
+                                $('#company_table').bootstrapTable('refresh');
+                            }
+
+                        },
+                        error : function () {
+                            Ewin.alert("操作异常，请联系管理员");
+                        }
+                    })
+
+                }
+            }
+        });
     }
+
 
 };
 
@@ -291,8 +398,5 @@ $(document).on('click','[data-click]',function(e){
             self.parents('.add-form-item').remove();
 
             break;
-
-
     }
 });
-

@@ -20,24 +20,7 @@
     </div>
 
     <%--数据表格--%>
-    <table id="group_table" >
-        <%--<thead>--%>
-            <%--<tr>--%>
-                <%--<th data-checkbox="true"></th>--%>
-                <%--<th data-field="userName">操作人</th>--%>
-                <%--<th data-field="totalNumber">总笔数</th>--%>
-                <%--<th data-field="totalAmount">总金额</th>--%>
-                <%--<th data-field="company">企业名称</th>--%>
-                <%--<th data-field="salaryDate">工资发放时间</th>--%>
-                <%--<th data-field="salary_createTime">操作时间</th>--%>
-                <%--<th data-field="entrustSeqNo">业务委托编号</th>--%>
-                <%--<th data-field="status">状态</th>--%>
-                <%--<th data-field="remark">备注</th>--%>
-                <%--<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>--%>
-            <%--</tr>--%>
-        <%--</thead>--%>
-
-    </table>
+    <table id="group_table" ></table>
 
         <!-- 弹出框（Modal） -->
         <div id="group_add_modal" class="modal fade">
@@ -107,11 +90,13 @@
         </div><!-- /.modal -->
 
 </div>
+<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrapValidator.js" type="text/javascript"></script>
 <script type="text/javascript">
 
     //初始化数据
     $(function () {
         GroupFun.groupQuery();
+        GroupFun.group_validate();
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
@@ -126,6 +111,46 @@
         },
         //新增操作
         groupSave : function () {
+            var name = $("input[name=name]").val();
+            var legalPerson = $("input[name=legalPerson]").val();
+            var registeredCapital = $("input[name=registeredCapital]").val();
+            var contacts = $("input[name=contacts]").val();
+            var phone = $("input[name=contactsTelephone]").val();
+            if(name == ""){
+                Ewin.alert("集团名称不能为空");
+                return;
+            }else if(!Validate.regNumAndLetter(name)){
+                Ewin.alert("集团名称格式不合法，请重新输入");
+                return;
+            }
+            if(legalPerson == ""){
+                Ewin.alert("法人不能为空");
+                return;
+            }else if(!Validate.regNumAndLetter(legalPerson)){
+                Ewin.alert("法人格式不合法，请重新输入");
+                return;
+            }
+            if(registeredCapital == ""){
+                Ewin.alert("注册资本不能为空");
+                return;
+            }else if(!Validate.regNumAndLetter(registeredCapital)){
+                Ewin.alert("注册资本格式不合法，请重新输入");
+                return;
+            }
+            if(contacts == "" ){
+                Ewin.alert("负责联系人不能为空");
+                return;
+            }else if(!Validate.regNumAndLetter(contacts)){
+                Ewin.alert("负责联系人格式不合法，请重新输入");
+                return;
+            }
+            if(phone == ""){
+                Ewin.alert("联系电话不能为空");
+                return;
+            }else if(!Validate.regPhone(phone)){
+                Ewin.alert("电话号码格式不合法，请重新输入");
+                return;
+            }
             $.ajax({
                 url : 'addGroup?flag=' + flag ,
                 dataType : 'json',
@@ -169,6 +194,7 @@
                 search : true, //搜索框
                 searchText : ' ', //初始化搜索文字
                 clickToSelect : true,
+               // showColumns : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                     {field : 'name', title : '集团名称', width: 130, align : 'left'},
@@ -216,54 +242,78 @@
 
         },
         //删除
-        gropDelete : function () {
+        gropDelete : function (e) {
+            e = window.event;
+            e.preventDefault();
             var row = $('#group_table').bootstrapTable('getSelections');
             if(row.length <= 0){
                 Ewin.alert("请选中需要删除的数据");
                 return;
             }
-            var numbers = ""; //存放多个集团编号
-            for (var i = 0 ; i < row.length ;i++){
-                if(i > 0 ){
-                    numbers += "," + row[i].groupNumber;
-                }else{
-                    numbers += row[i].groupNumber;
+            Confirm.show('提示', '确定删除该集团吗？', {
+                'Delete': {
+                    'primary': true,
+                    'callback': function() {
+                        var numbers = ""; //存放多个集团编号
+                        for (var i = 0 ; i < row.length ;i++){
+                            if(i > 0 ){
+                                numbers += "," + row[i].groupNumber;
+                            }else{
+                                numbers += row[i].groupNumber;
+                            }
+                        }
+                        $.ajax({
+                            url : 'deleteGroup',
+                            dataType : 'json',
+                            type : 'post',
+                            data:  {
+                                "numbers" : numbers
+                            },
+                            success : function (data) {
+                                if(data.code == 300){
+                                    Confirm.hide();
+                                    Ewin.alert(data.message);
+                                }else if(data.code == 500){
+                                    Ewin.alert("操作异常，请联系管理员");
+                                }else{
+                                    Confirm.hide();
+                                    Ewin.alert(data.message);
+                                    $('#group_table').bootstrapTable('refresh');
+
+                                }
+
+                            },
+                            error : function () {
+                                Ewin.alert("操作异常，请联系管理员");
+                            }
+                        })
+
+                    }
                 }
-            }
-            $.ajax({
-                url : 'deleteGroup',
-                dataType : 'json',
-                type : 'post',
-                data:  {
-                    "numbers" : numbers
+            });
+        },
+        group_validate : function () {
+            $("#group_form").bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
                 },
-                success : function (data) {
-                    if(data.code == 300){
-                        Ewin.alert(data.message);
-                    }else if(data.code == 500){
-                        Ewin.alert("操作异常，请联系管理员");
-                    }else{
-                        Ewin.alert(data.message);
-                        $("#group_form")[0].reset();
-                        $("#group_add_modal").modal("hide");
-                        $('#group_table').bootstrapTable('refresh');
+                fields : {
+                    "name" : {
+                        validators : {
+                            notEmpty : {
+                                message : "集团名不能为空"
+                            }
+                        }
                     }
 
-                },
-                error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
                 }
-            })
-
+            });
         }
 
 
     };
-
-
-
-
-
 
 
 </script>

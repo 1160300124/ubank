@@ -3,9 +3,9 @@ package com.ulaiber.web.controller.backend;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.PermissionService;
+import com.ulaiber.web.service.UserService;
+import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.StringUtil;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ulaiber.web.utils.MD5Util.getEncryptedPwd;
+
 /**
  * 权限设置Controller
  * Created by daiqingwen on 2017/7/18.
@@ -27,6 +29,9 @@ public class PermissionController extends BaseController {
 
     @Resource
     private PermissionService permissionService;
+
+    @Resource
+    private UserService userService;
 
     //跳转集团管理页面
     @RequestMapping("group")
@@ -83,7 +88,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("集团已存在，请重新填写！");
             }
         }else{
-           // 1 修改操作
+            // 1 修改操作
             int flag = permissionService.modifyGroup(group);
             if(flag >0){
                 resultInfo.setMessage("修改成功");
@@ -131,6 +136,12 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteGroup(@RequestParam String numbers ){
         ResultInfo resultInfo = new ResultInfo();
         String[] numberArr = numbers.split(",");
+        List<Company> comList = permissionService.queryComByGroupid(numberArr); //根据集团编号查询是否存在公司
+        if(comList.size() > 0 ){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该集团存在公司，请先删除该集团下的公司");
+            return resultInfo;
+        }
         int result = permissionService.deleteGroup(numberArr);
         if(result >0){
             resultInfo.setMessage("删除成功");
@@ -150,7 +161,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "departmentQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> departmentQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                             @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                              @Param("pageNum") int pageNum ,HttpServletRequest request){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -210,6 +221,12 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteDept(@Param("numbers") String numbers){
         ResultInfo resultInfo = new ResultInfo();
         String[] number = numbers.split(",");
+        List<User> deptList = permissionService.queryUserByDeptid(number); //根据部门id查询该部门是否存在用户
+        if(deptList.size() > 0){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该部门下存在员工，请先删除该部门下的员工");
+            return resultInfo;
+        }
         int result = permissionService.deptDelete(number);
         if(result > 0){
             resultInfo.setMessage("删除成功");
@@ -272,9 +289,9 @@ public class PermissionController extends BaseController {
             Company co = permissionService.getComByName(comName); //根据公司名称获取公司信息
             if(StringUtil.isEmpty(co)){
                 int com = permissionService.addCom(company);  // 插入公司基本信息
-                String com_num = company.getCompanyNumber() + "";
+                String com_num = String.valueOf(company.getCompanyNumber());
                 for (int i = 0;i <list.size();i++){
-                     list.get(i).put("companyNumber",com_num);
+                    list.get(i).put("companyNumber",com_num);
                 }
                 int acc = permissionService.addBankAccount(list); //插入银行账户信息
                 if(acc > 0 && com > 0 ){
@@ -318,7 +335,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "comQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> comQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                      @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                       @Param("pageNum") int pageNum ,HttpServletRequest request){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -386,7 +403,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(300);
                 return resultInfo;
             }
-            user.setLogin_password(pwd);
+            String password = MD5Util.getEncryptedPwd(pwd);
+            user.setLogin_password(password);
             int result = permissionService.addEmployee(user);
             if(result > 0){
                 resultInfo.setMessage("新增成功");
@@ -459,7 +477,262 @@ public class PermissionController extends BaseController {
 
     }
 
+    /**
+     * 获取所有菜单，以树节点形式返回
+     * @return
+     */
+    @RequestMapping(value = "menuTree", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String,Object>> menuTree(){
+        List<Menu> list = userService.getAllMenu();
+        Map<String ,Object> map_one = new HashMap<String,Object>();
+        List<Map<String,Object>> list_one = new ArrayList<>();
+        Map<String , Object> _map = new HashMap<String,Object>();
+        for (int i = 0 ; i < list.size() ; i++){
+            Menu menus = list.get(i);
+            if(menus.getFather().equals("")){
+                if(!_map.containsKey(menus.getCode())){
+                    _map.put(menus.getCode(),menus);
+                }
+            }
+
+        }
+        for (Map.Entry<String,Object> entry : _map.entrySet()){
+            String key = entry.getKey();
+            Menu _map2 = (Menu) entry.getValue();
+            Map<String,Object> _map3 = new HashMap<String,Object>();
+            List<Map<String,Object>> list_two = new ArrayList<>();
+            _map3.put("id" , key);
+            _map3.put("name", _map2.getName());
+            _map3.put("children" , list_two);
+            _map3.put("isParent", true);//设置根节点为父节点
+            _map3.put("open", true); //根节点展开
+            for (int i = 0 ; i < list.size() ; i++){
+                Menu menus = list.get(i);
+                Map<String,Object> _map4 = new HashMap<String,Object>();
+                if(menus.getFather().equals(key) ){
+                    _map4.put("id" , menus.getCode());
+                    _map4.put("name" , menus.getName());
+                    list_two.add(_map4);
+                }
+
+            }
+            list_one.add(_map3);
+        }
+        return list_one;
+    }
+
+    /**
+     * 获取所有公司，以树节点形式返回
+     * @return
+     */
+    @RequestMapping(value = "getComTree", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String , Object>> getComTree(){
+        List<Company> list = permissionService.getAllCompany();
+        List<Map<String ,Object>> list_one = new ArrayList<>();
+        Map<String,Object> _map = new HashMap<String,Object>();
+        for (int i = 0 ;i < list.size(); i++){
+            Company com = list.get(i);
+            if(!_map.containsKey(String.valueOf(com.getCompanyNumber()))){
+                _map.put(String.valueOf(com.getCompanyNumber()),com);
+            }
+        }
+
+        for (Map.Entry<String,Object> entry : _map.entrySet()){
+            String key = entry.getKey();
+            Company company = (Company) entry.getValue();
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("id" , key);
+            map.put("text" , company.getName());
+            list_one.add(map);
+        }
+        return list_one;
+    }
+
+    /**
+     * 获取所有角色信息
+     * @return
+     */
+    @RequestMapping(value = "roleAllQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Roles> roleAllQuery(){
+        List<Roles> list = permissionService.roleAllQuery();
+        return list;
+    }
+
+    //新增角色信息
+    @RequestMapping(value = "addRole", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo addRole(@Param("com_numbers") String com_numbers,@Param("roleName")
+                            String roleName,@Param("flag") String flag,@Param("roleId") String roleId){
+        ResultInfo resultInfo = new ResultInfo();
+        if(flag.equals("0")){  //新增
+            List<Roles> list = permissionService.getRoleByName(roleName); //根据角色名，获取角色信息
+            if(list.size() >0){
+                resultInfo.setMessage("该角色已存在，请重新选择");
+                resultInfo.setCode(300);
+                return resultInfo;
+            }
+            int role = permissionService.addRole(com_numbers,roleName); //新增角色信息
+            if(role > 0){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("新增成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("新增失败，请联系管理员");
+            }
+        }else{  // 修改
+            int result = permissionService.modifyRole(com_numbers,roleName,roleId);
+            if(result > 0){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("修改成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改失败，请联系管理员");
+            }
+        }
+
+        return  resultInfo;
+    }
 
 
+    /**
+     * 设置角色权限
+     * @param menuId
+     * @param roleId
+     * @param flag
+     * @return
+     */
+    @RequestMapping(value = "settingRoleMenu", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo settingRoleMenu(@Param("menuId") String menuId,@Param("roleId") String roleId,@Param("flag") String flag){
+        ResultInfo resultInfo = new ResultInfo();
+        // 根据角色id查询该角色是否被创建
+        List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
+        if(list.size() > 0 ){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该角色已存在，请重新创建");
+            return resultInfo;
+        }
+        if (flag.equals("0")){//新增
+            int result = permissionService.settingRoleMenu(roleId,menuId);
+            if(result > 0){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("新增角色权限成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("新增角色权限失败，请联系管理员");
+            }
+        }else{  //修改
 
+        }
+        return resultInfo;
+
+    }
+
+    /**
+     * 根据角色ID，获取角色信息
+     * @param roleId
+     * @return
+     */
+    @RequestMapping(value = "getRoleById", method = RequestMethod.POST)
+    @ResponseBody
+    public List<RoleMenu>  getRoleById(@Param("roleId") String roleId){
+        List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
+        return list;
+    }
+
+    /**
+     * 分页查询角色信息
+     * @param search
+     * @param pageSize
+     * @param pageNum
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "roleQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> roleQuery(@Param("search") String search,@Param("pageSize") int pageSize,
+                                        @Param("pageNum") int pageNum ,HttpServletRequest request){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        int empTotal = permissionService.getRoleTotal();   //获取角色总数
+        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum); //分页查询
+        map.put("total",empTotal);
+        map.put("rows",list);
+        return map;
+    }
+
+    /**
+     * 根据角色ID删除对应的角色
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "deleteRoles", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo deleteRoles(@Param("ids") String ids){
+        ResultInfo resultInfo = new ResultInfo();
+        String[] idsArr = ids.split(",");
+        List<User> userList = permissionService.queryUserByRoleid(idsArr); //根据角色id，判断当前角色下是否有用户存在
+        if (userList.size() > 0){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该角色存在用户，请先删除对应的用户");
+            return resultInfo;
+        }
+        int result = permissionService.deleteRoles(idsArr); //删除角色信息
+        if(result <= 0){
+            resultInfo.setCode(500);
+            resultInfo.setMessage("删除角色失败，请联系管理员");
+            return  resultInfo;
+        }
+        int result2 = permissionService.deleteRolesMenu(idsArr);  //删除角色对应的权限菜单
+        if(result2 > 0){
+            resultInfo.setMessage("删除成功");
+            resultInfo.setCode(200);
+        }else{
+            resultInfo.setCode(500);
+            resultInfo.setMessage("删除角色菜单失败，请联系管理员");
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 删除公司信息
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "deleteCompanys", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo deleteCompanys(@Param("ids") String ids){
+        ResultInfo resultInfo = new ResultInfo();
+        String[] idsArr = ids.split(",");
+        List<Departments> deptList = permissionService.queryDeptByCompanyNum(idsArr); //根据公司编号查询该公司是否存在部门
+        if(deptList.size() > 0){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该公司存在部门，请先删除该公司下的部门");
+            return resultInfo;
+        }
+        int result = permissionService.deleteCompanys(idsArr);  //删除公司信息
+        if ( result <= 0 ){
+            resultInfo.setCode(500);
+            resultInfo.setMessage("删除公司失败，请联系管理员");
+            return resultInfo;
+        }
+        int msg = permissionService.deleteCompanyByNum(idsArr); //根据公司编号删除对应的银行账户
+        if( msg > 0 ){
+            resultInfo.setCode(200);
+            resultInfo.setMessage("删除成功");
+        }else{
+            resultInfo.setCode(500);
+            resultInfo.setMessage("删除公司账户失败，请联系管理员");
+        }
+
+        return resultInfo;
+    }
 }

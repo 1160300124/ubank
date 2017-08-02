@@ -16,8 +16,9 @@ public interface CompanyDao {
 
     Company getComByName(String comName);   //根据公司名称获取公司信息
 
-    int deleteComByNum(String comNum);  //根据公司编号删除银行账户信息表中的数据
-
     int addBankAccount(List<Map<String, Object>> list);  //插入银行账户信息
 
+    int deleteCompanys(String[] idsArr); //删除公司信息
+
+    List<Company> queryComByGroupid(String[] numberArr); //根据集团编号查询是否存在公司
 }

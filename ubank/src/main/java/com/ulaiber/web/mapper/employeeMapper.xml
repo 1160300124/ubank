@@ -15,8 +15,8 @@
 
     <!--新增员工信息-->
     <insert id="addEmployee" >
-        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,companyNumber,dept_number,bankNo,bankCardNo,role_id)
-            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,groupNumber,companyNumber,dept_number,bankNo,bankCardNo,role_id)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{groupNumber},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
     </insert>
 
     <!--修改员工信息-->
@@ -33,7 +33,7 @@
 
     <!-- 分页查询员工信息-->
     <select id="empQuery" parameterType="Map" resultType="com.ulaiber.web.model.User">
-        select b.name as com_name,c.name as dept_name,d.bankName as bank,a.companyNumber,
+        select b.name as com_name,c.name as dept_name,d.bankName ,a.companyNumber,
         a.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,a.mobile,a.cardNo from tbl_users a
         LEFT JOIN tbl_company b on a.companyNumber = b.companyNumber
         left join tbl_departments c on a.dept_number = c.dept_number

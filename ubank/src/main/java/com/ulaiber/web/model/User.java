@@ -28,6 +28,9 @@ public class User implements Serializable {
 	//银行预留手机号码
 	private String reserve_mobile;
 
+	//集团编号
+	private String groupNumber;
+
 	//公司编号
 	private String companyNumber;
 
@@ -48,6 +51,9 @@ public class User implements Serializable {
 	
 	//绑定银行
 	private Bank bank;
+
+	//银行名称
+	private String bankName;
 
 	//银行编号
 	private String bankNo;
@@ -152,6 +158,14 @@ public class User implements Serializable {
 		this.reserve_mobile = reserve_mobile;
 	}
 
+	public String getGroupNumber() {
+		return groupNumber;
+	}
+
+	public void setGroupNumber(String groupNumber) {
+		this.groupNumber = groupNumber;
+	}
+
 	public String getCompanyNumber() {
 		return companyNumber;
 	}
@@ -198,6 +212,14 @@ public class User implements Serializable {
 
 	public void setBank(Bank bank) {
 		this.bank = bank;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 
 	public String getDept_name() {

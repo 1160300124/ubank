@@ -70,4 +70,37 @@ public interface PermissionService {
     int editEmp(User user); //修改员工信息
 
     int empDelete(String[] number); //根据员工编号删除对应的员工
+
+    List<Roles> roleAllQuery();  //获取所有角色信息
+
+    List<Roles> getRoleByName(String roleName);  //根据角色名，获取角色信息
+
+    int addRole(String com_numbers, String roleName); //新增角色信息
+
+    int settingRoleMenu(String roleId, String menuId); //设置角色权限
+
+    List<RoleMenu> getRoleMenuByRoleid(String roleId);  // 根据角色id查询该角色是否被创建
+
+    int getRoleTotal();  //获取角色总数
+
+    List<Roles> roleQuery(String search, int pageSize, int pageNum);  //分页查询角色信息
+
+    int modifyRole(String com_numbers, String roleName , String roleId);  //修改角色信息
+
+    int deleteRoles(String[] idsArr); //删除角色信息
+
+
+    int deleteRolesMenu(String[] idsArr);  //删除角色对应的权限菜单
+
+    int deleteCompanys(String[] idsArr);  //删除公司信息
+
+    int deleteCompanyByNum(String[] idsArr); //根据公司编号删除对应的银行账户
+
+    List<User> queryUserByRoleid(String[] idsArr);  //根据角色id，判断当前角色下是否有用户存在
+
+    List<User> queryUserByDeptid(String[] number); //根据部门id查询该部门是否存在用户
+
+    List<Departments> queryDeptByCompanyNum(String[] idsArr); //根据公司编号查询该公司是否存在部门
+
+    List<Company> queryComByGroupid(String[] numberArr); //根据集团编号查询是否存在公司
 }
