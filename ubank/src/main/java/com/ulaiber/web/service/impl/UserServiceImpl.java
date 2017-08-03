@@ -180,6 +180,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
+	public List<Menu> getAllMenuByUser(String userName) {
+		return mapper.getAllMenuByUser(userName);
+	}
+
+	@Override
 	public List<Menu> getAllMenu() {
 		return mapper.getAllMenu();
 	}

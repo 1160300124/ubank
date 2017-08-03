@@ -15,7 +15,7 @@ public interface EmployeeDao {
 
     int addEmployee(User user);   //新增员工信息
 
-    int getEmpTotal(); //获取员工总数
+    int getEmpTotal(Map<String, Object> map); //获取员工总数
 
     List<User> empQuery(Map<String, Object> map); //分页查询员工信息
 

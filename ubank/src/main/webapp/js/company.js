@@ -3,6 +3,8 @@ $(function () {
     CompanyFun.getAllGroup();
     CompanyFun.getAllBank();
     CompanyFun.companyQuery();
+    CompanyFun.com_listening();
+
 });
 var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 var bankInfo = ""; //全局变量，存放所有银行信息
@@ -17,13 +19,24 @@ var CompanyFun = {
         $("#company_modal").modal("show");
 
     },
+    //弹出框关闭监听事件
+    com_listening : function () {
+        $("#company_modal").on('hide.bs.modal',function () {
+            $('#company_table').bootstrapTable('uncheckAll');
+            $("#company_form")[0].reset();
+            $(".form-box").html("");
+        });
+    },
     //获取所有集团
     getAllGroup : function () {
         $.ajax({
             url : 'getAllGroup',
             dataType : 'json',
             type : 'post',
-            data:  {},
+            data:  {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
             success : function (data) {
                 if(data.length <= 0){
                     Ewin.alert("没有集团数据，，请联系管理员");
@@ -110,7 +123,9 @@ var CompanyFun = {
         var paramData = {
             pageSize : params.limit,
             pageNum : params.offset,
-            search : params.search
+            search : params.search,
+            sysflag : SYSFLAG,
+            groupNumber : GROUPNUMBER
         };
         return paramData;
     },
@@ -156,21 +171,21 @@ var CompanyFun = {
         if(customer == ""){
             Ewin.alert("公司客户号不能为空");
             return;
-        }else if(Validate.NumberAndLetter(customer)){
+        }else if(!Validate.regNumAndLetter(customer)){
             Ewin.alert("公司客户号格式不合法，请重新输入");
             return;
         }
         if(certificateNumber == ""){
             Ewin.alert("证书编号不能为空");
             return;
-        }else if(Validate.NumberAndLetter(certificateNumber)){
+        }else if(!Validate.NumberAndLetter(certificateNumber)){
             Ewin.alert("证书编号格式不合法，请重新输入");
             return;
         }
         if(authorizationCode == ""){
             Ewin.alert("银行数字证书授权码不能为空");
             return;
-        }else if(Validate.NumberAndLetter(authorizationCode)){
+        }else if(!Validate.NumberAndLetter(authorizationCode)){
             Ewin.alert("银行数字证书授权码格式不合法，请重新输入");
             return;
 
@@ -289,7 +304,7 @@ var CompanyFun = {
                         "</div>" +
                         "</div>";
                     //插入银行信息
-                    $(".sele"+i+"").find("option[]").attr("selected",true);
+                  //  $(".sele"+i+"").find("option[]").attr("selected",true);
 
                 }
                 $(".form-box").html(html);

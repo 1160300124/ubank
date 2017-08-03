@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ulaiber.web.model.Menu;
+import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -77,13 +78,13 @@ public class BackendLoginController extends BaseController {
 	}
 
 	/**
-	 * 获取系统所有菜单
+	 * 根据用户名获取系统所有菜单
 	 * @return menu
 	 */
 	@RequestMapping(value = "getAllMenu")
 	@ResponseBody
-	public List<Menu> getAllMenu(HttpServletRequest request){
-		List<Menu> menu = userService.getAllMenu();
+	public List<Menu> getAllMenu(@Param("userName") String userName){
+		List<Menu> menu = userService.getAllMenuByUser(userName);
 		return menu;
 
 	};
