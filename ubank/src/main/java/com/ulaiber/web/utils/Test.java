@@ -1,33 +1,21 @@
 package com.ulaiber.web.utils;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import javax.xml.crypto.dsig.TransformException;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.sun.tools.javac.util.Constants.format;
-import static com.ulaiber.web.utils.SignatureUtil.virefy;
-import static java.net.HttpCookie.parse;
+import com.ulaiber.web.conmon.IConstants;
 
 public class Test {
 
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	@org.junit.Test
-	public void  register(String[] args) {
+	public static void main(String[] args) {
 //		UUID uuid = UUID.randomUUID();
 //        System.out.println(uuid.toString().replaceAll("-", ""));
-//        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", "【优融UBOSS】您的验证码是：123143", "15919477086");
+//        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", IConstants.SMS_TEMPLATE.replace("#code#", CaptchaUtil.getCaptcha()), "15919477086");
 //        System.out.println(s);
+		
 //        int n = 0 ;
-//
-//		while(n < 100000)
-//			n = (int)(Math.random()*1000000);
+//		while(n < 10000)
+//			n = (int)(Math.random()*100000);
 //		
 //		System.out.println(n);
 //		System.out.println(Math.random());
@@ -92,9 +80,25 @@ public class Test {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
+//      String apiUrl = "http://localhost:8080/uwallet/api/v1/updateForBankCard";
+//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//      params.put("mobile", "15919477086");
+//      params.put("bankCardNo", "123456");
+//      params.put("bankNo", "123456");
+//      params.put("reserve_mobile", "123456");
+//      String response = HttpsUtil.doPost1(apiUrl, params);
+//      System.out.println(response);
+		
 		
 //		FileUtil.copy(new File("C:\\tools\\test\\haha\\body.jpg"), new File("C:\\tools\\test\\"));
-		FileUtil.delFile("C:\\tools\\test\\haha\\body.jpg");
+//		FileUtil.delFile("C:\\tools\\test\\haha\\body.jpg");
+		
+//		String filename = "fileaaaaa.aaaa.jpg";
+//		String uuid = UUIDGenerator.getUUID();
+//        String newFilename = uuid + filename.substring(filename.lastIndexOf("."), filename.length());
+//        System.out.println(uuid);
+//        System.out.println(newFilename);
+		System.out.println(SPDBUtil.CLIENT_MASTER_ID);
 		
 	}
 	

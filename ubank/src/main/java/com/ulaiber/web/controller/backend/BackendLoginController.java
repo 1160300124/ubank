@@ -45,10 +45,15 @@ public class BackendLoginController extends BaseController {
 		return "login";
 	}
 	
+	@RequestMapping("test")
+	public String test(HttpServletRequest request, HttpServletResponse response){
+		return "test";
+	}
+	
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo login(User user, HttpServletRequest request, HttpServletResponse response){
-		logger.info("Start to login...");
+		logger.debug("backend login start...");
 		ResultInfo retInfo = new ResultInfo();
 		if (!ObjUtil.notEmpty(user.getUserName()) || !ObjUtil.notEmpty(user.getLogin_password())){
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -71,9 +76,11 @@ public class BackendLoginController extends BaseController {
 		//放入session
 		request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, dbuser);
 		request.getSession().setAttribute("userName", dbuser.getUserName());
+		logger.info(dbuser.getUserName() + " login successed.");
 		
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setMessage("login successed.");
+		logger.debug("backedn login end...");
 		return retInfo;
 	}
 

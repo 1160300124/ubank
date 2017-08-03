@@ -61,4 +61,11 @@ public interface BannerDao {
 	 */
 	int deleteByIds(List<Long> ids);
 	
+	/**
+	 * 查询有没有banner引用模块
+	 * @param mids
+	 * @return
+	 */
+	int getCountByMids(List<Integer> mids);
+	
 }

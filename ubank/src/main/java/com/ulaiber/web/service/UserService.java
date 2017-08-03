@@ -103,6 +103,14 @@ public interface UserService {
 	List<Menu> getAllMenuByUser( String userName);
 
 	/**
+	 * 校验支付密码是否正确
+	 * @param mobile
+	 * @param password
+	 * @return
+	 */
+	boolean validatePayPwd(String mobile, String password);
+
+	/**
 	 * 获取所有系统菜单
 	 * @return
 	 */

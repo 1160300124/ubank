@@ -12,7 +12,7 @@ public class IConstants
 {
 
 	//
-	public final static String PICTURE_SERVER = "http://10.17.1.136:8080/ubank"; 
+	public final static String PICTURE_SERVER = "http://bank.ubosspay.com/ubank"; 
 	
     //后台用户SESSION常量名
     public final static String UBANK_BACKEND_USERSESSION = "BACKENDUSER";
@@ -60,7 +60,7 @@ public class IConstants
     public final static int QT_BIND_BANKCARD_ERROR = 3014; 
     
     //短信模板
-	public final static String SMS_TEMPLATE = "【U钱包】您的验证码是#code#";
+	public final static String SMS_TEMPLATE = "【优发展】您的验证码是#code#。如非本人操作，请忽略本短信";
 	
 	//银企直联交易状态
 	public static Map<String, String> TRANS_STATUS = new HashMap<String, String>();
@@ -93,8 +93,8 @@ public class IConstants
 	//图标路径
 	public static String ICON_PATH = "/icon";
 	
-	//bunner路径
-	public static String BUNNER_PATH = "/bunner";
+	//banner路径
+	public static String BANNER_PATH = "/banner";
 	
 	//上传临时目录
 	public static String TEMP_UPLOAD_PATH = UPLOAD_PATH + TEMP_PATH;
@@ -105,11 +105,11 @@ public class IConstants
 	//图标上传目录
 	public static String ICON_UPLOAD_PATH = UPLOAD_PATH + ICON_PATH;
 	
-	//bunner上传临时目录
-	public static String BUNNER_TEMP_UPLOAD_PATH = TEMP_UPLOAD_PATH + BUNNER_PATH;
+	//banner上传临时目录
+	public static String BANNER_TEMP_UPLOAD_PATH = TEMP_UPLOAD_PATH + BANNER_PATH;
 	
-	//bunner上传目录
-	public static String BUNNER_UPLOAD_PATH = UPLOAD_PATH + BUNNER_PATH;
+	//banner上传目录
+	public static String BANNER_UPLOAD_PATH = UPLOAD_PATH + BANNER_PATH;
 	
 	//文件操作的缓存大小
 	public static final int FILE_OPERA_BUFFER = 1024 ;

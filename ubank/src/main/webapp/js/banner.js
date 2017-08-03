@@ -1,9 +1,15 @@
 $(function(){
 	
+	$("#btn_refresh").unbind().bind("click", function(){
+		$("#tb_banners").bootstrapTable("refresh");
+	});
+	
 	$("#btn_add").unbind().bind("click", function(){
 		
 		var addModal = $("#add_modal");
 		addModal.find("#add_form")[0].reset();
+		addModal.find("#lefile").val("");
+		addModal.find("#img_path").attr("src", "");
 		addModal.find("#banner_module").empty();
 		
 		$.ajax({
@@ -81,40 +87,6 @@ $(function(){
 		
 	});
 	
-	$("#btn_add_pic_upload").unbind().bind("click", function(){
-
-		$("#btn_add_pic_upload").attr("disabled", true);
-		
-		$.ajaxFileUpload({
-			url : "uploadUrlPic",
-			type: "post",
-			secureuri : false,
-			fileElementId : "lefile",
-			dataType : "json",
-			data : {
-				name : $('#lefile').val()
-			},
-			success : function(data, status) {
-				$("#btn_add_pic_upload").attr("disabled", false);
-				data = $.parseJSON(data.replace(/<.*?>/ig,""));
-				var code = data['code'];
-				if (code == 1000) {
-					$("#img_path").attr("src", basePath + data['data']);
-					$("#pic_path").val(data['data']);
-				}else{
-					Ewin.alert("上传失败！" + data['message']);
-				}
-			},
-			error : function(data, status, e) {
-				Ewin.alert("上传发生异常");
-			}
-		})
-		
-		$("#btn_add_pic_upload").attr("disabled", true);
-
-		return false;
-	});
-	
 	$("#btn_add_confirm").unbind().bind("click", function(){
 		
 		$("#btn_add_confirm").attr("disabled", true);
@@ -155,40 +127,6 @@ $(function(){
 		
 		$("#btn_add_confirm").attr("disabled", false);
 
-	});
-	
-	$("#btn_edit_pic_upload").unbind().bind("click", function(){
-		
-		$("#btn_edit_pic_upload").attr("disabled", true);
-		var editModal = $("#edit_modal");
-
-		$.ajaxFileUpload({
-			url : "uploadUrlPic",
-			type: "post",
-			secureuri : false,
-			fileElementId : "efile",
-			dataType : "json",
-			data : {
-				name : $('#efile').val()
-			},
-			success : function(data, status) {
-				$("#btn_edit_pic_upload").attr("disabled", false);
-				data = $.parseJSON(data.replace(/<.*?>/ig,""));
-				var code = data['code'];
-				if (code == 1000) {
-					editModal.find("#img_path").attr("src", basePath +data['data']);
-					editModal.find("#pic_path").val(data['data']);
-				}else{
-					Ewin.alert("上传失败！" + data['message']);
-				}
-			},
-			error : function(data, status, e) {
-				Ewin.alert("上传发生异常");
-			}
-		})
-
-		$("#btn_edit_pic_upload").attr("disabled", false);
-		return false;
 	});
 	
 	$("#btn_edit_confirm").unbind().bind("click", function(){
@@ -287,3 +225,79 @@ window.operateEvents = {
 		}
 
 };
+
+function addFileChange(){
+	var file = $('#lefile').val();
+	if (file == null || file == "" || file == undefined){
+		Ewin.alert("请上传图标！");
+		return false;
+	}
+	$("#btn_add_pic_upload").attr("disabled", true);
+	
+	$.ajaxFileUpload({
+		url : "uploadBannerPic",
+		type: "post",
+		secureuri : false,
+		fileElementId : "lefile",
+		dataType : "json",
+		data : {
+			name : $('#lefile').val()
+		},
+		success : function(data, status) {
+			$("#btn_add_pic_upload").attr("disabled", false);
+			data = $.parseJSON(data.replace(/<.*?>/ig,""));
+			var code = data['code'];
+			if (code == 1000) {
+				$("#img_path").attr("src", basePath + data['data']);
+				$("#pic_path").val(data['data']);
+			}else{
+				Ewin.alert("上传失败！" + data['message']);
+			}
+		},
+		error : function(data, status, e) {
+			Ewin.alert("上传发生异常");
+		}
+	})
+	
+	$("#btn_add_pic_upload").attr("disabled", false);
+	return false;
+}
+
+function editFileChange(){
+	var file = $('#efile').val();
+	if (file == null || file == "" || file == undefined){
+		Ewin.alert("请上传图标！");
+		return false;
+	}
+	
+	$("#btn_edit_pic_upload").attr("disabled", true);
+	var editModal = $("#edit_modal");
+
+	$.ajaxFileUpload({
+		url : "uploadBannerPic",
+		type: "post",
+		secureuri : false,
+		fileElementId : "efile",
+		dataType : "json",
+		data : {
+			name : $('#efile').val()
+		},
+		success : function(data, status) {
+			$("#btn_edit_pic_upload").attr("disabled", false);
+			data = $.parseJSON(data.replace(/<.*?>/ig,""));
+			var code = data['code'];
+			if (code == 1000) {
+				editModal.find("#img_path").attr("src", basePath +data['data']);
+				editModal.find("#pic_path").val(data['data']);
+			}else{
+				Ewin.alert("上传失败！" + data['message']);
+			}
+		},
+		error : function(data, status, e) {
+			Ewin.alert("上传发生异常");
+		}
+	})
+
+	$("#btn_edit_pic_upload").attr("disabled", false);
+	return false;
+} 

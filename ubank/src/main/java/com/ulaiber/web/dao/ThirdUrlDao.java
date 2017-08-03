@@ -54,4 +54,18 @@ public interface ThirdUrlDao {
 	 * @return
 	 */
 	List<ThirdUrl> getUrlsByMidAndCid(Map<String, Object> params);
+	
+	/**
+	 * 查询有没有url引用模块
+	 * @param mids
+	 * @return
+	 */
+	int getCountByMids(List<Integer> mids);
+	
+	/**
+	 * 查询有没有url引用类别
+	 * @param cids
+	 * @return
+	 */
+	int getCountByCids(List<Integer> cids);
 }

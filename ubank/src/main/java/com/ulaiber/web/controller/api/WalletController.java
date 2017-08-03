@@ -52,7 +52,7 @@ public class WalletController extends BaseController {
 	@RequestMapping(value = "getBalance", method = RequestMethod.GET)
 	@ResponseBody
 	public ResultInfo getBalance(String mobile, HttpServletRequest request, HttpServletResponse response){
-		
+		logger.debug("");
 		ResultInfo retInfo = new ResultInfo();
 		
 		//TODO 调银行查询余额接口
@@ -103,10 +103,10 @@ public class WalletController extends BaseController {
 		
 		
 		List<Bill> bills = new ArrayList<Bill>();
-		bills.add(bill);
-		bills.add(bill2);
-		bills.add(bill3);
-		bills.add(bill4);
+//		bills.add(bill);
+//		bills.add(bill2);
+//		bills.add(bill3);
+//		bills.add(bill4);
 		
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(bills);

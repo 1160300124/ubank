@@ -21,6 +21,8 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Category;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.CategoryService;
+import com.ulaiber.web.service.ThirdUrlService;
+import com.ulaiber.web.utils.ObjUtil;
 
 /** 
  * <一句话概述功能>
@@ -38,6 +40,9 @@ public class CategoryController extends BaseController {
 	
 	@Autowired
 	private CategoryService service;
+	
+	@Autowired
+	private ThirdUrlService urlService;
 	
 	@RequestMapping(value = "category", method = RequestMethod.GET)
 	public String toPage(HttpServletRequest request, HttpServletResponse response){
@@ -115,17 +120,27 @@ public class CategoryController extends BaseController {
 
 	@RequestMapping(value = "deleteCategories", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo deleteCategories(@RequestBody List<Integer> pids, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo deleteCategories(@RequestBody List<Integer> cids, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("deleteCategories start...");
 		ResultInfo info = new ResultInfo();
-		boolean flag = service.deleteByIds(pids);
+		if (!ObjUtil.notEmpty(cids)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数为空！");
+			return info;
+		}
+		if (urlService.getCountByCids(cids) > 0){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("删除失败，您选中的类别有URL引用，请先删除引用的URL！");
+			return info;
+		}
+		boolean flag = service.deleteByIds(cids);
 		 if (flag){
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("删除成功");;
-			} else {
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("删除失败");
-			}
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("删除成功");;
+		} else {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("删除失败");
+		}
 		 logger.debug("deleteCategories end...");
 		return info;
 	}

@@ -14,6 +14,7 @@ import com.ulaiber.web.model.User;
 import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.StringUtil;
+import com.ulaiber.web.utils.UUIDGenerator;
 
 /**
  * 基础控制器，所有controller都要继承此类
@@ -106,7 +107,8 @@ public class BaseController {
         } else {
         	filesavepaths = realpath.concat("/").concat(basePath);
         }
-        
+        String uuid = UUIDGenerator.getUUID();
+        String newFilename = uuid + filename.substring(filename.lastIndexOf("."), filename.length());
         FileOutputStream fos = null;
         try {
 			
@@ -115,7 +117,7 @@ public class BaseController {
         	if (!file.exists())
         		file.mkdirs();
         	
-        	fos = new FileOutputStream(new File( filesavepaths.concat(File.separator).concat(filename)));
+        	fos = new FileOutputStream(new File( filesavepaths.concat(File.separator).concat(newFilename)));
         	fos.write(bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,7 +134,7 @@ public class BaseController {
 		}
         
         //返回文件的相对地址
-        return basePath.concat("/").concat(filename);
+        return basePath.concat("/").concat(newFilename);
     } 
 	
 	/**

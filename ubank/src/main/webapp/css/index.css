@@ -91,6 +91,10 @@ a:active, a:hover, a:focus, a:visited {
     color: #fff;
 }
 
+.panel-body .bootstrap-table  .table > tbody > tr > td {
+ word-break:break-all;
+}
+
 .logo{width:86px;height:86px;background:url("../images/logo.png") no-repeat;}
 .logo+h1{margin:0px;line-height:90px;font-size:24px;font-weight:400;}
 .icon-user-one{width:23px;height:23px;background:url("../images/user.png") no-repeat;}
@@ -98,6 +102,8 @@ a:active, a:hover, a:focus, a:visited {
 .icon-recond{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/date.png") no-repeat center;background-size:100%;}
 .icon-other{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/others.png") no-repeat center;background-size:100%;}
 .icon_banner_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_banner_default.png") no-repeat center;background-size:100%;}
+.icon_classify{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_classify.png") no-repeat center;background-size:100%;}
+.icon_module{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_module.png") no-repeat center;background-size:100%;}
 .icon_bumen_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_bumen_default.png") no-repeat center;background-size:100%;}
 .icon_company_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_company_default.png") no-repeat center;background-size:100%;}
 .icon_jituan_default{float:left;margin:10px 5px 0 0;width:20px;height:20px;background:url("../images/icon_jituan_default.png") no-repeat center;background-size:100%;}
