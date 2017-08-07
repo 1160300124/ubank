@@ -27,7 +27,7 @@
 		<property name="autoStartup" value="true"/>  
 	</bean>
 	
-	<!-- 触发器：定义出发器执行的脚本的时间  -->
+	<!--每天凌晨1点定时清理临时目录  -->
 	<bean id="clearTempFolderTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="clearTempFolderTaskDetail" />
 		<property name="cronExpression" value="0 0 1 * * ?" />

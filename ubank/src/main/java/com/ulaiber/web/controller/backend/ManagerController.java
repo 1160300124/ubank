@@ -218,8 +218,8 @@ public class ManagerController extends BaseController{
 		params.put("totalNumber", totalNumber);
 		params.put("totalAmount", totalAmount);
 		params.put("flag", "1");
-//    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
-		String entrustSeqNo = "12345678910";
+    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
+//		String entrustSeqNo = "12345678910";
     	if (StringUtils.isNotEmpty(entrustSeqNo)){
     		sa.setEntrustSeqNo(entrustSeqNo);
     		
