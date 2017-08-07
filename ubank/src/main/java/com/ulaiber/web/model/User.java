@@ -94,6 +94,9 @@ public class User implements Serializable {
 	//最近登陆失败时间
 	private String login_fail_time;
 
+	//角色标识
+	private String sysflag;
+
 	public long getId() {
 		return id;
 	}
@@ -334,4 +337,11 @@ public class User implements Serializable {
 		this.secondBankCardNo = secondBankCardNo;
 	}
 
+	public String getSysflag() {
+		return sysflag;
+	}
+
+	public void setSysflag(String sysflag) {
+		this.sysflag = sysflag;
+	}
 }

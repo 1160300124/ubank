@@ -12,6 +12,9 @@
     <!-- 获取所有角色信息-->
     <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
         SELECT role_id,role_name,companyNumber FROM tbl_roles
+        <if test = 'sysflag == "1"'>
+            where companyNumber = #{companyNumber}
+        </if>
     </select>
 
     <!--根据角色名，获取角色信息-->
@@ -21,17 +24,20 @@
 
     <!--新增角色信息-->
     <insert id="addRole" parameterType="Map" >
-        INSERT INTO tbl_roles(role_name,companyNumber)
-            VALUES (#{roleName},#{com_numbers})
+        INSERT INTO tbl_roles(role_name,companyNumber,sysflag)
+            VALUES (#{roleName},#{com_numbers},'1')
     </insert>
 
     <!--分页查询角色信息-->
     <select id="roleQuery" parameterType="Map" resultType="com.ulaiber.web.model.Roles">
-        select * from tbl_roles ORDER BY role_id
+        select * from tbl_roles  where 1=1
         <if test="search != null and search != ''">
-            where role_name like concat('%',#{search},'%')
+            and  role_name like concat('%',#{search},'%')
         </if>
-        limit #{pageNum},#{pageSize}
+        <if test = 'sysflag == "1"'>
+            and companyNumber = #{companyNumber}
+        </if>
+        ORDER BY role_id  limit #{pageNum},#{pageSize}
     </select>
 
     <!--修改角色信息-->

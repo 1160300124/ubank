@@ -15,7 +15,9 @@ public interface RoleMenuDao {
 
     List<RoleMenu> getRoleMenuByRoleid(String roleId);  //根据角色id查询该角色是否被创建
 
-    int getRoleTotal(); //获取角色总数
+    int getRoleTotal(Map<String,Object> map); //获取角色总数
 
     int deleteRolesMenu(String[] idsArr);  //删除角色对应的权限菜单
+
+    int deleteRoleMenuByRoleId(String roleId);  // 根据角色id，删除对应的菜单
 }

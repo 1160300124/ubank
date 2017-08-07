@@ -2,6 +2,7 @@ $(function () {
     RoleFun.role_getComTree();
     RoleFun.role_query();
     RoleFun.loadTree();
+    RoleFun.role_listening();
 
 });
 var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
@@ -23,6 +24,7 @@ var setting = {
 var RoleFun = {
     //打开新增框
     openAddRole : function () {
+        flag = 0;
         this.rol_roleTable();
         $(".modal-title").html("新增");
         $("#role_modal").modal("show");
@@ -38,13 +40,24 @@ var RoleFun = {
             }
         });
     },
+    //弹出框关闭监听事件
+    role_listening : function () {
+        $("#role_modal").on('hide.bs.modal',function () {
+            $('#role_table').bootstrapTable('uncheckAll');
+            $('#role_table2').bootstrapTable('uncheckAll');
+            $("#roles_form")[0].reset();
+        });
+    },
     //获取所有公司
     role_getComTree : function () {
         $.ajax({
             url : 'getComTree',
             dataType : 'json',
             type : 'post',
-            data : {},
+            data : {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
             success : function (data) {
                 $("#combotree").bootstrapCombotree({
                     defaultLable : '请选择公司',//默认按钮上的文本
@@ -68,6 +81,10 @@ var RoleFun = {
             method : 'post',// get,post
             striped : true, // 是否显示行间隔色
             cache : false, // 是否使用缓存，默认为true
+            queryParams : {
+                "companyNumber" : COMPANYNUMBER,
+                "sysflag" : SYSFLAG
+            },
             contentType : "application/x-www-form-urlencoded",
             sidePagination : "client", // 分页方式：client客户端分页，server服务端分页
             pageNumber : 1, // 初始化加载第一页，默认第一页
@@ -142,7 +159,6 @@ var RoleFun = {
                 {field : 'companyNumber', title : '所属公司', width: 130, align : 'left',
                     formatter : function (value,row,index) {
                         return value;
-
                     }
                 },
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false}
@@ -158,7 +174,9 @@ var RoleFun = {
         var paramData = {
             pageSize : params.limit,
             pageNum : params.offset,
-            search : params.search
+            search : params.search,
+            companyNumber : COMPANYNUMBER,
+            sysflag : SYSFLAG
         };
         return paramData;
     },
@@ -211,7 +229,6 @@ var RoleFun = {
     },
     //角色分配权限
     roleForMenu : function () {
-        flag = 0 ;
         var treeObj = $.fn.zTree.getZTreeObj("role_tree");
         var nodes = treeObj.getCheckedNodes(true);
         var row = $('#role_table2').bootstrapTable('getSelections');
@@ -232,7 +249,7 @@ var RoleFun = {
             }
         }
         $.ajax({
-            url : 'settingRoleMenu',
+            url : 'settingRoleMenu?flag' + flag,
             type : 'post',
             dataType : 'json',
             data :{
@@ -248,6 +265,7 @@ var RoleFun = {
                 }else{
                     Ewin.alert(data.message);
                     treeObj.checkAllNodes(false);
+                    $('#role_table2').bootstrapTable('refresh');
                     $("#role_modal").modal("hide");
                     flag = 0;
 
@@ -286,7 +304,7 @@ var RoleFun = {
             arr = num;
         }
         this.rol_roleTable();
-        $("#combotree").bootstrapCombotree("setValue",arr);
+        $("#combotree").bootstrapCombotree("setValue",num);
         $("#role_modal").modal("show");
     },
     //删除角色
@@ -340,4 +358,4 @@ var RoleFun = {
         });
 
     }
-}
+};

@@ -14,7 +14,6 @@
 	<script src="<%=request.getContextPath()%>/js/jquery/jquery-1.12.3.min.js" type="text/javascript" ></script>
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-treeview.css" rel="stylesheet" />
-	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrapValidator.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/zTreeStyle.css" rel="stylesheet" />
 	<script src="<%=request.getContextPath()%>/js/jquery/ajaxfileupload.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
@@ -39,7 +38,7 @@
 	<h1 class="fl">优发展银行</h1>
 	<div class="fr header-user">
 		<i class="fl icon-user-one"></i>
-		<span class="fl">${userName }</span>
+		<span class="fl username" >${userName }</span>
 		<i class="fl icon-arrows-bottom"></i>
 		<ul class="header-user-menu" onclick="return logout();">
 			<li>退出</li>
@@ -69,15 +68,21 @@
 
 
 <script type="text/javascript">
-var GROUPNUMBER = ${BACKENDUSER.groupNumber}; //当前用户所属集团编号
-    $(function () {
+	var GROUPNUMBER = ${BACKENDUSER.groupNumber}; //当前用户所属集团编号
+	var SYSFLAG = ${BACKENDUSER.sysflag}; //角色表示，0 表示管理所有集团的超级管理员；1 表示集团里的超级管理员
+	var COMPANYNUMBER = ${BACKENDUSER.companyNumber};  //当前用户所属公司
+	var DEPTNUMBER = ${BACKENDUSER.dept_number};		//当前用户所属部门
 
+    $(function () {
         //获取系统菜单
         $.ajax({
             url : 'getAllMenu',
             type: 'post',
             dataType : 'json',
-            data : {},
+            data : {
+                "userName" : $(".username").text()
+
+			},
             success : function (data) {
                 var html = "";
                 var fatherMenu = "";
@@ -122,14 +127,6 @@ var GROUPNUMBER = ${BACKENDUSER.groupNumber}; //当前用户所属集团编号
                 Ewin.alert("系统菜单加载异常，请联系管理员。");
 
             }
-
-
         });
-
-
-
-
     })
-
-
 </script>

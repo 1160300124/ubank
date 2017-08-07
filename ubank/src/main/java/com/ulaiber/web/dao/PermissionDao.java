@@ -30,7 +30,7 @@ public interface PermissionDao {
 
     List<Departments> departmentQuery(Map<String,Object> map);   //获取所有部门信息
 
-    int getTotal();  //获取总数
+    int getTotal(Map<String,Object> map);  //获取集团总数
 
     int getDeptTotal();  //获取部门总数
 
@@ -38,17 +38,17 @@ public interface PermissionDao {
 
     int deptDelete(String[] number);  // 删除部门
 
-    List<Group> getAllGroup();  //获取所有集团信息
+    List<Group> getAllGroup(Map<String,Object> map);  //获取所有集团信息
 
     int addCom(Company company);  //插入公司基本信息
 
     List<Bank> getAllBank(); //获取所有银行信息
 
-    int getCompanyTotal();   //获取公司总数
+    int getCompanyTotal(Map<String,Object> map);   //获取公司总数
 
     int updateCompany(Company company);   //更新银行信息表
 
-    List<Company> getAllCompany();  // 获取所有公司信息
+    List<Company> getAllCompany(Map<String,Object> map);  // 获取所有公司信息
 
     List<Departments> getAllDept(); //获取所有部门信息
 
