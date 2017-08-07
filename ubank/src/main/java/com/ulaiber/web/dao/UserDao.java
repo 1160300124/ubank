@@ -92,9 +92,14 @@ public interface UserDao {
 	User getUserByName(String uesrName);
 
 	/**
-	 * 获取系统所有菜单
+	 * 根据用户名获取系统所有菜单
+	 * @return
+	 */
+	List<Menu> getAllMenuByUser(String userName);
+
+	/**
+	 * 获取所有系统菜单
 	 * @return
 	 */
 	List<Menu> getAllMenu();
-	
 }

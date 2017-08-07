@@ -30,10 +30,12 @@
     	<result property="expiredTime" column="expiredTime" jdbcType="VARCHAR" />
     	<result property="loginTime" column="loginTime" jdbcType="VARCHAR" />
     	<result property="groupNumber" column="groupNumber" jdbcType="VARCHAR" />
-    	<result property="groupNumber" column="groupNumber" jdbcType="VARCHAR" />
+    	<result property="companyNumber" column="companyNumber" jdbcType="VARCHAR" />
+    	<result property="dept_number" column="dept_number" jdbcType="VARCHAR" />
     	<result property="remark" column="remark" jdbcType="VARCHAR" />
     	<result property="login_fail_num" column="login_fail_num" jdbcType="INTEGER" />
     	<result property="login_fail_time" column="login_fail_time" jdbcType="VARCHAR" />
+    	<result property="sysflag" column="sysflag" jdbcType="VARCHAR" />
     	<association property="bank" column="bankNo" javaType="Bank" select="com.ulaiber.web.dao.BankDao.getBankByBankNo" />
    </resultMap>
   
@@ -76,11 +78,20 @@
 	</select>
 	
 	<select id="getUserByName" resultMap="UserMap">
-		select * from tbl_users where user_name=#{userName}
+		select a.*,b.sysflag from tbl_users a  left join tbl_roles b on a.role_id = b.role_id
+		 where a.user_name=#{userName}
 	</select>
 
 	<!--获取系统所有菜单-->
-	 <select id="getAllMenu" resultType="com.ulaiber.web.model.Menu">
-		 select id,name,url,code,father,icon,sorting from tbl_menu order by sorting;
+	 <select id="getAllMenuByUser" resultType="com.ulaiber.web.model.Menu" parameterType="String">
+		 select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
+		where a.code in(
+		select b.menuNumber from tbl_users a  left join tbl_roleMenu b on a.role_id = b.role_id
+		where a.user_name = #{userName})
 	 </select>
+
+	<!--获取系统所有菜单-->
+	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" >
+		select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
+	</select>
 </mapper>

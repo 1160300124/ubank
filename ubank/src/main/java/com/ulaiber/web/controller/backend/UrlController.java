@@ -1,6 +1,7 @@
 package com.ulaiber.web.controller.backend;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.ThirdUrl;
 import com.ulaiber.web.service.ThirdUrlService;
 import com.ulaiber.web.utils.FileUtil;
+import com.ulaiber.web.utils.ObjUtil;
+import com.ulaiber.web.utils.SysConf;
 
 /**
  * 第三方URL管理控制器
@@ -139,7 +142,7 @@ public class UrlController extends BaseController {
 				info.setMessage("图标复制异常！");
 				return info;
 			}
-			url.setPicPath(IConstants.PICTURE_SERVER + path);
+			url.setPicPath(SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn") + path);
 		}
 
 		boolean flag = service.save(url);
@@ -148,7 +151,7 @@ public class UrlController extends BaseController {
 			info.setMessage("新增第三方URL成功！");
 			if (tempPath.contains(IConstants.TEMP_PATH)){
 				//成功后删除temp下的临时图标，以后会加入定时任务，定时清理临时目录，防止异常情况下，临时目录图标删不掉导致目录越来越大
-				FileUtil.delFile(getProjectAbsoluteURL(request) + tempPath);
+				FileUtil.deleteAllFilesOfDir(getProjectAbsoluteURL(request) + tempPath);
 			}
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);
@@ -160,14 +163,30 @@ public class UrlController extends BaseController {
 	
 	@RequestMapping(value= "deleteUrl", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo deleteUrl(@RequestBody List<Long> uids, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo deleteUrl(@RequestBody List<ThirdUrl> urls, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
+		if (!ObjUtil.notEmpty(urls)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数不能为空");
+			return info;
+		}
+		List<Long> uids = new ArrayList<Long>();
+		List<String> paths = new ArrayList<String>();
+		String server = SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn");
+		for (ThirdUrl url : urls){
+			uids.add(url.getUid());
+			String path = url.getPicPath().replace(server, getProjectAbsoluteURL(request));
+			paths.add(path);
+		}
 		
 		boolean flag = service.deleteByUids(uids);
 		
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("删除成功！");
+			for (String path : paths){
+				FileUtil.deleteAllFilesOfDir(path);
+			}
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("删除失败！");
@@ -200,7 +219,7 @@ public class UrlController extends BaseController {
 				info.setMessage("图标复制异常！");
 				return info;
 			}
-			url.setPicPath(IConstants.PICTURE_SERVER + path);
+			url.setPicPath(SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn") + path);
 		}
 		
 		boolean flag = service.updateByUid(url);
@@ -210,7 +229,7 @@ public class UrlController extends BaseController {
 			info.setMessage("修改成功！");
 			if (tempPath.contains(IConstants.TEMP_PATH)){
 				//成功后删除temp下的临时图标
-				FileUtil.delFile(getProjectAbsoluteURL(request) + tempPath);
+				FileUtil.deleteAllFilesOfDir(getProjectAbsoluteURL(request) + tempPath);
 			}
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);

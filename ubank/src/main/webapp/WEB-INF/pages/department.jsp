@@ -71,7 +71,8 @@
 
     $(function () {
         DepartmentFun.departmentQuery();
-        DepartmentFun.getAllCompany()
+        DepartmentFun.getAllCompany();
+        DepartmentFun.dept_listening();
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
@@ -113,9 +114,18 @@
             var paramData = {
                 pageSize : params.limit,
                 pageNum : params.offset,
-                search : params.search
+                search : params.search,
+                sysflag : SYSFLAG,
+                companyNumber : COMPANYNUMBER
             };
             return paramData;
+        },
+        //弹出框关闭监听事件
+        dept_listening : function () {
+            $("#department_modal").on('hide.bs.modal',function () {
+                $('#department_table').bootstrapTable('uncheckAll');
+                $("#department_form")[0].reset();
+            });
         },
         //打开新增窗口
         openAdd : function () {
@@ -129,7 +139,10 @@
                 url : 'getAllCom',
                 dataType : 'json',
                 type : 'post',
-                data:  {},
+                data:  {
+                    "groupNumber" : GROUPNUMBER,
+                    "sysflag" : SYSFLAG
+                },
                 success : function (data) {
                     if(data.length <= 0){
                         Ewin.alert("获取公司失败，请联系管理员");
@@ -152,10 +165,10 @@
             var name = $("input[name=name]").val();
             var com = $("#dept_select").val();
             if(name == ""){
-                Ewin.alert("部门名称不能为空")
+                Ewin.alert("部门名称不能为空");
                 return ;
-            }else if(Validate.regNumAndLetter(name)){
-                Ewin.alert("部门名称格式不合法，请重新输入")
+            }else if(!Validate.regNumAndLetter(name)){
+                Ewin.alert("部门名称格式不合法，请重新输入");
                 return;
             }
             if(com == ""){

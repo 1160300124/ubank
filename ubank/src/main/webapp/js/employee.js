@@ -6,6 +6,7 @@ $(function () {
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
     EmployeeFun.getAllRoles();
+    EmployeeFun.emp_listening();
 
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
@@ -56,7 +57,9 @@ var EmployeeFun = {
         var paramData = {
             pageSize : params.limit,
             pageNum : params.offset,
-            search : params.search
+            search : params.search,
+            sysflag : SYSFLAG,
+            companyNumber : COMPANYNUMBER
         };
         return paramData;
     },
@@ -65,8 +68,13 @@ var EmployeeFun = {
         flag = 0;
         $(".modal-title").html("新增");
         $("#employee_modal").modal("show");
-
-
+    },
+    //弹出框关闭监听事件
+    emp_listening : function () {
+        $("#employee_modal").on('hide.bs.modal',function () {
+            $('#employee_table').bootstrapTable('uncheckAll');
+            $("#employee_form")[0].reset();
+        });
     },
     //获取所有公司
     emp_getCompany : function () {
@@ -74,7 +82,10 @@ var EmployeeFun = {
             url : 'getAllCom',
             dataType : 'json',
             type : 'post',
-            data:  {},
+            data:  {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
             success : function (data) {
                 if(data.length <= 0){
                     Ewin.alert("获取公司失败，请联系管理员");
@@ -122,7 +133,10 @@ var EmployeeFun = {
             url : 'getAllGroup',
             dataType : 'json',
             type : 'post',
-            data:  {},
+            data:  {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
             success : function (data) {
                 if(data.length <= 0){
                     Ewin.alert("没有集团数据，，请联系管理员");
@@ -146,7 +160,10 @@ var EmployeeFun = {
             url : 'roleAllQuery',
             dataType : 'json',
             type : 'post',
-            data:  {},
+            data:  {
+                "companyNumber" : COMPANYNUMBER,
+                "sysflag" : SYSFLAG
+            },
             success : function (data) {
                 if(data.length <= 0){
                     return;
@@ -229,7 +246,7 @@ var EmployeeFun = {
         if(userName == ""){
             Ewin.alert("姓名不能为空");
             return;
-        }else if(!Validate.regWord(userName)){
+        }else if(!Validate.regNumAndLetter(userName)){
             Ewin.alert("性名格式不合法，请重新输入");
             return;
         }
@@ -282,6 +299,7 @@ var EmployeeFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
+        $("input[name=id]").val(row[0].id);
         $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=mobile]").val(row[0].mobile);
         $("input[name=userName]").val(row[0].userName);

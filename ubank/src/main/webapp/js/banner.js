@@ -54,7 +54,7 @@ $(function(){
 		
 		var data = [];
 		$.each(arrselections, function(index, item){
-			data.push(item.bid);
+			data.push(item);
 		});
 		
 		Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
@@ -89,8 +89,6 @@ $(function(){
 	
 	$("#btn_add_confirm").unbind().bind("click", function(){
 		
-		$("#btn_add_confirm").attr("disabled", true);
-		
 		var addModal = $("#add_modal");
 		var params = {};
 		var module ={};
@@ -101,6 +99,21 @@ $(function(){
 		params.module = module;
 		params.orderby = addModal.find("#banner_sort").val();
 		params.remark = addModal.find("#remark").val();
+		
+		if (params.bannerName == "" || params.bannerName == null) {
+			Ewin.alert("Banner名称不能为空。");
+			return;
+		}
+		if (params.picPath == "" || params.picPath == null) {
+			Ewin.alert("请上传图片。");
+			return;
+		}
+		if (params.orderby == "" || params.orderby == null) {
+			Ewin.alert("排序不能为空。");
+			return;
+		}
+		
+		$("#btn_add_confirm").attr("disabled", true);
 		
 		$.ajax({
 			url : "saveBanner",
@@ -131,8 +144,6 @@ $(function(){
 	
 	$("#btn_edit_confirm").unbind().bind("click", function(){
 		
-		$("#btn_edit_confirm").attr("disabled", true);
-		
 		var editModal = $("#edit_modal");
 		var params = {};
 		var module ={};
@@ -144,6 +155,21 @@ $(function(){
 		params.module = module;
 		params.orderby = editModal.find("#banner_sort").val();
 		params.remark = editModal.find("#remark").val();
+		
+		if (params.bannerName == "" || params.bannerName == null) {
+			Ewin.alert("Banner名称不能为空。");
+			return;
+		}
+		if (params.picPath == "" || params.picPath == null) {
+			Ewin.alert("请上传图片。");
+			return;
+		}
+		if (params.orderby == "" || params.orderby == null) {
+			Ewin.alert("排序不能为空。");
+			return;
+		}
+		
+		$("#btn_edit_confirm").attr("disabled", true);
 		
 		$.ajax({
 			url : "editBanner",

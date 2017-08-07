@@ -11,9 +11,6 @@ import java.util.Map;
 public class IConstants
 {
 
-	//
-	public final static String PICTURE_SERVER = "http://bank.ubosspay.com/ubank"; 
-	
     //后台用户SESSION常量名
     public final static String UBANK_BACKEND_USERSESSION = "BACKENDUSER";
     

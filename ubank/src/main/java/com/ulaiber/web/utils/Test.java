@@ -91,14 +91,13 @@ public class Test {
 		
 		
 //		FileUtil.copy(new File("C:\\tools\\test\\haha\\body.jpg"), new File("C:\\tools\\test\\"));
-//		FileUtil.delFile("C:\\tools\\test\\haha\\body.jpg");
+		FileUtil.deleteAllFilesOfDir("C:\\tools\\test\\");
 		
 //		String filename = "fileaaaaa.aaaa.jpg";
 //		String uuid = UUIDGenerator.getUUID();
 //        String newFilename = uuid + filename.substring(filename.lastIndexOf("."), filename.length());
 //        System.out.println(uuid);
 //        System.out.println(newFilename);
-		System.out.println(SPDBUtil.CLIENT_MASTER_ID);
 		
 	}
 	

@@ -97,11 +97,11 @@ public interface UserService {
 	Message sendInfo(User user);
 
 	/**
-	 * 获取系统所有菜单
+	 * 根据用户名获取系统所有菜单
 	 * @return
 	 */
-	List<Menu> getAllMenu();
-	
+	List<Menu> getAllMenuByUser( String userName);
+
 	/**
 	 * 校验支付密码是否正确
 	 * @param mobile
@@ -110,4 +110,9 @@ public interface UserService {
 	 */
 	boolean validatePayPwd(String mobile, String password);
 
+	/**
+	 * 获取所有系统菜单
+	 * @return
+	 */
+	List<Menu> getAllMenu();
 }

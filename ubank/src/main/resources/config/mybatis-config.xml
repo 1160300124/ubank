@@ -38,6 +38,7 @@
 		<mapper resource="com/ulaiber/web/mapper/employeeMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/roleMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/roleMenuMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/levelInfoMapper.xml" />
 	</mappers>
 
 </configuration>  

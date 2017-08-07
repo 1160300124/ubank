@@ -98,7 +98,7 @@ public class SPDBUtil {
 	 * @return
 	 */
 	private static String getSign(String signBody, boolean signFlag){
-		String signUrl = "http://" + BISAFE_IP + ":" + BISAFE_SIGN_PORT + "/";
+		String signUrl = "http://" + getProperty("BISAFE_IP", BISAFE_IP) + ":" + getProperty("BISAFE_SIGN_PORT", BISAFE_SIGN_PORT) + "/";
 		String res = HttpsUtil.doPost(signUrl, signBody, signFlag);
 		return res;
 	}
@@ -402,7 +402,7 @@ public class SPDBUtil {
 		
 		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位s
 		xml = String.format("%06d", xml.length() + 6) + xml;
-		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
+		String url = "http://" + getProperty("BISAFE_IP", BISAFE_IP) + ":" + getProperty("BISAFE_HTTP_PORT", BISAFE_HTTP_PORT) + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
 		logger.debug("[getPayResult] response: " + res);
 		String res1 = res.substring(6);
@@ -494,7 +494,7 @@ public class SPDBUtil {
 		
 		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位
 		xml = String.format("%06d", xml.length() + 6) + xml;
-		String url = "http://" + BISAFE_IP + ":" + BISAFE_HTTP_PORT + "/";
+		String url = "http://" + getProperty("BISAFE_IP", BISAFE_IP) + ":" + getProperty("BISAFE_HTTP_PORT", BISAFE_HTTP_PORT) + "/";
 		String res = HttpsUtil.doPost(url, xml, true);
 		logger.debug("[paySalaries] response: " + res);
 		String res1 = res.substring(6);
