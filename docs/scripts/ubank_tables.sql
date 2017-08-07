@@ -139,13 +139,13 @@ create table tbl_modules(
 	PRIMARY KEY(mid)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='模块信息';
 
-insert into tbl_modules(module_name,createTime) values('首页链接块',now());
-insert into tbl_modules(module_name,createTime) values('首页顶部banner模块',now());
-insert into tbl_modules(module_name,createTime) values('生活顶部banner模块',now());
-insert into tbl_modules(module_name,createTime) values('生活4按钮链接模块',now());
-insert into tbl_modules(module_name,createTime) values('生活8按钮链接模块',now());
-insert into tbl_modules(module_name,createTime) values('生活底部banner模块',now());
-insert into tbl_modules(module_name,createTime) values('首页底部banner模块',now());
+insert into tbl_modules(mid,module_name,createTime) values(1,'首页链接块',now());
+insert into tbl_modules(mid,module_name,createTime) values(2,'首页顶部banner模块',now());
+insert into tbl_modules(mid,module_name,createTime) values(3,'生活顶部banner模块',now());
+insert into tbl_modules(mid,module_name,createTime) values(4,'生活4按钮链接模块',now());
+insert into tbl_modules(mid,module_name,createTime) values(5,'生活8按钮链接模块',now());
+insert into tbl_modules(mid,module_name,createTime) values(6,'生活底部banner模块',now());
+insert into tbl_modules(mid,module_name,createTime) values(7,'首页底部banner模块',now());
 
 -- ----------------------------
 --  Table structure for tbl_third_party_urls
