@@ -154,7 +154,7 @@ DROP TABLE IF EXISTS tbl_third_party_urls;
 create table tbl_third_party_urls(
 	uid      bigint(20)  NOT NULL AUTO_INCREMENT COMMENT 'URL编号',
 	url_name varchar(50)  NOT NULL COMMENT 'URL名称',
-	url      varchar(128) DEFAULT NULL COMMENT 'URL链接',
+	url      varchar(300) DEFAULT NULL COMMENT 'URL链接',
 	pic_path varchar(128) DEFAULT NULL COMMENT '图片地址', 
 	url_cid  int(10)   DEFAULT NULL COMMENT 'URL属于哪个类别', 
 	url_mid  int(10)   DEFAULT NULL COMMENT 'URL属于哪个模块',
@@ -172,7 +172,7 @@ DROP TABLE IF EXISTS tbl_banners;
 create table tbl_banners(
 	bid      bigint(20)  NOT NULL AUTO_INCREMENT COMMENT 'banner编号',
 	banner_name varchar(50)  NOT NULL COMMENT 'banner名称',
-	url      varchar(128) DEFAULT NULL COMMENT 'banner链接',
+	url      varchar(300) DEFAULT NULL COMMENT 'banner链接',
 	pic_path varchar(128) DEFAULT NULL COMMENT '图片地址', 
 	banner_mid  int(10)   DEFAULT NULL COMMENT 'banner属于哪个模块',
 	orderby  int(10)   DEFAULT NULL COMMENT '排序',

@@ -41,41 +41,41 @@
 		<property name="minIdle" value="${minIdle}"></property>
 		<!-- 获取连接最大等待时间 -->
 		<property name="maxWait" value="${maxWait}"></property>
+		<!-- 取出连接时进行有效验证 -->
+		<property name="testOnBorrow" value="true"></property>
+		<!-- 归还连接时进行有效验证 -->
+  		<property name="testOnReturn" value="true"></property>
+  		<!-- 指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除. -->
+  		<property name="testWhileIdle" value="true"></property>
+  		<!-- 简单的sql进行验证 -->
+		<property name="validationQuery" value="select now()"></property>
+		<!-- 检查连接超时的时间间隔,单位毫秒-->
+		<property name="timeBetweenEvictionRunsMillis" value="300000"></property>
+		<!-- 连接超时的时间,单位毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="3600000"></property>
 	</bean>
 		
 
-	<!--
-		2. mybatis的SqlSession的工厂: SqlSessionFactoryBean dataSource:引用数据源
-
-		MyBatis定义数据源,同意加载配置
-	-->
+	<!-- 2. mybatis的SqlSession的工厂: SqlSessionFactoryBean dataSource:引用数据源    MyBatis定义数据源,同意加载配置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
 		<property name="configLocation" value="classpath:config/mybatis-config.xml" /> 
 	</bean>
 
-	<!--
-		3. mybatis自动扫描加载Sql映射文件/接口 : MapperScannerConfigurer sqlSessionFactory
-
-		basePackage:指定sql映射文件/接口所在的包（自动扫描）
-	-->
+	<!-- 3. mybatis自动扫描加载Sql映射文件/接口 : MapperScannerConfigurer sqlSessionFactory
+		basePackage:指定sql映射文件/接口所在的包（自动扫描） -->
 	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.ulaiber.web.dao"></property>
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
 	</bean>
 
-	<!--
-		4. 事务管理 : DataSourceTransactionManager dataSource:引用上面定义的数据源
-	-->
-	<bean id="txManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<!-- 4. 事务管理 : DataSourceTransactionManager dataSource:引用上面定义的数据源 -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 
-	<!-- 5. 使用声明式事务
-		 transaction-manager：引用上面定义的事务管理器
-	 -->
+	<!-- 5. 使用声明式事务 transaction-manager：引用上面定义的事务管理器 -->
 	<tx:annotation-driven transaction-manager="txManager" />
 
 </beans>

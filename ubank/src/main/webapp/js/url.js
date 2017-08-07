@@ -86,7 +86,7 @@ $(function(){
 		
 		var data = [];
 		$.each(arrselections, function(index, item){
-			data.push(item.uid);
+			data.push(item);
 		});
 		
 		Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
@@ -121,8 +121,6 @@ $(function(){
 	
 	$("#btn_add_confirm").unbind().bind("click", function(){
 		
-		$("#btn_add_confirm").attr("disabled", true);
-		
 		var addModal = $("#add_modal");
 		var params = {};
 		var category ={};
@@ -136,6 +134,21 @@ $(function(){
 		params.module = module;
 		params.orderby = addModal.find("#url_sort").val();
 		params.remark = addModal.find("#remark").val();
+		
+		if (params.urlName == "" || params.urlName == null) {
+			Ewin.alert("URL名称不能为空。");
+			return;
+		}
+		if (params.picPath == "" || params.picPath == null) {
+			Ewin.alert("请上传图标。");
+			return;
+		}
+		if (params.orderby == "" || params.orderby == null) {
+			Ewin.alert("排序不能为空。");
+			return;
+		}
+		
+		$("#btn_add_confirm").attr("disabled", true);
 		
 		$.ajax({
 			url : "saveUrl",
@@ -166,8 +179,6 @@ $(function(){
 	
 	$("#btn_edit_confirm").unbind().bind("click", function(){
 		
-		$("#btn_edit_confirm").attr("disabled", true);
-		
 		var editModal = $("#edit_modal");
 		var params = {};
 		var category ={};
@@ -182,6 +193,21 @@ $(function(){
 		params.module = module;
 		params.orderby = editModal.find("#url_sort").val();
 		params.remark = editModal.find("#remark").val();
+		
+		if (params.urlName == "" || params.urlName == null) {
+			Ewin.alert("URL名称不能为空。");
+			return;
+		}
+		if (params.picPath == "" || params.picPath == null) {
+			Ewin.alert("请上传图标。");
+			return;
+		}
+		if (params.orderby == "" || params.orderby == null) {
+			Ewin.alert("排序不能为空。");
+			return;
+		}
+		
+		$("#btn_add_confirm").attr("disabled", true);
 		
 		$.ajax({
 			url : "editUrl",
