@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface RolesDao {
 
-    List<Roles> roleAllQuery(); //获取所有角色信息
+    List<Roles> roleAllQuery(Map<String, Object> map); //获取所有角色信息
 
     List<Roles> getRoleByName(String roleName); //根据角色名，获取角色信息
 

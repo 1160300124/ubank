@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.ulaiber.web.utils.MD5Util.getEncryptedPwd;
-
 /**
  * 权限设置Controller
  * Created by daiqingwen on 2017/7/18.
@@ -104,13 +102,13 @@ public class PermissionController extends BaseController {
 
     /**
      * 分页查询集团
-     * @param request
+     * @param
      * @return
      */
     @RequestMapping(value = "groupQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> groupQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                         @Param("pageNum") int pageNum ,HttpServletRequest request) {
+                                         @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber) {
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -118,8 +116,8 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int pageTotal = permissionService.getTotal();  //获取总数
-        List<Group> resultGroup = permissionService.groupQuery(search,pageSize,pageNum);
+        int pageTotal = permissionService.getTotal(sysflag,groupNumber);  //获取总数
+        List<Group> resultGroup = permissionService.groupQuery(search,pageSize,pageNum,sysflag,groupNumber);
         map.put("total",pageTotal);
         map.put("rows",resultGroup);
         return map;
@@ -161,7 +159,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "departmentQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> departmentQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                              @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                              @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -170,7 +168,7 @@ public class PermissionController extends BaseController {
         }
         Map<String,Object> map = new HashMap<String,Object>();
         int deptTotal = permissionService.getDeptTotal();   //获取部门总数
-        List<Departments> list = permissionService.departmentQuery(search,pageSize,pageNum);
+        List<Departments> list = permissionService.departmentQuery(search,pageSize,pageNum,sysflag,companyNumber);
         map.put("total",deptTotal);
         map.put("rows",list);
         return map;
@@ -244,8 +242,8 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getAllGroup", method = RequestMethod.POST)
     @ResponseBody
-    public List<Group> getAllGroup(){
-        List<Group> list = permissionService.getAllGroup();
+    public List<Group> getAllGroup(@Param("groupNumber") String groupNumber,@Param("sysflag") String sysflag){
+        List<Group> list = permissionService.getAllGroup(sysflag,groupNumber);
         return list;
     }
 
@@ -329,13 +327,13 @@ public class PermissionController extends BaseController {
 
     /**
      * 分页查询公司信息
-     * @param request
+     * @param
      * @return
      */
     @RequestMapping(value = "comQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> comQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                       @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                       @Param("pageNum") int pageNum ,@Param("groupNumber") String groupNumber,@Param("sysflag") String sysflag){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -343,8 +341,8 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int deptTotal = permissionService.getCompanyTotal();   //获取公司总数
-        List<Company> list = permissionService.companyQuery(search,pageSize,pageNum);
+        int deptTotal = permissionService.getCompanyTotal(sysflag,groupNumber);   //获取公司总数
+        List<Company> list = permissionService.companyQuery(search,pageSize,pageNum,sysflag,groupNumber);
         map.put("total",deptTotal);
         map.put("rows",list);
         return map;
@@ -369,8 +367,8 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getAllCom", method = RequestMethod.POST)
     @ResponseBody
-    public List<Company> getAllCom(){
-        List<Company> list = permissionService.getAllCompany();
+    public List<Company> getAllCom(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
+        List<Company> list = permissionService.getAllCompany(sysflag,groupNumber);
         return list;
     }
 
@@ -407,6 +405,13 @@ public class PermissionController extends BaseController {
             user.setLogin_password(password);
             int result = permissionService.addEmployee(user);
             if(result > 0){
+//                user.setId(user.getId()); //设置用户ID
+//                int result2 = permissionService.addPermission(user);  //新增用户权限层级信息
+//                if(result2 <= 0){
+//                    resultInfo.setMessage("新增失败，请联系管理员");
+//                    resultInfo.setCode(500);
+//                    return resultInfo;
+//                }
                 resultInfo.setMessage("新增成功");
                 resultInfo.setCode(200);
             }else{
@@ -438,7 +443,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "empQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> empQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                       @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                       @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -446,8 +451,8 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int empTotal = permissionService.getEmpTotal();   //获取部门总数
-        List<User> list = permissionService.empQuery(search,pageSize,pageNum); //分页查询
+        int empTotal = permissionService.getEmpTotal(sysflag,companyNumber);   //获取部门总数
+        List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,companyNumber); //分页查询
         map.put("total",empTotal);
         map.put("rows",list);
         return map;
@@ -528,8 +533,8 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getComTree", method = RequestMethod.POST)
     @ResponseBody
-    public List<Map<String , Object>> getComTree(){
-        List<Company> list = permissionService.getAllCompany();
+    public List<Map<String , Object>> getComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
+        List<Company> list = permissionService.getAllCompany(sysflag,groupNumber);
         List<Map<String ,Object>> list_one = new ArrayList<>();
         Map<String,Object> _map = new HashMap<String,Object>();
         for (int i = 0 ;i < list.size(); i++){
@@ -556,8 +561,8 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "roleAllQuery", method = RequestMethod.POST)
     @ResponseBody
-    public List<Roles> roleAllQuery(){
-        List<Roles> list = permissionService.roleAllQuery();
+    public List<Roles> roleAllQuery(@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
+        List<Roles> list = permissionService.roleAllQuery(sysflag,companyNumber);
         return list;
     }
 
@@ -608,14 +613,14 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public ResultInfo settingRoleMenu(@Param("menuId") String menuId,@Param("roleId") String roleId,@Param("flag") String flag){
         ResultInfo resultInfo = new ResultInfo();
-        // 根据角色id查询该角色是否被创建
-        List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
-        if(list.size() > 0 ){
-            resultInfo.setCode(300);
-            resultInfo.setMessage("该角色已存在，请重新创建");
-            return resultInfo;
-        }
         if (flag.equals("0")){//新增
+            // 根据角色id查询该角色是否被创建
+            List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
+            if(list.size() > 0 ){
+                resultInfo.setCode(300);
+                resultInfo.setMessage("该角色已存在，请重新创建");
+                return resultInfo;
+            }
             int result = permissionService.settingRoleMenu(roleId,menuId);
             if(result > 0){
                 resultInfo.setCode(200);
@@ -624,8 +629,16 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(500);
                 resultInfo.setMessage("新增角色权限失败，请联系管理员");
             }
-        }else{  //修改
-
+        }else{ //修改
+            int in = permissionService.deleteRoleMenuByRoleId(roleId); // 根据角色id，删除对应的菜单
+            int result2 = permissionService.settingRoleMenu(roleId,menuId);
+            if(result2 > 0 ){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("修改角色权限成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改角色权限失败，请联系管理员");
+            }
         }
         return resultInfo;
 
@@ -654,7 +667,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "roleQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> roleQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                        @Param("pageNum") int pageNum ,HttpServletRequest request){
+                                        @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -662,8 +675,8 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int empTotal = permissionService.getRoleTotal();   //获取角色总数
-        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum); //分页查询
+        int empTotal = permissionService.getRoleTotal(sysflag,companyNumber);   //获取角色总数
+        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum,sysflag,companyNumber); //分页查询
         map.put("total",empTotal);
         map.put("rows",list);
         return map;

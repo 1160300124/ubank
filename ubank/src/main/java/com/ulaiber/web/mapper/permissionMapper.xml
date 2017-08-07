@@ -23,16 +23,22 @@
     <!--查询所有集团-->
     <select id="groupQuery" parameterType="Map" resultType="com.ulaiber.web.model.Group">
           select name,contacts,contactsTelephone,details,registeredCapital,groupNumber,remark,legalPerson
-          FROM tbl_group
-           <if test="search != null and search != ''">
-               where name like concat('%',#{search},'%')
-           </if>
+          FROM tbl_group where 1=1
+        <if test="search != null and search != ''">
+            and name like concat('%',#{search},'%')
+        </if>
+        <if test='sysflag == "1"'>
+            and groupNumber = #{groupNumber}
+        </if>
         limit #{pageNum},#{pageSize}
     </select>
 
     <!--获取集团总数-->
-    <select id="getTotal" resultType="int">
-        select COUNT(name) total from tbl_group;
+    <select id="getTotal" resultType="int" parameterType="Map">
+        select COUNT(name) total from tbl_group
+        <if test = 'sysflag == "1"'>
+            where groupNumber = #{groupNumber}
+        </if>
     </select>
 
     <!--修改集团信息-->
@@ -64,9 +70,12 @@
     <!--获取所有部门信息-->
     <select id="departmentQuery" parameterType="Map" resultType="com.ulaiber.web.model.Departments">
         SELECT company_num,count,dept_number,name,remark
-        from tbl_departments
+        from tbl_departments where 1=1
         <if test="search != null and search != ''">
-            where name like concat('%',#{search},'%')
+            and name like concat('%',#{search},'%')
+        </if>
+        <if test = 'sysflag == "1"'>
+            and company_num = #{companyNumber}
         </if>
         limit #{pageNum},#{pageSize}
     </select>
@@ -91,8 +100,11 @@
     </delete>
 
     <!--获取所有集团信息-->
-    <select id="getAllGroup" resultType="com.ulaiber.web.model.Group">
+    <select id="getAllGroup" resultType="com.ulaiber.web.model.Group" parameterType="Map">
         select name,groupNumber from tbl_group
+        <if test = 'sysflag == "1"'>
+            where groupNumber = #{groupNumber}
+        </if>
     </select>
 
     <!--新增公司基本信息-->
@@ -108,12 +120,18 @@
 
     <!--获取公司总数-->
     <select id="getCompanyTotal" resultType="int">
-        select COUNT(name) total from tbl_company;
+        select COUNT(name) total from tbl_company
+        <if test = 'sysflag == "1"'>
+            where group_num = #{groupNumber}
+        </if>
     </select>
 
     <!--获取所有公司信息-->
     <select id="companyQuery" parameterType="Map" resultType="com.ulaiber.web.model.Company" >
         select name,account,companyNumber,details,group_num,legalPerson from tbl_company
+        <if test = 'sysflag == "1"'>
+            where group_num = #{groupNumber}
+        </if>
     </select>
 
     <!--//更新银行信息表-->
@@ -125,6 +143,9 @@
     <!--获取所有公司信息-->
     <select id="getAllCompany" resultType="com.ulaiber.web.model.Company">
         select companyNumber,name from tbl_company
+        <if test = 'sysflag == "1"'>
+            where group_num = #{groupNumber}
+        </if>
     </select>
 
     <!--获取所有部门信息-->

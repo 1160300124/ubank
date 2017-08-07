@@ -214,7 +214,9 @@
             var paramData = {
                 pageSize : params.limit,
                 pageNum : params.offset,
-                search : params.search
+                search : params.search,
+                sysflag : SYSFLAG,
+                groupNumber : GROUPNUMBER
             };
             return paramData;
         },
@@ -291,28 +293,7 @@
                     }
                 }
             });
-        },
-        group_validate : function () {
-            $("#group_form").bootstrapValidator({
-                feedbackIcons: {
-                    valid: 'glyphicon glyphicon-ok',
-                    invalid: 'glyphicon glyphicon-remove',
-                    validating: 'glyphicon glyphicon-refresh'
-                },
-                fields : {
-                    "name" : {
-                        validators : {
-                            notEmpty : {
-                                message : "集团名不能为空"
-                            }
-                        }
-                    }
-
-                }
-            });
         }
-
-
     };
 
 
