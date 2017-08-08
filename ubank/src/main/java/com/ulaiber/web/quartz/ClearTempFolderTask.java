@@ -8,10 +8,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.service.BankService;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /** 
  * <一句话概述功能>
@@ -21,7 +21,7 @@ import com.ulaiber.web.service.BankService;
  * @version 1.0 
  * @since 
  */
-public class ClearTempFolderTask extends QuartzJobBean{
+public class ClearTempFolderTask extends QuartzJobBean {
 
 	private static Logger logger = Logger.getLogger(ClearTempFolderTask.class);
 

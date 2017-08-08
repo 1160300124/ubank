@@ -437,7 +437,7 @@ public class PermissionController extends BaseController {
      * @param search
      * @param pageSize
      * @param pageNum
-     * @param request
+     * @param
      * @return
      */
     @RequestMapping(value = "empQuery", method = RequestMethod.POST)
@@ -661,7 +661,7 @@ public class PermissionController extends BaseController {
      * @param search
      * @param pageSize
      * @param pageNum
-     * @param request
+     * @param
      * @return
      */
     @RequestMapping(value = "roleQuery", method = RequestMethod.POST)
