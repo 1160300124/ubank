@@ -55,6 +55,8 @@ public interface PermissionDao {
     List<User> queryUserByDeptid(String[] number);  //根据部门id查询该部门是否存在用户
 
     List<Departments> queryDeptByCompanyNum(String[] idsArr); //根据公司编号查询该公司是否存在部门
+
+    List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
 }
 
 

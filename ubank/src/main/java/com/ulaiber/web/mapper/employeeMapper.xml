@@ -19,38 +19,38 @@
 
     <!--新增员工信息-->
     <insert id="addEmployee" parameterType="com.ulaiber.web.model.User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,groupNumber,companyNumber,dept_number,bankNo,bankCardNo,role_id)
-            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{groupNumber},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id})
     </insert>
 
     <!--修改员工信息-->
     <update id="editEmp" parameterType="com.ulaiber.web.model.User">
-        UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo} ,
-        companyNumber = #{companyNumber},dept_number = #{dept_number},bankNo = #{bankNo}, bankCardNo = #{bankCardNo},
-        groupNumber = #{groupNumber},role_id = #{role_id}
+        UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo}
+              ,bankNo = #{bankNo}, bankCardNo = #{bankCardNo},role_id = #{role_id}
           where user_id = #{id}
     </update>
 
     <!--获取员工总数-->
     <select id="getEmpTotal" resultType="int">
-        select count(user_name) as total from tbl_users
+        select count(a.user_name) as total from tbl_users a left join tbl_roots b on a.user_id = b.userid
         <if test = 'sysflag == "1"'>
-            where companyNumber = #{companyNumber}
+            where b.companyNumber = #{companyNumber}
         </if>
     </select>
 
     <!-- 分页查询员工信息-->
     <select id="empQuery" parameterType="Map" resultType="com.ulaiber.web.model.User">
-        select b.name as com_name,c.name as dept_name,d.bankName ,a.companyNumber,a.role_id,
-        a.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,a.mobile,a.cardNo from tbl_users a
-        LEFT JOIN tbl_company b on a.companyNumber = b.companyNumber
-        left join tbl_departments c on a.dept_number = c.dept_number
-        left join tbl_banks d on a.bankNo = d.bankNo where 1=1
+        select b.name as com_name,c.name as dept_name,d.bankName ,e.companyNumber,a.role_id,
+        e.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,a.mobile,a.cardNo from tbl_users a
+        left join tbl_banks d on a.bankNo = d.bankNo
+        left join tbl_roots e on a.user_id = e.userid
+        LEFT JOIN tbl_company b on e.companyNumber = b.companyNumber
+        left join tbl_departments c on e.dept_number = c.dept_number where 1=1
         <if test="search != null and search != ''">
             and  a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
         </if>
         <if test = 'sysflag == "1"'>
-            and a.companyNumber = #{companyNumber}
+            and e.companyNumber = #{companyNumber}
         </if>
         limit #{pageNum},#{pageSize}
     </select>

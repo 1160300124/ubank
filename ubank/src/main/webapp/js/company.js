@@ -39,7 +39,7 @@ var CompanyFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据，，请联系管理员");
+                    Ewin.alert("没有集团数据");
                     return;
                 }
                 var option = "";
@@ -49,7 +49,7 @@ var CompanyFun = {
                 $("#group_select").append(option);
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -62,7 +62,7 @@ var CompanyFun = {
             data:  {},
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取银行失败，请联系管理员");
+                    Ewin.alert("获取银行失败");
                     return;
                 }
                 var option = "";
@@ -74,7 +74,7 @@ var CompanyFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -219,7 +219,7 @@ var CompanyFun = {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }else{
                     $("#company_form")[0].reset();
                     $("#company_modal").modal("hide");
@@ -229,7 +229,7 @@ var CompanyFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -316,7 +316,7 @@ var CompanyFun = {
                 $("#company_modal").modal("show");
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -353,7 +353,7 @@ var CompanyFun = {
                                 Confirm.hide();
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }else{
                                 Confirm.hide();
                                 Ewin.alert(data.message);
@@ -362,7 +362,7 @@ var CompanyFun = {
 
                         },
                         error : function () {
-                            Ewin.alert("操作异常，请联系管理员");
+                            Ewin.alert("操作异常");
                         }
                     })
 

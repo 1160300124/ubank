@@ -169,4 +169,9 @@
             #{idsArr}
         </foreach>
     </select>
+
+    <!--根据公司编号获取部门-->
+    <select id="getDeptByCom" parameterType="String" resultType="com.ulaiber.web.model.Departments">
+        select * from tbl_departments where company_num = #{comNum}
+    </select>
 </mapper>

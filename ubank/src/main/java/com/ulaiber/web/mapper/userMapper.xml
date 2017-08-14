@@ -78,7 +78,7 @@
 	</select>
 	
 	<select id="getUserByName" resultMap="UserMap">
-		select a.*,b.sysflag from tbl_users a  LEFT join tbl_roots b on a.user_id = b.userid
+		select a.*,b.* from tbl_users a  LEFT join tbl_roots b on a.user_id = b.userid
 		 where a.user_name=#{userName}
 	</select>
 
@@ -91,7 +91,10 @@
 	 </select>
 
 	<!--获取系统所有菜单-->
-	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" >
-		select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
+	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" parameterType="Map">
+		select distinct  a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a left join tbl_roleMenu b on a.code = b.menuNumber where 1=1
+		<if test='sysflag == "1"'>
+			and b.role_id = #{roleid}
+		</if>
 	</select>
 </mapper>

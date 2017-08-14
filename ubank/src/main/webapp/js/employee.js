@@ -1,8 +1,8 @@
 //arr function
 $(function () {
-    EmployeeFun.emp_getCompany();
-    EmployeeFun.emp_getDept();
     EmployeeFun.emp_getAllGroup();
+   // EmployeeFun.emp_getCompany();
+    //EmployeeFun.emp_getDept();
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
     EmployeeFun.getAllRoles();
@@ -77,53 +77,55 @@ var EmployeeFun = {
         });
     },
     //获取所有公司
-    emp_getCompany : function () {
+    emp_getCompany : function (groupNum) {
         $.ajax({
-            url : 'getAllCom',
+            url : 'getComByGroup',
             dataType : 'json',
             type : 'post',
             data:  {
-                "groupNumber" : GROUPNUMBER,
-                "sysflag" : SYSFLAG
+                "groupNum" : groupNum
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取公司失败，请联系管理员");
+                    Ewin.alert("获取公司失败");
                     return;
                 }
+                $("#emp_select").empty();
                 var option = "";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
                 }
-                $("#emp_select").append(option);
+                $("#emp_select").html(option);
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
     //获取所有部门
-    emp_getDept : function () {
+    emp_getDept : function (comNum) {
         $.ajax({
-            url : 'getAllDept',
+            url : 'getDeptByCom',
             dataType : 'json',
             type : 'post',
-            data:  {},
+            data:  {
+                "comNum" : comNum
+            },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取部门失败，请联系管理员");
                     return;
                 }
+                $("#emp_select_dept").empty();
                 var option = "";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
                 }
-                $("#emp_select_dept").append(option);
+                $("#emp_select_dept").html(option);
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -139,7 +141,7 @@ var EmployeeFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据，，请联系管理员");
+                    Ewin.alert("没有集团数据");
                     return;
                 }
                 var option = "";
@@ -150,7 +152,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -176,7 +178,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -189,7 +191,7 @@ var EmployeeFun = {
             data:  {},
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取银行失败，请联系管理员");
+                    Ewin.alert("获取银行失败");
                     return;
                 }
                 var option = "";
@@ -200,7 +202,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -273,7 +275,7 @@ var EmployeeFun = {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }else{
                     Ewin.alert(data.message);
                     $("#employee_form")[0].reset();
@@ -283,7 +285,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -344,7 +346,7 @@ var EmployeeFun = {
                             if(data.code == 300){
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }else{
                                 Ewin.alert(data.message);
                                 //$("#employee_form")[0].reset();
@@ -355,7 +357,7 @@ var EmployeeFun = {
 
                         },
                         error : function () {
-                            Ewin.alert("操作异常，请联系管理员");
+                            Ewin.alert("操作异常");
                         }
                     })
 
@@ -366,4 +368,17 @@ var EmployeeFun = {
     }
 
 
-}
+};
+
+//选择框监听事件
+$("#emp_select_group").change(function(){
+    var groupNum = $(this).val();
+    EmployeeFun.emp_getCompany(groupNum);
+});
+
+//选择框监听事件
+$("#emp_select").change(function () {
+    var comNum = $(this).val();
+    debugger;
+    EmployeeFun.emp_getDept(comNum);
+});

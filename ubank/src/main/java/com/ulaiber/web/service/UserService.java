@@ -114,5 +114,5 @@ public interface UserService {
 	 * 获取所有系统菜单
 	 * @return
 	 */
-	List<Menu> getAllMenu();
+	List<Menu> getAllMenu(String roleid,String sysflag);
 }

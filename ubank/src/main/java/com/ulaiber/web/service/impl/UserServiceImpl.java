@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,8 +188,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
-	public List<Menu> getAllMenu() {
-		return mapper.getAllMenu();
+	public List<Menu> getAllMenu(String roleid,String sysflag) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("roleid" , roleid);
+		map.put("sysflag" , sysflag);
+		return mapper.getAllMenu(map);
 	}
 
 	@Override

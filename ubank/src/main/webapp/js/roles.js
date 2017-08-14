@@ -34,7 +34,10 @@ var RoleFun = {
             url : 'menuTree',
             dataType : 'json',
             type : 'post',
-            data : {},
+            data : {
+               roleid  : ROLEID,
+               sysflag : SYSFLAG
+            },
             success : function (data) {
                 $.fn.zTree.init($("#role_tree"), setting, data);
             }
@@ -125,9 +128,13 @@ var RoleFun = {
 
                     },
                     error : function () {
-                        Ewin.alert("操作异常，请联系管理员");
+                        Ewin.alert("操作异常");
                     }
                 })
+            },
+            onUncheck : function () {
+                var treeObj = $.fn.zTree.getZTreeObj("role_tree");
+                treeObj.checkAllNodes(false);   //清空tree
             }
         });
     },
@@ -208,22 +215,22 @@ var RoleFun = {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }else{
                     Ewin.alert(data.message);
-                    $("#role_modal").modal("hide");
-                    $('#role_table').bootstrapTable('refresh');
-                    $('#role_table2').bootstrapTable('refresh');
-                    RoleFun.rol_roleTable();
                     $("input[name=role_name]").val("");
                     $("#combotree").bootstrapCombotree("setValue","");
-                    flag = 0;
+                    $('#role_table2').bootstrapTable('refresh');
+                    // RoleFun.rol_roleTable();
+                    //  $("#role_modal").modal("hide");
+                    // $('#role_table').bootstrapTable('refresh');
+                    // flag = 0;
 
                 }
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -261,7 +268,7 @@ var RoleFun = {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }else{
                     Ewin.alert(data.message);
                     treeObj.checkAllNodes(false);
@@ -273,7 +280,7 @@ var RoleFun = {
 
             },
             error :function () {
-                Ewin.alert("添加权限失败，请联系管理员");
+                Ewin.alert("添加权限失败");
             }
         });
     },
@@ -340,7 +347,7 @@ var RoleFun = {
                                 Confirm.hide();
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }else{
                                 Confirm.hide();
                                 Ewin.alert(data.message);
@@ -349,7 +356,7 @@ var RoleFun = {
 
                         },
                         error : function () {
-                            Ewin.alert("操作异常，请联系管理员");
+                            Ewin.alert("操作异常");
                         }
                     })
 

@@ -1,6 +1,7 @@
 package com.ulaiber.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.User;
@@ -101,5 +102,5 @@ public interface UserDao {
 	 * 获取所有系统菜单
 	 * @return
 	 */
-	List<Menu> getAllMenu();
+	List<Menu> getAllMenu(Map<String,Object> map);
 }

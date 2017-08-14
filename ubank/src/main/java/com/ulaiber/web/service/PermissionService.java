@@ -107,4 +107,8 @@ public interface PermissionService {
     int addPermission(User user);   //新增用户权限层级信息
 
     int deleteRoleMenuByRoleId(String roleId); // 根据角色id，删除对应的菜单
+
+    List<Company> getComByGroup(String groupNum); //根据集团获取公司名
+
+    List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
 }

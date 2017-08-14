@@ -203,7 +203,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(200);
             }else{
                 resultInfo.setCode(500);
-                resultInfo.setMessage("修改失败，请联系管理员");
+                resultInfo.setMessage("修改失败");
             }
         }
         return resultInfo;
@@ -231,7 +231,7 @@ public class PermissionController extends BaseController {
             resultInfo.setCode(200);
         }else{
             resultInfo.setCode(500);
-            resultInfo.setMessage("删除失败，请联系管理员");
+            resultInfo.setMessage("删除失败");
         }
         return resultInfo;
 
@@ -297,7 +297,7 @@ public class PermissionController extends BaseController {
                     resultInfo.setCode(200);
                 }else{
                     resultInfo.setCode(500);
-                    resultInfo.setMessage("新增失败，请联系管理员");
+                    resultInfo.setMessage("新增失败");
                 }
             }else{
                 resultInfo.setMessage("公司已存在，请重新添加");
@@ -307,7 +307,7 @@ public class PermissionController extends BaseController {
         }else{   //修改
             if(StringUtil.isEmpty(comNum)){
                 resultInfo.setCode(500);
-                resultInfo.setMessage("修改失败，请联系管理员");
+                resultInfo.setMessage("修改失败");
                 return resultInfo;
             }
             int msg = permissionService.deleteComByNum(comNum); //根据公司编号删除银行账户信息表中的数据
@@ -318,7 +318,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(200);
             }else{
                 resultInfo.setCode(500);
-                resultInfo.setMessage("修改失败，请联系管理员");
+                resultInfo.setMessage("修改失败");
             }
 
         }
@@ -408,24 +408,20 @@ public class PermissionController extends BaseController {
                 user.setId(user.getId()); //设置用户ID
                 int result2 = permissionService.addPermission(user);  //新增用户权限层级信息
                 if(result2 <= 0){
-                    resultInfo.setMessage("新增失败，请联系管理员");
+                    resultInfo.setMessage("新增失败");
                     resultInfo.setCode(500);
                     return resultInfo;
                 }
                 resultInfo.setMessage("新增成功");
                 resultInfo.setCode(200);
             }else{
-                resultInfo.setMessage("新增失败，请联系管理员");
+                resultInfo.setMessage("新增失败");
                 resultInfo.setCode(500);
             }
         }else{
             int emp = permissionService.editEmp(user); //修改员工信息
-            if (emp > 0){
-                resultInfo.setMessage("修改成功");
-                resultInfo.setCode(200);
-            }else{
-                resultInfo.setMessage("修改失败，请联系管理员");
-                resultInfo.setCode(500);
+            if(emp > 0){
+               // permissionService.
             }
         }
         return resultInfo;
@@ -474,7 +470,7 @@ public class PermissionController extends BaseController {
             resultInfo.setMessage("删除成功");
             resultInfo.setCode(200);
         } else {
-            resultInfo.setMessage("删除失败，请联系管理员");
+            resultInfo.setMessage("删除失败");
             resultInfo.setCode(500);
         }
 
@@ -488,8 +484,8 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "menuTree", method = RequestMethod.POST)
     @ResponseBody
-    public List<Map<String,Object>> menuTree(){
-        List<Menu> list = userService.getAllMenu();
+    public List<Map<String,Object>> menuTree(@Param("roleid") String roleid,@Param("sysflag") String sysflag){
+        List<Menu> list = userService.getAllMenu(roleid,sysflag);
         Map<String ,Object> map_one = new HashMap<String,Object>();
         List<Map<String,Object>> list_one = new ArrayList<>();
         Map<String , Object> _map = new HashMap<String,Object>();
@@ -585,7 +581,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("新增成功");
             }else{
                 resultInfo.setCode(500);
-                resultInfo.setMessage("新增失败，请联系管理员");
+                resultInfo.setMessage("新增失败");
             }
         }else{  // 修改
             int result = permissionService.modifyRole(com_numbers,roleName,roleId);
@@ -594,7 +590,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("修改成功");
             }else{
                 resultInfo.setCode(500);
-                resultInfo.setMessage("修改失败，请联系管理员");
+                resultInfo.setMessage("修改失败");
             }
         }
 
@@ -627,7 +623,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("新增角色权限成功");
             }else{
                 resultInfo.setCode(500);
-                resultInfo.setMessage("新增角色权限失败，请联系管理员");
+                resultInfo.setMessage("新增角色权限失败");
             }
         }else{ //修改
             int in = permissionService.deleteRoleMenuByRoleId(roleId); // 根据角色id，删除对应的菜单
@@ -637,7 +633,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("修改角色权限成功");
             }else{
                 resultInfo.setCode(500);
-                resultInfo.setMessage("修改角色权限失败，请联系管理员");
+                resultInfo.setMessage("修改角色权限失败");
             }
         }
         return resultInfo;
@@ -701,7 +697,7 @@ public class PermissionController extends BaseController {
         int result = permissionService.deleteRoles(idsArr); //删除角色信息
         if(result <= 0){
             resultInfo.setCode(500);
-            resultInfo.setMessage("删除角色失败，请联系管理员");
+            resultInfo.setMessage("删除角色失败");
             return  resultInfo;
         }
         int result2 = permissionService.deleteRolesMenu(idsArr);  //删除角色对应的权限菜单
@@ -710,7 +706,7 @@ public class PermissionController extends BaseController {
             resultInfo.setCode(200);
         }else{
             resultInfo.setCode(500);
-            resultInfo.setMessage("删除角色菜单失败，请联系管理员");
+            resultInfo.setMessage("删除角色菜单失败");
         }
         return resultInfo;
     }
@@ -734,7 +730,7 @@ public class PermissionController extends BaseController {
         int result = permissionService.deleteCompanys(idsArr);  //删除公司信息
         if ( result <= 0 ){
             resultInfo.setCode(500);
-            resultInfo.setMessage("删除公司失败，请联系管理员");
+            resultInfo.setMessage("删除公司失败");
             return resultInfo;
         }
         int msg = permissionService.deleteCompanyByNum(idsArr); //根据公司编号删除对应的银行账户
@@ -743,9 +739,33 @@ public class PermissionController extends BaseController {
             resultInfo.setMessage("删除成功");
         }else{
             resultInfo.setCode(500);
-            resultInfo.setMessage("删除公司账户失败，请联系管理员");
+            resultInfo.setMessage("删除公司账户失败");
         }
 
         return resultInfo;
+    }
+
+    /**
+     * 根据集团获取公司名
+     * @param groupNum
+     * @return
+     */
+    @RequestMapping(value = "getComByGroup", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Company> getComByGroup(@Param("groupNum") String groupNum){
+        List<Company> list =  permissionService.getComByGroup(groupNum);
+        return list;
+    }
+
+    /**
+     * 根据公司编号获取部门
+     * @param comNum
+     * @return
+     */
+    @RequestMapping(value = "getDeptByCom", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Departments> getDeptByCom(@Param("comNum") String comNum){
+        List<Departments> list = permissionService.getDeptByCom(comNum);
+        return list;
     }
 }

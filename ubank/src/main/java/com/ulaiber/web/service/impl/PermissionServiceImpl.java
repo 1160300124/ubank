@@ -410,5 +410,17 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         return roleMenuDao.deleteRoleMenuByRoleId(roleId);
     }
 
+    @Override
+    public List<Company> getComByGroup(String groupNum) {
+        List<Company> list = companyDao.getComByGroup(groupNum);
+        return list;
+    }
+
+    @Override
+    public List<Departments> getDeptByCom(String comNum) {
+        List<Departments> list = permissionDao.getDeptByCom(comNum);
+        return list;
+    }
+
 
 }

@@ -11,8 +11,8 @@
 
     <!--新增用户权限层级信息-->
     <insert id="addPermission" parameterType="com.ulaiber.web.model.User">
-        INSERT INTO tbl_roots(userid,username,groupNumber,companyNumber,dept_number,sysflag)
-          VALUES (#{id},#{userName},#{groupNumber},#{companyNumber},#{dept_number},'1')
+        INSERT INTO tbl_roots(userid,groupNumber,companyNumber,dept_number,sysflag)
+          VALUES (#{id},#{groupNumber},#{companyNumber},#{dept_number},'1')
     </insert>
 
 </mapper>

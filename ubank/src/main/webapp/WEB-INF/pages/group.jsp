@@ -158,7 +158,7 @@
                     if(data.code == 300){
                         Ewin.alert(data.message);
                     }else if(data.code == 500){
-                        Ewin.alert("操作异常，请联系管理员");
+                        Ewin.alert("操作异常");
                     }else{
                         Ewin.alert(data.message);
                         $("#group_form")[0].reset();
@@ -168,7 +168,7 @@
 
                 },
                 error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }
             })
         },
@@ -274,7 +274,7 @@
                                     Confirm.hide();
                                     Ewin.alert(data.message);
                                 }else if(data.code == 500){
-                                    Ewin.alert("操作异常，请联系管理员");
+                                    Ewin.alert("操作异常");
                                 }else{
                                     Confirm.hide();
                                     Ewin.alert(data.message);
@@ -284,7 +284,7 @@
 
                             },
                             error : function () {
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }
                         })
 
