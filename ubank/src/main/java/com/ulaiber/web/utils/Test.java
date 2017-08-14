@@ -1,7 +1,10 @@
 package com.ulaiber.web.utils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.ulaiber.web.conmon.IConstants;
 
@@ -91,13 +94,20 @@ public class Test {
 		
 		
 //		FileUtil.copy(new File("C:\\tools\\test\\haha\\body.jpg"), new File("C:\\tools\\test\\"));
-		FileUtil.deleteAllFilesOfDir("C:\\tools\\test\\");
+//		FileUtil.deleteAllFilesOfDir("C:\\tools\\test\\");
 		
 //		String filename = "fileaaaaa.aaaa.jpg";
 //		String uuid = UUIDGenerator.getUUID();
 //        String newFilename = uuid + filename.substring(filename.lastIndexOf("."), filename.length());
 //        System.out.println(uuid);
 //        System.out.println(newFilename);
+		
+//		String clock_on_time = "09:30";
+//		String clock_off_time = "18:30";
+//		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
+//		String date = datetime.split(" ")[0];
+//		String time = datetime.split(" ")[1];
+//		System.out.println("--------------" + date + "-------------" + time);
 		
 	}
 	

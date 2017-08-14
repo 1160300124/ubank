@@ -80,7 +80,7 @@ insert into tbl_roles(role_id, role_name) values(3, '普通用户');
 -- ----------------------------
 DROP TABLE IF EXISTS tbl_salaries;
 create table tbl_salaries(
-	sid       bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '流水号',
+	sid       bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '工资流水号',
 	userName  varchar(50)  DEFAULT NULL COMMENT '操作人',
 	totalNumber int(10)    DEFAULT 0 COMMENT '总笔数', 
 	totalAmount double  DEFAULT 0.0 COMMENT '总金额', 
@@ -266,6 +266,48 @@ insert into tbl_menu(name,url,code,father,icon,sorting) values('模块管理', '
 insert into tbl_menu(name,url,code,father,icon,sorting) values('类别管理', '/backend/category', '103002', '103', 'icon_classify', '103002');
 insert into tbl_menu(name,url,code,father,icon,sorting) values('URL管理', '/backend/thirdUrl', '103003', '103', 'icon_url_default', '102003');
 insert into tbl_menu(name,url,code,father,icon,sorting) values('Banner管理', '/backend/banner', '103004', '103', 'icon_banner_default', '102004');
+
+-- ----------------------------
+--  Table structure for `tbl_attendance_records`
+-- ----------------------------
+DROP TABLE IF EXISTS tbl_attendance_records;
+CREATE TABLE tbl_attendance_records (
+   rid bigint(20) NOT NULL AUTO_INCREMENT COMMENT '考勤记录流水号',
+   user_id bigint(20)  NOT NULL COMMENT '用户编号',
+   user_name varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '员工姓名',
+   dept_num int(11) DEFAULT NULL COMMENT '部门',
+   company_num int(11) DEFAULT NULL COMMENT '公司',
+   clock_date varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT '打卡日期',
+   clock_time varchar(20) DEFAULT NULL COMMENT '打卡时间',
+   clock_type int(5) DEFAULT NULL COMMENT '打卡类型 0：签到 1：签退',
+   clock_status int(5) DEFAULT NULL COMMENT '打卡状态 0：正常 1：迟到 2：早退',
+   clock_location varchar(100) DEFAULT NULL COMMENT '打卡位置',
+   clock_device varchar(100) DEFAULT NULL COMMENT '打卡设备号',
+  PRIMARY KEY (rid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='考勤记录表'; 
+
+insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device)
+	values(10,'huangguoqing',40000,20006,'2017-08-11','10:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');
+insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device)
+	values(10,'huangguoqing',40000,20006,'2017-08-11','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');
+
+-- ----------------------------
+--  Table structure for `tbl_attendance_statistics`
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_attendance_statistics`;
+CREATE TABLE `tbl_attendance_statistics` (
+   sid bigint(20) NOT NULL AUTO_INCREMENT COMMENT '考勤统计流水号',
+   user_name varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '员工姓名',
+   dept_num int(11) DEFAULT NULL COMMENT '部门',
+   company_num int(11) DEFAULT NULL COMMENT '公司',
+   normal_sign_on_count int(10) DEFAULT NULL COMMENT '正常打卡次数',
+   later_count int(10) DEFAULT NULL COMMENT '迟到次数',
+   not_sign_on_count int(10) DEFAULT NULL COMMENT '未签到次数',
+   normal_sign_off_count int(10) DEFAULT NULL COMMENT '正常签退次数',
+   leave_early_count int(10) DEFAULT NULL COMMENT '早退次数',
+   not_sign_off_count int(10) DEFAULT NULL COMMENT '未签退次数',
+   PRIMARY KEY (sid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='考勤记录统计表';
 
 
 

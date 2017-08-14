@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class Departments implements Serializable {
     private String dept_number;
     private String name;
+    private String deptName;
     private String company_num;
     private String count;
     private String remark;
@@ -53,4 +54,13 @@ public class Departments implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+	public String getDeptName() {
+		return deptName;
+	}
+
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+    
 }
