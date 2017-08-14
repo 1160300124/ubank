@@ -1,7 +1,5 @@
 package com.ulaiber.web.quartz;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -9,9 +7,9 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
 
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.service.BankService;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.utils.FileUtil;
 
 /** 
  * <一句话概述功能>
@@ -28,24 +26,17 @@ public class ClearTempFolderTask extends QuartzJobBean {
 	@Override
 	protected void executeInternal(JobExecutionContext jobContext) throws JobExecutionException {
 		logger.info("ClearTempFolderTask start...");
-		ApplicationContext applicationContext=null;  
-		try {
-			applicationContext = getApplicationContext(jobContext);
-			
-		} catch (SchedulerException e) {
-			logger.error("No application context available.", e);
-		}  
-		BankService service  = applicationContext.getBean(BankService.class);
-		List<Bank> banks = service.getAllBanks();
-		System.out.println(banks);
+		String path = ClearTempFolderTask.class.getResource("/").getPath();
+		String projectPath = path.substring(0, path.indexOf("/WEB-INF/"));
+		if (System.getProperty("os.name").contains("Windows")){
+			projectPath = projectPath.substring(1);
+		}
+		FileUtil.deleteAllFilesOfDir(projectPath + IConstants.ICON_TEMP_UPLOAD_PATH);
+		FileUtil.deleteAllFilesOfDir(projectPath + IConstants.BANNER_TEMP_UPLOAD_PATH);
+		logger.info("ClearTempFolderTask end...");
 	}
 
-	/**
-	 * 
-	 * @param jobContext
-	 * @return
-	 * @throws SchedulerException
-	 */
+	@SuppressWarnings("unused")
 	private ApplicationContext getApplicationContext(JobExecutionContext jobContext) throws SchedulerException {  
 		ApplicationContext appCtx = (ApplicationContext) jobContext.getScheduler().getContext().get("applicationContext");  
 		if (appCtx == null) {  

@@ -251,12 +251,22 @@ public class FileUtil {
 	}
 
 	/**
-	 * 删除文件
+	 * 删除文件夹及其所有子目录
 	 * @param path 路径
 	 * @return
 	 */
-	public static boolean delFile(String path){
+	public static boolean deleteAllFilesOfDir(String path){
 		File file = new File(path);
+		if (!file.exists())  
+	        return false;  
+	    if (file.isFile()) {  
+	    	file.delete();  
+	        return true;  
+	    }  
+	    File[] files = file.listFiles();  
+	    for (int i = 0; i < files.length; i++) {  
+	        deleteAllFilesOfDir(files[i].getAbsolutePath());  
+	    }  
 		boolean result = file.delete();
 		return result;
 	}

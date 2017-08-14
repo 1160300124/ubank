@@ -1,6 +1,7 @@
 package com.ulaiber.web.controller.backend;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.ulaiber.web.model.Banner;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.BannerService;
 import com.ulaiber.web.utils.FileUtil;
+import com.ulaiber.web.utils.ObjUtil;
+import com.ulaiber.web.utils.SysConf;
 
 /** 
  * <一句话概述功能>
@@ -141,7 +144,7 @@ public class BackendBannerController extends BaseController {
 				info.setMessage("图片复制异常！");
 				return info;
 			}
-			banner.setPicPath(IConstants.PICTURE_SERVER + path);
+			banner.setPicPath(SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn") + path);
 		}
 
 		boolean flag = service.save(banner);
@@ -151,7 +154,7 @@ public class BackendBannerController extends BaseController {
 			info.setMessage("新增banner成功！");
 			if (tempPath.contains(IConstants.TEMP_PATH)){
 				//成功后删除temp下的临时图标，以后会加入定时任务，定时清理临时目录，防止异常情况下，临时目录图标删不掉导致目录越来越大
-				FileUtil.delFile(getProjectAbsoluteURL(request) + tempPath);
+				FileUtil.deleteAllFilesOfDir(getProjectAbsoluteURL(request) + tempPath);
 			}
 		} else {
 			logger.error("新增banner失败！");
@@ -164,14 +167,29 @@ public class BackendBannerController extends BaseController {
 	
 	@RequestMapping(value= "deleteBanners", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo deleteBanners(@RequestBody List<Long> bids, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo deleteBanners(@RequestBody List<Banner> data, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
-		
+		if (!ObjUtil.notEmpty(data)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数不能为空");
+			return info;
+		}
+		List<Long> bids = new ArrayList<Long>();
+		List<String> paths = new ArrayList<String>();
+		String server = SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn");
+		for (Banner ban : data){
+			bids.add(ban.getBid());
+			String path = ban.getPicPath().replace(server, getProjectAbsoluteURL(request));
+			paths.add(path);
+		}
 		boolean flag = service.deleteByIds(bids);
 		
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("删除成功！");
+			for (String path : paths){
+				FileUtil.deleteAllFilesOfDir(path);
+			}
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("删除失败！");
@@ -204,7 +222,7 @@ public class BackendBannerController extends BaseController {
 				info.setMessage("图片复制异常！");
 				return info;
 			}
-			banner.setPicPath(IConstants.PICTURE_SERVER + path);
+			banner.setPicPath(SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn") + path);
 		}
 		
 		boolean flag = service.updateById(banner);
@@ -214,7 +232,7 @@ public class BackendBannerController extends BaseController {
 			info.setMessage("修改成功！");
 			if (tempPath.contains(IConstants.TEMP_PATH)){
 				//成功后删除temp下的临时图标
-				FileUtil.delFile(getProjectAbsoluteURL(request) + tempPath);
+				FileUtil.deleteAllFilesOfDir(getProjectAbsoluteURL(request) + tempPath);
 			}
 		} else {
 			info.setCode(IConstants.QT_CODE_ERROR);

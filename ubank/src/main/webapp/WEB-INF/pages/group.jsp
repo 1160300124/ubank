@@ -90,13 +90,11 @@
         </div><!-- /.modal -->
 
 </div>
-<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrapValidator.js" type="text/javascript"></script>
 <script type="text/javascript">
 
     //初始化数据
     $(function () {
         GroupFun.groupQuery();
-        GroupFun.group_validate();
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
