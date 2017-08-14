@@ -78,7 +78,7 @@
 	</select>
 	
 	<select id="getUserByName" resultMap="UserMap">
-		select a.*,b.sysflag from tbl_users a  left join tbl_roles b on a.role_id = b.role_id
+		select a.*,b.sysflag from tbl_users a  LEFT join tbl_roots b on a.user_id = b.userid
 		 where a.user_name=#{userName}
 	</select>
 

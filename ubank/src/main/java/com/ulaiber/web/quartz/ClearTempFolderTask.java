@@ -6,8 +6,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.quartz.QuartzJobBean;
 
+import org.springframework.scheduling.quartz.QuartzJobBean;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.utils.FileUtil;
 
@@ -19,7 +19,7 @@ import com.ulaiber.web.utils.FileUtil;
  * @version 1.0 
  * @since 
  */
-public class ClearTempFolderTask extends QuartzJobBean{
+public class ClearTempFolderTask extends QuartzJobBean {
 
 	private static Logger logger = Logger.getLogger(ClearTempFolderTask.class);
 

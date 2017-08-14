@@ -405,13 +405,13 @@ public class PermissionController extends BaseController {
             user.setLogin_password(password);
             int result = permissionService.addEmployee(user);
             if(result > 0){
-//                user.setId(user.getId()); //设置用户ID
-//                int result2 = permissionService.addPermission(user);  //新增用户权限层级信息
-//                if(result2 <= 0){
-//                    resultInfo.setMessage("新增失败，请联系管理员");
-//                    resultInfo.setCode(500);
-//                    return resultInfo;
-//                }
+                user.setId(user.getId()); //设置用户ID
+                int result2 = permissionService.addPermission(user);  //新增用户权限层级信息
+                if(result2 <= 0){
+                    resultInfo.setMessage("新增失败，请联系管理员");
+                    resultInfo.setCode(500);
+                    return resultInfo;
+                }
                 resultInfo.setMessage("新增成功");
                 resultInfo.setCode(200);
             }else{
@@ -437,7 +437,7 @@ public class PermissionController extends BaseController {
      * @param search
      * @param pageSize
      * @param pageNum
-     * @param request
+     * @param
      * @return
      */
     @RequestMapping(value = "empQuery", method = RequestMethod.POST)
@@ -661,7 +661,7 @@ public class PermissionController extends BaseController {
      * @param search
      * @param pageSize
      * @param pageNum
-     * @param request
+     * @param
      * @return
      */
     @RequestMapping(value = "roleQuery", method = RequestMethod.POST)

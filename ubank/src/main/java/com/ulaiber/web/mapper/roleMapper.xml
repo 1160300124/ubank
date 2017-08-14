@@ -24,8 +24,7 @@
 
     <!--新增角色信息-->
     <insert id="addRole" parameterType="Map" >
-        INSERT INTO tbl_roles(role_name,companyNumber,sysflag)
-            VALUES (#{roleName},#{com_numbers},'1')
+        INSERT INTO tbl_roles(role_name,companyNumber) VALUES (#{roleName},#{com_numbers})
     </insert>
 
     <!--分页查询角色信息-->
