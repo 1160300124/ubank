@@ -422,5 +422,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         return list;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int editRoots(User user) {
+        return employeeDao.editRoots(user);
+    }
+
 
 }

@@ -111,4 +111,6 @@ public interface PermissionService {
     List<Company> getComByGroup(String groupNum); //根据集团获取公司名
 
     List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
+
+    int editRoots(User user); //修改权限对应关系表
 }

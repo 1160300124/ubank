@@ -421,7 +421,17 @@ public class PermissionController extends BaseController {
         }else{
             int emp = permissionService.editEmp(user); //修改员工信息
             if(emp > 0){
-               // permissionService.
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改员工失败");
+                return resultInfo;
+            }
+            int roots =  permissionService.editRoots(user); //修改权限对应关系表
+            if(roots > 0 ){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("修改员工成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改员工失败");
             }
         }
         return resultInfo;

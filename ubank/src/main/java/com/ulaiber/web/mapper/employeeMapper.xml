@@ -30,6 +30,12 @@
           where user_id = #{id}
     </update>
 
+    <!--修改权限对应关系表-->
+    <update id="editRoots" parameterType="com.ulaiber.web.model.User">
+        UPDATE tbl_roots set groupNumber = #{groupNumber},companyNumber = #{companyNumber},dept_number = #{dept_number}
+        where userid = #{id}
+    </update>
+
     <!--获取员工总数-->
     <select id="getEmpTotal" resultType="int">
         select count(a.user_name) as total from tbl_users a left join tbl_roots b on a.user_id = b.userid
