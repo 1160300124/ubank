@@ -110,8 +110,7 @@ public class HttpsUtil {
   
             HttpEntity entity = response.getEntity();  
             if (entity != null) {  
-                InputStream instream = entity.getContent();  
-                result = IOUtils.toString(instream, "UTF-8");  
+            	result = EntityUtils.toString(entity, "UTF-8");
             }  
         } catch (IOException e) {  
             e.printStackTrace();  
