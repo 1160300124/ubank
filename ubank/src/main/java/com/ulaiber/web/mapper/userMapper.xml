@@ -65,7 +65,7 @@
 	</delete>
 	
 	<select id="getUserByTicketAndToken" parameterType="User" resultMap="UserMap">
-		select * from tbl_users where login_ticket=#{login_ticket} and access_token=#{access_token}
+		select user_id from tbl_users where login_ticket=#{login_ticket} and access_token=#{access_token}
 	</select>
 	
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  

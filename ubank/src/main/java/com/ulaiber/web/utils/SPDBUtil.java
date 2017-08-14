@@ -403,15 +403,15 @@ public class SPDBUtil {
 		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位s
 		xml = String.format("%06d", xml.length() + 6) + xml;
 		String url = "http://" + getProperty("BISAFE_IP", BISAFE_IP) + ":" + getProperty("BISAFE_HTTP_PORT", BISAFE_HTTP_PORT) + "/";
+		logger.info("[getPayResult] request xml: " + xml);
 		String res = HttpsUtil.doPost(url, xml, true);
-		logger.debug("[getPayResult] response: " + res);
+		logger.info("[getPayResult] response: " + res);
 		String res1 = res.substring(6);
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
 			String returnCode = root.element("head").elementTextTrim("returnCode");
-			logger.info("[getPayResult] response head: " + root.element("head"));
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
 				String res2 = getSign(returnsign, false);
@@ -495,15 +495,15 @@ public class SPDBUtil {
 		//接口规范  请求报文前面必须加上报文长度+6 固定长度6位
 		xml = String.format("%06d", xml.length() + 6) + xml;
 		String url = "http://" + getProperty("BISAFE_IP", BISAFE_IP) + ":" + getProperty("BISAFE_HTTP_PORT", BISAFE_HTTP_PORT) + "/";
+		logger.info("[paySalaries] request xml: " + xml);
 		String res = HttpsUtil.doPost(url, xml, true);
-		logger.debug("[paySalaries] response: " + res);
+		logger.info("[paySalaries] response: " + res);
 		String res1 = res.substring(6);
 		
 		try {
 			org.dom4j.Document document = DocumentHelper.parseText(res1);
 			org.dom4j.Element root = document.getRootElement();
 			String returnCode = root.element("head").elementTextTrim("returnCode");
-			logger.info("[paySalaries] response head: " + root.element("head"));
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
 				//解签
