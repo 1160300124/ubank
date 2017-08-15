@@ -13,7 +13,10 @@
     <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
         SELECT role_id,role_name,companyNumber FROM tbl_roles
         <if test = 'sysflag == "1"'>
-            where companyNumber like concat('%',#{companyNumber},'%')
+            where companyNumber in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                #{companyNumber}
+            </foreach>
         </if>
     </select>
 
@@ -34,7 +37,10 @@
             and  role_name like concat('%',#{search},'%')
         </if>
         <if test = 'sysflag == "1"'>
-              and companyNumber like concat('%',#{companyNumber},'%')
+            and companyNumber in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                  #{companyNumber}
+            </foreach>
         </if>
         ORDER BY role_id  limit #{pageNum},#{pageSize}
     </select>
