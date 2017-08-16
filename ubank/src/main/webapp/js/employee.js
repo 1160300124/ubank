@@ -80,6 +80,7 @@ var EmployeeFun = {
     },
     //获取所有公司
     emp_getCompany : function (groupNum) {
+        $("#emp_select").empty();
         $.ajax({
             url : 'getComByGroup',
             dataType : 'json',
@@ -92,7 +93,7 @@ var EmployeeFun = {
                    // Ewin.alert("获取公司失败");
                     return;
                 }
-                $("#emp_select").empty();
+
                 var option = "<option value=''>请选择</option>";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
@@ -107,6 +108,7 @@ var EmployeeFun = {
     },
     //获取所有部门
     emp_getDept : function (comNum) {
+        $("#emp_select_dept").empty();
         $.ajax({
             url : 'getDeptByCom',
             dataType : 'json',
@@ -118,7 +120,6 @@ var EmployeeFun = {
                 if(data.length <= 0){
                     return;
                 }
-                $("#emp_select_dept").empty();
                 var option = "";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
@@ -172,7 +173,7 @@ var EmployeeFun = {
                 if(data.length <= 0){
                     return;
                 }
-                var option = "";
+                var option = "<option value='0'>员工</option>";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].role_id+"'>"+data[i].role_name+"</option>";
                 }
