@@ -266,6 +266,9 @@ insert into tbl_menu(name,url,code,father,icon,sorting) values('模块管理', '
 insert into tbl_menu(name,url,code,father,icon,sorting) values('类别管理', '/backend/category', '103002', '103', 'icon_classify', '103002');
 insert into tbl_menu(name,url,code,father,icon,sorting) values('URL管理', '/backend/thirdUrl', '103003', '103', 'icon_url_default', '102003');
 insert into tbl_menu(name,url,code,father,icon,sorting) values('Banner管理', '/backend/banner', '103004', '103', 'icon_banner_default', '102004');
+insert into tbl_menu(name,url,code,father,icon,sorting) values('行政管理', '', '104', '', '', '104');
+insert into tbl_menu(name,url,code,father,icon,sorting) values('考勤记录', '/backend/attendance', '104001', '104', 'icon-module', '104001');
+insert into tbl_menu(name,url,code,father,icon,sorting) values('考勤统计', '/backend/statistics', '104002', '104', 'icon_classify', '104002');
 
 -- ----------------------------
 --  Table structure for `tbl_attendance_records`
@@ -300,16 +303,51 @@ CREATE TABLE `tbl_attendance_statistics` (
    user_name varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '员工姓名',
    dept_num int(11) DEFAULT NULL COMMENT '部门',
    company_num int(11) DEFAULT NULL COMMENT '公司',
-   normal_sign_on_count int(10) DEFAULT NULL COMMENT '正常打卡次数',
+   normal_clock_on_count int(10) DEFAULT NULL COMMENT '正常打卡次数',
    later_count int(10) DEFAULT NULL COMMENT '迟到次数',
-   not_sign_on_count int(10) DEFAULT NULL COMMENT '未签到次数',
+   not_clock_on_count int(10) DEFAULT NULL COMMENT '未签到次数',
    normal_sign_off_count int(10) DEFAULT NULL COMMENT '正常签退次数',
    leave_early_count int(10) DEFAULT NULL COMMENT '早退次数',
-   not_sign_off_count int(10) DEFAULT NULL COMMENT '未签退次数',
+   not_clock_off_count int(10) DEFAULT NULL COMMENT '未签退次数',
    PRIMARY KEY (sid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='考勤记录统计表';
 
+-- ----------------------------
+--  Table structure for `tbl_attendance_rules`
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_attendance_rules`;
+CREATE TABLE `tbl_attendance_rules` (
+   rid bigint(20) NOT NULL AUTO_INCREMENT COMMENT '考勤规则id',
+   clock_on_time varchar(20) DEFAULT NULL COMMENT '上班打卡时间',
+   clock_off_time varchar(20) DEFAULT NULL COMMENT '下班打卡时间',
+   clock_on_advance_hours int(5) DEFAULT 0 COMMENT '上班打卡提前小时数',
+   clock_on_start_time varchar(20) DEFAULT NULL COMMENT '最早上班打卡时间',
+   clock_off_delay_hours int(5) DEFAULT 0 COMMENT '下班打卡延迟小时数',
+   clock_off_end_time varchar(20) DEFAULT NULL COMMENT '最晚下班打卡时间',
+   rest_start_time varchar(20) DEFAULT NULL COMMENT '休息开始时间',
+   rest_end_time varchar(20) DEFAULT NULL COMMENT '休息结束时间',
+   longit_latit varchar(50) DEFAULT NULL COMMENT '经纬度',
+   clock_location varchar(50) DEFAULT NULL COMMENT '打卡位置',
+   clock_bounds int(10) DEFAULT NULL COMMENT '打卡范围',
+   PRIMARY KEY (rid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='考勤规则表';
 
+insert into tbl_attendance_rules(clock_on_time,clock_off_time,clock_on_advance_hours,clock_on_start_time,clock_off_delay_hours,clock_off_end_time,rest_start_time,rest_end_time,longit_latit,clock_location,clock_bounds)
+	values('09:30','18:30',2,'07:30',6,'00:30','12:30','14:00','113.941664,22.542380','深圳市优融网络科技有限公司','1000');
+
+-- ----------------------------
+--  Table structure for `tbl_users_of_rules`
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_users_of_rules`;
+CREATE TABLE `tbl_users_of_rules` (
+   userid bigint(20) NOT NULL COMMENT '用户id',
+   rid bigint(20) NOT NULL COMMENT '考勤规则id',
+   deptid int(11) NOT NULL COMMENT '部门id',
+   companyid int(11) NOT NULL COMMENT '公司id',
+   PRIMARY KEY (userid,rid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户与考勤规则关联表';
+
+insert into tbl_users_of_rules(userid,rid,deptid,companyid) values(315,1,'40000','20006');
 
 
 

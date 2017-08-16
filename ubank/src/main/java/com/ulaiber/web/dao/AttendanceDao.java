@@ -28,5 +28,31 @@ public interface AttendanceDao {
 	 * @return
 	 */
 	List<Attendance> getRecordsByCond(Map<String, Object> params);
+	
+	/**
+	 * 根据条件获取记录数
+	 */
+	int getCountBycond(Map<String, Object> params);
+	
+	/**
+	 * 根据用户id获取考勤记录
+	 * @param userId
+	 * @return
+	 */
+	Attendance getRecordByCond(Attendance attend);
+	
+	/**
+	 * 根据date和手机号查询考勤记录
+	 * @param params
+	 * @return
+	 */
+	List<Attendance> getRecordsByDateAndMobile(Map<String, Object> params);
+	
+	/**
+	 * 根据手机号获取用户的最近一次打卡记录
+	 * @param userId
+	 * @return
+	 */
+	Attendance getLatestRecordByUserId(long userId);
 
 }

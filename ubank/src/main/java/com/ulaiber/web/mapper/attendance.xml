@@ -11,7 +11,7 @@
 
     <resultMap id="AttendanceMap" type="Attendance" >
     	<id column="rid" property="rid" jdbcType="BIGINT" />
-    	<result column="user_id" property="userId" jdbcType="VARCHAR" />
+    	<result column="user_id" property="userId" jdbcType="BIGINT" />
     	<result column="user_name" property="userName" jdbcType="VARCHAR" />
     	<result column="clock_date" property="clockDate" jdbcType="VARCHAR" />
     	<result column="clock_time" property="clockTime" jdbcType="VARCHAR" />
@@ -46,8 +46,7 @@
 		    values(#{userId}, #{userName}, #{dept.dept_number}, #{company.companyNumber}, #{clockDate}, #{clockTime}, #{clockType}, #{clockStatus}, #{clockLocation}, #{clockDevice}) 
 	</insert>
 	
-	<select id="getRecordsByCond" parameterType="Map" resultMap="AttendanceMap">
-		select r.*,d.dept_number,d.name deptName,c.companyNumber,c.name from tbl_attendance_records r left join tbl_departments d on r.dept_num=d.dept_number left join tbl_company c on d.company_num=c.companyNumber
+	<sql id="byCond">
 		where r.company_num = #{company_num} and r.clock_date &gt;= #{start_date} and r.clock_date &lt;= #{end_date}
 		<if test="dept_num != null and dept_num != 0">
 			and r.dept_num = #{dept_num}
@@ -61,8 +60,30 @@
 		<if test="user_name != null and user_name != ''">
 			and r.user_name like concat('%',#{user_name},'%')
 		</if>
+	</sql>
+	
+	<select id="getRecordsByCond" parameterType="Map" resultMap="AttendanceMap">
+		select r.*,d.dept_number,d.name deptName,c.companyNumber,c.name from tbl_attendance_records r left join tbl_departments d on r.dept_num=d.dept_number 
+			left join tbl_company c on d.company_num=c.companyNumber
+			<include refid="byCond" />
 		order by rid limit #{offset},#{limit}
 	</select>
 
+	<select id="getCountBycond" parameterType="Map" resultType="Integer">
+		select count(1) from tbl_attendance_records r left join tbl_departments d on r.dept_num=d.dept_number left join tbl_company c on d.company_num=c.companyNumber
+		<include refid="byCond" />
+	</select>
+	
+	<select id="getRecordByCond" parameterType="Attendance" resultMap="AttendanceMap">
+		select * from tbl_attendance_records where clock_date=#{clockDate} and clock_type=#{clockType} and user_id=#{userId};
+	</select>
+
+	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
+		select r.* from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where r.clock_date=#{clockDate} and u.mobile=#{mobile};
+	</select>
+	
+	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
+		select user_id,user_name,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId} order by clock_date desc limit 1;
+	</select>
 
 </mapper>

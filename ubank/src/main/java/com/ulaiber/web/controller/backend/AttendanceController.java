@@ -76,12 +76,13 @@ public class AttendanceController extends BaseController {
 		params.put("start_date", startDate);
 		params.put("end_date", endDate);
 		
-		
+		int total = service.getCountBycond(params);
 		List<Attendance> list = service.getRecordsByCond(params);
 		for (Attendance attend : list){
 			attend.setClockType(CLOCK_TYPE.get(attend.getClockType()));
 			attend.setClockStatus(CLOCK_STATUS.get(attend.getClockStatus()));
 		}
+		data.put("total", total);
 		data.put("rows", list);
 		return data;
 	}

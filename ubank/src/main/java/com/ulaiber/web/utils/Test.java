@@ -39,13 +39,13 @@ public class Test {
 //		System.out.println(s.substring("/uwallet".length()));
         
 //      -----------------------------------------------------------------
-//        String apiUrl = "http://localhost:8080/uwallet/api/v1/register";
+//        String apiUrl = "http://localhost:8080/ubank/api/v1/register";
 //        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//	    params.put("userName", "lisi");
-//	    params.put("login_password", "1234567");
-//	    params.put("pay_password", "1234567");
-//	    params.put("mobile", "15919477089");
-//	    params.put("reserve_mobile", "12345678910");
+//	    params.put("userName", "黄国清");
+//	    params.put("login_password", "123456");
+//	    params.put("pay_password", "123456");
+//	    params.put("mobile", "15919477086");
+//	    params.put("reserve_mobile", "15919477086");
 //	    params.put("cardType", 1);
 //	    params.put("bankNo", "305100000013");
 //	    params.put("bankCardNo", "1234567890");
@@ -108,7 +108,11 @@ public class Test {
 //		String date = datetime.split(" ")[0];
 //		String time = datetime.split(" ")[1];
 //		System.out.println("--------------" + date + "-------------" + time);
-		
+        
+		String time = DateTimeUtil.date2Str(new Date(), "yyyy-MM-dd HH:mm");
+        System.out.println(time);
+        System.out.println(DateTimeUtil.getfutureTime(time, 0, 12, 0));
+
 	}
 	
 	/* 单条短信发送,智能匹配短信模板

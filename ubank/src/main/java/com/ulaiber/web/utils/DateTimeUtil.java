@@ -228,11 +228,20 @@ public class DateTimeUtil {
 		return strdate + " 23:59:59";
 	}
 	
-	
-	public static String getfutureDay(int days){
+	/**
+	 * 根据传入的日期和天，小时，分钟数求日期
+	 * @param strdate  yyyy-MM-dd HH:mm
+	 * @param day 前几天或后几天
+	 * @param hour 前几个小时或后几个小时
+	 * @param minute 前几分钟或后几分钟
+	 * @return
+	 */
+	public static String getfutureTime(String strdate, int day, int hour, int minute){
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.add(calendar.DATE, days);//把日期往前减少一天，若想把日期向后推一天则将负数改为正数
-		return date2Str(calendar.getTime(), DATE_FORMAT_SHORTDAY);
+		calendar.setTime(str2Date(strdate, DATE_FORMAT_MINUTETIME));
+		calendar.add(calendar.DATE, day); //把日期往前减少一天，若想把日期向后推一天则将负数改为正数
+		calendar.add(calendar.HOUR, hour);
+		calendar.add(calendar.MINUTE, minute);
+		return date2Str(calendar.getTime(), DATE_FORMAT_MINUTETIME);
 	}
 }

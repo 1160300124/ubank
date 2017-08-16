@@ -91,8 +91,8 @@
 				<th data-field="clockType">打卡类型</th>
 				<th data-field="clockTime">打卡时间</th>
 				<th data-field="clockStatus">状态</th>
+				<th data-field="clockLocation">打卡位置</th>
 				<th data-field="clockDevice">打卡设备号</th>
-				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>
 
