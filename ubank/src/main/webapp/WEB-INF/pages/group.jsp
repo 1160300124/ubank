@@ -37,31 +37,31 @@
                                     <label class="col-md-3" for="exampleInputName2">集团名称</label>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control" name="name"  >
-                                        <%--<input type="text" class="form-control" style="display: none;" name="groupNumber" >--%>
+                                        <input type="text" class="form-control" style="display: none;" name="groupNumber" value="0">
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">法人</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="legalPerson"  id="" >
+                                        <input type="text" class="form-control" name="legalPerson"   >
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">注册资本</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="registeredCapital"  id="" >
+                                        <input type="text" class="form-control" name="registeredCapital" >
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">负责联系人</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="contacts"  id="" >
+                                        <input type="text" class="form-control" name="contacts" >
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="col-md-3" for="exampleInputName2">联系人电话</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="contactsTelephone"  id="" >
+                                        <input type="text" class="form-control" name="contactsTelephone"  >
                                     </div>
                                 </div>
                                 <div class="form-group col-md-12">
@@ -155,6 +155,7 @@
                 type : 'post',
                 data:  $("#group_form").serialize(),
                 success : function (data) {
+                    debugger;
                     if(data.code == 300){
                         Ewin.alert(data.message);
                     }else if(data.code == 500){

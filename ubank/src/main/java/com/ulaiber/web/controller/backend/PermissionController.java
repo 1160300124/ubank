@@ -141,12 +141,12 @@ public class PermissionController extends BaseController {
             return resultInfo;
         }
         int result = permissionService.deleteGroup(numberArr);
-        if(result >0){
-            resultInfo.setMessage("删除成功");
+        if(result > 0){
             resultInfo.setCode(200);
+            resultInfo.setMessage("删除成功");
         }else{
-            resultInfo.setMessage("删除失败");
             resultInfo.setCode(500);
+            resultInfo.setMessage("删除失败");
         }
         return resultInfo;
 
@@ -167,8 +167,9 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int deptTotal = permissionService.getDeptTotal();   //获取部门总数
-        List<Departments> list = permissionService.departmentQuery(search,pageSize,pageNum,sysflag,companyNumber);
+        String[] comArr = companyNumber.split(",");
+        int deptTotal = permissionService.getDeptTotal(sysflag,comArr);   //获取部门总数
+        List<Departments> list = permissionService.departmentQuery(search,pageSize,pageNum,sysflag,comArr);
         map.put("total",deptTotal);
         map.put("rows",list);
         return map;
@@ -312,6 +313,9 @@ public class PermissionController extends BaseController {
             }
             int msg = permissionService.deleteComByNum(comNum); //根据公司编号删除银行账户信息表中的数据
             int result = permissionService.updateCompany(company); //更新银行信息表
+            for (int i = 0;i <list.size();i++){
+                list.get(i).put("companyNumber",comNum);
+            }
             int acc = permissionService.addBankAccount(list); //插入银行账户信息
             if(result >0 && acc > 0){
                 resultInfo.setMessage("修改成功");
@@ -420,8 +424,18 @@ public class PermissionController extends BaseController {
             }
         }else{
             int emp = permissionService.editEmp(user); //修改员工信息
-            if(emp > 0){
-               // permissionService.
+            if(emp <= 0){
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改员工失败");
+                return resultInfo;
+            }
+            int roots =  permissionService.editRoots(user); //修改权限对应关系表
+            if(roots > 0 ){
+                resultInfo.setCode(200);
+                resultInfo.setMessage("修改员工成功");
+            }else{
+                resultInfo.setCode(500);
+                resultInfo.setMessage("修改员工失败");
             }
         }
         return resultInfo;
@@ -447,8 +461,9 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int empTotal = permissionService.getEmpTotal(sysflag,companyNumber);   //获取部门总数
-        List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,companyNumber); //分页查询
+        String[] comArr = companyNumber.split(",");
+        int empTotal = permissionService.getEmpTotal(sysflag,comArr);   //获取部门总数
+        List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,comArr); //分页查询
         map.put("total",empTotal);
         map.put("rows",list);
         return map;
@@ -672,7 +687,8 @@ public class PermissionController extends BaseController {
         }
         Map<String,Object> map = new HashMap<String,Object>();
         int empTotal = permissionService.getRoleTotal(sysflag,companyNumber);   //获取角色总数
-        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum,sysflag,companyNumber); //分页查询
+        String[] comArr = companyNumber.split(",");
+        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum,sysflag,comArr); //分页查询
         map.put("total",empTotal);
         map.put("rows",list);
         return map;

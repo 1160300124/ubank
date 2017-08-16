@@ -72,11 +72,11 @@
 
 
 <script type="text/javascript">
-	var GROUPNUMBER = ${BACKENDUSER.groupNumber}; //当前用户所属集团编号
-	var SYSFLAG = 0; //角色表示，0 表示管理所有集团的超级管理员；1 表示集团里的超级管理员
-	var COMPANYNUMBER = ${BACKENDUSER.companyNumber};  //当前用户所属公司
-    var DEPTNUMBER = ${BACKENDUSER.dept_number};		//当前用户所属部门
-    var ROLEID = ${BACKENDUSER.role_id};		//当前用户角色ID
+	var GROUPNUMBER = "${BACKENDUSER.groupNumber}"; //当前用户所属集团编号
+	var SYSFLAG = "${BACKENDUSER.sysflag}"; //角色表示，0 表示管理所有集团的超级管理员；1 表示集团里的超级管理员
+	var COMPANYNUMBER = "${BACKENDUSER.companyNumber}";  //当前用户所属公司
+    var DEPTNUMBER = "${BACKENDUSER.dept_number}";		//当前用户所属部门
+    var ROLEID = "${BACKENDUSER.role_id}";		//当前用户角色ID
     $(function () {
         //获取系统菜单
         $.ajax({

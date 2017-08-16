@@ -35,19 +35,21 @@ var EmployeeFun = {
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
+                {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
+                {field : 'dept_name', title : '部门', width: 130, align : 'left'},
+                {field : 'com_name', title : '公司', width: 130, align : 'left'},
+                {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
+                {field : 'bankName', title : '绑定银行', width: 130, align : 'left'},
+                {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},
+                {field : 'mobile', title : '预留手机号', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false},
                 {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
                 {field : 'id', title : '员工编号', width: 130, align : 'left',visible : false},
                 {field : 'role_id', title : '角色id', width: 60, align : 'left',visible : false},
-                {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
-                {field : 'dept_name', title : '部门', width: 130, align : 'left'},
-                {field : 'com_name', title : '公司', width: 130, align : 'left'},
-                {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
-                {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false},
-                {field : 'bankName', title : '绑定银行', width: 130, align : 'left'},
-                {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},
-                {field : 'mobile', title : '预留手机号', width: 130, align : 'left'}
+                {field : 'dept_name', title : '部门名称', width: 60, align : 'left',visible : false},
+                {field : 'com_name', title : '公司名称', width: 60, align : 'left',visible : false},
+                {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false}
 
             ]
         });
@@ -78,6 +80,7 @@ var EmployeeFun = {
     },
     //获取所有公司
     emp_getCompany : function (groupNum) {
+        $("#emp_select").empty();
         $.ajax({
             url : 'getComByGroup',
             dataType : 'json',
@@ -87,11 +90,11 @@ var EmployeeFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取公司失败");
+                   // Ewin.alert("获取公司失败");
                     return;
                 }
-                $("#emp_select").empty();
-                var option = "";
+
+                var option = "<option value=''>请选择</option>";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
                 }
@@ -105,6 +108,7 @@ var EmployeeFun = {
     },
     //获取所有部门
     emp_getDept : function (comNum) {
+        $("#emp_select_dept").empty();
         $.ajax({
             url : 'getDeptByCom',
             dataType : 'json',
@@ -116,7 +120,6 @@ var EmployeeFun = {
                 if(data.length <= 0){
                     return;
                 }
-                $("#emp_select_dept").empty();
                 var option = "";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
@@ -141,10 +144,10 @@ var EmployeeFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据");
+                    // Ewin.alert("没有集团数据");
                     return;
                 }
-                var option = "";
+                var option = "<option value=''>请选择</option>";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
                 }
@@ -171,7 +174,11 @@ var EmployeeFun = {
                     return;
                 }
                 var option = "";
+                    option = "<option value='0'>员工</option>";
                 for (var i = 0; i < data.length; i++){
+                    if(data[i].role_id == 0){
+                        continue;
+                    }
                     option += "<option value='"+data[i].role_id+"'>"+data[i].role_name+"</option>";
                 }
                 $("#emp_select_role").html(option);
@@ -302,15 +309,15 @@ var EmployeeFun = {
             return;
         }
         $("input[name=id]").val(row[0].id);
-        $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=mobile]").val(row[0].mobile);
+        $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=userName]").val(row[0].userName);
         $("input[name=cardNo]").val(row[0].cardNo);
-        $("#emp_select").find("option[value="+row[0].companyNumber+"]").attr("selected","selected");
-        $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").attr("selected","selected");
+        $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
+        $("#emp_select").html("<option value='" + row[0].companyNumber + "'>"+(row[0].com_name != undefined ? row[0].com_name : '')+"</option>");
+        $("#emp_select_dept").html("<option value='" + row[0].dept_number + "'>"+row[0].dept_name+"</option>");
         $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
         $("#emp_select_role").find("option[value="+row[0].role_id+"]").attr("selected","selected");
-        $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").attr("selected","selected");
         $("#employee_modal").modal("show");
 
     },
@@ -373,12 +380,13 @@ var EmployeeFun = {
 //选择框监听事件
 $("#emp_select_group").change(function(){
     var groupNum = $(this).val();
-    EmployeeFun.emp_getCompany(groupNum);
+    if(groupNum != ''){
+        EmployeeFun.emp_getCompany(groupNum);
+    }
 });
 
 //选择框监听事件
 $("#emp_select").change(function () {
     var comNum = $(this).val();
-    debugger;
     EmployeeFun.emp_getDept(comNum);
 });

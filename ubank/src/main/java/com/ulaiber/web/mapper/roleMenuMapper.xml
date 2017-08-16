@@ -27,7 +27,10 @@
     <select id="getRoleTotal" resultType="int">
         SELECT count(role_id) as total FROM tbl_roles
         <if test = 'sysflag == "1"'>
-            WHERE companyNumber = #{companyNumber}
+            WHERE companyNumber in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                #{companyNumber}
+            </foreach>
         </if>
     </select>
 

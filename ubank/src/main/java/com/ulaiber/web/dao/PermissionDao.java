@@ -32,7 +32,7 @@ public interface PermissionDao {
 
     int getTotal(Map<String,Object> map);  //获取集团总数
 
-    int getDeptTotal();  //获取部门总数
+    int getDeptTotal(Map<String,Object> map);  //获取部门总数
 
     int editDept(Departments dept); //修改部门
 

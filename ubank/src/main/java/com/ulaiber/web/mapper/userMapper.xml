@@ -78,8 +78,10 @@
 	</select>
 	
 	<select id="getUserByName" resultMap="UserMap">
-		select a.*,b.* from tbl_users a  LEFT join tbl_roots b on a.user_id = b.userid
-		 where a.user_name=#{userName}
+		select a.*,b.groupNumber,b.dept_number,c.companyNumber,b.sysflag from tbl_users a
+		LEFT join tbl_roots b on a.user_id = b.userid
+		left join tbl_roles c on a.role_id = c.role_id
+		 where a.user_name = #{userName}
 	</select>
 
 	<!--获取系统所有菜单-->
