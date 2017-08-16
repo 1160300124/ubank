@@ -166,7 +166,7 @@
 
     <!--根据部门id查询该部门是否存在用户-->
     <select id="queryUserByDeptid" parameterType="String" resultType="com.ulaiber.web.model.User">
-        select * from tbl_users where dept_number in
+        select * from tbl_roots where dept_number in
         <foreach collection="array" item="number" open="(" separator="," close=")">
             #{number}
         </foreach>

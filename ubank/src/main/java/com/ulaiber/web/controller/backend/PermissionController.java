@@ -313,6 +313,9 @@ public class PermissionController extends BaseController {
             }
             int msg = permissionService.deleteComByNum(comNum); //根据公司编号删除银行账户信息表中的数据
             int result = permissionService.updateCompany(company); //更新银行信息表
+            for (int i = 0;i <list.size();i++){
+                list.get(i).put("companyNumber",comNum);
+            }
             int acc = permissionService.addBankAccount(list); //插入银行账户信息
             if(result >0 && acc > 0){
                 resultInfo.setMessage("修改成功");
@@ -421,7 +424,7 @@ public class PermissionController extends BaseController {
             }
         }else{
             int emp = permissionService.editEmp(user); //修改员工信息
-            if(emp > 0){
+            if(emp <= 0){
                 resultInfo.setCode(500);
                 resultInfo.setMessage("修改员工失败");
                 return resultInfo;

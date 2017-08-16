@@ -210,7 +210,8 @@
                 Ewin.alert("请选中需要修改的数据");
                 return;
             }
-            $(".dept_select").find("option[name='"+row[0].company_num+"']").attr("selected",true);
+            debugger;
+            $("#dept_select").find("option[value='"+row[0].company_num+"']").prop("selected","selected");
             $("input[name=name]").val(row[0].name);
             $("input[name=dept_number]").val(row[0].dept_number);
             $("#dept_area").val(row[0].remark);

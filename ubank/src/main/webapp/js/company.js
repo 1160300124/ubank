@@ -44,9 +44,13 @@ var CompanyFun = {
                 }
                 var option = "";
                 for (var i = 0; i < data.length; i++){
-                    option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
+                  //  if(groupNum == data[i].groupNumber){
+                  //      option += "<option value='"+ data[i].groupNumber +"' selected='selected'>"+ data[i].name +"</option>";
+                   // }else{
+                        option += "<option value='"+ data[i].groupNumber +"'>"+data[i].name+"</option>";
+                   // }
                 }
-                $("#group_select").append(option);
+                $("#group_select").html(option);
             },
             error : function () {
                 Ewin.alert("操作异常");
@@ -167,12 +171,18 @@ var CompanyFun = {
         }else if(!Validate.regNumber(accounts)){
             Ewin.alert("公司账号格式不合法，请重新输入");
             return;
+        }else if(accounts.length > 25){
+            Ewin.alert("字符超出范围");
+            return;
         }
         if(customer == ""){
             Ewin.alert("公司客户号不能为空");
             return;
         }else if(!Validate.regNumAndLetter(customer)){
             Ewin.alert("公司客户号格式不合法，请重新输入");
+            return;
+        }else if(customer.length > 25){
+            Ewin.alert("字符超出范围");
             return;
         }
         if(certificateNumber == ""){
@@ -181,6 +191,9 @@ var CompanyFun = {
         }else if(!Validate.NumberAndLetter(certificateNumber)){
             Ewin.alert("证书编号格式不合法，请重新输入");
             return;
+        }else if(certificateNumber.length > 25){
+            Ewin.alert("字符超出范围");
+            return;
         }
         if(authorizationCode == ""){
             Ewin.alert("银行数字证书授权码不能为空");
@@ -188,7 +201,9 @@ var CompanyFun = {
         }else if(!Validate.NumberAndLetter(authorizationCode)){
             Ewin.alert("银行数字证书授权码格式不合法，请重新输入");
             return;
-
+        }else if(authorizationCode.length > 25){
+            Ewin.alert("字符超出范围");
+            return;
         }
 
         //获取所有账户信息
@@ -246,6 +261,8 @@ var CompanyFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
+        var groupNum = row[0].group_num;
+       // CompanyFun.getAllGroup(groupNum);
         //根据银行账户编号获取银行账户信息
         $.ajax({
             url : 'getBankAccountByNum',
@@ -255,7 +272,7 @@ var CompanyFun = {
                 "accountNum" : row[0].account
             },
             success : function (data) {
-                $("#group_select").find("option[value="+row[0].group_num+"]").attr("selected",true);
+                $("#group_select").find("option[value="+row[0].group_num+"]").prop("selected","selected");
                 $("#companyName").val(row[0].name);
                 $("input[name=legalPerson]").val(row[0].legalPerson);
                 $("#com_area").val(row[0].details);

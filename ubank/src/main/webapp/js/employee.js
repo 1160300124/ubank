@@ -173,8 +173,12 @@ var EmployeeFun = {
                 if(data.length <= 0){
                     return;
                 }
-                var option = "<option value='0'>员工</option>";
+                var option = "";
+                    option = "<option value='0'>员工</option>";
                 for (var i = 0; i < data.length; i++){
+                    if(data[i].role_id == 0){
+                        continue;
+                    }
                     option += "<option value='"+data[i].role_id+"'>"+data[i].role_name+"</option>";
                 }
                 $("#emp_select_role").html(option);
@@ -305,11 +309,11 @@ var EmployeeFun = {
             return;
         }
         $("input[name=id]").val(row[0].id);
-        $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=mobile]").val(row[0].mobile);
+        $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=userName]").val(row[0].userName);
         $("input[name=cardNo]").val(row[0].cardNo);
-        $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").attr("selected","selected");
+        $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
         $("#emp_select").html("<option value='" + row[0].companyNumber + "'>"+(row[0].com_name != undefined ? row[0].com_name : '')+"</option>");
         $("#emp_select_dept").html("<option value='" + row[0].dept_number + "'>"+row[0].dept_name+"</option>");
         $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
