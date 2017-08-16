@@ -19,6 +19,7 @@
 		<typeAlias alias="Module" type="com.ulaiber.web.model.Module" />
 		<typeAlias alias="Banner" type="com.ulaiber.web.model.Banner" />
 		<typeAlias alias="Attendance" type="com.ulaiber.web.model.Attendance" />
+		<typeAlias alias="AttendanceRule" type="com.ulaiber.web.model.AttendanceRule" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
 
@@ -41,6 +42,7 @@
 		<mapper resource="com/ulaiber/web/mapper/roleMenuMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/levelInfoMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/attendance.xml" />
+		<mapper resource="com/ulaiber/web/mapper/attendanceRule.xml" />
 	</mappers>
 
 </configuration>  

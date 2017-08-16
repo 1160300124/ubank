@@ -70,7 +70,7 @@
 	
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getUserByMobile" parameterType="String" resultMap="UserMap">
-		select * from tbl_users where mobile=#{mobile}
+		select u.*, r.* from tbl_users u left join tbl_roots r on u.user_id=r.userid where u.mobile=#{mobile}
 	</select>
 	
 	<select id="findAll" resultMap="UserMap">

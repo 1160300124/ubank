@@ -18,6 +18,7 @@
 		<servlet.api.version>2.5</servlet.api.version>
 		<jstl.version>1.2</jstl.version>
 		<jsp.api.version>2.1</jsp.api.version>
+		<jackson.version>2.5.0</jackson.version>
 	</properties>
 
 	<dependencies>
@@ -81,8 +82,29 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.7.1</version>
+			<version>1.9.13</version>
 		</dependency>
+		
+		<dependency>  
+            <groupId>com.fasterxml.jackson.core</groupId>  
+            <artifactId>jackson-annotations</artifactId>  
+            <version>${jackson.version}</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>com.fasterxml.jackson.core</groupId>  
+            <artifactId>jackson-core</artifactId>  
+            <version>${jackson.version}</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>com.fasterxml.jackson.core</groupId>  
+            <artifactId>jackson-databind</artifactId>  
+            <version>${jackson.version}</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>com.fasterxml.jackson.jr</groupId>  
+            <artifactId>jackson-jr-all</artifactId>  
+            <version>${jackson.version}</version>  
+        </dependency> 
 
 		<dependency>
 			<groupId>commons-io</groupId>

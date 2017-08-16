@@ -23,7 +23,7 @@ public interface AttendanceService {
 	 * @param attend
 	 * @return
 	 */
-	boolean save(Attendance attend);
+	ResultInfo save(Attendance attend);
 	
 	/**
 	 * 根据条件查询记录
@@ -37,5 +37,33 @@ public interface AttendanceService {
 	 * @return
 	 */
 	ResultInfo refreshLocation(String longitude, String latitude, HttpServletRequest request);
+	
+	/**
+	 * 根据条件获取记录数
+	 * @param params
+	 * @return
+	 */
+	int getCountBycond(Map<String, Object> params);
+	
+	/**
+	 * 根据用户id获取考勤记录
+	 * @param userId
+	 * @return
+	 */
+	Attendance getRecordByCond(Attendance attend);
+	
+	/**
+	 * 根据date和手机号查询考勤记录
+	 * @param params
+	 * @return
+	 */
+	List<Attendance> getRecordsByDateAndMobile(String date, String mobile);
+	
+	/**
+	 * 根据userId获取用户的最近一次打卡记录
+	 * @param userId
+	 * @return
+	 */
+	Attendance getLatestRecordByUserId(long userId);
 
 }

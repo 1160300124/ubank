@@ -119,7 +119,7 @@ public class Attendance {
 	public void setClockTime(String clockTime) {
 		this.clockTime = clockTime;
 	}
-
+	
 	public String getClockType() {
 		return clockType;
 	}
