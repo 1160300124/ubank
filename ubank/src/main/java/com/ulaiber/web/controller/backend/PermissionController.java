@@ -399,7 +399,8 @@ public class PermissionController extends BaseController {
         ResultInfo resultInfo = new ResultInfo();
         if(flag.equals("0")){  //新增
             String userName = user.getUserName();
-            User emp = permissionService.getEmpByName(userName);  //根据员工姓名查询对应的信息
+            String mobile = user.getMobile();
+            User emp = permissionService.getEmpByName(userName,mobile);  //根据员工姓名查询对应的信息
             if(!StringUtil.isEmpty(emp)){
                 resultInfo.setMessage("员工已存在，请重新添加");
                 resultInfo.setCode(300);
@@ -545,7 +546,7 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "getComTree", method = RequestMethod.POST)
     @ResponseBody
     public List<Map<String , Object>> getComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
-        List<Company> list = permissionService.getAllCompany(sysflag,groupNumber);
+        List<Company> list = permissionService.getAllCompanybyGroupNum(sysflag,groupNumber);
         List<Map<String ,Object>> list_one = new ArrayList<>();
         Map<String,Object> _map = new HashMap<String,Object>();
         for (int i = 0 ;i < list.size(); i++){
@@ -567,6 +568,35 @@ public class PermissionController extends BaseController {
     }
 
     /**
+     * 查询所有公司
+     * @param sysflag
+     * @param groupNumber
+     * @return
+     */
+    @RequestMapping(value = "queryComTree", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String , Object>> queryComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
+        List<Company> list = permissionService.getAllCompany(sysflag,groupNumber);
+        List<Map<String ,Object>> _list = new ArrayList<>();
+        Map<String,Object> _map = new HashMap<String,Object>();
+        for (int i = 0 ;i < list.size(); i++){
+            Company com = list.get(i);
+            if(!_map.containsKey(String.valueOf(com.getCompanyNumber()))){
+                _map.put(String.valueOf(com.getCompanyNumber()),com);
+            }
+        }
+        for (Map.Entry<String,Object> entry : _map.entrySet()){
+            String key = entry.getKey();
+            Company company = (Company) entry.getValue();
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("id" , key);
+            map.put("text" , company.getName());
+            _list.add(map);
+        }
+        return _list;
+    }
+
+    /**
      * 获取所有角色信息
      * @return
      */
@@ -580,8 +610,8 @@ public class PermissionController extends BaseController {
     //新增角色信息
     @RequestMapping(value = "addRole", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo addRole(@Param("com_numbers") String com_numbers,@Param("roleName")
-                            String roleName,@Param("flag") String flag,@Param("roleId") String roleId){
+    public ResultInfo addRole(@Param("com_numbers") String com_numbers,@Param("roleName") String roleName
+                        ,@Param("names") String names,@Param("flag") String flag,@Param("roleId") String roleId){
         ResultInfo resultInfo = new ResultInfo();
         if(flag.equals("0")){  //新增
             List<Roles> list = permissionService.getRoleByName(roleName); //根据角色名，获取角色信息
@@ -590,7 +620,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(300);
                 return resultInfo;
             }
-            int role = permissionService.addRole(com_numbers,roleName); //新增角色信息
+            int role = permissionService.addRole(com_numbers,roleName,names); //新增角色信息
             if(role > 0){
                 resultInfo.setCode(200);
                 resultInfo.setMessage("新增成功");
@@ -782,6 +812,19 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public List<Departments> getDeptByCom(@Param("comNum") String comNum){
         List<Departments> list = permissionService.getDeptByCom(comNum);
+        return list;
+    }
+
+    /**
+     * 根据当前角色所属公司编号，查询对应的部门
+     * @param sysflag
+     * @param companyNumber
+     * @return
+     */
+    @RequestMapping(value = "queryAllDept", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Departments> queryAllDept(@Param("sysflag") String sysflag,@Param("companyNumber")String companyNumber){
+        List<Departments> list = permissionService.queryAllDept(sysflag,companyNumber);
         return list;
     }
 }

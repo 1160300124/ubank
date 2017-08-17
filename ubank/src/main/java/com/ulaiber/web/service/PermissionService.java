@@ -59,7 +59,7 @@ public interface PermissionService {
 
     List<Departments> getAllDept(); //获取所有部门信息
 
-    User getEmpByName(String userName);  //根据员工姓名查询对应的信息
+    User getEmpByName(String userName,String mobile);  //根据员工姓名查询对应的信息
 
     int addEmployee(User user);  //新增员工信息
 
@@ -75,7 +75,7 @@ public interface PermissionService {
 
     List<Roles> getRoleByName(String roleName);  //根据角色名，获取角色信息
 
-    int addRole(String com_numbers, String roleName); //新增角色信息
+    int addRole(String com_numbers, String roleName,String names); //新增角色信息
 
     int settingRoleMenu(String roleId, String menuId); //设置角色权限
 
@@ -113,4 +113,8 @@ public interface PermissionService {
     List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
 
     int editRoots(User user); //修改权限对应关系表
+
+    List<Company> getAllCompanybyGroupNum(String sysflag, String groupNumber);
+
+    List<Departments> queryAllDept(String sysflag, String companyNumber); //根据当前角色所属公司编号，查询对应的部门
 }

@@ -308,18 +308,74 @@ var EmployeeFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
+        this.emp_queryAllCom(); //加载公司信息
+        this.emp_queryAllDept(); //加载部门信息
         $("input[name=id]").val(row[0].id);
         $("input[name=mobile]").val(row[0].mobile);
         $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=userName]").val(row[0].userName);
         $("input[name=cardNo]").val(row[0].cardNo);
         $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
-        $("#emp_select").html("<option value='" + row[0].companyNumber + "'>"+(row[0].com_name != undefined ? row[0].com_name : '')+"</option>");
-        $("#emp_select_dept").html("<option value='" + row[0].dept_number + "'>"+row[0].dept_name+"</option>");
-        $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
-        $("#emp_select_role").find("option[value="+row[0].role_id+"]").attr("selected","selected");
+        $("#emp_select").find("option[value="+row[0].companyNumber+"]").prop("selected","selected");
+        // $("#emp_select_dept").html("<option value='" + row[0].dept_number + "'>"+row[0].dept_name+"</option>");
+        //  $("#emp_select").html("<option value='" + row[0].companyNumber + "'>"+(row[0].com_name != undefined ? row[0].com_name : '')+"</option>");
+        $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
+        $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").prop("selected","selected");
+        $("#emp_select_role").find("option[value="+row[0].role_id+"]").prop("selected","selected");
         $("#employee_modal").modal("show");
 
+    },
+    //点击修改，加载公司信息
+    emp_queryAllCom : function () {
+        $.ajax({
+            url : 'getAllCom',
+            dataType : 'json',
+            type : 'post',
+            async : false,
+            data : {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    return;
+                }
+                var option = "<option value=''>请选择</option>";
+                for (var i = 0; i < data.length; i++){
+                    option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
+                }
+                $("#emp_select").html(option);
+            },
+            error : function () {
+                Ewin.alert("获取公司失败");
+            }
+        });
+    },
+    //点击修改，加载部门信息
+    emp_queryAllDept : function (data) {
+        $.ajax({
+            url : 'queryAllDept',
+            dataType : 'json',
+            type : 'post',
+            async : false,
+            data : {
+                "companyNumber" : COMPANYNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    return;
+                }
+                var option = "";
+                for (var i = 0; i < data.length; i++){
+                    option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
+                }
+                $("#emp_select_dept").html(option);
+            },
+            error : function () {
+                Ewin.alert("获取部门失败");
+            }
+        });
     },
     //删除
     emp_delete : function (e) {

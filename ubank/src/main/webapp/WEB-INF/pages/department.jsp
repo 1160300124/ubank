@@ -101,6 +101,7 @@
               //  showColumns : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
+                    {field : 'comName', title : '公司名称', width: 130, align : 'left'},
                     {field : 'name', title : '部门名称', width: 130, align : 'left'},
                     {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
                     {field : 'company_num', title : '公司编号', width: 130, align : 'left',visible : false},
@@ -170,6 +171,9 @@
             }else if(!Validate.regNumAndLetter(name)){
                 Ewin.alert("部门名称格式不合法，请重新输入");
                 return;
+            }else if(name.length >= 10){
+                Ewin.alert("部门名称不能超过10个字符");
+                return;
             }
             if(com == ""){
                 Ewin.alert("公司不能为空");
@@ -210,7 +214,6 @@
                 Ewin.alert("请选中需要修改的数据");
                 return;
             }
-            debugger;
             $("#dept_select").find("option[value='"+row[0].company_num+"']").prop("selected","selected");
             $("input[name=name]").val(row[0].name);
             $("input[name=dept_number]").val(row[0].dept_number);

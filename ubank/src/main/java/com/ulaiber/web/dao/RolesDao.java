@@ -1,5 +1,6 @@
 package com.ulaiber.web.dao;
 
+import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Roles;
 import com.ulaiber.web.model.User;
 
@@ -25,4 +26,6 @@ public interface RolesDao {
     int deleteRoles(String[] idsArr);  //删除角色信息
 
     List<User> queryUserByRoleid(String[] idsArr);  //根据角色id，判断当前角色下是否有用户存在
+
+    List<Company> getAllCompanybyGroupNum(Map<String, Object> map); //根据集团编号获取公司
 }

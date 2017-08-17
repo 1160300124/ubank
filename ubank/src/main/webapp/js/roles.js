@@ -1,5 +1,5 @@
 $(function () {
-    RoleFun.role_getComTree();
+    RoleFun.role_getAllGroup();
     RoleFun.role_query();
     RoleFun.loadTree();
     RoleFun.role_listening();
@@ -25,9 +25,10 @@ var RoleFun = {
     //打开新增框
     openAddRole : function () {
         flag = 0;
-        this.rol_roleTable();
+       // this.rol_roleTable();
         $(".modal-title").html("新增");
         $("#role_modal").modal("show");
+
     },
     loadTree : function () {
         $.ajax({
@@ -47,18 +48,24 @@ var RoleFun = {
     role_listening : function () {
         $("#role_modal").on('hide.bs.modal',function () {
             $('#role_table').bootstrapTable('uncheckAll');
-            $('#role_table2').bootstrapTable('uncheckAll');
+           // $("#combotree").bootstrapCombotree("setValue","");
             $("#roles_form")[0].reset();
         });
+        $("#permission_modal").on('hide.bs.modal',function () {
+            $('#role_table2').bootstrapTable('uncheckAll');
+            var treeObj = $.fn.zTree.getZTreeObj("role_tree");
+            treeObj.checkAllNodes(false);   //清空tree
+            $("#combotree").bootstrapCombotree("setValue","");
+        });
     },
-    //获取所有公司
-    role_getComTree : function () {
+    //根据集团编号，获取集团下属公司
+    role_getComTree : function (groupNum) {
         $.ajax({
             url : 'getComTree',
             dataType : 'json',
             type : 'post',
             data : {
-                "groupNumber" : GROUPNUMBER,
+                "groupNumber" : groupNum,
                 "sysflag" : SYSFLAG
             },
             success : function (data) {
@@ -67,12 +74,9 @@ var RoleFun = {
                     data: data,//data应符合实例的data格式
                     showIcon: true,//显示图标
                     showCheckbox: true,//显示复选框
-                    width : 400,//下拉列表宽度
+                    width : 250,//下拉列表宽度
                     name : 'list',//combotree值得name，可以用在表单提交
-                    maxItemsDisplay : 3,//按钮上最多显示多少项，如果超出这个数目，将会以‘XX项已被选中代替’
-                    onCheck : function (node) {//树形菜单被选中是 触发事件
-
-                    }
+                    maxItemsDisplay : 3//按钮上最多显示多少项，如果超出这个数目，将会以‘XX项已被选中代替’
                 });
             }
         });
@@ -99,7 +103,8 @@ var RoleFun = {
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                 {field : 'role_id', title : '角色编号', width: 130, align : 'left'},
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
-                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false}
+                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left'}
+
             ],
             onCheck : function (row) {
                 var treeObj = $.fn.zTree.getZTreeObj("role_tree");
@@ -161,14 +166,11 @@ var RoleFun = {
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                {field : 'role_id', title : '角色编号', width: 130, align : 'left'},
+                {field : 'role_id', title : '角色编号', width: 80, align : 'left'},
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
-                {field : 'companyNumber', title : '所属公司', width: 130, align : 'left',
-                    formatter : function (value,row,index) {
-                        return value;
-                    }
-                },
-                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false}
+                {field : 'companyName', title : '所属公司', width: 150, align : 'left'},
+                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
 
             ],
             onClickRow : function (row, $element) {
@@ -190,7 +192,8 @@ var RoleFun = {
     //新增角色操作
     role_add : function () {
         var com_numbers = $("#combotree").bootstrapCombotree("getValue");
-        var roleName = $("input[name=role_name]").val();
+        var roleName = $("input[name=role_name]").val();   //公司编号
+        var names = $("#combotree button").attr("title"); //公司名称
         var numbers = com_numbers.join(",");
         if(roleName == ""){
             Ewin.alert("角色名不能为空");
@@ -209,7 +212,8 @@ var RoleFun = {
             type : 'post',
             data:  {
                 "com_numbers" : numbers,
-                "roleName" : roleName
+                "roleName" : roleName,
+                "names" : names
             },
             success : function (data) {
                 if(data.code == 300){
@@ -220,11 +224,10 @@ var RoleFun = {
                     Ewin.alert(data.message);
                     $("input[name=role_name]").val("");
                     $("#combotree").bootstrapCombotree("setValue","");
-                    $('#role_table2').bootstrapTable('refresh');
+                    $('#role_table').bootstrapTable('refresh');
+                    $("#role_modal").modal("hide");
                     // RoleFun.rol_roleTable();
-                    //  $("#role_modal").modal("hide");
-                    // $('#role_table').bootstrapTable('refresh');
-                    // flag = 0;
+                    flag = 0;
 
                 }
 
@@ -284,11 +287,6 @@ var RoleFun = {
             }
         });
     },
-    //清空输入框
-    clear : function () {
-        $("input[name=role_name]").val("");
-        $("#combotree").bootstrapCombotree("setValue","");
-    },
     //修改操作
     role_edit : function () {
         flag = 1;
@@ -301,18 +299,43 @@ var RoleFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
-        roleId = row[0].role_id;
-        $("input[name=role_name]").val(row[0].role_name);
-        var num = row[0].companyNumber;
-        var arr = [];
-        if(num.indexOf(",") > 0){
-            arr = num.split(",");
-        }else{
-            arr = num;
-        }
-        this.rol_roleTable();
-        $("#combotree").bootstrapCombotree("setValue",num);
-        $("#role_modal").modal("show");
+        this.role_queryAllCom(row);
+
+    },
+    //点击修改按钮，查询所有公司
+    role_queryAllCom : function (row) {
+        $.ajax({
+            url : 'queryComTree',
+            dataType : 'json',
+            type : 'post',
+            data : {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                $("#combotree").bootstrapCombotree({
+                    defaultLable : '请选择公司',//默认按钮上的文本
+                    data: data,//data应符合实例的data格式
+                    showIcon: true,//显示图标
+                    showCheckbox: true,//显示复选框
+                    width : 250,//下拉列表宽度
+                    name : 'list',//combotree值得name，可以用在表单提交
+                    maxItemsDisplay : 3//按钮上最多显示多少项，如果超出这个数目，将会以‘XX项已被选中代替’
+                });
+                roleId = row[0].role_id;
+                $("input[name=role_name]").val(row[0].role_name);
+                $("#role_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
+                var num = row[0].companyNumber;
+                var arr = [];
+                if(num.indexOf(",") > 0){
+                    arr = num.split(",");
+                }else{
+                    arr = num;
+                }
+                $("#combotree").bootstrapCombotree("setValue",num);
+                $("#role_modal").modal("show");
+            }
+        });
     },
     //删除角色
     role_delete : function (e) {
@@ -364,5 +387,45 @@ var RoleFun = {
             }
         });
 
+    },
+    //获取所有集团
+    role_getAllGroup : function () {
+        $.ajax({
+            url : 'getAllGroup',
+            dataType : 'json',
+            type : 'post',
+            data:  {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    // Ewin.alert("没有集团数据");
+                    return;
+                }
+                var option = "<option value=''>请选择</option>";
+                for (var i = 0; i < data.length; i++){
+                    option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
+                }
+                $("#role_group").html(option);
+
+            },
+            error : function () {
+                Ewin.alert("操作异常");
+            }
+        })
+    },
+    //权限设置
+    permissionSet : function () {
+        this.rol_roleTable();
+        $("#permission_modal").modal("show");
     }
 };
+
+//select框监听事件
+$("#role_group").change(function(){
+    var groupNum = $(this).val();
+    if(groupNum != ''){
+        RoleFun.role_getComTree(groupNum);
+    }
+});

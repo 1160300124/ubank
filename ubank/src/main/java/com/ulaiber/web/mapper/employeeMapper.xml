@@ -13,8 +13,8 @@
     </resultMap>
 
     <!--根据员工姓名查询对应的信息-->
-    <select id="getEmpByName" parameterType="String" resultType="com.ulaiber.web.model.User">
-        SELECT * from tbl_users where user_name = #{userName}
+    <select id="getEmpByName" parameterType="Map" resultType="com.ulaiber.web.model.User">
+        SELECT * from tbl_users where user_name = #{userName} and mobile = #{mobile}
     </select>
 
     <!--新增员工信息-->

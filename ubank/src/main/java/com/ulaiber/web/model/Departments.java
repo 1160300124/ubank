@@ -14,6 +14,7 @@ public class Departments implements Serializable {
     private String company_num;
     private String count;
     private String remark;
+    private String comName;
 
     public String getDept_number() {
         return dept_number;
@@ -62,5 +63,12 @@ public class Departments implements Serializable {
 	public void setDeptName(String deptName) {
 		this.deptName = deptName;
 	}
-    
+
+    public String getComName() {
+        return comName;
+    }
+
+    public void setComName(String comName) {
+        this.comName = comName;
+    }
 }

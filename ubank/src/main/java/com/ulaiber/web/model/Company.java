@@ -13,6 +13,7 @@ public class Company implements Serializable {
     private String account;
     private int group_num;
     private String details;
+    private String groupName;
 
     //get set
     public int getCompanyNumber() {
@@ -61,5 +62,13 @@ public class Company implements Serializable {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }

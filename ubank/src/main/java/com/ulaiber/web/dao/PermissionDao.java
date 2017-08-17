@@ -57,6 +57,8 @@ public interface PermissionDao {
     List<Departments> queryDeptByCompanyNum(String[] idsArr); //根据公司编号查询该公司是否存在部门
 
     List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
+
+    List<Departments> queryAllDept(Map<String, Object> map); //根据当前角色所属公司编号，查询对应的部门
 }
 
 

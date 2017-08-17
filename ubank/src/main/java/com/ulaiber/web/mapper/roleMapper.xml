@@ -11,9 +11,9 @@
 
     <!-- 获取所有角色信息-->
     <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
-        SELECT role_id,role_name,companyNumber FROM tbl_roles
+        SELECT DISTINCT a.role_id,a.role_name,a.companyNumber FROM tbl_roles a
         <if test = 'sysflag == "1"'>
-            where companyNumber in
+            where a.companyNumber in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                 #{companyNumber}
             </foreach>
@@ -27,17 +27,18 @@
 
     <!--新增角色信息-->
     <insert id="addRole" parameterType="Map" >
-        INSERT INTO tbl_roles(role_name,companyNumber) VALUES (#{roleName},#{com_numbers})
+        INSERT INTO tbl_roles(role_name,companyNumber,companyName) VALUES (#{roleName},#{com_numbers},#{names})
     </insert>
 
     <!--分页查询角色信息-->
     <select id="roleQuery" parameterType="Map" resultType="com.ulaiber.web.model.Roles">
-        select * from tbl_roles  where 1=1
+        SELECT DISTINCT a.role_id,a.role_name,a.companyNumber,a.companyName,c.groupNumber FROM tbl_roles a left join tbl_users b on a.role_id = b.role_id
+        left join tbl_roots c on b.user_id = c.userid where 1=1
         <if test="search != null and search != ''">
-            and  role_name like concat('%',#{search},'%')
+            and  a.role_name like concat('%',#{search},'%')
         </if>
         <if test = 'sysflag == "1"'>
-            and companyNumber in
+            and a.companyNumber in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                   #{companyNumber}
             </foreach>
@@ -65,5 +66,11 @@
         <foreach collection="array" item="idsArr" open="(" separator="," close=")">
             #{idsArr}
         </foreach>
+    </select>
+
+    <!--根据集团编号获取公司-->
+    <!--获取所有公司信息-->
+    <select id="getAllCompanybyGroupNum" resultType="com.ulaiber.web.model.Company">
+        select companyNumber,name from tbl_company where group_num = #{groupNumber}
     </select>
 </mapper>

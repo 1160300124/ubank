@@ -8,6 +8,8 @@ public class Roles {
     private int role_id;
     private String role_name;
     private String companyNumber;
+    private String companyName;
+    private String groupNumber;
 
     //get set
     public int getRole_id() {
@@ -32,5 +34,21 @@ public class Roles {
 
     public void setCompanyNumber(String companyNumber) {
         this.companyNumber = companyNumber;
+    }
+
+    public String getGroupNumber() {
+        return groupNumber;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void setGroupNumber(String groupNumber) {
+        this.groupNumber = groupNumber;
     }
 }

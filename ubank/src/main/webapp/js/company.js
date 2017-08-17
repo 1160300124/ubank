@@ -105,6 +105,7 @@ var CompanyFun = {
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
+                {field : 'groupName', title : '集团名称', width: 130, align : 'left'},
                 {field : 'name', title : '公司名称', width: 130, align : 'left'},
                 {field : 'account', title : '银行账户', width: 130, align : 'left',
                     formatter : function (value,row,index) {
@@ -251,8 +252,6 @@ var CompanyFun = {
     //打开修改框
     openEdit : function () {
         var row = $('#company_table').bootstrapTable('getSelections');
-        flag = 1;
-        comNum = row[0].companyNumber;
         $(".modal-title").html("修改");
         if(row.length > 1){
             Ewin.alert("不能多选，请重新选择");
@@ -261,6 +260,8 @@ var CompanyFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
+        flag = 1;
+        comNum = row[0].companyNumber;
         var groupNum = row[0].group_num;
        // CompanyFun.getAllGroup(groupNum);
         //根据银行账户编号获取银行账户信息

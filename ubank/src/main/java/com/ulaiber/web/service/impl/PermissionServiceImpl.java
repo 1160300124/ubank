@@ -4,6 +4,7 @@ import com.ulaiber.web.dao.*;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -217,11 +218,30 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> getAllCompany(String sysflag,String groupNumber) {
+    public List<Company> getAllCompany(String sysflag, String groupNumber) {
+        Map<String ,Object> map = new HashMap<String , Object>();
+        map.put("sysflag",sysflag);
+        map.put("groupNumber",groupNumber);
+        List<Company> list = permissionDao.getAllCompany(map);
+        return list;
+    }
+
+    @Override
+    public List<Company> getAllCompanybyGroupNum(String sysflag,String groupNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("sysflag" , sysflag);
         map.put("groupNumber" , groupNumber);
-        List<Company> list = permissionDao.getAllCompany(map);
+     //   List<Company> list = permissionDao.getAllCompany(map);
+        List<Company> list = rolesDao.getAllCompanybyGroupNum(map);
+        return list;
+    }
+
+    @Override
+    public List<Departments> queryAllDept(String sysflag, String companyNumber) {
+        Map<String,Object> map = new HashMap<String ,Object>();
+        map.put("sysflag" , sysflag);
+        map.put("companyNumber" , companyNumber);
+        List<Departments> list = permissionDao.queryAllDept(map);
         return list;
     }
 
@@ -232,8 +252,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public User getEmpByName(String userName) {
-        User emp = employeeDao.getEmpByName(userName);
+    public User getEmpByName(String userName,String mobile) {
+        Map<String,Object> map = new HashMap<String ,Object>();
+        map.put("userName" ,userName);
+        map.put("mobile" ,mobile);
+        User emp = employeeDao.getEmpByName(map);
         return emp;
     }
 
@@ -304,10 +327,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int addRole(String com_numbers, String roleName) {
+    public int addRole(String com_numbers, String roleName,String names) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
         map.put("roleName" , roleName);
+        map.put("names" , names);
         int result = rolesDao.addRole(map);
         return result;
     }

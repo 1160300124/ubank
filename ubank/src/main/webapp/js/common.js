@@ -194,7 +194,8 @@
 	window.Validate = {
 		//判断文本框不能输入特殊字符的正则表达式  能输入英文大小写字母、数字、中文 但不能输入特殊字符
         regNumAndLetter : function (str) {
-            var reg = /^([\u4e00-\u9fa5]+|[a-zA-Z0-9]+)$/;
+            var reg = /^[a-zA-Z0-9\u4e00-\u9fa5]+$/;
+            debugger
             if(str.match(reg) == null){
                 return false;
             }else{
