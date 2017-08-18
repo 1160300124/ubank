@@ -218,7 +218,7 @@ var EmployeeFun = {
     addEmp: function () {
         var mobile = $("input[name=mobile]").val();
         var userName = $("input[name=userName]").val();
-        var pwd = mobile.substr(7,4);
+        var pwd = mobile.substr(5,6);
         var cardNo = $("input[name=cardNo]").val();
         var bankCardNo = $("input[name=bankCardNo]").val();
         var com = $("#emp_select").val();

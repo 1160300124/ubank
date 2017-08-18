@@ -210,6 +210,7 @@
                 url : 'addDept?flag=' + flag ,
                 dataType : 'json',
                 type : 'post',
+                async : false,
                 data:  $("#department_form").serialize(),
                 success : function (data) {
                     if(data.code == 300){
