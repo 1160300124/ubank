@@ -400,11 +400,12 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int modifyRole(String com_numbers, String roleName,String roleId) {
+    public int modifyRole(String com_numbers, String roleName,String roleId,String names) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
         map.put("roleName" , roleName);
         map.put("roleId" , roleId);
+        map.put("names" , names);
         int result = rolesDao.modifyRole(map);
         return result;
     }

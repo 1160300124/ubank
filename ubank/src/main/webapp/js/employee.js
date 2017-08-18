@@ -226,14 +226,14 @@ var EmployeeFun = {
         var bank = $("#emp_select_bank").val();
         var role = $("#emp_select_role").val();
         var group = $("#emp_select_group").val();
-        if(com == ""){
-            Ewin.alert("公司不能为空");
-            return;
-        }
-        if(dept == ""){
-            Ewin.alert("部门不能为空");
-            return;
-        }
+        // if(com == ""){
+        //     Ewin.alert("公司不能为空");
+        //     return;
+        // }
+        // if(dept == ""){
+        //     Ewin.alert("部门不能为空");
+        //     return;
+        // }
         if(bank == ""){
             Ewin.alert("银行不能为空");
             return;

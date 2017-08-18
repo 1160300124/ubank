@@ -85,7 +85,7 @@ public interface PermissionService {
 
     List<Roles> roleQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr);  //分页查询角色信息
 
-    int modifyRole(String com_numbers, String roleName , String roleId);  //修改角色信息
+    int modifyRole(String com_numbers, String roleName , String roleId,String names);  //修改角色信息
 
     int deleteRoles(String[] idsArr); //删除角色信息
 

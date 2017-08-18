@@ -49,7 +49,7 @@
 
     <!--修改角色信息-->
     <update id="modifyRole" parameterType="Map">
-        UPDATE tbl_roles set role_name = #{roleName} , companyNumber = #{com_numbers}
+        UPDATE tbl_roles set role_name = #{roleName} , companyNumber = #{com_numbers},companyName = #{names}
           where role_id = #{roleId}
     </update>
 

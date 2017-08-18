@@ -58,7 +58,7 @@
 
     <!--根据部门编号获取对应部门-->
     <select id="getDeptByNum" parameterType="String" resultType="com.ulaiber.web.model.Departments">
-        SELECT dept_number FROM tbl_departments where dept_number = #{deptNum}
+        SELECT dept_number FROM tbl_departments where name = #{deptNum}
     </select>
 
     <!--新增部门-->
@@ -70,7 +70,7 @@
     <!--获取所有部门信息-->
     <select id="departmentQuery" parameterType="Map" resultType="com.ulaiber.web.model.Departments">
         SELECT a.company_num,a.count,a.dept_number,a.name,a.remark,b.name as comName  from tbl_departments a left join tbl_company b
-        on a.company_num = b.companyNumber
+        on a.company_num = b.companyNumber where 1=1
         <if test="search != null and search != ''">
             and a.name like concat('%',#{search},'%')
         </if>

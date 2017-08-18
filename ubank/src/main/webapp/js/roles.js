@@ -194,7 +194,12 @@ var RoleFun = {
     role_add : function () {
         var com_numbers = $("#combotree").bootstrapCombotree("getValue");
         var roleName = $("input[name=role_name]").val();   //公司编号
-        var names = $("#combotree button").attr("title"); //公司名称
+        var names = ""; //公司名称
+        $("#combotree ul .node-checked").each(function () {
+            var txt = $(this).text();
+            names = txt + ",";
+            names = names.substr(0,(names.length-1));
+        });
         var numbers = com_numbers.join(",");
         if(roleName == ""){
             Ewin.alert("角色名不能为空");
@@ -303,7 +308,8 @@ var RoleFun = {
         //this.role_queryAllCom();
         roleId = row[0].role_id;
         $("input[name=role_name]").val(row[0].role_name);
-       // $("#role_group").find("option[value="+GROUPNUMBER+"]").prop("selected","selected");
+        debugger;
+        $("#role_group").find("option[value="+GROUPNUMBER+"]").prop("selected","selected");
         var num = row[0].companyNumber;
         var arr = [];
         if(num.indexOf(",") > 0){

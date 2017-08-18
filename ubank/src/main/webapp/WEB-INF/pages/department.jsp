@@ -116,7 +116,6 @@
                         type : 'post',
                         success : function (result) {
                             var arr = data.rows;
-                            debugger;
                             for (var i = 0 ; i < arr.length; i++){
                                 for (var j = 0; j < result.length; j++){
                                     if(arr[i].dept_number == result[j].dept_number){

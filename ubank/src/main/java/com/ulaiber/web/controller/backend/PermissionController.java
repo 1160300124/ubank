@@ -186,7 +186,7 @@ public class PermissionController extends BaseController {
         String deptNum = dept.getName().trim();
         ResultInfo resultInfo = new ResultInfo();
         if(flag.equals("0")){ //新增部门
-            Departments departments = permissionService.getDeptByNum(deptNum); //根据部门编号获取对应部门
+            Departments departments = permissionService.getDeptByNum(deptNum); //根据部门名称获取对应部门
             if(StringUtil.isEmpty(departments)){
                 int result = permissionService.addDept(dept); //新增
                 if(result > 0 ){
@@ -630,7 +630,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("新增失败");
             }
         }else{  // 修改
-            int result = permissionService.modifyRole(com_numbers,roleName,roleId);
+            int result = permissionService.modifyRole(com_numbers,roleName,roleId,names);
             if(result > 0){
                 resultInfo.setCode(200);
                 resultInfo.setMessage("修改成功");
@@ -657,12 +657,12 @@ public class PermissionController extends BaseController {
         ResultInfo resultInfo = new ResultInfo();
         if (flag.equals("0")){//新增
             // 根据角色id查询该角色是否被创建
-            List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
-            if(list.size() > 0 ){
-                resultInfo.setCode(300);
-                resultInfo.setMessage("该角色已存在，请重新创建");
-                return resultInfo;
-            }
+//            List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
+//            if(list.size() > 0 ){
+//                resultInfo.setCode(300);
+//                resultInfo.setMessage("该角色已存在，请重新创建");
+//                return resultInfo;
+//            }
             int result = permissionService.settingRoleMenu(roleId,menuId);
             if(result > 0){
                 resultInfo.setCode(200);
