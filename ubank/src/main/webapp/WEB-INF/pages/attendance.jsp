@@ -11,7 +11,7 @@
 	            <div class="col-sm-2">
                    	  <select class="form-control" id="company">
                    	  	 <option value=""></option>
-                   	  	 <option value="20006">优融</option>
+                   	  	 <option value="20047">深圳市优融网络科技有限公司</option>
                    	  </select>
 	            </div>
 	            
@@ -19,8 +19,8 @@
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="dept">
                    	  	 <option value=""></option>
-                   	  	 <option value="40000">技术部</option>
-                   	  	 <option value="40002">财务部</option>
+                   	  	 <option value="40025">技术部</option>
+                   	  	 <option value="40026">财务部</option>
                    	  </select>
 	            </div>
 	            

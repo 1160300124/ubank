@@ -60,16 +60,39 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		}
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
-		String date = datetime.split(" ")[0];
+//		String datetime = "2017-08-19 00:29";
+		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
-		att.setClockType("0");
-		att.setClockDate(date);
-		//查询该用户当天有没有打上班卡
-		Attendance dbAtt = dao.getRecordByCond(att);
+		
+		att.setClockDate(today);
+		att.setClockTime(time);
+		
+		String yesterday = "";
+		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
+		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
+			//转钟后的前一天日期 yyyy-MM-dd 
+			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
+
+		}
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", att.getUserId());
+		params.put("clockType", "");
+		params.put("clockDate", today);
+		params.put("yesterday", yesterday);
+		params.put("clockOnStartTime", rule.getClockOnStartTime());
+		params.put("clockOffEndTime", rule.getClockOffEndTime());
+		
+		//查询该用户当天的打卡记录
+		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
+		
+		//新增，更新标志，默认失败
+		boolean flag = false;
 		//type：0签到，1签退   status：0正常 ，1迟到， 2早退
-		if (null == dbAtt){
+		if (null == records || records.size() == 0){
+			//没有记录时说明没有打卡,先默认是打上班卡
+			att.setClockType("0");
 			//如果加班到凌晨打卡，当天是没有打卡记录的，需判断当前打卡时间是否在最晚下班打卡时间之内，如在则为昨天的下班卡，否则为今天的上班卡
-			if (time.compareTo(rule.getClockOffEndTime()) <= 0){
+			if (time.compareTo(rule.getClockOffTime()) >= 0 || time.compareTo(rule.getClockOffEndTime()) <= 0){
 				att.setClockType("1");
 				att.setClockStatus("0");
 			}
@@ -89,38 +112,57 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			else if (time.compareTo(rule.getClockOnTime()) > 0 && time.compareTo(rule.getClockOffTime()) < 0){
 				att.setClockStatus("1");
 			} 
-		} else{
+			
+			flag = dao.save(att) > 0;
+			
+		} else {
 			att.setClockType("1");
 			//当前时间大于下班打卡时间或小于最晚下班打卡时间(转钟后当前时间小于最晚下班打卡时间)
 			if (time.compareTo(rule.getClockOffTime()) >= 0 || time.compareTo(rule.getClockOffEndTime()) <= 0){
 				att.setClockStatus("0");
 			}
 			//当前时间大于上班打卡时间小于下班打卡时间----早退
-			else if (time.compareTo(dbAtt.getClockTime()) > 0 && time.compareTo(rule.getClockOffTime()) < 0){
+			else if (time.compareTo(records.get(0).getClockTime()) > 0 && time.compareTo(rule.getClockOffTime()) < 0){
 				att.setClockStatus("2");
 			}
 			//当前时间晚于最晚下班打卡时间
-			else if (time.compareTo(rule.getClockOffEndTime()) > 0){
+			else if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) > 0){
 				logger.error("最晚下班打卡时间为次日 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
 				info.setCode(IConstants.QT_CODE_ERROR);
 				info.setMessage("最晚下班打卡时间为次日 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
 				return info;
 			}
-			
-		}
+			//如果有一条打卡记录,如果是上班记录则插入下班卡记录，否则更新下班卡记录
+			if (records.size() == 1){
+				//判断是上班记录还是下班记录,如果是上班记录则插入下班卡记录，否则更新下班卡记录
+				if (StringUtils.equals(records.get(0).getClockType(), "0")){
+					flag = dao.save(att) > 0;
+				} else {
+					//如果是下班记录则更新记录
+					if (!StringUtils.equals(records.get(0).getClockDate(), today)){
+						att.setYesterday(yesterday);
+					} 
+					flag = dao.updateClockOffInfo(att);
+				}
+			}
+			//如果有2条记录，说明上下班记录都有，直接更新下班记录
+			else if (records.size() >= 2){
+				if (!StringUtils.equals(records.get(1).getClockDate(), today)){
+					att.setYesterday(yesterday);
+				} 
+				flag = dao.updateClockOffInfo(att);
+			}
+		} 
 		
-		att.setClockDate(date);
-		att.setClockTime(time);
-		
-		if (dao.save(att) > 0){
+		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
 			att.setCompany(null);
 			att.setDept(null);
 			info.setData(att);
 		} else{
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("数据库异常。");
-			logger.error("数据库异常。");
+			info.setMessage("新增或更新失败。");
+			logger.error("新增或更新失败。");
 		}
 		
 		return info;
@@ -175,15 +217,18 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public Attendance getRecordByCond(Attendance attend) {
+	public List<Attendance> getRecordsByDateAndUserId(Map<String, Object> params) {
 		
-		return dao.getRecordByCond(attend);
+		return dao.getRecordsByDateAndUserId(params);
 	}
 
 	@Override
-	public List<Attendance> getRecordsByDateAndMobile(String date, String mobile) {
+	public List<Attendance> getRecordsByDateAndMobile(String today, String yesterday, String clockOnStartTime,  String clockOffEndTime, String mobile) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("clockDate", date);
+		params.put("clockDate", today);
+		params.put("yesterday", yesterday);
+		params.put("clockOnStartTime", clockOnStartTime);
+		params.put("clockOffEndTime", clockOffEndTime);
 		params.put("mobile", mobile);
 		return dao.getRecordsByDateAndMobile(params);
 	}
@@ -192,6 +237,13 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	public Attendance getLatestRecordByUserId(long userId) {
 		
 		return dao.getLatestRecordByUserId(userId);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public boolean updateClockOffInfo(Attendance record) {
+
+		return dao.updateClockOffInfo(record);
 	}
 
 }

@@ -47,17 +47,17 @@ public interface AttendanceService {
 	
 	/**
 	 * 根据用户id获取考勤记录
-	 * @param userId
+	 * @param params
 	 * @return
 	 */
-	Attendance getRecordByCond(Attendance attend);
+	List<Attendance> getRecordsByDateAndUserId(Map<String, Object> params);
 	
 	/**
 	 * 根据date和手机号查询考勤记录
 	 * @param params
 	 * @return
 	 */
-	List<Attendance> getRecordsByDateAndMobile(String date, String mobile);
+	List<Attendance> getRecordsByDateAndMobile(String today, String yesterday, String clockOnStartTime,  String clockOffEndTime, String mobile);
 	
 	/**
 	 * 根据userId获取用户的最近一次打卡记录
@@ -66,4 +66,10 @@ public interface AttendanceService {
 	 */
 	Attendance getLatestRecordByUserId(long userId);
 
+	/**
+	 * 更新打卡记录
+	 * @param record
+	 * @return
+	 */
+	boolean updateClockOffInfo(Attendance record);
 }
