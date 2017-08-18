@@ -74,16 +74,53 @@
 		<include refid="byCond" />
 	</select>
 	
-	<select id="getRecordByCond" parameterType="Attendance" resultMap="AttendanceMap">
-		select * from tbl_attendance_records where clock_date=#{clockDate} and clock_type=#{clockType} and user_id=#{userId};
+	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
+		select * from tbl_attendance_records where clock_date=#{clockDate} and user_id=#{userId}
+		<if test="clockType != null and clockType != ''">
+			and r.clock_type = #{clockType}
+		</if>
+		<choose>
+			<when test="yesterday != null and yesterday != ''">
+				and clock_time &lt;= #{clockOffEndTime} or clock_date = #{yesterday} and clock_time &gt;= #{clockOnStartTime} and user_id=#{userId}
+			</when>
+			<otherwise>
+				and clock_time &gt;= #{clockOnStartTime}
+			</otherwise>
+		</choose>
+		order by rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
-		select r.* from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where r.clock_date=#{clockDate} and u.mobile=#{mobile};
+		select r.* from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where r.clock_date=#{clockDate} and u.mobile=#{mobile}
+		<choose>
+			<when test="yesterday != null and yesterday != ''">
+				and r.clock_time &lt;= #{clockOffEndTime} or r.clock_date = #{yesterday} and r.clock_time &gt;= #{clockOnStartTime} and u.mobile=#{mobile}
+			</when>
+			<otherwise>
+				and r.clock_time &gt;= #{clockOnStartTime}
+			</otherwise>
+		</choose>
+		order by rid
 	</select>
 	
 	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
-		select user_id,user_name,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId} order by clock_date desc limit 1;
+		select user_id,user_name,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId} order by clock_date desc limit 1
 	</select>
+	
+	<update id="updateClockOffInfo" parameterType="Attendance">
+		update tbl_attendance_records set clock_time=#{clockTime},clock_status = #{clockStatus},clock_location=#{clockLocation},clock_device=#{clockDevice}
+		<if test="yesterday != null and yesterday != ''">
+			,clock_date = #{clockDate}
+		</if>
+		where user_id=#{userId} and clock_type = #{clockType}
+		<choose>
+			<when test="yesterday != null and yesterday != ''">
+				and clock_date = #{yesterday}
+			</when>
+			<otherwise>
+				and clock_date = #{clockDate}
+			</otherwise>
+		</choose>
+	</update>
 
 </mapper>

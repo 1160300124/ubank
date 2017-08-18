@@ -25,12 +25,12 @@ public class Test {
 //		System.out.println(CaptchaUtil.getCaptcha());
         
 //		
-//        
-//        String tt = MD5Util.getEncryptedPwd("ubank123456!");
+//        6700e28167adc46e61422ddbabea87e9
+//        String tt = MD5Util.getEncryptedPwd("123456");
 //        System.out.println(tt);
 //
 //        //MD5加密
-//        String s = new String("ubank123456!"); 
+//        String s = new String("123456"); 
 //        System.out.println("原始：" + s); 
 //        System.out.println("-------------：" + MD5Util.validatePwd(s, MD5Util.getEncryptedPwd(s))); 
 //        System.out.println("MD5加密后：" + MD5Util.getEncryptedPwd(s));
@@ -112,7 +112,7 @@ public class Test {
 		String time = DateTimeUtil.date2Str(new Date(), "yyyy-MM-dd HH:mm");
         System.out.println(time);
         System.out.println(DateTimeUtil.getfutureTime(time, 0, 12, 0));
-
+        System.out.println(DateTimeUtil.getfutureTime(time, -1, 0, 0).split(" ")[0]);
 	}
 	
 	/* 单条短信发送,智能匹配短信模板

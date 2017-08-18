@@ -36,10 +36,10 @@ public interface AttendanceDao {
 	
 	/**
 	 * 根据用户id获取考勤记录
-	 * @param userId
+	 * @param params
 	 * @return
 	 */
-	Attendance getRecordByCond(Attendance attend);
+	List<Attendance> getRecordsByDateAndUserId(Map<String, Object> params);
 	
 	/**
 	 * 根据date和手机号查询考勤记录
@@ -54,5 +54,12 @@ public interface AttendanceDao {
 	 * @return
 	 */
 	Attendance getLatestRecordByUserId(long userId);
+	
+	/**
+	 * 更新打卡记录
+	 * @param record
+	 * @return
+	 */
+	boolean updateClockOffInfo(Attendance record);
 
 }
