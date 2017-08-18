@@ -40,6 +40,11 @@ public class Attendance {
 	private String clockDate;
 	
 	/**
+	 * 打卡日期前一天yyyy-mm-dd
+	 */
+	private String yesterday;
+	
+	/**
 	 * 打卡时间 HH:mm
 	 */
 	private String clockTime;
@@ -150,6 +155,14 @@ public class Attendance {
 
 	public void setClockDevice(String clockDevice) {
 		this.clockDevice = clockDevice;
+	}
+
+	public String getYesterday() {
+		return yesterday;
+	}
+
+	public void setYesterday(String yesterday) {
+		this.yesterday = yesterday;
 	}
 	
 }

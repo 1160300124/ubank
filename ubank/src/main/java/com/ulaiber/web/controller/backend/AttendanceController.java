@@ -69,7 +69,7 @@ public class AttendanceController extends BaseController {
 		params.put("offset", offset);
 		params.put("order", order);
 		params.put("company_num", att.getCompany().getCompanyNumber());
-		params.put("dept_num", att.getDept().getCompany_num());
+		params.put("dept_num", att.getDept().getDept_number());
 		params.put("clock_type", att.getClockType());
 		params.put("clock_status", att.getClockStatus());
 		params.put("user_name", att.getUserName());

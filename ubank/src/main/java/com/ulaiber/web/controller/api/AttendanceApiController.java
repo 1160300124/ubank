@@ -1,6 +1,5 @@
 package com.ulaiber.web.controller.api;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -80,33 +79,39 @@ public class AttendanceApiController extends BaseController {
 		data.put("clockOnTime", rule.getClockOnTime());
 		data.put("clockOffTime", rule.getClockOffTime());
 		
-//		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME) + " " + rule.getClockOffTime();
-//		//最晚打卡时间大于打卡时间为当天打卡，否则为次日凌晨打卡
-//		if (rule.getClockOffEndTime().compareTo(rule.getClockOffTime()) > 0){
-//			String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
-//			List<Attendance> records = service.getRecordsByDateAndMobile(day, mobile);
-//		} else {
-//			
-//			//获取当天最晚打卡时间
-//			String clockOffEndTime = DateTimeUtil.getfutureTime(datetime, 0, rule.getClockOffDelayHours(), 0);
-//		}
-		String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
-		List<Attendance> list = new ArrayList<Attendance>();
-		List<Attendance> records = service.getRecordsByDateAndMobile(day, mobile);
-		for (Attendance record : records){
-			Attendance att = new Attendance();
-			att.setRid(record.getRid());
-			att.setUserId(record.getUserId());
-			att.setUserName(record.getUserName());
-			att.setClockDate(record.getClockDate());
-			att.setClockTime(record.getClockTime());
-			att.setClockType(record.getClockType());
-			att.setClockStatus(record.getClockStatus());
-			att.setClockLocation(record.getClockLocation());
-			att.setClockDevice(record.getClockDevice());
-			list.add(att);
+		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
+//		String datetime = "2017-08-19 00:30";
+		String today = datetime.split(" ")[0];
+		String time = datetime.split(" ")[1];
+		String yesterday = "";
+		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
+		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
+			//转钟后的前一天日期 yyyy-MM-dd 
+			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
+			
 		}
-		data.put("records", list);
+		
+		//0上班卡  1下班卡  2更新 打卡
+		int type = 0;
+		//按rid顺序查出考勤记录，<=2条记录
+		List<Attendance> records = service.getRecordsByDateAndMobile(today, yesterday, rule.getClockOnStartTime(), rule.getClockOffEndTime(), mobile);
+		if (null != records && records.size() > 0){
+			if (records.size() == 1){
+				if (StringUtils.equals(records.get(0).getClockType(), "0")){
+					type = 1;
+				} else if (StringUtils.equals(records.get(0).getClockType(), "1")){
+					type = 2;
+				}
+			} else if (records.size() >= 2){
+				type = 2;
+			}
+			for (Attendance record : records){
+				record.setCompany(null);
+				record.setDept(null);
+			}
+		}
+		data.put("type", type);
+		data.put("records", records);
 		return data;
 	}
 	
