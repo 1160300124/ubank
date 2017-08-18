@@ -49,13 +49,14 @@
 
     <!-- 分页查询员工信息-->
     <select id="empQuery" parameterType="Map" resultType="com.ulaiber.web.model.User">
-        select b.name as com_name,c.name as dept_name,d.bankName ,e.companyNumber,a.role_id,
-        e.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,a.mobile,a.cardNo,
-        b.name as com_name,c.name as dept_name,e.groupNumber  from tbl_users a
+        select d.bankName ,e.companyNumber,a.role_id,a.mobile,a.cardNo,
+        e.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,
+        b.name as com_name,c.name as dept_name,e.groupNumber , f.role_name from tbl_users a
         left join tbl_banks d on a.bankNo = d.bankNo
         left join tbl_roots e on a.user_id = e.userid
         LEFT JOIN tbl_company b on e.companyNumber = b.companyNumber
-        left join tbl_departments c on e.dept_number = c.dept_number where 1=1
+        left join tbl_departments c on e.dept_number = c.dept_number
+        left join tbl_roles f on a.role_id = f.role_id where 1=1
         <if test="search != null and search != ''">
             and  a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
         </if>
@@ -69,8 +70,16 @@
     </select>
 
     <!-- 根据员工编号删除对应的员工-->
-    <delete id="empDlete" parameterType="String">
+    <delete id="empDelete" parameterType="String">
         DELETE FROM tbl_users where user_id in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </delete>
+
+    <!--删除权限层级表中的记录-->
+    <delete id="deleteRoots" parameterType="String">
+        DELETE FROM tbl_roots where userid in
         <foreach collection="array" item="number" open="(" separator="," close=")">
             #{number}
         </foreach>

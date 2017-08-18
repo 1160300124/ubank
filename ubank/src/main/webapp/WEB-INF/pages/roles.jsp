@@ -106,7 +106,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-inline base-form clearfix">
-                        <div style="width: 60%;height: 100%;float: left;">
+                        <div style="width: 60%;height: 400px;float: left;overflow-y: auto;">
                             <table id="role_table2" > </table>
                         </div>
                         <div style="width: 40%;height: 100%;float: right;">

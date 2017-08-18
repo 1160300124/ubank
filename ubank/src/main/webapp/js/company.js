@@ -97,16 +97,16 @@ var CompanyFun = {
             search : true, //搜索框
             searchText : ' ', //初始化搜索文字
             pageNumber : 1, // 初始化加载第一页，默认第一页
-            pageSize : 20, // 每页的记录行数
-            pageList : [20,30,40], // 可供选择的每页的行数
+            pageSize : 10, // 每页的记录行数
+            pageList : [10,20,30,40], // 可供选择的每页的行数
             showRefresh : true, //刷新按钮
             showToggle :true,   //切换试图（table/card）按钮
-           // showColumns : true,
+            //showColumns : true,
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                {field : 'groupName', title : '集团名称', width: 130, align : 'left'},
                 {field : 'name', title : '公司名称', width: 130, align : 'left'},
+                {field : 'groupName', title : '集团名称', width: 130, align : 'left'},
                 {field : 'account', title : '银行账户', width: 130, align : 'left',
                     formatter : function (value,row,index) {
                         var arr = [];
@@ -118,8 +118,6 @@ var CompanyFun = {
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'legalPerson', title : '公司法人', width: 130, align : 'left',visible : false},
                 {field : 'group_num', title : '集团编号', width: 130, align : 'left',visible : false}
-
-
             ]
         });
     },

@@ -36,8 +36,9 @@ var EmployeeFun = {
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                 {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
-                {field : 'dept_name', title : '部门', width: 130, align : 'left'},
-                {field : 'com_name', title : '公司', width: 130, align : 'left'},
+                {field : 'com_name', title : '所属公司', width: 130, align : 'left'},
+                {field : 'dept_name', title : '所属部门', width: 130, align : 'left'},
+                {field : 'role_name', title : '所属角色', width: 130, align : 'left'},
                 {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
                 {field : 'bankName', title : '绑定银行', width: 130, align : 'left'},
                 {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},

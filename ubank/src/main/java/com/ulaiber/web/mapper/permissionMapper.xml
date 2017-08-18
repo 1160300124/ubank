@@ -193,4 +193,9 @@
             and  company_num = #{companyNumber}
         </if>
     </select>
+
+    <!--获取各个部门员工人数-->
+    <select id="getDeptEmpCount" resultType="com.ulaiber.web.model.Departments">
+        select count(dept_number) as count,dept_number  from tbl_roots group by dept_number;
+    </select>
 </mapper>

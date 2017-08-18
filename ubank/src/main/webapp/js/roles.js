@@ -1,5 +1,6 @@
 $(function () {
     RoleFun.role_getAllGroup();
+    RoleFun.role_queryAllCom();
     RoleFun.role_query();
     RoleFun.loadTree();
     RoleFun.role_listening();
@@ -169,8 +170,8 @@ var RoleFun = {
                 {field : 'role_id', title : '角色编号', width: 80, align : 'left'},
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
                 {field : 'companyName', title : '所属公司', width: 150, align : 'left'},
-                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
-                {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
+                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false}
+                //{field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
 
             ],
             onClickRow : function (row, $element) {
@@ -299,15 +300,28 @@ var RoleFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
-        this.role_queryAllCom(row);
+        //this.role_queryAllCom();
+        roleId = row[0].role_id;
+        $("input[name=role_name]").val(row[0].role_name);
+       // $("#role_group").find("option[value="+GROUPNUMBER+"]").prop("selected","selected");
+        var num = row[0].companyNumber;
+        var arr = [];
+        if(num.indexOf(",") > 0){
+            arr = num.split(",");
+        }else{
+            arr = num;
+        }
+        $("#combotree").bootstrapCombotree("setValue",num);
+        $("#role_modal").modal("show");
 
     },
     //点击修改按钮，查询所有公司
-    role_queryAllCom : function (row) {
+    role_queryAllCom : function () {
         $.ajax({
             url : 'queryComTree',
             dataType : 'json',
             type : 'post',
+            async : false,
             data : {
                 "groupNumber" : GROUPNUMBER,
                 "sysflag" : SYSFLAG
@@ -322,18 +336,7 @@ var RoleFun = {
                     name : 'list',//combotree值得name，可以用在表单提交
                     maxItemsDisplay : 3//按钮上最多显示多少项，如果超出这个数目，将会以‘XX项已被选中代替’
                 });
-                roleId = row[0].role_id;
-                $("input[name=role_name]").val(row[0].role_name);
-                $("#role_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
-                var num = row[0].companyNumber;
-                var arr = [];
-                if(num.indexOf(",") > 0){
-                    arr = num.split(",");
-                }else{
-                    arr = num;
-                }
-                $("#combotree").bootstrapCombotree("setValue",num);
-                $("#role_modal").modal("show");
+
             }
         });
     },

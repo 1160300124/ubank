@@ -101,13 +101,40 @@
               //  showColumns : true,
                 columns : [
                     {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                    {field : 'comName', title : '公司名称', width: 130, align : 'left'},
                     {field : 'name', title : '部门名称', width: 130, align : 'left'},
-                    {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
+                    {field : 'comName', title : '公司名称', width: 130, align : 'left'},
+                    {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : true},
                     {field : 'company_num', title : '公司编号', width: 130, align : 'left',visible : false},
                     {field : 'count', title : '部门人数', width: 60, align : 'left'},
                     {field : 'remark', title : '备注', width: 150, align : 'left'}
-                ]
+                ],
+                onLoadSuccess : function (data) {
+                    //获取各个部门的人数
+                    $.ajax({
+                        url : 'getDeptEmpCount',
+                        dataType : 'json',
+                        type : 'post',
+                        success : function (result) {
+                            var arr = data.rows;
+                            debugger;
+                            for (var i = 0 ; i < arr.length; i++){
+                                for (var j = 0; j < result.length; j++){
+                                    if(arr[i].dept_number == result[j].dept_number){
+                                        $("#department_table").bootstrapTable('updateRow',{
+                                            index : i,
+                                            row : {
+                                                count : result[j].count
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        },
+                        error : function () {
+                            Ewin.alert("操作异常");
+                        }
+                    })
+                }
             });
         },
         //查询参数定义
@@ -146,7 +173,7 @@
                 },
                 success : function (data) {
                     if(data.length <= 0){
-                        Ewin.alert("获取公司失败，请联系管理员");
+                        Ewin.alert("获取公司失败");
                         return;
                     }
                     var option = "";
@@ -157,7 +184,7 @@
 
                 },
                 error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }
             })
         },
@@ -188,7 +215,7 @@
                     if(data.code == 300){
                         Ewin.alert(data.message);
                     }else if(data.code == 500){
-                        Ewin.alert("操作异常，请联系管理员");
+                        Ewin.alert("操作异常");
                     }else{
                         Ewin.alert(data.message);
                         $("#department_form")[0].reset();
@@ -198,7 +225,7 @@
 
                 },
                 error : function () {
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }
             })
         },
@@ -254,7 +281,7 @@
                                     Confirm.hide();
                                     Ewin.alert(data.message);
                                 }else if(data.code == 500){
-                                    Ewin.alert("操作异常，请联系管理员");
+                                    Ewin.alert("操作异常");
                                 }else{
                                     Confirm.hide();
                                     Ewin.alert(data.message);
@@ -263,7 +290,7 @@
 
                             },
                             error : function () {
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }
                         })
                     }

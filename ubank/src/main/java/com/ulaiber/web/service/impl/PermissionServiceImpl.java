@@ -246,6 +246,17 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
+    public List<Departments> getDeptEmpCount() {
+        List<Departments> list = permissionDao.getDeptEmpCount();
+        return list;
+    }
+
+    @Override
+    public int deleteRoots(String[] number) {
+        return employeeDao.deleteRoots(number);
+    }
+
+    @Override
     public List<Departments> getAllDept() {
         List<Departments> list = permissionDao.getAllDept();
         return list;
@@ -305,7 +316,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     public int empDelete(String[] number) {
-        int result = employeeDao.empDlete(number);
+        int result = employeeDao.empDelete(number);
         return result;
     }
 

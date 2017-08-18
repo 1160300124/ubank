@@ -6,25 +6,25 @@ public class User implements Serializable {
 	
 	//用户编号
 	private long id;
-	
+
 	//用户名称
 	private String userName;
-	
+
 	//登录密码
 	private String login_password;
-	
+
 	//支付密码
 	private String pay_password;
-	
+
 	//登录凭据
 	private String login_ticket;
-	
+
 	//访问令牌
 	private String access_token;
-	
+
 	//手机号码
 	private String mobile;
-	
+
 	//银行预留手机号码
 	private String reserve_mobile;
 
@@ -45,10 +45,10 @@ public class User implements Serializable {
 
 	//证件类型 1:身份证;2:护照;3:港澳通行证;21:工作证;99:其它
 	private String cardType;
-	
+
 	//证件号码 (目前只支持身份证)
 	private String cardNo;
-	
+
 	//绑定银行
 	private Bank bank;
 
@@ -57,40 +57,43 @@ public class User implements Serializable {
 
 	//银行编号
 	private String bankNo;
-	
+
 	//绑定银行卡号
 	private String bankCardNo;
-	
+
 	//二类户账号
 	private String secondBankCardNo;
-	
+
 	//账户余额
 	private double balance;
-	
+
 	//邮箱
 	private String email;
-	
+
 	//状态 0:启用;1:停用;2:已注销
 	private int status;
-	
+
 	//0:管理员;1:普通用户
 	private int role_id;
-	
+
+	//角色名称
+	private String role_name;
+
 	//添加时间
 	private String createTime;
-	
+
 	//过期时间
 	private String expiredTime;
-	
+
 	//登录时间
 	private String loginTime;
-	
+
 	//备注
 	private String remark;
-	
+
 	//连续登陆失败次数,登陆成功后请归零
 	private int login_fail_num;
-	
+
 	//最近登陆失败时间
 	private String login_fail_time;
 
@@ -279,6 +282,14 @@ public class User implements Serializable {
 
 	public void setRole_id(int role_id) {
 		this.role_id = role_id;
+	}
+
+	public String getRole_name() {
+		return role_name;
+	}
+
+	public void setRole_name(String role_name) {
+		this.role_name = role_name;
 	}
 
 	public String getCreateTime() {

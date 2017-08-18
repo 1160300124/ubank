@@ -435,8 +435,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(200);
                 resultInfo.setMessage("修改员工成功");
             }else{
-                resultInfo.setCode(500);
-                resultInfo.setMessage("修改员工失败");
+                resultInfo.setCode(200);
+                resultInfo.setMessage("修改员工成功");
             }
         }
         return resultInfo;
@@ -483,6 +483,7 @@ public class PermissionController extends BaseController {
         String[] number = numbers.split(",");
         int result = permissionService.empDelete(number);
         if(result > 0){
+            int result2 = permissionService.deleteRoots(number); //删除权限层级表中的记录
             resultInfo.setMessage("删除成功");
             resultInfo.setCode(200);
         } else {
@@ -751,8 +752,8 @@ public class PermissionController extends BaseController {
             resultInfo.setMessage("删除成功");
             resultInfo.setCode(200);
         }else{
-            resultInfo.setCode(500);
-            resultInfo.setMessage("删除角色菜单失败");
+            resultInfo.setCode(200);
+            resultInfo.setMessage("删除权限成功");
         }
         return resultInfo;
     }
@@ -825,6 +826,17 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public List<Departments> queryAllDept(@Param("sysflag") String sysflag,@Param("companyNumber")String companyNumber){
         List<Departments> list = permissionService.queryAllDept(sysflag,companyNumber);
+        return list;
+    }
+
+    /**
+     * 获取各个部门员工人数
+     * @return
+     */
+    @RequestMapping(value = "getDeptEmpCount", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Departments> getDeptEmpCount(){
+        List<Departments> list = permissionService.getDeptEmpCount();
         return list;
     }
 }

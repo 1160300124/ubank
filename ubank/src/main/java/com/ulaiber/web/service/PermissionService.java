@@ -117,4 +117,8 @@ public interface PermissionService {
     List<Company> getAllCompanybyGroupNum(String sysflag, String groupNumber);
 
     List<Departments> queryAllDept(String sysflag, String companyNumber); //根据当前角色所属公司编号，查询对应的部门
+
+    List<Departments> getDeptEmpCount();  //获取各个部门员工人数
+
+    int deleteRoots(String[] number); //删除权限层级表中的记录
 }
