@@ -79,18 +79,8 @@ public class AttendanceApiController extends BaseController {
 		data.put("clockOnTime", rule.getClockOnTime());
 		data.put("clockOffTime", rule.getClockOffTime());
 		
-//		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME) + " " + rule.getClockOffTime();
-//		//最晚打卡时间大于打卡时间为当天打卡，否则为次日凌晨打卡
-//		if (rule.getClockOffEndTime().compareTo(rule.getClockOffTime()) > 0){
-//			String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
-//			List<Attendance> records = service.getRecordsByDateAndMobile(day, mobile);
-//		} else {
-//			
-//			//获取当天最晚打卡时间
-//			String clockOffEndTime = DateTimeUtil.getfutureTime(datetime, 0, rule.getClockOffDelayHours(), 0);
-//		}
-//		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
-		String datetime = "2017-08-19 00:30";
+		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
+//		String datetime = "2017-08-19 00:30";
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		String yesterday = "";
