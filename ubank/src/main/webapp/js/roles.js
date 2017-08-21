@@ -197,9 +197,9 @@ var RoleFun = {
         var names = ""; //公司名称
         $("#combotree ul .node-checked").each(function () {
             var txt = $(this).text();
-            names = txt + ",";
-            names = names.substr(0,(names.length-1));
+            names += txt + ",";
         });
+        names = names.substr(0,(names.length-1));
         var numbers = com_numbers.join(",");
         if(roleName == ""){
             Ewin.alert("角色名不能为空");
@@ -231,6 +231,7 @@ var RoleFun = {
                     $("input[name=role_name]").val("");
                     $("#combotree").bootstrapCombotree("setValue","");
                     $('#role_table').bootstrapTable('refresh');
+                    $('#role_table2').bootstrapTable('refresh');
                     $("#role_modal").modal("hide");
                     // RoleFun.rol_roleTable();
                     flag = 0;
@@ -308,8 +309,9 @@ var RoleFun = {
         //this.role_queryAllCom();
         roleId = row[0].role_id;
         $("input[name=role_name]").val(row[0].role_name);
-        debugger;
-        $("#role_group").find("option[value="+GROUPNUMBER+"]").prop("selected","selected");
+        if(GROUPNUMBER != ""){
+            $("#role_group").find("option[value="+GROUPNUMBER+"]").prop("selected","selected");
+        }
         var num = row[0].companyNumber;
         var arr = [];
         if(num.indexOf(",") > 0){
@@ -384,6 +386,7 @@ var RoleFun = {
                                 Confirm.hide();
                                 Ewin.alert(data.message);
                                 $('#role_table').bootstrapTable('refresh');
+                                $('#role_table2').bootstrapTable('refresh');
                             }
 
                         },
