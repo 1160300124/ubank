@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.LeaveDao">
+
+    <resultMap id="LeaveRecordMap" type="com.ulaiber.web.model.LeaveRecord" >
+        <id property="id" column="id" jdbcType="BIGINT" />
+    </resultMap>
+
+    <!--申请请假-->
+    <insert id="saveLeaveRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason)
+            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason})
+    </insert>
+</mapper>

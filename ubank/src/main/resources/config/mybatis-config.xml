@@ -43,6 +43,8 @@
 		<mapper resource="com/ulaiber/web/mapper/levelInfoMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/attendance.xml" />
 		<mapper resource="com/ulaiber/web/mapper/attendanceRule.xml" />
+		<mapper resource="com/ulaiber/web/mapper/leaveMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/leaveAuditMapper.xml" />
 	</mappers>
 
 </configuration>  
