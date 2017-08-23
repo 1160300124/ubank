@@ -139,20 +139,48 @@ public class Test {
 //	    return post("https://sms.yunpian.com/v2/sms/single_send.json", params);//请自行使用post方式请求,可使用Apache HttpClient
 	}
 
+
+	/**----------------------------------------------------------------------------------------------*/
 	//申请请假test
     @org.junit.Test
 	public void apply(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userid","369");
-		map.put("leaveType","1");
-		map.put("leaveTime",48);
-		map.put("startDate","2017-08-23");
+		map.put("userid","365");
+		map.put("leaveType","2");
+		map.put("leaveTime",24);
+		map.put("startDate","2017-08-24");
 		map.put("endDate","2017-08-25");
-		map.put("auditor","366,365,364");
-		map.put("reason","回家探亲");
+		map.put("auditor","364,366");
+		map.put("reason","生病，去一医院看病");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/applyForLeave",map);
 		System.out.print(result);
 	}
 
+	//查询个人申请记录
+	@org.junit.Test
+	public void queryApplyRecord(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userid","369");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
+		System.out.print(result);
+	}
+
+	//取消请假申请
+	@org.junit.Test
+	public void cancelapply(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("applyId","106");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/cancelApply",map);
+		System.out.print("~~~~~~~~取消申请结果为："+result);
+	}
+
+	//查询工作提醒
+	@org.junit.Test
+	public void getWorkRemind(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkRemind",map);
+		System.out.print("~~~~~~~~取消申请结果为："+result);
+	}
 
 }

@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 /**
  * 个人申请信息
- * Created by daiqingwen on 2017/8/22.
+ * Created by daiqingwen on 2017/8/23.
  */
-public class LeaveRecord implements Serializable{
+public class ApplyForVO implements Serializable{
     private int id;
     private String userid;
     private String leaveType;

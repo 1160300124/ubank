@@ -15,7 +15,24 @@
 
     <!--申请请假-->
     <insert id="saveLeaveRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason)
-            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason})
+        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason,disable)
+            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},'0')
     </insert>
+
+    <!--查询个人申请记录-->
+    <select id="queryApplyRecord" parameterType="String" resultType="com.ulaiber.web.model.LeaveRecord">
+        SELECT a.*,b.status FROM tbl_leave_record a left join
+        (select max(auditDate)as date,recordNo,status from tbl_leave_audit_record GROUP BY recordNo,status ) b
+        on a.id = b.recordNo  where  a.userid = #{userid}
+    </select>
+
+    <!--取消请假申请-->
+    <update id="cancelApply" parameterType="String"  >
+        UPDATE tbl_leave_record SET disable = '1' WHERE id = #{applyId}
+    </update>
+
+    <!--查询工作提醒-->
+    <select id="getLeaveRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
+      SELECT * FROM tbl_leave_record where userid = #{userId}
+    </select>
 </mapper>

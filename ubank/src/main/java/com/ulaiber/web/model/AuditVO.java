@@ -3,10 +3,10 @@ package com.ulaiber.web.model;
 import java.io.Serializable;
 
 /**
- * 请假审批记录
- * Created by daiqingwen on 2017/8/22.
+ * 个人审批信息
+ * Created by daiqingwen on 2017/8/23.
  */
-public class LeaveAudit implements Serializable{
+public class AuditVO implements Serializable{
     private int id;
     private String userid;
     private String recordNo;
