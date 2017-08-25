@@ -16,6 +16,7 @@ public class LeaveRecord implements Serializable{
     private String auditor;
     private String reason;
     private String disable;
+    private String createDate;
     private String status;
     private Object auditorStatus;
 
@@ -89,6 +90,14 @@ public class LeaveRecord implements Serializable{
 
     public void setDisable(String disable) {
         this.disable = disable;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
     }
 
     public String getStatus() {

@@ -49,6 +49,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
             map.put("recordNo",String.valueOf(leaveRecord.getId()));
             map.put("auditor",auditor[i]);
             map.put("auditDate",sdf.format(new Date()));
+            map.put("sort",i+1);
             list.add(map);
         }
         int result = leaveAuditDao.saveAditor(list);
@@ -88,4 +89,44 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     public List<AuditVO> getLeaveAuditor(String userId) {
         return leaveAuditDao.getLeaveAuditor(userId);
     }
+
+    @Override
+    public List<Map<String, Object>> getPendingRecord(String userId) {
+        return leaveDao.getPendingRecord(userId);
+    }
+
+    @Override
+    public List<Map<String, Object>> getAlreadyRecord(String userId) {
+        return leaveDao.getAlreadyRecord(userId);
+    }
+
+    @Override
+    public ApplyForVO queryPeningRecord(int id) {
+        return leaveDao.queryPeningRecord(id);
+    }
+
+    @Override
+    public List<LeaveRecord> queryAlreadRecord(String userId) {
+        return leaveDao.queryAlreadRecord(userId);
+    }
+
+    @Override
+    public List<LeaveAudit> getAuditorByUserId( String userId) {
+        return leaveAuditDao.getAuditorByUserId(userId);
+    }
+
+    @Override
+    public List<LeaveAudit> getAuditorBySort(String recordNo, int sortValue) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("recordNo" , recordNo);
+        map.put("sort" , sortValue);
+        return leaveAuditDao.getAuditorBySort(map);
+    }
+
+    @Override
+    public List<LeaveAudit> queryAuditorByRecord(String recordNo) {
+        return leaveAuditDao.queryAuditorByRecord(recordNo);
+    }
+
+
 }

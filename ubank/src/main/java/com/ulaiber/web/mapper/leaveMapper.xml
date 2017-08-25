@@ -15,8 +15,8 @@
 
     <!--申请请假-->
     <insert id="saveLeaveRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason,disable)
-            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},'0')
+        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable)
+            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},#{createDate},'0','0')
     </insert>
 
     <!--查询个人申请记录-->
@@ -28,11 +28,33 @@
 
     <!--取消请假申请-->
     <update id="cancelApply" parameterType="String"  >
-        UPDATE tbl_leave_record SET disable = '1' WHERE id = #{applyId}
+        UPDATE tbl_leave_record SET  disable = '1' WHERE id = #{applyId}
     </update>
 
     <!--查询工作提醒-->
     <select id="getLeaveRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
       SELECT * FROM tbl_leave_record where userid = #{userId}
+    </select>
+
+    <!--获取待审批记录数量-->
+    <select id="getPendingRecord" parameterType="String" resultType="java.util.HashMap">
+        select createDate,status from tbl_leave_record  where status = '0' and auditor like concat('%',#{userId},'%') order by  createDate DESC
+    </select>
+
+    <!--获取已审批记录数量-->
+    <select id="getAlreadyRecord" parameterType="String" resultType="java.util.HashMap">
+        select createDate,status from tbl_leave_record  where status &lt;&gt; '0' and auditor like concat('%',#{userId},'%') order by  createDate DESC
+    </select>
+
+    <!--获取待审批记录-->
+    <select id="queryPeningRecord" parameterType="int" resultType="com.ulaiber.web.model.ApplyForVO">
+        select id,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable from tbl_leave_record
+        where id = #{id}
+    </select>
+
+    <!--获取已审批记录-->
+    <select id="queryAlreadRecord" parameterType="String" resultType="com.ulaiber.web.model.LeaveRecord">
+        select id,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable from tbl_leave_record
+        where status &lt;&gt; '0' and auditor like concat('%',#{userId},'%') order by  createDate DESC
     </select>
 </mapper>

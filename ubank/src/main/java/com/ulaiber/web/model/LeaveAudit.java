@@ -14,6 +14,7 @@ public class LeaveAudit implements Serializable{
     private String auditDate;
     private String status;
     private String disable;
+    private int sort;
 
     public int getId() {
         return id;
@@ -70,4 +71,13 @@ public class LeaveAudit implements Serializable{
     public void setDisable(String disable) {
         this.disable = disable;
     }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
 }
+

@@ -19,4 +19,10 @@ public interface LeaveAuditDao {
     List<LeaveAudit> queryAuditor(String[] ids); //查询审批人记录
 
     List<AuditVO> getLeaveAuditor(String userId); //获取个人所有审批记录
+
+    List<LeaveAudit> getAuditorByUserId(String userId); //根据申请记录编号获取审批人
+
+    List<LeaveAudit> getAuditorBySort(Map<String, Object> map); //根据排序号和申请记录编号获取审批人
+
+    List<LeaveAudit> queryAuditorByRecord(String recordNo); //根据申请记录号查询审批人记录
 }

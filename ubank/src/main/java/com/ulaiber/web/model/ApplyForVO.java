@@ -3,7 +3,7 @@ package com.ulaiber.web.model;
 import java.io.Serializable;
 
 /**
- * 个人申请信息
+ * 个人申请记录信息
  * Created by daiqingwen on 2017/8/23.
  */
 public class ApplyForVO implements Serializable{

@@ -180,7 +180,26 @@ public class Test {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","365");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkRemind",map);
-		System.out.print("~~~~~~~~取消申请结果为："+result);
+		System.out.print("~~~~~~~~工作提醒结果为："+result);
+	}
+
+	//查询工作审批
+	@org.junit.Test
+	public void getWorkAudit(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkAudit",map);
+		System.out.print("~~~~~~~~工作审批结果为："+result);
+	}
+
+	//待审批数据查询
+	@org.junit.Test
+	public void queryAuditRecord(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		map.put("mark","0");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
+		System.out.print("~~~~~~~~工作审批结果为："+result);
 	}
 
 }

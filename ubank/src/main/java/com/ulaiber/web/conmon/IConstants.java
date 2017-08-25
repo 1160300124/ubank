@@ -111,4 +111,16 @@ public class IConstants
 	//文件操作的缓存大小
 	public static final int FILE_OPERA_BUFFER = 1024 ;
 
+	//个人待审批记录标识
+	public static final int Pengding_AUDIT_MARK = 0;
+
+	//个人已审批记录标识
+	public static final int Already_APPLY_MARK = 1;
+
+	//是否显示审批按钮标识 0 否，1 是
+	public static final int ENABLED = 1;
+
+	//是否显示审批按钮标识 0 否，1 是
+	public static final int DISABLED = 0;
+
 }
