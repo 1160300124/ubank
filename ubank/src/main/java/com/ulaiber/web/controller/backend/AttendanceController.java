@@ -62,7 +62,7 @@ public class AttendanceController extends BaseController {
 	@ResponseBody
 	public Map<String, Object> getRecords(Attendance att, String startDate, String endDate, int limit, int offset, String order, 
 			HttpServletRequest request, HttpServletResponse response){
-		logger.info("-------------------------------------");
+		logger.info("getRecords start...");
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("limit", limit);
@@ -84,6 +84,8 @@ public class AttendanceController extends BaseController {
 		}
 		data.put("total", total);
 		data.put("rows", list);
+		
+		logger.info("getRecords end...");
 		return data;
 	}
 

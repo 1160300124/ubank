@@ -1,5 +1,5 @@
 $(function(){
-	$('#datetimepicker_start').datetimepicker({  
+	$(".time-picker").datetimepicker({  
 		format: 'yyyy-mm-dd',  
 		language: 'zh-CN',  
 		pickDate: true,  
@@ -9,17 +9,6 @@ $(function(){
 		todayHighlight: 1,
 		minView: "month"
 	});  
-
-	$('#datetimepicker_end').datetimepicker({  
-		format: 'yyyy-mm-dd',  
-		language: 'zh-CN',  
-		pickDate: true,  
-		pickTime: true,  
-		autoclose: 1,
-		todayBtn:  1,
-		todayHighlight: 1,
-		minView: "month"
-	}); 
 
 	$("#btn_search").unbind().bind("click", function(){
 

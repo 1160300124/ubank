@@ -1,5 +1,6 @@
 package com.ulaiber.web.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.ulaiber.web.dao.AttendanceDao;
 import com.ulaiber.web.dao.AttendanceRuleDao;
 import com.ulaiber.web.model.Attendance;
 import com.ulaiber.web.model.AttendanceRule;
+import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.BaseService;
@@ -60,7 +62,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		}
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
-//		String datetime = "2017-08-19 00:29";
+//		String datetime = "2017-08-24 20:49";
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		
@@ -72,8 +74,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
 			//转钟后的前一天日期 yyyy-MM-dd 
 			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-
 		}
+		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", att.getUserId());
 		params.put("clockType", "");
@@ -85,31 +87,83 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		//查询该用户当天的打卡记录
 		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
 		
+		boolean isRestDay = false;
+		String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
+		//节假日
+		if (rule.getHolidayFlag() == 0){
+			Holiday holiday = ruleDao.getHolidaysByYear(DateTimeUtil.getYear(new Date()) + "");
+			if (holiday != null){
+				List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
+				List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
+				if (holidays.contains(today) && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0
+						|| time.compareTo(rule.getClockOffEndTime()) > 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0)){
+					isRestDay = true;
+				} else {
+					if (rule.getWorkday().contains(workday) || workdays.contains(today)){
+						isRestDay = false;
+					} else {
+						isRestDay = true;
+					}
+				}
+			}
+		} else {
+			if (!rule.getWorkday().contains(workday)){
+				isRestDay = true;
+			} 
+		}
+		if (isRestDay){
+			logger.info("休息日不用打卡："+ today + "-" + workday);
+			info.setCode(IConstants.QT_REST_DAY);
+			info.setMessage("休息日不用打卡："+ today + "-" + workday);
+			return info;
+		}
+		
+		String clockOnTime= rule.getClockOnTime();
+		String clockOffTime = rule.getClockOffTime();
+		//是否开启弹性时间
+		if (rule.getFlexibleFlag() == 0){
+			clockOnTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOnTime(), 0, 0, rule.getFlexibleTime());
+			//下班是否顺延
+			if (rule.getPostponeFlag() == 0){
+				clockOffTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOffTime(), 0, 0, rule.getFlexibleTime());
+			}
+		}
+		
 		//新增，更新标志，默认失败
 		boolean flag = false;
 		//type：0签到，1签退   status：0正常 ，1迟到， 2早退
 		if (null == records || records.size() == 0){
 			//没有记录时说明没有打卡,先默认是打上班卡
 			att.setClockType("0");
-			//如果加班到凌晨打卡，当天是没有打卡记录的，需判断当前打卡时间是否在最晚下班打卡时间之内，如在则为昨天的下班卡，否则为今天的上班卡
-			if (time.compareTo(rule.getClockOffTime()) >= 0 || time.compareTo(rule.getClockOffEndTime()) <= 0){
-				att.setClockType("1");
-				att.setClockStatus("0");
-			}
-			//当前时间早于最早上班打卡时间
-			else if (time.compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) > 0){
+			//当前时间<最早上班打卡时间&&最晚下班打卡时间>最早上班打卡时间 || 当前时间<最早上班打卡时间&&最晚下班打卡时间<最早上班打卡时间&&当前时间>最晚下班打卡时间
+			if (time.compareTo(rule.getClockOnStartTime()) < 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0
+					|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) > 0)){
 				logger.error("最早上班打卡时间为 " + rule.getClockOnStartTime() + ",请等待...");
-				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setCode(IConstants.QT_CANNOT_CLOCK_ON);
 				info.setMessage("最早上班打卡时间为 " + rule.getClockOnStartTime() + ",请等待...");
 				return info;
 			}
+			//当前时间>最晚下班打卡时间&&最晚下班打卡时间>最早上班打卡时间 || 当前时间>最晚下班打卡时间&&最晚下班打卡时间<最早上班打卡时间&&当前时间<最早上班打卡时间
+			if (time.compareTo(rule.getClockOffEndTime()) > 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0) 
+					|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOnStartTime()) < 0){ 
+				logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+				info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
+				info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+				return info;
+			}
+			//如果加班到凌晨打卡，当天是没有打卡记录的，需判断当前打卡时间是否在最晚下班打卡时间之内，如在则为昨天的下班卡，否则为今天的上班卡
+			if (time.compareTo(clockOffTime) >= 0
+					|| time.compareTo(rule.getClockOffEndTime()) <= 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				att.setClockType("1");
+				att.setClockStatus("0");
+			}
 			//当前时间大于最早上班打卡时间且小于上班打卡时间----正常打卡
-			else if (time.compareTo(rule.getClockOnStartTime()) >= 0 && time.compareTo(rule.getClockOnTime()) <= 0)
+			else if (time.compareTo(rule.getClockOnStartTime()) >= 0 && time.compareTo(clockOnTime) <= 0)
 			{
 				att.setClockStatus("0");
 			}
 			//当前时间大于上班打卡时间且小于下班打卡时间----迟到
-			else if (time.compareTo(rule.getClockOnTime()) > 0 && time.compareTo(rule.getClockOffTime()) < 0){
+			else if (time.compareTo(clockOnTime) > 0 && time.compareTo(clockOffTime) < 0){
 				att.setClockStatus("1");
 			} 
 			
@@ -117,21 +171,31 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			
 		} else {
 			att.setClockType("1");
-			//当前时间大于下班打卡时间或小于最晚下班打卡时间(转钟后当前时间小于最晚下班打卡时间)
-			if (time.compareTo(rule.getClockOffTime()) >= 0 || time.compareTo(rule.getClockOffEndTime()) <= 0){
-				att.setClockStatus("0");
-			}
-			//当前时间大于上班打卡时间小于下班打卡时间----早退
-			else if (time.compareTo(records.get(0).getClockTime()) > 0 && time.compareTo(rule.getClockOffTime()) < 0){
-				att.setClockStatus("2");
-			}
 			//当前时间晚于最晚下班打卡时间
-			else if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) > 0){
-				logger.error("最晚下班打卡时间为次日 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("最晚下班打卡时间为次日 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+			if (time.compareTo(rule.getClockOffEndTime()) > 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0) 
+					|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOnStartTime()) < 0){ 
+				logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+				info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
+				info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
 				return info;
 			}
+			//当前时间等于上次打卡时间
+			if (time.compareTo(records.get(0).getClockTime()) == 0){
+				logger.error("歇一会嘛，不要太频繁打卡哟。");
+				info.setCode(IConstants.QT_CANNOT_CLOCK_FREQUENTLY);
+				info.setMessage("歇一会嘛，不要太频繁打卡哟。");
+				return info;
+			}
+			//当前时间大于下班打卡时间或小于最晚下班打卡时间(转钟后当前时间小于最晚下班打卡时间)
+			if (time.compareTo(clockOffTime) >= 0
+					|| time.compareTo(rule.getClockOffEndTime()) <= 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				att.setClockStatus("0");
+			}
+			//当前时间大于上次打卡时间小于下班打卡时间----早退
+			else if (time.compareTo(records.get(0).getClockTime()) > 0 && time.compareTo(clockOffTime) <= 0){
+				att.setClockStatus("2");
+			}
+			
 			//如果有一条打卡记录,如果是上班记录则插入下班卡记录，否则更新下班卡记录
 			if (records.size() == 1){
 				//判断是上班记录还是下班记录,如果是上班记录则插入下班卡记录，否则更新下班卡记录

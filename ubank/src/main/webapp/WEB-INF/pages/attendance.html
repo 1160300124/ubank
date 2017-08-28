@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>优发展银行</title>
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="./assets/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="./assets/icheck/skins/all.css">
+    <link rel="stylesheet" href="./assets/zTree/css/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="./assets/css/attendance.css">
+</head>
+
+<body>
+    <table id="ss" class="attendance-table">
+        <tr class="tr">
+            <td class="head">
+                规则名称
+            </td>
+            <td>
+                <input type="text" placeholder="请输入考勤规则" class="form-control input-lg">
+            </td>
+        </tr>
+        <tr class="tr">
+            <td class="head">
+                考勤类型
+            </td>
+            <td>
+                <input type="radio" id="attendance1" checked="checked" class="icheck">
+                <label for="attendance1">固定班制</label>
+            </td>
+
+        </tr>
+        <tr class="tr">
+            <td></td>
+            <td>
+                <div class="attendance-type">
+                    <table>
+                        <tr>
+                            <td>工作时段：</td>
+                            <td>
+                                <div class="input-time">
+                                    <input type="text" class="form-control input-lg time-picker" value="09:00" style="width:200px;">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </div>
+                                一
+                                <div class="input-time">
+                                    <input type="text" class="form-control input-lg time-picker" value="18:00" style="width:200px;">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input tabindex="1" type="checkbox" id="input-1" class="icheck">
+                                <label for="input-1">设置休息时间段</label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td style="padding-left:30px;">
+                                <div class="input-time">
+                                    <input type="text" class="form-control input-lg time-picker" value="12:30" style="width:150px;">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </div>
+                                一
+                                <div class="input-time">
+                                    <input type="text" class="form-control input-lg time-picker" value="14:00" style="width:150px;">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                </div>
+                                <div class="free-time-des">
+                                    休息时段仅对有一个工作时段的工作日（含特殊日期）生效<br/>设置后，工作时长会扣除休息时段部分
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                工作日：
+                            </td>
+                            <td style="vertical-align: top;">
+                                <span class="work-day"></span> <a href="javascript:;" onclick="$('#workDayModal').modal('toggle')">修改</a>
+                                <br/>
+                                <input type="checkbox" checked=“checked” class="icheck"> 遵循 <a href="javascript:;" onclick="$('#freeDayModal').modal('toggle')">法定节假日</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <a href="javascript:;" onclick="$('#advanceSettingModal').modal('toggle')"><span class="glyphicon glyphicon-cog"></span>高级设置</a>
+                            </td>
+                            <td>
+                                <ul class="advance-settings">
+                                    <li>
+                                        <span>允许最早签到时间：上班前2小时</span>
+                                    </li>
+                                    <li>
+                                        <span>允许最晚签到时间：下班后6小时</span>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr class="tr">
+            <td class="head">
+                考勤位置
+            </td>
+            <td>
+                <span style="display:inline-block;height:34px;line-height:34px;">1、地点考勤</span>
+                <span style="float:right;">
+                    有效范围  
+                    <select name="" id="area" class="form-control form-select">
+                        <option value="300">300米</option>
+                    </select>
+                </span>
+            </td>
+        </tr>
+        <tr class="tr">
+            <td></td>
+            <td>
+                <div class="attendance-location">
+                    <table class="table-location">
+                        <tr>
+                            <td>优融网络科技有限公司</td>
+                            <td>
+                                <a href="javascript:;" onclick="$('#attendanceLocationModal').modal('toggle')">修改</a>
+                                <a href="javascript:;" style="margin-left:20px;">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="add-location">
+                        <a href="javascript:;" onclick="$('#attendanceLocationModal').modal('toggle')">+&nbsp;&nbsp;添加考勤地点</a>                        
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr class="tr">
+            <td class="head">
+                参与考勤人员：
+            </td>
+            <td>
+                <div class="in-attendance-people" onclick="$('#attendancePeopleModal').modal('toggle')">
+                    0人
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="workDayModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">设置工作日</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="work-day-list">
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="freeDayModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">法定节假日</h4>
+                </div>
+                <div class="modal-body">
+                    <h4>2017年放假时间安排</h4>
+                    <table class="free-day-table">
+                        <tr>
+                            <td>元旦</td>
+                            <td>放假：2016年12月31日~2017年1月2日 共3天</td>
+                        </tr>
+                        <tr>
+                            <td>春节</td>
+                            <td>放假：1月27日~2月2日 共7天 调休：1月22日（星期日）上班、2月4日（星期六）上班</td>
+                        </tr>
+                        <tr>
+                            <td>清明节</td>
+                            <td>放假：4月2日~4日 共3天 调休：4月1日（星期六）上班</td>
+                        </tr>
+                        <tr>
+                            <td>劳动节</td>
+                            <td>放假：4月29日~5月1日 共3天</td>
+                        </tr>
+                        <tr>
+                            <td>端午节</td>
+                            <td>放假：5月28日~30日 共3天 调休：5月27日（星期六）上班</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                中秋节、国庆节 放假：10月1日~10月8日 共8天 调休：9月30日（星期六）上班
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="advanceSettingModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">高级设置</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="advance-setting">
+                        <div class="setting" style="padding-top:20px;margin-top:20px;border-top:1px solid #ededed;">
+                            允许最早签到时间：上班前
+                            <select class="form-control form-select" name="" id="">
+                                <option value="2">2小时</option>
+                                <option value="3">3小时</option>
+                            </select>
+                        </div>
+                        <div class="setting">
+                            允许最晚签到时间：下班后
+                            <select class="form-control form-select" name="" id="">
+                                <option value="2">2小时</option>
+                                <option value="3">3小时</option>
+                            </select>
+                        </div>
+                        <div class="setting">
+                            <span style="color:#ccc;">在选择时间的范围以外不可以打卡</span>
+                        </div>
+
+                        <div class="setting" style="padding-top:20px;margin-top:20px;border-top:1px solid #ededed;">
+                            <input type="checkbox" class="icheck" id="openFlexible">
+                            <label for="openFlexible">开启上班弹性时间</label>
+                            <select class="form-control form-select" name="" id="flexibleTime">
+                                <option value="30">30分钟</option>
+                                <option value="60">60分钟</option>
+                            </select>
+                            
+                        </div>
+                        <div class="setting" style="padding-left:20px;">
+                            <input type="radio" name="Flexible" class="icheck" id="shunyan" value="0">
+                            <label for="shunyan">弹性时间内不算迟到，下班时间自动顺延</label>
+                        </div>
+                        <div class="setting" style="padding-left:20px;">
+                            <input type="radio" name="Flexible" class="icheck" id="bushunyan" value="1">
+                            <label for="bushunyan">弹性时间内不算迟到，下班时间不顺延</label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="attendanceLocationModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">添加考勤地点</h4>
+                </div>
+                <div class="modal-body">
+                    <table style="width:100%;">
+                        <tr>
+                            <tdstyle="width:100px;">考勤地点</td>
+                            <td><input type="text" style="display:inline-block;" class="form-control input-lg"></td>
+                        </tr>
+                    </table>
+                    <div style="margin-top:20px;width:100%;height:400px;background-color:#ccc;">
+                        map
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="attendancePeopleModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">选择部门与人员</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="select-people">
+                        <div class="all-people">
+                            选择：<br/>
+                            <div class="people-box">
+                                <div class="search-box">
+                                    <span class="glyphicon glyphicon-search search-icon"></span>
+                                    <input type="text" class="form-control input-lg search-input" placeholder="搜索" />
+                                </div>
+                                <div>
+                                    <input type="checkbox" onchange="selectAll(this)" id="checkAll" />
+                                    <label for="checkAll">全选</label>
+                                    <ul id="peoplesTree" class="ztree"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="selected-people">
+                            已选：<br/>
+                            <div class="people-box">
+                                <table class="selected-people-table">
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script src="./assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="./assets/icheck/icheck.min.js"></script>
+    <script src="./assets/zTree/js/jquery.ztree.core.min.js"></script>
+    <script src="./assets/zTree/js/jquery.ztree.excheck.min.js"></script>
+    <script>
+
+        //datetimepicker 初始化
+        $('.time-picker').datetimepicker({
+            // format: 'yyyy-mm-dd hh:ii'
+            default: '09:00',
+            language: 'en',
+            format: 'hh:ii',
+            startView: 1,
+            autoclose: true,
+            minView: 0
+        }).on('changeDate', function (ev) {
+            console.log(ev)
+        });
+        $('.icheck').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%'
+        });
+
+
+        //工作日，假数据
+        var workDay = [
+            {
+                name: '周一',
+                isWork: true,
+                workTime: '09:00-18:00'
+            },
+            {
+                name: '周二',
+                isWork: true,
+                workTime: '09:00-18:00'
+            },
+            {
+                name: '周三',
+                isWork: true,
+                workTime: '09:00-18:00'
+            },
+            {
+                name: '周四',
+                isWork: true,
+                workTime: '09:00-18:00'
+            },
+            {
+                name: '周五',
+                isWork: true,
+                workTime: '09:00-18:00'
+            },
+            {
+                name: '周六',
+                isWork: false,
+                workTime: '休息'
+            },
+            {
+                name: '周日',
+                isWork: false,
+                workTime: '休息'
+            }
+        ]
+
+        var zTreeObj;
+        var setting = {
+            check: {
+                enable: true,
+                chkStyle: "checkbox",
+                chkboxType: { "Y": "ps", "N": "ps" }
+            },
+            callback: {
+                onCheck: function (event, treeId, treeNode) {
+                    
+                    renderSelected();
+                }
+            }
+        };
+
+        //公司员工，假数据
+        var zNodes = [
+            {
+                name: "财务部", children: [
+                    { name: "刘A", checked: true },
+                    { name: "刘B" }
+                ]            
+            },
+            {
+                name: "总经办", children: [
+                    { name: "张A" },
+                    { name: "张B" }
+                ]            
+            },
+            {
+                name: "销售部", children: [
+                    { name: "李A" },
+                    { name: "李B" }
+                ]
+            },
+            {
+                name: "销售部", children: [
+                    { name: "李A" },
+                    { name: "李B" }
+                ]
+            },
+            {
+                name: "销售部", children: [
+                    { name: "李A" },
+                    { name: "李B" }
+                ]
+            },
+            {
+                name: "销售部", children: [
+                    { name: "李A" },
+                    { name: "李B" }
+                ]
+            },
+            {
+                name: "销售部", children: [
+                    { name: "李A" },
+                    { name: "李B" }
+                ]
+            },
+            {
+                name: "销售部", children: [
+                    { name: "李A" },
+                    { name: "李B" }
+                ]
+            }
+        ];
+
+        $(function () {
+            renderWorkDay();
+            renderPeople();
+        });
+
+        //设置工作日modal的渲染
+        function renderWorkDay() {
+            $(workDay).each(function (index, item) {
+                if (item.isWork)
+                    $('.work-day').append('<span>' + item.name + '&nbsp;&nbsp;&nbsp;</span>')
+                $('.work-day-list').append('' +
+                    '<tr>' +
+                    '<td><input type="checkbox" ' + (item.isWork ? 'checked="checked"' : '') + ' class="isWork"></td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td class="work-time">' + item.workTime + '</td>' +
+                    '<td class="set-work-time"><a href="javascript:;">设置</a></td>' +
+                    '</tr>' +
+                    '');
+                     
+            });
+
+            //设置工作日checkbox初始化，状态改变的事件绑定
+            $('.work-day-list input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%'
+            }).on('ifChecked', function(event){
+                var currentTr=$(event.currentTarget).parent().parent().parent();
+                workDay[$(currentTr).index()].isWork=true;
+                currentTr.find('.work-time').html('09:00-18:00');
+                
+            }).on('ifUnchecked', function(event){
+                var currentTr=$(event.currentTarget).parent().parent().parent();
+                workDay[$(currentTr).index()].isWork=false;
+                currentTr.find('.work-time').html('休息');
+                currentTr.attr('edit','false');
+            });
+
+            $('.set-work-time').bind('click',function(event){
+                var currentTr=$(this).parent();
+                var edit=currentTr.attr('edit');
+                if(edit==='true'){
+                    return;
+                }
+
+                
+
+                //改变其他正在编辑行的状态
+                var editRow=currentTr.parent().find('tr[edit="true"]');
+                editRow.attr('edit','false')
+                editRow.find('.work-time').html('09:00-18:00');
+
+                //设置行属性edit=true 表示正在编辑
+                currentTr.attr('edit','true')
+                var workTime=currentTr.find('.work-time');
+                var workTimeHtml=workTime.html();
+                var workTimes=workTimeHtml.split('-');
+                var workTimeStart="09:00";
+                var workTimeEnd="18:00";
+                if(workTimes.length>1){
+                    workTimeStart=workTimes[0];
+                    workTimeEnd=workTimes[1];
+                }
+                var workTimeDom=''+
+                    '<div class="input-time">'+
+                        '<input type="text" class="form-control input-lg time-picker" value="'+workTimeStart+'" style="width:120px;">'+
+                        '<span class="glyphicon glyphicon-time"></span>'+
+                    '</div>'+
+                    '&nbsp;&nbsp;一&nbsp;&nbsp;'+
+                    '<div class="input-time">'+
+                        '<input type="text" class="form-control input-lg time-picker" value="'+workTimeEnd+'" style="width:120px;">'+
+                        '<span class="glyphicon glyphicon-time"></span>'+
+                    '</div>'
+                    ;
+                workTime.html(workTimeDom);
+                $('.time-picker').datetimepicker({
+                    default: '09:00',
+                    language: 'en',
+                    format: 'hh:ii',
+                    startView: 1,
+                    autoclose: true,
+                    minView: 0
+                })
+                
+            }) 
+        }
+
+        //选择部门与人员modal 所有员工渲染
+        function renderPeople() {
+            zTreeObj = $.fn.zTree.init($("#peoplesTree"), setting, zNodes);
+            renderSelected();
+        }
+
+        //选择所有员工事件
+        function selectAll(obj) {
+            zTreeObj.checkAllNodes(obj.checked);
+            renderSelected();
+        }
+
+        //渲染已选择的员工
+        function renderSelected() {
+            var selectedPeoples = zTreeObj.getCheckedNodes();
+            $('.in-attendance-people').html(selectedPeoples.length+'人')
+            var selectedPeoplesDom=''
+            $(selectedPeoples).each(function(index,item){
+                if (item.parentTId === null) {
+                    return;
+                }
+                selectedPeoplesDom+=''+
+                    '<tr><td>'+
+                    '<span class="glyphicon glyphicon-user"></span>'+item.name+'</td>'+
+                    '<td class="remove-selected-people"><span class="glyphicon glyphicon-remove-circle"></span></td></tr>';
+            })
+            $('.selected-people-table').html(selectedPeoplesDom)
+        }
+    </script>
+</body>
+
+</html>

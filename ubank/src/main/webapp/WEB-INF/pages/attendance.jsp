@@ -10,7 +10,7 @@
 				<label class="col-sm-1 control-label" for="company">公司</label>
 	            <div class="col-sm-2">
                    	  <select class="form-control" id="company">
-                   	  	 <option value=""></option>
+                   	  	 <option value="">请选择公司</option>
                    	  	 <option value="20047">深圳市优融网络科技有限公司</option>
                    	  </select>
 	            </div>
@@ -51,15 +51,15 @@
 			
 				<label class="col-sm-1 control-label" for="start_date">开始日期</label>
 	            <div class="col-sm-2" >
-	            	<div class="input-group date" id="datetimepicker_start">
+	            	<div class="input-group date time-picker" id="datetimepicker_start">
 		                <input class="form-control" id="start_date" type="text" placeholder="请选择开始日期"/>
 		            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 	            	</div>
 	            </div>
 	            
 	            <label class="col-sm-1 control-label" for="end_date">结束日期</label>
-		            <div class="col-sm-2">
-		            <div class="input-group date" id="datetimepicker_end">
+		        <div class="col-sm-2">
+		            <div class="input-group date time-picker" id="datetimepicker_end">
 		               <input class="form-control" id="end_date" type="text" placeholder="请选择结束日期" />
 		               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 		            </div>

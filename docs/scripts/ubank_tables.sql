@@ -1,7 +1,8 @@
 ﻿-- ----------------------------
 --  
 -- ----------------------------
-CREATE DATABASE IF NOT EXISTS ubank;
+DROP DATABASE IF EXISTS ubank;
+CREATE DATABASE ubank;
 use ubank;
 -- ----------------------------
 --  Table structure for tbl_users
@@ -269,6 +270,7 @@ insert into tbl_menu(name,url,code,father,icon,sorting) values('Banner管理', '
 insert into tbl_menu(name,url,code,father,icon,sorting) values('行政管理', '', '104', '', '', '104');
 insert into tbl_menu(name,url,code,father,icon,sorting) values('考勤记录', '/backend/attendance', '104001', '104', 'icon-module', '104001');
 insert into tbl_menu(name,url,code,father,icon,sorting) values('考勤统计', '/backend/statistics', '104002', '104', 'icon_classify', '104002');
+insert into tbl_menu(name,url,code,father,icon,sorting) values('考勤规则', '/backend/rule', '104003', '104', 'icon_classify', '104003');
 
 -- ----------------------------
 --  Table structure for `tbl_attendance_records`
@@ -318,6 +320,7 @@ CREATE TABLE `tbl_attendance_statistics` (
 DROP TABLE IF EXISTS `tbl_attendance_rules`;
 CREATE TABLE `tbl_attendance_rules` (
    rid bigint(20) NOT NULL AUTO_INCREMENT COMMENT '考勤规则id',
+   rule_name varchar(50) CHARACTER SET utf8 DEFAULT NULL COMMENT '规则名称',
    clock_on_time varchar(20) DEFAULT NULL COMMENT '上班打卡时间',
    clock_off_time varchar(20) DEFAULT NULL COMMENT '下班打卡时间',
    clock_on_advance_hours int(5) DEFAULT 0 COMMENT '上班打卡提前小时数',
@@ -326,14 +329,33 @@ CREATE TABLE `tbl_attendance_rules` (
    clock_off_end_time varchar(20) DEFAULT NULL COMMENT '最晚下班打卡时间',
    rest_start_time varchar(20) DEFAULT NULL COMMENT '休息开始时间',
    rest_end_time varchar(20) DEFAULT NULL COMMENT '休息结束时间',
+   workday varchar(30) DEFAULT NULL COMMENT '工作日',
+   holiday varchar(300) DEFAULT NULL COMMENT '节假日',
+   holiday_flag  int(5) DEFAULT 0 COMMENT '0:遵循, 1:不遵循',
+   flexible_time int(5) DEFAULT 0 COMMENT '弹性上班时间',
+   flexible_flag int(5) DEFAULT 0 COMMENT '0:开启弹性上班时间, 1:不开启弹性上班时间',
+   postpone_flag int(5) DEFAULT 0 COMMENT '0:下班时间自动顺延, 1:下班时间不顺延',
    longit_latit varchar(50) DEFAULT NULL COMMENT '经纬度',
-   clock_location varchar(50) DEFAULT NULL COMMENT '打卡位置',
+   clock_location varchar(100) DEFAULT NULL COMMENT '打卡位置',
    clock_bounds int(10) DEFAULT NULL COMMENT '打卡范围',
    PRIMARY KEY (rid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='考勤规则表';
 
 insert into tbl_attendance_rules(clock_on_time,clock_off_time,clock_on_advance_hours,clock_on_start_time,clock_off_delay_hours,clock_off_end_time,rest_start_time,rest_end_time,longit_latit,clock_location,clock_bounds)
 	values('09:30','18:30',2,'07:30',6,'00:30','12:30','14:00','113.941664,22.542380','深圳市优融网络科技有限公司','1000');
+	
+-- ----------------------------
+--  Table structure for `tbl_holidays`
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_holidays`;
+CREATE TABLE `tbl_holidays` (
+   hid bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+   year varchar(10) DEFAULT NULL COMMENT '年',
+   holiday varchar(300) DEFAULT NULL COMMENT '节假日日期',
+   workday varchar(300) DEFAULT NULL COMMENT '节假日调休日期',
+   PRIMARY KEY (hid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='节假日期表';	
+	
 
 -- ----------------------------
 --  Table structure for `tbl_users_of_rules`

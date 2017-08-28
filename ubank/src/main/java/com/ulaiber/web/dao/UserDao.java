@@ -103,4 +103,11 @@ public interface UserDao {
 	 * @return
 	 */
 	List<Menu> getAllMenu(Map<String,Object> map);
+	
+	/**
+	 * 获取一个公司的各个部门下的所有用户
+	 * @param comNum
+	 * @return
+	 */
+	List<User> getUsersByComNum(String comNum);
 }
