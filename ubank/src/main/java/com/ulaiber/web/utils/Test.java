@@ -5,11 +5,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.deploy.net.HttpUtils;
+import com.ulaiber.web.model.LeaveRecord;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ulaiber.web.conmon.IConstants;
 
 public class Test {
+	public static final String priKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKh7bxbe5dhwuZzNkeDXrpHx7o5k+uIWrbY1+8c6Oqgq2AfajnK5v10OfQW85xNUn/4TzoRcCOCaK2LZO4QJoQmgs41x45jZNvI/f8EGcJvt2oCs3S2Da98+v6VVfDXoSfgeHlNRcDSYlZF2E31KQLtdTGva9IeECx2CpPIkbVeXAgMBAAECgYA0QlUq2uigQhbQtFLTUxMq4cgFEv1es3oeUpBOM5mOH/vyM7CLlWHuE1hkNzvVmyIlRS+BjqqSQD/E4Wy8f+AbAznky5F8q5Afe5ZKxi+n2M4ZMgh9uryVMcAHCXu1RnOrtsnGjJvp23ku4wZtWCHLNAuQfI9zj6ncq4v50RKKQQJBAN8tSbcT37Mq3Y50zVnnmGxNEgUZKJXwPw/KnO6EeR/Nfpmzy40GQU8y+GGoq5cVY5NDOqYVi6nh21mLXQij9AsCQQDBQt0zU8zurSNaoRYsjhNrHJHQjBt0WuIxtluZz44CTbNQw5/3kA1jVvt1EXOE1hF+l2QVIuLgvgIeHDwvenYlAkAeiusgtAaUVZR2r4N+/1P71lxV+Eh2pKdsuNTbS6Pr90qRLGr6BNYhSZ92dgftqE61U6kOG7q+aBuF2K3FxfJbAkA1oCES4fjmbYJ23mXxvQakXQwU6xufIKzNEIXAWzhTaU4NZgrYPc+JNhSWOl5siJ3YG5f4yXJc3DxoMHt+zSNFAkEA25eGORpWtXERhGXHZR8f3nWIHTAF+EM1O8T7YXp+y7sWs8YvtNI3ZtzjzncHWk4YdScNqkXC1UJz2hokLUR7Aw==";
+	public static String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoe28W3uXYcLmczZHg166R8e6OZPriFq22NfvHOjqoKtgH2o5yub9dDn0FvOcTVJ/+E86EXAjgmiti2TuECaEJoLONceOY2TbyP3/BBnCb7dqArN0tg2vfPr+lVXw16En4Hh5TUXA0mJWRdhN9SkC7XUxr2vSHhAsdgqTyJG1XlwIDAQAB";
+
 
 	public static void main(String[] args) {
 //		UUID uuid = UUID.randomUUID();
@@ -141,10 +149,78 @@ public class Test {
 //	    return post("https://sms.yunpian.com/v2/sms/single_send.json", params);//请自行使用post方式请求,可使用Apache HttpClient
 	}
 
-	public static final String priKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKh7bxbe5dhwuZzNkeDXrpHx7o5k+uIWrbY1+8c6Oqgq2AfajnK5v10OfQW85xNUn/4TzoRcCOCaK2LZO4QJoQmgs41x45jZNvI/f8EGcJvt2oCs3S2Da98+v6VVfDXoSfgeHlNRcDSYlZF2E31KQLtdTGva9IeECx2CpPIkbVeXAgMBAAECgYA0QlUq2uigQhbQtFLTUxMq4cgFEv1es3oeUpBOM5mOH/vyM7CLlWHuE1hkNzvVmyIlRS+BjqqSQD/E4Wy8f+AbAznky5F8q5Afe5ZKxi+n2M4ZMgh9uryVMcAHCXu1RnOrtsnGjJvp23ku4wZtWCHLNAuQfI9zj6ncq4v50RKKQQJBAN8tSbcT37Mq3Y50zVnnmGxNEgUZKJXwPw/KnO6EeR/Nfpmzy40GQU8y+GGoq5cVY5NDOqYVi6nh21mLXQij9AsCQQDBQt0zU8zurSNaoRYsjhNrHJHQjBt0WuIxtluZz44CTbNQw5/3kA1jVvt1EXOE1hF+l2QVIuLgvgIeHDwvenYlAkAeiusgtAaUVZR2r4N+/1P71lxV+Eh2pKdsuNTbS6Pr90qRLGr6BNYhSZ92dgftqE61U6kOG7q+aBuF2K3FxfJbAkA1oCES4fjmbYJ23mXxvQakXQwU6xufIKzNEIXAWzhTaU4NZgrYPc+JNhSWOl5siJ3YG5f4yXJc3DxoMHt+zSNFAkEA25eGORpWtXERhGXHZR8f3nWIHTAF+EM1O8T7YXp+y7sWs8YvtNI3ZtzjzncHWk4YdScNqkXC1UJz2hokLUR7Aw==";
-	public static String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoe28W3uXYcLmczZHg166R8e6OZPriFq22NfvHOjqoKtgH2o5yub9dDn0FvOcTVJ/+E86EXAjgmiti2TuECaEJoLONceOY2TbyP3/BBnCb7dqArN0tg2vfPr+lVXw16En4Hh5TUXA0mJWRdhN9SkC7XUxr2vSHhAsdgqTyJG1XlwIDAQAB";
 
+	/**----------------------------------------------------------------------------------------------*/
+	//申请请假test
+    @org.junit.Test
+	public void apply(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userid","365");
+		map.put("leaveType","2");
+		map.put("leaveTime",24);
+		map.put("startDate","2017-08-24");
+		map.put("endDate","2017-08-25");
+		map.put("auditor","364,366");
+		map.put("reason","生病，去一医院看病");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/applyForLeave",map);
+		System.out.print(result);
+	}
 
+	//查询个人申请记录
+	@org.junit.Test
+	public void queryApplyRecord(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userid","369");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
+		System.out.print(result);
+	}
 
+	//取消请假申请
+	@org.junit.Test
+	public void cancelapply(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("applyId","106");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/cancelApply",map);
+		System.out.print("~~~~~~~~取消申请结果为："+result);
+	}
+
+	//查询工作提醒
+	@org.junit.Test
+	public void getWorkRemind(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkRemind",map);
+		System.out.print("~~~~~~~~工作提醒结果为："+result);
+	}
+
+	//查询工作审批
+	@org.junit.Test
+	public void getWorkAudit(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkAudit",map);
+		System.out.print("~~~~~~~~工作审批结果为："+result);
+	}
+
+	//待审批数据查询
+	@org.junit.Test
+	public void queryAuditRecord(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		map.put("mark","0");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
+		System.out.print("~~~~~~~~工作审批结果为："+result);
+	}
+
+	//确认审批
+	@org.junit.Test
+	public void confirmAudit(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		map.put("recordNo","106");
+		map.put("status","1");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);
+		System.out.print("~~~~~~~~工作审批结果为："+result);
+	}
 
 }

@@ -137,4 +137,17 @@ public class IConstants
 		WORK_DAY.put("6", "周六");
 		WORK_DAY.put("7", "周日");
 	}
+
+	//个人待审批记录标识
+	public static final int Pengding_AUDIT_MARK = 0;
+
+	//个人已审批记录标识
+	public static final int Already_APPLY_MARK = 1;
+
+	//是否显示审批按钮标识 0 否，1 是
+	public static final int ENABLED = 1;
+
+	//是否显示审批按钮标识 0 否，1 是
+	public static final int DISABLED = 0;
+
 }

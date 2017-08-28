@@ -205,6 +205,18 @@ var CompanyFun = {
             return;
         }
 
+        //判断公司账户是否重复
+        var accArray = [];
+        $(".form-box>.add-form-item").find("input[name='accounts']").each(function () {
+            accArray.push($(this).val());
+        });
+        var nary = accArray.sort();
+        for (var i = 0; i <accArray.length; i++){
+            if(nary[i] == nary[i+1]){
+                Ewin.alert("公司账户有重复，请重新添加");
+                return;
+            }
+        }
         //获取所有账户信息
         var arr=[];
         var allBankAccount = [];

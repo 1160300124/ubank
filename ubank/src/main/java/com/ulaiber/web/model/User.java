@@ -100,6 +100,9 @@ public class User implements Serializable {
 	//角色标识
 	private String sysflag;
 
+	//员工头像
+	private String image;
+
 	public long getId() {
 		return id;
 	}
@@ -354,5 +357,13 @@ public class User implements Serializable {
 
 	public void setSysflag(String sysflag) {
 		this.sysflag = sysflag;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 }
