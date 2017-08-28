@@ -1,5 +1,6 @@
 package com.ulaiber.web.controller.api;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.ulaiber.web.model.Attendance;
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
+import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.AttendanceRuleService;
@@ -74,8 +76,8 @@ public class AttendanceApiController extends BaseController {
 	@ResponseBody
 	public Map<String, Object> getClockInfo(String mobile, HttpServletRequest request, HttpServletResponse response){
 		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+		
 		Map<String, Object> data = new HashMap<String, Object>(); 
-		data.put("isRestDay", false);
 		data.put("clockOnTime", rule.getClockOnTime());
 		data.put("clockOffTime", rule.getClockOffTime());
 		
@@ -83,6 +85,30 @@ public class AttendanceApiController extends BaseController {
 //		String datetime = "2017-08-19 00:30";
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
+		
+		boolean isRestDay = false;
+		//节假日
+		Holiday holiday = ruleService.getHolidaysByYear(DateTimeUtil.getYear(new Date()) + "");
+		if (holiday != null){
+			List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
+			List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
+			if (holidays.contains(today) && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0
+					|| time.compareTo(rule.getClockOffEndTime()) > 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0)){
+				isRestDay = true;
+			} else {
+				String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
+				if (rule.getWorkday().contains(workday) || workdays.contains(today)){
+					isRestDay = false;
+				} else {
+					isRestDay = true;
+				}
+			}
+		}
+		
+		if (isRestDay){
+			data.put("isRestDay", isRestDay);
+			return data;
+		}
 		String yesterday = "";
 		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
 		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
@@ -91,11 +117,17 @@ public class AttendanceApiController extends BaseController {
 			
 		}
 		
-		//0上班卡  1下班卡  2更新 打卡
+		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡
 		int type = 0;
 		//按rid顺序查出考勤记录，<=2条记录
 		List<Attendance> records = service.getRecordsByDateAndMobile(today, yesterday, rule.getClockOnStartTime(), rule.getClockOffEndTime(), mobile);
-		if (null != records && records.size() > 0){
+		if (null == records || records.size() == 0){
+			//如果加班到凌晨打卡，当天是没有打卡记录的，需判断当前打卡时间是否在最晚下班打卡时间之内，如在则为昨天的下班卡，否则为今天的上班卡
+			if (time.compareTo(rule.getClockOffTime()) >= 0
+					|| time.compareTo(rule.getClockOffEndTime()) <= 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				type = 1;
+			}
+		} else {
 			if (records.size() == 1){
 				if (StringUtils.equals(records.get(0).getClockType(), "0")){
 					type = 1;
@@ -110,6 +142,18 @@ public class AttendanceApiController extends BaseController {
 				record.setDept(null);
 			}
 		}
+		
+		//当前时间<最早上班打卡时间&&最晚下班打卡时间>最早上班打卡时间 || 当前时间<最早上班打卡时间&&最晚下班打卡时间<最早上班打卡时间&&当前时间>最晚下班打卡时间
+		if (time.compareTo(rule.getClockOnStartTime()) < 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0
+				|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) > 0)){
+			type = 3;
+		}
+		//当前时间>最晚下班打卡时间&&最晚下班打卡时间>最早上班打卡时间 || 当前时间>最晚下班打卡时间&&最晚下班打卡时间<最早上班打卡时间&&当前时间<最早上班打卡时间
+		else if (time.compareTo(rule.getClockOffEndTime()) > 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0) 
+				|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOnStartTime()) < 0){ 
+			type = 4;
+		}
+		
 		data.put("type", type);
 		data.put("records", records);
 		return data;

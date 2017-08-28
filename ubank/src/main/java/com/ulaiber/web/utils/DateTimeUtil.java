@@ -229,7 +229,7 @@ public class DateTimeUtil {
 	}
 	
 	/**
-	 * 根据传入的日期和天，小时，分钟数求日期
+	 * 根据指定日期和天，小时，分钟数求日期
 	 * @param strdate  yyyy-MM-dd HH:mm
 	 * @param day 前几天或后几天
 	 * @param hour 前几个小时或后几个小时
@@ -243,5 +243,18 @@ public class DateTimeUtil {
 		calendar.add(calendar.HOUR, hour);
 		calendar.add(calendar.MINUTE, minute);
 		return date2Str(calendar.getTime(), DATE_FORMAT_MINUTETIME);
+	}
+	
+	/**
+	 * 查看指定日期是星期几 yyyy-MM-dd
+	 * @param strdate
+	 * @return
+	 */
+	public static int getWeekday(String strdate){
+        Calendar calendar = Calendar.getInstance();
+        Date date = str2Date(strdate, DATE_FORMAT_DAYTIME);
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_WEEK, -1);
+        return calendar.get(Calendar.DAY_OF_WEEK);
 	}
 }
