@@ -268,7 +268,7 @@ public class LeaveController extends BaseController {
         }
         //0 待审批，1 已审批
         if(mark.equals("0")){
-            List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId);  //根据申请记录编号获取审批人
+            List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId);  //根据申请记录编号获取待审批人
             List<ApplyForVO> list = new ArrayList<>();
             if(auList.size() > 0){
                 for (int i = 0 ; i < auList.size() ; i++){
@@ -308,13 +308,80 @@ public class LeaveController extends BaseController {
             logger.info("查询待审批数据成功");
             return resultInfo;
         }else if(mark.equals("1")){
-            List<LeaveRecord> list2 = leaveService.queryAlreadRecord(userId); //获取已审批记录
+            List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId);  //根据申请记录编号获取已审批人
+            List<ApplyForVO> list = new ArrayList<>();
+            if(auditorList.size() > 0){
+                for (int i = 0; i < auditorList.size(); i++){
+                    int id = Integer.parseInt(auditorList.get(i).getRecordNo());
+                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id); //获取已审批记录
+                    list.add(applyForVO);
+                    String recordNo = auditorList.get(i).getRecordNo();
+                    List<LeaveAudit> list2 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
+                    for (int j = 0; j < list.size(); j++){
+                        if(String.valueOf(list.get(j).getId()).equals(auditorList.get(i).getRecordNo())){
+                            list.get(j).setAuditorStatus(list2);
+                            list.get(j).setStatus(auditorList.get(i).getStatus());
+                        }
+                    }
+                }
+            }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("查询已审批数据成功");
-            resultInfo.setData(list2);
+            resultInfo.setData(list);
             logger.info("查询已审批数据成功");
             return resultInfo;
         }
+        return resultInfo;
+    }
+
+
+    /**
+     * 确认审批
+     * @param userId 用户id
+     * @param recordNo 申请记录id
+     * @param status 审批状态：1 审批通过，2 驳回
+     * @return ResultInfo
+     */
+    @RequestMapping("confirmAudit")
+    @ResponseBody
+    public ResultInfo confirmAudit(String userId,String recordNo,String status){
+        logger.info("开始确认审批操作");
+        ResultInfo resultInfo = new ResultInfo();
+        if(StringUtil.isEmpty(userId)){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("用户ID为空");
+            logger.info("用户ID为空");
+            return resultInfo;
+        }
+        if(StringUtil.isEmpty(recordNo)){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("申请记录ID为空");
+            logger.info("申请记录ID为空");
+            return resultInfo;
+        }
+        if(StringUtil.isEmpty(status)){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("审批状态为空");
+            logger.info("审批状态为空");
+            return resultInfo;
+        }
+        int result = leaveService.confirmAudit(userId,recordNo,status);
+        if(result <= 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("审批失败");
+            logger.info("审批失败");
+            return resultInfo;
+        }
+        int result2 = leaveService.updateRecord(recordNo,status);  //更新申请记录为最新的状态
+        if(result2 <= 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("审批失败");
+            logger.info("审批失败");
+            return resultInfo;
+        }
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        resultInfo.setMessage("审批成功");
+        logger.info("审批成功");
         return resultInfo;
     }
 

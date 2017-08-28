@@ -53,8 +53,13 @@
     </select>
 
     <!--获取已审批记录-->
-    <select id="queryAlreadRecord" parameterType="String" resultType="com.ulaiber.web.model.LeaveRecord">
+    <select id="queryAlreadRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
         select id,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable from tbl_leave_record
-        where status &lt;&gt; '0' and auditor like concat('%',#{userId},'%') order by  createDate DESC
+        where id = #{id}
     </select>
+
+    <!--更新申请记录为最新的状态-->
+    <update id="updateRecord" parameterType="Map" >
+        UPDATE tbl_leave_record set status = #{status} where id = #{recordNo}
+    </update>
 </mapper>

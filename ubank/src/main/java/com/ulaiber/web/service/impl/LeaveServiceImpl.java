@@ -106,8 +106,8 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public List<LeaveRecord> queryAlreadRecord(String userId) {
-        return leaveDao.queryAlreadRecord(userId);
+    public ApplyForVO queryAlreadRecord(int id) {
+        return leaveDao.queryAlreadRecord(id);
     }
 
     @Override
@@ -126,6 +126,28 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     @Override
     public List<LeaveAudit> queryAuditorByRecord(String recordNo) {
         return leaveAuditDao.queryAuditorByRecord(recordNo);
+    }
+
+    @Override
+    public List<LeaveAudit> queryAuditorByUserId(String userId) {
+        return leaveAuditDao.queryAuditorByUserId(userId);
+    }
+
+    @Override
+    public int confirmAudit(String userId, String recordNo, String status) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId" , userId);
+        map.put("recordNo" , recordNo);
+        map.put("status" , status);
+        return leaveAuditDao.confirmAudit(map);
+    }
+
+    @Override
+    public int updateRecord(String recordNo,String status) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("recordNo" , recordNo);
+        map.put("status" , status);
+        return leaveDao.updateRecord(map);
     }
 
 

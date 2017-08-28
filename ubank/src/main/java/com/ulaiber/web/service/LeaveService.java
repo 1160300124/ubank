@@ -35,11 +35,17 @@ public interface LeaveService {
 
     ApplyForVO queryPeningRecord(int id); //获取待审批记录
 
-    List<LeaveRecord> queryAlreadRecord(String userId); //获取已审批记录
+    ApplyForVO queryAlreadRecord(int id); //获取已审批记录
 
     List<LeaveAudit> getAuditorByUserId(String userId); //根据申请记录编号获取审批人
 
     List<LeaveAudit> getAuditorBySort(String recordNo, int sortValue); //根据排序号和申请记录编号获取审批人
 
-    List<LeaveAudit> queryAuditorByRecord(String recordNo);  //根据申请记录号查询审批人记录
+    List<LeaveAudit> queryAuditorByRecord(String recordNo);  //根据申请记录号查询待审批人记录
+
+    List<LeaveAudit> queryAuditorByUserId(String userId);  //根据申请记录编号获取已审批人
+
+    int confirmAudit(String userId, String recordNo, String status);  //确认审批
+
+    int updateRecord(String recordNo,String status);  //更新申请记录为最新的状态
 }

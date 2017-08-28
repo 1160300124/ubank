@@ -202,4 +202,15 @@ public class Test {
 		System.out.print("~~~~~~~~工作审批结果为："+result);
 	}
 
+	//确认审批
+	@org.junit.Test
+	public void confirmAudit(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","365");
+		map.put("recordNo","106");
+		map.put("status","1");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);
+		System.out.print("~~~~~~~~工作审批结果为："+result);
+	}
+
 }
