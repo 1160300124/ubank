@@ -1,6 +1,10 @@
 package com.ulaiber.web.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.ulaiber.web.model.AttendanceRule;
+import com.ulaiber.web.model.Holiday;
 
 /** 
  * 考勤规则数据接口
@@ -39,4 +43,47 @@ public interface AttendanceRuleDao {
 	 * @return
 	 */
 	AttendanceRule getRuleByMobile(String mobile);
+	
+	/**
+	 * 获取全部考勤规则
+	 * @param offset
+	 * @param limit
+	 * @return
+	 */
+	List<AttendanceRule> getRules(Map<String, Object> params);
+	
+	/**
+	 * 获取总记录数
+	 * @return
+	 */
+	int getCount();
+	
+	/**
+	 * 根据指定年获取节假日期
+	 * @param year
+	 * @return
+	 */
+	Holiday getHolidaysByYear(String year);
+	
+	/**
+	 * 批量插入关系表
+	 * @param ids
+	 * @return
+	 */
+	int batchInsertUserOfRule(List<Map<String, Object>> ids);
+	
+	/**
+	 * 批量删除规则
+	 * @param rids
+	 * @return
+	 */
+	int deleteRulesByRids(List<Long> rids);
+	
+	
+	/**
+	 * 批量删除规则和用户关系
+	 * @param rids
+	 * @return
+	 */
+	int deleteUserOfRulesByRids(List<Long> rids);
 }

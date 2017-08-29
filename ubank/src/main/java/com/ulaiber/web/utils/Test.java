@@ -1,5 +1,6 @@
 package com.ulaiber.web.utils;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,10 +118,19 @@ public class Test {
 //		String time = datetime.split(" ")[1];
 //		System.out.println("--------------" + date + "-------------" + time);
         
-		String time = DateTimeUtil.date2Str(new Date(), "yyyy-MM-dd HH:mm");
-        System.out.println(time);
-        System.out.println(DateTimeUtil.getfutureTime(time, 0, 12, 0));
-        System.out.println(DateTimeUtil.getfutureTime(time, -1, 0, 0).split(" ")[0]);
+//		String time = DateTimeUtil.date2Str(new Date(), "yyyy-MM-dd HH:mm");
+//        System.out.println(time);
+//        System.out.println(DateTimeUtil.getfutureTime(time, 0, 12, 0));
+//        System.out.println(DateTimeUtil.getfutureTime(time, -1, 0, 0).split(" ")[0]);
+//		System.out.println(DateTimeUtil.getWeekday("2017-08-26"));
+		String[] holidays = {"2017-08-26", "2017-08-27" ,"2017-08-28"};
+		System.out.println(Arrays.asList(holidays));
+		System.out.println(DateTimeUtil.getYear(new Date()));
+		
+		String daytime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
+		String clockOnStartTime = DateTimeUtil.getfutureTime(daytime + " " + "10:30", 0, -2, 0).split(" ")[1];
+		String clockOffEndTime = DateTimeUtil.getfutureTime(daytime + " " + "19:00", 0, 6, 0).split(" ")[1];
+		System.out.println(clockOnStartTime + "--------------------" + clockOffEndTime);
 	}
 	
 	/* 单条短信发送,智能匹配短信模板

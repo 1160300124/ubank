@@ -1,6 +1,9 @@
 package com.ulaiber.web.service;
 
+import java.util.List;
+
 import com.ulaiber.web.model.AttendanceRule;
+import com.ulaiber.web.model.Holiday;
 
 /** 
  * <一句话概述功能>
@@ -17,7 +20,7 @@ public interface AttendanceRuleService {
 	 * @param rule
 	 * @return
 	 */
-	boolean save(AttendanceRule rule);
+	boolean save(AttendanceRule rule, String ids);
 	
 	/**
 	 * 更新规则
@@ -39,5 +42,33 @@ public interface AttendanceRuleService {
 	 * @return
 	 */
 	AttendanceRule getRuleByMobile(String mobile);
+	
+	/**
+	 * 获取全部考勤规则
+	 * @param offset
+	 * @param limit
+	 * @return
+	 */
+	List<AttendanceRule> getRules(int offset, int limit, String orderby);
+	
+	/**
+	 * 获取总记录数
+	 * @return
+	 */
+	int getCount();
+	
+	/**
+	 * 根据指定年获取节假日期
+	 * @param year
+	 * @return
+	 */
+	Holiday getHolidaysByYear(String year);
+	
+	/**
+	 * 批量删除规则
+	 * @param rids
+	 * @return
+	 */
+	boolean deleteRulesByRids(List<Long> rids);
 	
 }

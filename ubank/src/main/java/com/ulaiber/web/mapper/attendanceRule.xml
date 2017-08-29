@@ -10,6 +10,7 @@
 <mapper namespace="com.ulaiber.web.dao.AttendanceRuleDao">
     <resultMap id="AttendanceRuleMap" type="AttendanceRule" >
     	<id column="rid" property="rid" jdbcType="BIGINT" />
+    	<result column="rule_name" property="ruleName" jdbcType="VARCHAR" />
     	<result column="clock_on_time" property="clockOnTime" jdbcType="VARCHAR" />
     	<result column="clock_off_time" property="clockOffTime" jdbcType="VARCHAR" />
     	<result column="clock_on_advance_hours" property="clockOnAdvanceHours" jdbcType="INTEGER" />
@@ -18,22 +19,30 @@
     	<result column="clock_off_end_time" property="clockOffEndTime" jdbcType="VARCHAR" />
 	   	<result column="rest_start_time" property="restStartTime" jdbcType="VARCHAR" />
     	<result column="rest_end_time" property="restEndTime" jdbcType="VARCHAR" />
+   		<result column="workday" property="workday" jdbcType="VARCHAR" />
+   		<result column="holiday" property="holiday" jdbcType="VARCHAR" />
+   		<result column="holiday_flag" property="holidayFlag" jdbcType="INTEGER" />
+   		<result column="flexible_time" property="flexibleTime" jdbcType="INTEGER" />
+   		<result column="flexible_flag" property="flexibleFlag" jdbcType="INTEGER" />
+   		<result column="postpone_flag" property="postponeFlag" jdbcType="INTEGER" />
 		<result column="longit_latit" property="longit_latit" jdbcType="VARCHAR" />    	
     	<result column="clock_location" property="clockLocation" jdbcType="VARCHAR" />
     	<result column="clock_bounds" property="clockBounds" jdbcType="INTEGER" />
    </resultMap>
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
-	<insert id="save" parameterType="AttendanceRule" >
-		insert into tbl_attendance_rules(clock_on_time,clock_off_time,clock_on_advance_hours,clock_on_start_time,clock_off_delay_hours,clock_off_end_time,
-			rest_start_time,rest_end_time,longit_latit,clock_location,clock_bounds) values(#{clockOnTime}, #{clockOffTime}, #{clockOnAdvanceHours}, 
-			#{clockOnStartTime}, #{clockOffDelayHours}, #{clockOffEndTime}, #{restStartTime}, #{restEndTime}, #{longit_latit}, #{clockLocation}, #{clock_bounds}) 
+	<insert id="save" parameterType="AttendanceRule" useGeneratedKeys="true" keyProperty="rid">
+		insert into tbl_attendance_rules(rule_name,clock_on_time,clock_off_time,clock_on_advance_hours,clock_on_start_time,clock_off_delay_hours,clock_off_end_time,
+			rest_start_time,rest_end_time,workday,holiday,holiday_flag,flexible_time,flexible_flag,postpone_flag,longit_latit,clock_location,clock_bounds)
+		values(#{ruleName}, #{clockOnTime}, #{clockOffTime}, #{clockOnAdvanceHours}, #{clockOnStartTime}, #{clockOffDelayHours}, #{clockOffEndTime}, #{restStartTime},
+		#{restEndTime}, #{workday}, #{holiday}, #{holidayFlag}, #{flexibleTime}, #{flexibleFlag}, #{postponeFlag}, #{longit_latit}, #{clockLocation}, #{clockBounds}) 
 	</insert>
 	
 	<update id="update" parameterType="AttendanceRule">
-		update tbl_attendance_rules set clock_on_time=#{clockOnTime},clock_off_time=#{clockOffTime},clock_on_advance_hours=#{clockOnAdvanceHours},
+		update tbl_attendance_rules set rule_name=#{ruleName},clock_on_time=#{clockOnTime},clock_off_time=#{clockOffTime},clock_on_advance_hours=#{clockOnAdvanceHours},
 			clock_on_start_time=#{clockOnStartTime},clock_off_delay_hours=#{clockOffDelayHours},clock_off_end_time=#{clockOffEndTime},rest_start_time=#{restStartTime},
-			rest_end_time=#{restEndTime},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clock_bounds}
+			rest_end_time=#{restEndTime},workday=#{workday},holiday= #{holiday},holiday_flag=#{holidayFlag},flexible_time=#{flexibleTime},flexible_flag= #{flexibleFlag},
+			postpone_flag=#{postponeFlag},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clockBounds}
 	</update>
 	
 	<select id="getRuleByUserId" parameterType="Long" resultMap="AttendanceRuleMap">
@@ -43,5 +52,38 @@
 	<select id="getRuleByMobile" parameterType="String" resultMap="AttendanceRuleMap">
 		select a.* from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid left join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile}
 	</select>
-
+	
+	<select id="getRules" parameterType="Map" resultMap="AttendanceRuleMap">
+		select * from tbl_attendance_rules order by rid limit #{offset},#{limit}
+	</select>
+	
+	<select id="getCount" resultType="Integer">
+		select count(1) from tbl_attendance_rules
+	</select>
+	
+	<select id="getHolidaysByYear" parameterType="String" resultType="com.ulaiber.web.model.Holiday">
+		select * from tbl_holidays where year=#{year}
+	</select>
+	
+	<insert id="batchInsertUserOfRule" parameterType="java.util.List">
+		insert into tbl_users_of_rules(userId,rid,deptId,companyId) values
+		<foreach collection ="list" item="ur" index= "index" separator =",">
+             (#{ur.userId}, #{ur.rid}, #{ur.deptId}, #{ur.companyId})
+        </foreach >
+	</insert>
+	
+	<delete id="deleteRulesByRids" parameterType="java.util.List">
+		delete from tbl_attendance_rules where rid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+	<delete id="deleteUserOfRulesByRids" parameterType="java.util.List">
+		delete from tbl_users_of_rules where rid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
 </mapper>

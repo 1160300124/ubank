@@ -11,6 +11,7 @@ import java.util.Map;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import com.ulaiber.web.utils.HttpsUtil;
 
 
 public class MapTest {
@@ -44,22 +45,22 @@ public class MapTest {
         System.out.println(distance);
         
         
-        String apiUrl1 = "http://10.17.1.136:8080/ubank/api/v1/refreshLocation";
-        Map<String, Object> params1 = new HashMap<String, Object>();//请求参数集合
-        params1.put("longitude", "113.944173");
-        params1.put("latitude", "22.538667");
-        String response1 = HttpsUtil.doPost1(apiUrl1, params1);
-        System.out.println(response1);
+//        String apiUrl1 = "http://10.17.1.136:8080/ubank/api/v1/refreshLocation";
+//        Map<String, Object> params1 = new HashMap<String, Object>();//请求参数集合
+//        params1.put("longitude", "113.944173");
+//        params1.put("latitude", "22.538667");
+//        String response1 = HttpsUtil.doPost1(apiUrl1, params1);
+//        System.out.println(response1);
         
-//        String apiUrl = "http://localhost:8080/ubank/api/v1/clock";
-//        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//        params.put("mobile", "15919477086");
-//        params.put("longitude", "113.944173");
-//        params.put("latitude", "22.538667");
-//        params.put("location", "深圳市优融网络科技有限公司M-10");
-//        params.put("device", "android-8.0土豪金版");
-//        String response = HttpsUtil.doPost1(apiUrl, params);
-//        System.out.println(response);
+        String apiUrl = "http://localhost:8080/ubank/api/v1/clock";
+        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+        params.put("mobile", "15919477086");
+        params.put("longitude", "113.944173");
+        params.put("latitude", "22.538667");
+        params.put("location", "深圳市优融网络科技有限公司M-10");
+        params.put("device", "android-8.0土豪金版");
+        String response = HttpsUtil.doPost1(apiUrl, params);
+        System.out.println(response);
         
         String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
         Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合

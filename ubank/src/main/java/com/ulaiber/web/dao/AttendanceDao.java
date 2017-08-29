@@ -61,5 +61,5 @@ public interface AttendanceDao {
 	 * @return
 	 */
 	boolean updateClockOffInfo(Attendance record);
-
+	
 }
