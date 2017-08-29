@@ -48,7 +48,7 @@
 			<li>退出</li>
 		</ul>
 	</div>
-	<span class="fr">深圳市优玩付信息技术有限公司</span>
+	<span class="fr">${BACKENDUSER.com_name}</span>
 </div>
 <!-- 公共导航菜单 -->
 <div class="nav">

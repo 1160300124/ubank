@@ -839,4 +839,5 @@ public class PermissionController extends BaseController {
         List<Departments> list = permissionService.getDeptEmpCount();
         return list;
     }
+
 }

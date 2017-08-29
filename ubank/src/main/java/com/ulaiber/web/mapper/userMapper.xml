@@ -32,6 +32,7 @@
     	<result property="groupNumber" column="groupNumber" jdbcType="VARCHAR" />
     	<result property="companyNumber" column="companyNumber" jdbcType="VARCHAR" />
     	<result property="dept_number" column="dept_number" jdbcType="VARCHAR" />
+    	<result property="com_name" column="com_name" jdbcType="VARCHAR" />
     	<result property="remark" column="remark" jdbcType="VARCHAR" />
     	<result property="login_fail_num" column="login_fail_num" jdbcType="INTEGER" />
     	<result property="login_fail_time" column="login_fail_time" jdbcType="VARCHAR" />
@@ -78,9 +79,10 @@
 	</select>
 	
 	<select id="getUserByName" resultMap="UserMap">
-		select a.*,b.groupNumber,b.dept_number,c.companyNumber,b.sysflag from tbl_users a
+		select a.*,b.groupNumber,b.dept_number,c.companyNumber,b.sysflag,e.name as com_name from tbl_users a
 		LEFT join tbl_roots b on a.user_id = b.userid
 		left join tbl_roles c on a.role_id = c.role_id
+		left join tbl_company e on b.companyNumber = e.companyNumber
 		 where a.user_name = #{userName}
 	</select>
 
