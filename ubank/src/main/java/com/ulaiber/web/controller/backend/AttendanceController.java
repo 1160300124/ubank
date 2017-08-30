@@ -10,13 +10,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.AttendanceService;
+import com.ulaiber.web.utils.ObjUtil;
 
 /** 
  * 考勤记录后台控制器
@@ -87,6 +91,29 @@ public class AttendanceController extends BaseController {
 		
 		logger.info("getRecords end...");
 		return data;
+	}
+	
+	@RequestMapping(value = "deleteRecords", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo deleteRecords(@RequestBody List<Long> rids, HttpServletRequest request, HttpServletResponse response){
+		
+		logger.debug("deleteRecords start...");
+		ResultInfo info = new ResultInfo();
+		if (!ObjUtil.notEmpty(rids)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数为空！");
+			return info;
+		}
+		boolean flag = service.deleteRecordsByRids(rids);
+		 if (flag){
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("删除成功");;
+		} else {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("删除失败");
+		}
+		 logger.debug("deleteRecords end...");
+		return info;
 	}
 
 }

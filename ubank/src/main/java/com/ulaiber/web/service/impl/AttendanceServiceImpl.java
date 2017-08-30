@@ -66,27 +66,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		
-		att.setClockDate(today);
-		att.setClockTime(time);
-		
-		String yesterday = "";
-		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
-		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
-			//转钟后的前一天日期 yyyy-MM-dd 
-			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-		}
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("userId", att.getUserId());
-		params.put("clockType", "");
-		params.put("clockDate", today);
-		params.put("yesterday", yesterday);
-		params.put("clockOnStartTime", rule.getClockOnStartTime());
-		params.put("clockOffEndTime", rule.getClockOffEndTime());
-		
-		//查询该用户当天的打卡记录
-		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
-		
 		boolean isRestDay = false;
 		String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
 		//节假日
@@ -118,14 +97,35 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			return info;
 		}
 		
+		att.setClockDate(today);
+		att.setClockTime(time);
+		
+		String yesterday = "";
+		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
+		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
+			//转钟后的前一天日期 yyyy-MM-dd 
+			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
+		}
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", att.getUserId());
+		params.put("clockType", "");
+		params.put("clockDate", today);
+		params.put("yesterday", yesterday);
+		params.put("clockOnStartTime", rule.getClockOnStartTime());
+		params.put("clockOffEndTime", rule.getClockOffEndTime());
+		
+		//查询该用户当天的打卡记录
+		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
+		
 		String clockOnTime= rule.getClockOnTime();
 		String clockOffTime = rule.getClockOffTime();
 		//是否开启弹性时间
 		if (rule.getFlexibleFlag() == 0){
-			clockOnTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOnTime(), 0, 0, rule.getFlexibleTime());
+			clockOnTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOnTime(), 0, 0, rule.getFlexibleTime()).split(" ")[1];
 			//下班是否顺延
 			if (rule.getPostponeFlag() == 0){
-				clockOffTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOffTime(), 0, 0, rule.getFlexibleTime());
+				clockOffTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOffTime(), 0, 0, rule.getFlexibleTime()).split(" ")[1];
 			}
 		}
 		
@@ -308,6 +308,12 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	public boolean updateClockOffInfo(Attendance record) {
 
 		return dao.updateClockOffInfo(record);
+	}
+
+	@Override
+	public boolean deleteRecordsByRids(List<Long> rids) {
+
+		return dao.deleteRecordsByRids(rids) > 0;
 	}
 
 }

@@ -338,6 +338,7 @@ CREATE TABLE `tbl_attendance_rules` (
    longit_latit varchar(50) DEFAULT NULL COMMENT '经纬度',
    clock_location varchar(100) DEFAULT NULL COMMENT '打卡位置',
    clock_bounds int(10) DEFAULT NULL COMMENT '打卡范围',
+   user_or_rule_counts int(5) DEFAULT 0 COMMENT '参与规则人数',
    PRIMARY KEY (rid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='考勤规则表';
 
@@ -366,7 +367,7 @@ CREATE TABLE `tbl_users_of_rules` (
    rid bigint(20) NOT NULL COMMENT '考勤规则id',
    deptid int(11) NOT NULL COMMENT '部门id',
    companyid int(11) NOT NULL COMMENT '公司id',
-   PRIMARY KEY (userid,rid)
+   PRIMARY KEY (userid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户与考勤规则关联表';
 
 insert into tbl_users_of_rules(userid,rid,deptid,companyid) values(315,1,'40000','20006');

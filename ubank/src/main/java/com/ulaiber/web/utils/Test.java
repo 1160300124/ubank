@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.deploy.net.HttpUtils;
 import com.ulaiber.web.model.LeaveRecord;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

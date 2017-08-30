@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ulaiber.web.dao.AttendanceRuleDao;
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.UserOfRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.BaseService;
 
@@ -34,31 +36,63 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean save(AttendanceRule rule, String ids) {
+	public boolean save(AttendanceRule rule, String data, String companyId) {
+		boolean flag = false;
 		if (dao.save(rule) > 0){
-			List<String> idList = Arrays.asList(ids.split(","));
-			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			for (String id : idList){
-				Map<String ,Object> map = new HashMap<String, Object>();
-				map.put("userId", id);
-				map.put("rid", rule.getRid());
-				map.put("deptId", 0);
-				map.put("companyId", 0);
-				list.add(map);
-			}
-			if (dao.batchInsertUserOfRule(list) > 0){
-				return true;
+			String[] deptId_userIds = data.split("-");
+			for (String deptId_userId : deptId_userIds) {
+				String deptId = deptId_userId.split("=")[0];
+				String[] userIds = deptId_userId.split("=")[1].split(",");
+				List<String> idList = Arrays.asList(userIds);
+				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+				for (String id : idList){
+					Map<String ,Object> map = new HashMap<String, Object>();
+					map.put("userId", id);
+					map.put("rid", rule.getRid());
+					map.put("deptId", deptId);
+					map.put("companyId", Integer.parseInt(companyId));
+					list.add(map);
+				}
+				if (dao.batchInsertUserOfRule(list) > 0){
+					flag = true;
+				}
 			}
 		}
 
-		return false;
+		return flag;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean update(AttendanceRule rule) {
+	public boolean update(AttendanceRule rule, String data, String companyId) {
+		if (dao.update(rule)){
+			if (StringUtils.isNotEmpty(data)){
+				String[] deptId_userIds = data.split("-");
+				for (String deptId_userId : deptId_userIds) {
+					String deptId = deptId_userId.split("=")[0];
+					String[] userIds = deptId_userId.split("=")[1].split(",");
+					List<String> idList = Arrays.asList(userIds);
+					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+					for (String id : idList){
+						Map<String ,Object> map = new HashMap<String, Object>();
+						map.put("userId", id);
+						map.put("rid", rule.getRid());
+						map.put("deptId", deptId);
+						map.put("companyId", Integer.parseInt(companyId));
+						list.add(map);
+					}
+					List<Long> rids = new ArrayList<Long>();
+					rids.add(rule.getRid());
+					//先删除所有与rid绑定的userId,在批量插入
+					dao.deleteUserOfRulesByRids(rids);
+					if (dao.batchInsertUserOfRule(list) > 0){
+						
+					}
+				}
+			}
+		}
 
-		return dao.update(rule);
+		return true;
 	}
 
 	@Override
@@ -101,6 +135,12 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 			return dao.deleteUserOfRulesByRids(rids) > 0;
 		}
 		return false;
+	}
+
+	@Override
+	public List<UserOfRule> getUserIdsByRid(Long rid) {
+
+		return dao.getUserIdsByRid(rid);
 	}
 
 }
