@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.UserOfRule;
 
 /** 
  * <一句话概述功能>
@@ -20,14 +21,14 @@ public interface AttendanceRuleService {
 	 * @param rule
 	 * @return
 	 */
-	boolean save(AttendanceRule rule, String ids);
+	boolean save(AttendanceRule rule, String data, String companyId);
 	
 	/**
 	 * 更新规则
 	 * @param rule
 	 * @return
 	 */
-	boolean update(AttendanceRule rule);
+	boolean update(AttendanceRule rule, String data, String companyId);
 	
 	/**
 	 * 根据userId获取考勤规则
@@ -70,5 +71,12 @@ public interface AttendanceRuleService {
 	 * @return
 	 */
 	boolean deleteRulesByRids(List<Long> rids);
+	
+	/**
+	 * 根据规则id获取用户id
+	 * @param rid
+	 * @return
+	 */
+	List<UserOfRule> getUserIdsByRid(Long rid);
 	
 }

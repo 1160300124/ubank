@@ -122,5 +122,12 @@
 			</otherwise>
 		</choose>
 	</update>
+	
+	<delete id="deleteRecordsByRids" parameterType="java.util.List">
+		delete from tbl_attendance_records where rid in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
 
 </mapper>

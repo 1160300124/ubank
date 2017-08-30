@@ -62,4 +62,11 @@ public interface AttendanceDao {
 	 */
 	boolean updateClockOffInfo(Attendance record);
 	
+	/**
+	 * 批量删除记录
+	 * @param rids
+	 * @return
+	 */
+	int deleteRecordsByRids(List<Long> rids);
+	
 }

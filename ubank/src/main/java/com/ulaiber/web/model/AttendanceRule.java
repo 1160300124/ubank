@@ -105,6 +105,11 @@ public class AttendanceRule {
 	 */
 	private int clockBounds;
 
+	/**
+	 * 规则人数
+	 */
+	private int counts;
+	
 	public long getRid() {
 		return rid;
 	}
@@ -255,6 +260,14 @@ public class AttendanceRule {
 
 	public void setClockBounds(int clockBounds) {
 		this.clockBounds = clockBounds;
+	}
+
+	public int getCounts() {
+		return counts;
+	}
+
+	public void setCounts(int counts) {
+		this.counts = counts;
 	}
 	
 }
