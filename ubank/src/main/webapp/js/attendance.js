@@ -9,6 +9,50 @@ $(function(){
 		todayHighlight: 1,
 		minView: "month"
 	});  
+	
+	$("#btn_delete").unbind().bind("click", function(){
+
+		//取表格的选中行数据
+		var arrselections = $("#tb_attendance_records").bootstrapTable('getSelections');
+		if (arrselections.length <= 0) {
+			Ewin.alert("请选择有效数据");
+			return;
+		}
+		
+		var data = [];
+		$.each(arrselections, function(index, item){
+			data.push(item.rid);
+		});
+		
+		Ewin.confirm({ message: "确定要删除吗？" }).on(function (e) {
+			
+			if (!e) {
+				return;
+			}
+			
+			$.ajax({
+				url : "deleteRecords",
+				type: "post",
+				contentType : 'application/json;charset=utf-8',
+				data : JSON.stringify(data),
+				dataType : "json",
+				success : function(data, status) {
+					var code = data['code'];
+					if (code == 1000) {
+						Ewin.alert("删除成功");
+						$("#tb_attendance_records").bootstrapTable("refresh");
+					}else{
+						Ewin.alert(data['message']);
+					}
+				},
+				error : function(data, status, e) {
+					Ewin.alert("系统内部异常");
+				}
+			})	
+			
+		});
+		
+	});
 
 	$("#btn_search").unbind().bind("click", function(){
 
@@ -56,26 +100,6 @@ $(function(){
 		$("#tb_attendance_records").bootstrapTable("refresh", {
 			url : "getRecords?" + parseParams(params)
 		});
-//		$.ajax({
-//			url : "getRecords",
-//			type: "get",
-//			data : params,
-//			contentType : 'application/json;charset=utf-8',
-//			async : true, 
-//			dataType : "json",
-//			success : function(data, status) {
-//				$("#btn_search").attr("disabled", false);
-//				var code = data['code'];
-//				if (code == 1000) {
-//					$("#tb_attendance_records").bootstrapTable("load", data['data']);
-//				}else{
-//					Ewin.alert(data['message']);
-//				}
-//			},
-//			error : function(data, status, e) {
-//				Ewin.alert("系统内部异常！");
-//			}
-//		})
 
 		$("#btn_search").attr("disabled", false);
 

@@ -72,4 +72,11 @@ public interface AttendanceService {
 	 * @return
 	 */
 	boolean updateClockOffInfo(Attendance record);
+	
+	/**
+	 * 批量删除记录
+	 * @param rids
+	 * @return
+	 */
+	boolean deleteRecordsByRids(List<Long> rids);
 }

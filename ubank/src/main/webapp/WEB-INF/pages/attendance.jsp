@@ -73,6 +73,9 @@
 	            	<button type="button" class="btn btn-default" id="btn_export" >
 	            		<span class="fa icon-download-alt" aria-hidden="true"></span>导出
 	            	</button>
+					<button id="btn_delete" type="button" class="btn btn-default">
+						<span class="fa icon-remove" aria-hidden="true"></span>删除
+					</button>
 	            </div>
 			</div>
 		</form>

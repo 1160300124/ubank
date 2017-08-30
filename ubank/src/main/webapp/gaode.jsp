@@ -22,8 +22,8 @@
 	           <div  id="container"></div>
 	      </div>
 	      <div class="form-group">
-	       	<div class="col-sm-2" for="ds_host"></div>
-	        <div class="col-sm-8">
+	       	<div class="col-sm-3" for="ds_host"></div>
+	        <div class="col-sm-6">
 	           <input class="form-control" id="attendance_addr" type="text" placeholder="请输入考勤地点"/>
 	           <input type="hidden" id="hidden_addr" />
 	        </div>

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.UserOfRule;
 
 /** 
  * 考勤规则数据接口
@@ -86,4 +87,11 @@ public interface AttendanceRuleDao {
 	 * @return
 	 */
 	int deleteUserOfRulesByRids(List<Long> rids);
+	
+	/**
+	 * 根据规则id获取用户id
+	 * @param rid
+	 * @return
+	 */
+	List<UserOfRule> getUserIdsByRid(Long rid);
 }

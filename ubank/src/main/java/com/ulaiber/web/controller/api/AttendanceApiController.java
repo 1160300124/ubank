@@ -109,12 +109,19 @@ public class AttendanceApiController extends BaseController {
 			data.put("isRestDay", isRestDay);
 			return data;
 		}
+		String clockOffTime = rule.getClockOffTime();
+		//是否开启弹性时间
+		if (rule.getFlexibleFlag() == 0){
+			//下班是否顺延
+			if (rule.getPostponeFlag() == 0){
+				clockOffTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOffTime(), 0, 0, rule.getFlexibleTime()).split(" ")[1];
+			}
+		}
 		String yesterday = "";
 		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
 		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
 			//转钟后的前一天日期 yyyy-MM-dd 
 			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-			
 		}
 		
 		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡
@@ -123,7 +130,7 @@ public class AttendanceApiController extends BaseController {
 		List<Attendance> records = service.getRecordsByDateAndMobile(today, yesterday, rule.getClockOnStartTime(), rule.getClockOffEndTime(), mobile);
 		if (null == records || records.size() == 0){
 			//如果加班到凌晨打卡，当天是没有打卡记录的，需判断当前打卡时间是否在最晚下班打卡时间之内，如在则为昨天的下班卡，否则为今天的上班卡
-			if (time.compareTo(rule.getClockOffTime()) >= 0
+			if (time.compareTo(clockOffTime) >= 0
 					|| time.compareTo(rule.getClockOffEndTime()) <= 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
 				type = 1;
 			}

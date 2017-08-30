@@ -24,6 +24,7 @@ import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.UserOfRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.UserService;
@@ -72,7 +73,7 @@ public class AttendanceRuleController extends BaseController {
 	
 	@RequestMapping(value = "addRules", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo addRules(AttendanceRule rule, String ids, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo addRules(AttendanceRule rule, String data, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		
 		String daytime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
@@ -81,7 +82,8 @@ public class AttendanceRuleController extends BaseController {
 		rule.setClockOnStartTime(clockOnStartTime);
 		rule.setClockOffEndTime(clockOffEndTime);
 		
-		if (service.save(rule, ids)){
+		User user = getUserFromSession(request);
+		if (service.save(rule, data, user.getCompanyNumber())){
 			logger.info("新增考勤规则成功。");
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("新增考勤规则成功。");
@@ -101,8 +103,6 @@ public class AttendanceRuleController extends BaseController {
 	public List<Map<String, Object>> getDeptsAndUsers(HttpServletRequest request, HttpServletResponse response){
 		
 		User conuser = getUserFromSession(request);
-		
-		
 		List<Map<String, Object>> tree = new ArrayList<Map<String, Object>>();
 		
 		List<Departments> depts = permissionSerivce.getDeptByCom(conuser.getCompanyNumber());
@@ -153,24 +153,51 @@ public class AttendanceRuleController extends BaseController {
 	
 	@RequestMapping(value = "updateRule", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo updateRule(@RequestBody AttendanceRule rule, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo updateRule(AttendanceRule rule, String data, HttpServletRequest request, HttpServletResponse response){
 		
-		logger.debug("deleteRules start...");
+		logger.debug("updateRule start...");
 		ResultInfo info = new ResultInfo();
 		if (!ObjUtil.notEmpty(rule)){
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("参数为空！");
 			return info;
 		}
-//		boolean flag = service.deleteRulesByRids(rids);
-//		 if (flag){
-//			info.setCode(IConstants.QT_CODE_OK);
-//			info.setMessage("删除成功");;
-//		} else {
-//			info.setCode(IConstants.QT_CODE_ERROR);
-//			info.setMessage("删除失败");
-//		}
-		 logger.debug("deleteRules end...");
+		
+		String daytime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
+		String clockOnStartTime = DateTimeUtil.getfutureTime(daytime + " " + rule.getClockOnTime(), 0, -rule.getClockOnAdvanceHours(), 0).split(" ")[1];
+		String clockOffEndTime = DateTimeUtil.getfutureTime(daytime + " " + rule.getClockOffTime(), 0, rule.getClockOffDelayHours(), 0).split(" ")[1];
+		rule.setClockOnStartTime(clockOnStartTime);
+		rule.setClockOffEndTime(clockOffEndTime);
+		
+		User user = getUserFromSession(request);
+		boolean flag = service.update(rule, data, user.getCompanyNumber());
+		 if (flag){
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("修改成功");;
+		} else {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("修改失败");
+		}
+		 logger.debug("updateRule end...");
 		return info;
 	}
+	
+	@RequestMapping(value = "getUserIdsByRid", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getUserIdsByRid(long rid, HttpServletRequest request, HttpServletResponse response){
+		
+		logger.debug("getUserIdsByRid start...");
+		ResultInfo info = new ResultInfo();
+		if (!ObjUtil.notEmpty(rid)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数为空！");
+			return info;
+		}
+		List<UserOfRule> ids = service.getUserIdsByRid(rid);
+		info.setCode(IConstants.QT_CODE_OK);
+		info.setData(ids);
+		logger.debug("getUserIdsByRid end...");
+		return info;
+	}
+	
 }
