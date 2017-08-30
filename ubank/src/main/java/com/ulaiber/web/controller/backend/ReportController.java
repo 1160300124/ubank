@@ -4,6 +4,7 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.LeaveAudit;
 import com.ulaiber.web.model.LeaveReportVO;
 import com.ulaiber.web.model.LeaveReturnVO;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReportService;
 import org.apache.ibatis.annotations.Param;
@@ -65,14 +66,16 @@ public class ReportController extends BaseController {
         if(list.size() > 0){
             for (int i = 0 ; i < list.size(); i++){
                 String recordNo = String.valueOf(list.get(i).getId());
+                String[] ids = list.get(i).getAuditor().split(",");
+                List<Map<String,Object>> user = reportService.getUserById(ids);  //根据用户ID获取用户名
+                String username = "";
+                for (int l = 0 ; l < user.size() ; l++){
+                    username += user.get(l).get("user_name") + ",";
+                }
+                username = username.substring(0,(username.length() - 1));
+                list.get(i).setAuditor(username);
                 List<LeaveAudit> list2 = leaveService.queryAuditorByRecord(recordNo);
                 if (list2.size() > 0){
-//                    int[] arr = new int[list2.size()];
-//                    for (int j = 0; j < list2.size() ; j++){
-//                        arr[i] = list2.get(j).getSort();
-//                    }
-//                    Arrays.sort(arr);
-//                    int index = arr[arr.length - 1];
                     int index = 0;
                     for (int j = 0; j < list2.size() ; j++){
                         if( list2.get(j).getSort() > index){

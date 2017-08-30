@@ -1,9 +1,6 @@
 package com.ulaiber.web.service;
 
-import com.ulaiber.web.model.ApplyForVO;
-import com.ulaiber.web.model.AuditVO;
-import com.ulaiber.web.model.LeaveAudit;
-import com.ulaiber.web.model.LeaveRecord;
+import com.ulaiber.web.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +22,7 @@ public interface LeaveService {
 
     List<LeaveAudit> queryAuditor(String[] ids); //查询审批人记录
 
-    List<ApplyForVO> getLeaveRecord(String userId);  //查询工作提醒
+    List<Map<String,Object>> getLeaveRecord(String userId);  //查询工作提醒
 
     List<AuditVO> getLeaveAuditor(String userId); //获取个人所有审批记录
 
@@ -48,4 +45,6 @@ public interface LeaveService {
     int confirmAudit(String userId, String recordNo, String status);  //确认审批
 
     int updateRecord(String recordNo,String status);  //更新申请记录为最新的状态
+
+    Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
 }

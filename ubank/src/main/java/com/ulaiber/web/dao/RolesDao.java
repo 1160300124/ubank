@@ -17,7 +17,7 @@ public interface RolesDao {
 
     List<Roles> getRoleByName(String roleName); //根据角色名，获取角色信息
 
-    int addRole(Map<String,Object> map);  //新增角色信息
+    int addRole(Map<String, Object> map);  //新增角色信息
 
     List<Roles> roleQuery(Map<String, Object> map); //分页查询角色信息
 

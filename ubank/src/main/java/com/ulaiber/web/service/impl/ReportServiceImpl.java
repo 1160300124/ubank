@@ -3,6 +3,7 @@ package com.ulaiber.web.service.impl;
 import com.ulaiber.web.dao.ReportDao;
 import com.ulaiber.web.model.LeaveReportVO;
 import com.ulaiber.web.model.LeaveReturnVO;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.ReportService;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class ReportServiceImpl extends BaseService implements ReportService {
 
     @Override
     public int getLeaveCount(String sysflag, String groupNumber) {
-        Map<String ,Object > map = new HashMap<>();
+        Map<String ,Object > map = new HashMap<String,Object>();
         map.put("sysflag" , sysflag);
         map.put("groupNumber" , groupNumber);
         int total = reportDao.getLeaveCount(map);
@@ -46,5 +47,10 @@ public class ReportServiceImpl extends BaseService implements ReportService {
         map.put("username" , leaveReportVO.getUsername());
         map.put("status" , leaveReportVO.getStatus());
         return reportDao.leaveQuery(map);
+    }
+
+    @Override
+    public List<Map<String,Object>> getUserById(String[] ids) {
+        return reportDao.getUserById(ids);
     }
 }

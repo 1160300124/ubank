@@ -58,7 +58,7 @@
                         <option value="2">驳回</option>
                     </select>
                 </div>
-                <button onclick="LeaveFun.loadLeaveData()" type="button" class="btn btn-default">
+                <button onclick="LeaveFun.reset()" type="button" class="btn btn-default">
                     <span class="fa icon-search" aria-hidden="true"></span>查询
                 </button>
             </div>
@@ -149,13 +149,19 @@
                                 return "审批通过";
                             }else if(row.status == "2"){
                                 return "驳回"
-                            }else if(row.status == ""){
+                            }else if(row.status == "0"){
+                                return "待审批";
+                            }else{
                                 return "";
                             }
                         }
                     }
                 ]
             });
+        },
+        //刷新
+        reset : function () {
+            $('#leave_table').bootstrapTable('refresh');
         },
         //查询参数
         queryParams : function (params) {

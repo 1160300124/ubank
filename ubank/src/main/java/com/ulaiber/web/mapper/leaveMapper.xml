@@ -15,8 +15,8 @@
 
     <!--申请请假-->
     <insert id="saveLeaveRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable)
-            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},#{createDate},'0','0')
+        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable,type)
+            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},#{createDate},'0','0','0')
     </insert>
 
     <!--查询个人申请记录-->
@@ -32,8 +32,9 @@
     </update>
 
     <!--查询工作提醒-->
-    <select id="getLeaveRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
-      SELECT * FROM tbl_leave_record where userid = #{userId}
+    <select id="getLeaveRecord" parameterType="String" resultType="Map">
+      select a.userid,a.reason,a.createDate,b.user_name  from tbl_leave_record a left join tbl_users b on a.userid = b.user_id
+      where a.userid = #{userId} order by a.createDate DESC
     </select>
 
     <!--获取待审批记录数量-->
@@ -48,8 +49,10 @@
 
     <!--获取待审批记录-->
     <select id="queryPeningRecord" parameterType="int" resultType="com.ulaiber.web.model.ApplyForVO">
-        select id,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable from tbl_leave_record
-        where id = #{id}
+        select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,
+              a.status,a.disable,a.type,b.holiday,b.mode from tbl_leave_record a
+              left join tbl_overtime_details b on a.id = b.recordNo
+              where  a.id =#{id} order by a.createDate desc
     </select>
 
     <!--获取已审批记录-->
@@ -62,4 +65,9 @@
     <update id="updateRecord" parameterType="Map" >
         UPDATE tbl_leave_record set status = #{status} where id = #{recordNo}
     </update>
+
+    <!--根据申请记录ID获取申请记录-->
+    <select id="queryApplyRecordById" parameterType="int" resultType="Map">
+        select a.reason,a.type,b.user_name from tbl_leave_record a left join tbl_users b on a.userid = b.user_id  where a.id = #{id}
+    </select>
 </mapper>

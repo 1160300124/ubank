@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface EmployeeDao {
 
-    User getEmpByName(Map<String,Object> map);//根据员工姓名查询对应的信息
+    User getEmpByName(Map<String, Object> map);//根据员工姓名查询对应的信息
 
     int addEmployee(User user);   //新增员工信息
 

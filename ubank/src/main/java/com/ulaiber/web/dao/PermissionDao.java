@@ -16,39 +16,39 @@ public interface PermissionDao {
     Group searchGroupByName(String name); //根据集团名称查询是否数据已存在
 
 
-    List<Group> groupQuery(Map<String,Object> map); //查询所有集团
+    List<Group> groupQuery(Map<String, Object> map); //查询所有集团
 
     int modifyGroup(Group group);  //修改集团信息
 
     int deleteGroup(String[] numberArr);    //删除集团
 
-    List<Company> companyQuery(Map<String,Object> map);   //获取所有公司信息
+    List<Company> companyQuery(Map<String, Object> map);   //获取所有公司信息
 
     Departments getDeptByNum(String deptNum);  //根据部门编号获取对应部门
 
     int addDept(Departments dept); //新增部门
 
-    List<Departments> departmentQuery(Map<String,Object> map);   //获取所有部门信息
+    List<Departments> departmentQuery(Map<String, Object> map);   //获取所有部门信息
 
-    int getTotal(Map<String,Object> map);  //获取集团总数
+    int getTotal(Map<String, Object> map);  //获取集团总数
 
-    int getDeptTotal(Map<String,Object> map);  //获取部门总数
+    int getDeptTotal(Map<String, Object> map);  //获取部门总数
 
     int editDept(Departments dept); //修改部门
 
     int deptDelete(String[] number);  // 删除部门
 
-    List<Group> getAllGroup(Map<String,Object> map);  //获取所有集团信息
+    List<Group> getAllGroup(Map<String, Object> map);  //获取所有集团信息
 
     int addCom(Company company);  //插入公司基本信息
 
     List<Bank> getAllBank(); //获取所有银行信息
 
-    int getCompanyTotal(Map<String,Object> map);   //获取公司总数
+    int getCompanyTotal(Map<String, Object> map);   //获取公司总数
 
     int updateCompany(Company company);   //更新银行信息表
 
-    List<Company> getAllCompany(Map<String,Object> map);  // 获取所有公司信息
+    List<Company> getAllCompany(Map<String, Object> map);  // 获取所有公司信息
 
     List<Departments> getAllDept(); //获取所有部门信息
 

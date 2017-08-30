@@ -2,10 +2,7 @@ package com.ulaiber.web.service.impl;
 
 import com.ulaiber.web.dao.LeaveAuditDao;
 import com.ulaiber.web.dao.LeaveDao;
-import com.ulaiber.web.model.ApplyForVO;
-import com.ulaiber.web.model.AuditVO;
-import com.ulaiber.web.model.LeaveAudit;
-import com.ulaiber.web.model.LeaveRecord;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.LeaveService;
 import org.springframework.stereotype.Service;
@@ -23,7 +20,7 @@ import java.util.*;
 @Service
 public class LeaveServiceImpl extends BaseService implements LeaveService{
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Resource
     private LeaveDao leaveDao;
@@ -81,7 +78,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public List<ApplyForVO> getLeaveRecord(String userId) {
+    public List<Map<String,Object>> getLeaveRecord(String userId) {
         return leaveDao.getLeaveRecord(userId);
     }
 
@@ -139,6 +136,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("userId" , userId);
         map.put("recordNo" , recordNo);
         map.put("status" , status);
+        map.put("date",sdf.format(new Date()));
         return leaveAuditDao.confirmAudit(map);
     }
 
@@ -148,6 +146,11 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("recordNo" , recordNo);
         map.put("status" , status);
         return leaveDao.updateRecord(map);
+    }
+
+    @Override
+    public Map<String,Object> queryApplyRecordById(int id) {
+        return leaveDao.queryApplyRecordById(id);
     }
 
 

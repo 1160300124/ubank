@@ -84,7 +84,7 @@
     </select>
 
     <!--获取部门总数-->
-    <select id="getDeptTotal" parameterMap="Map" resultType="int">
+    <select id="getDeptTotal" parameterType="Map" resultType="int">
         select COUNT(name) total from tbl_departments where 1=1
         <if test = 'sysflag == "1"'>
             and company_num in
