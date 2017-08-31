@@ -79,4 +79,10 @@ public interface AttendanceService {
 	 * @return
 	 */
 	boolean deleteRecordsByRids(List<Long> rids);
+	
+	/**
+	 * 根据月份查询考勤记录
+	 * @param month
+	 */
+	List<Attendance> getRecordsByMonthAndMobile(String month, String mobile);
 }

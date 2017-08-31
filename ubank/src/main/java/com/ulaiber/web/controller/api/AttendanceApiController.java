@@ -45,24 +45,6 @@ public class AttendanceApiController extends BaseController {
 	
 	private static Logger logger = Logger.getLogger(AttendanceApiController.class);
 	
-	/**
-	 * 打卡类型 0：签到  1：签退
-	 */
-	private static Map<String, String> CLOCK_TYPE = new HashMap<String, String>(); 
-	
-	/**
-	 * 打卡状态 0：正常  1：迟到  2：早退
-	 */
-	private static Map<String, String> CLOCK_STATUS = new HashMap<String, String>(); 
-	
-	static {
-		CLOCK_TYPE.put("0", "签到");
-		CLOCK_TYPE.put("1", "签退");
-		CLOCK_STATUS.put("0", "正常 ");
-		CLOCK_STATUS.put("1", "迟到 ");
-		CLOCK_STATUS.put("2", "早退 ");
-	}
-	
 	@Autowired
 	private AttendanceService service;
 	
@@ -72,12 +54,46 @@ public class AttendanceApiController extends BaseController {
 	@Autowired
 	private UserService userService;
 	
+	@RequestMapping(value = "getRecordsForMonth", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getRecordsForMonth(String mobile, String month,HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> data = new HashMap<String, Object>(); 
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(month)){
+			logger.error("手机号或月份不能为空。");
+			data.put("message", "手机号或月份不能为空。");
+			return data;
+		}
+		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+		if (null == rule){
+			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			data.put("message", "用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			return data;
+		}
+
+		data.put("clockOnTime", rule.getClockOnTime());
+		data.put("clockOffTime", rule.getClockOffTime());
+		
+		List<Attendance> list = service.getRecordsByMonthAndMobile(month, mobile);
+		data.put("records", list);
+		return data;
+	}
+	
 	@RequestMapping(value = "getClockInfo", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getClockInfo(String mobile, HttpServletRequest request, HttpServletResponse response){
-		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
-		
+	public Map<String, Object> getClockInfo(String mobile, String date,HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> data = new HashMap<String, Object>(); 
+		if (StringUtils.isEmpty(mobile)){
+			logger.error("手机号不能为空。");
+			data.put("message", "手机号不能为空。");
+			return data;
+		}
+		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+		if (null == rule){
+			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			data.put("message", "用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			return data;
+		}
+
 		data.put("clockOnTime", rule.getClockOnTime());
 		data.put("clockOffTime", rule.getClockOffTime());
 		
@@ -85,6 +101,10 @@ public class AttendanceApiController extends BaseController {
 //		String datetime = "2017-08-19 00:30";
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
+		
+		if (StringUtils.isNotEmpty(date)){
+			today = date;
+		}
 		
 		boolean isRestDay = false;
 		//节假日
@@ -107,6 +127,21 @@ public class AttendanceApiController extends BaseController {
 		
 		if (isRestDay){
 			data.put("isRestDay", isRestDay);
+			return data;
+		}
+		String tomorrow = "";
+		if (StringUtils.isNotEmpty(date)){
+			//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
+			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				//转钟后的前一天日期 yyyy-MM-dd 
+				tomorrow = DateTimeUtil.getfutureTime(date + " 00:00", 1, 0, 0).split(" ")[0];
+			}
+			List<Attendance> records = service.getRecordsByDateAndMobile(tomorrow, today, rule.getClockOnStartTime(), rule.getClockOffEndTime(), mobile);
+			for (Attendance record : records){
+				record.setCompany(null);
+				record.setDept(null);
+			}
+			data.put("records", records);
 			return data;
 		}
 		String clockOffTime = rule.getClockOffTime();
