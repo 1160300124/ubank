@@ -67,5 +67,11 @@ public interface AttendanceDao {
 	 * @return
 	 */
 	int deleteRecordsByRids(List<Long> rids);
-
+	
+	/**
+	 * 根据月份查询考勤记录
+	 * @param params
+	 */
+	List<Attendance> getRecordsByMonthAndMobile(Map<String, Object> params);
+	
 }
