@@ -7,15 +7,15 @@ import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.UserOfRule;
 
-/** 
+/**
  * 考勤规则数据接口
  *
- * @author  huangguoqing
+ * @author huangguoqing
+ * @version 1.0
  * @date 创建时间：2017年8月15日 下午7:04:56
- * @version 1.0 
- * @since 
  */
 public interface AttendanceRuleDao {
+
 
 	/**
 	 * 新增规则
@@ -94,4 +94,5 @@ public interface AttendanceRuleDao {
 	 * @return
 	 */
 	List<UserOfRule> getUserIdsByRid(Long rid);
+
 }

@@ -5,13 +5,12 @@ import java.util.Map;
 
 import com.ulaiber.web.model.Attendance;
 
-/** 
+/**
  * 考勤记录数据接口
  *
- * @author  huangguoqing
+ * @author huangguoqing
+ * @version 1.0
  * @date 创建时间：2017年8月11日 上午10:33:21
- * @version 1.0 
- * @since 
  */
 public interface AttendanceDao {
 	

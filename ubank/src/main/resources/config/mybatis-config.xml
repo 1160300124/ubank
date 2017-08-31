@@ -45,6 +45,8 @@
 		<mapper resource="com/ulaiber/web/mapper/attendanceRule.xml" />
 		<mapper resource="com/ulaiber/web/mapper/leaveMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/leaveAuditMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/ReportMapper.xml" />
+		<!--<package name="com.ulaiber.web.dao.*"/>-->
 	</mappers>
 
 </configuration>  

@@ -17,13 +17,13 @@
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
             where 1=1
-        <if test = 'sysflag != "1"'>
-            c.groupNumber = #{groupNumber}
+        <if test = 'sysflag == "1"'>
+            and c.groupNumber = #{groupNumber}
         </if>
     </select>
 
     <!--申请记录查询-->
-    <select id="leaveQuery" parameterMap="Map" resultType="com.ulaiber.web.model.LeaveReturnVO">
+    <select id="leaveQuery" parameterType="Map" resultType="com.ulaiber.web.model.LeaveReturnVO">
         select a.id,a.startDate,a.endDate,a.leaveTime,a.reason,a.auditor,a.status,d.name as company from tbl_leave_record a
             left join tbl_roots b on a.userid = b.userid
             left join tbl_group c on b.groupNumber = c.groupNumber
@@ -31,10 +31,10 @@
             left join tbl_departments e on e.dept_number = b.dept_number
             where 1=1
             <if test= 'sysflag != "1"'>
-                <if test= 'groupNumber != "" and groupNumber != null'>
+                <if test= 'groupNum != "" and groupNum != null'>
                      c.groupNumber = #{groupNum}
                 </if>
-                <if test= 'companyNumber != "" and companyNumber != null'>
+                <if test= 'companyNum != "" and companyNum != null'>
                     and d.companyNumber = #{companyNum}
                 </if>
                 <if test='dept_number != "" and dept_number != null'>
@@ -96,5 +96,13 @@
                     and a.status = #{result}
                 </if>
             </if>
+    </select>
+
+    <!--根据用户ID获取用户名-->
+    <select id="getUserById" parameterType="String" resultType="Map">
+          SELECT user_id,user_name FROM tbl_users where user_id in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
     </select>
 </mapper>
