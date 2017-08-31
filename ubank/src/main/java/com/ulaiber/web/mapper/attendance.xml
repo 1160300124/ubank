@@ -100,7 +100,7 @@
 				and r.clock_time &gt;= #{clockOnStartTime}
 			</otherwise>
 		</choose>
-		order by rid
+		order by r.rid
 	</select>
 	
 	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
@@ -129,5 +129,10 @@
 	        #{item}   
 	    </foreach>  
 	</delete>
+	
+	<select id="getRecordsByMonthAndMobile" parameterType="Map" resultMap="AttendanceMap">
+		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_time,r.clock_type,r.clock_status,r.clock_location,r.clock_device from tbl_attendance_records r 
+			left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile} and r.clock_date like concat('%',#{month},'%') 
+	</select>
 
 </mapper>

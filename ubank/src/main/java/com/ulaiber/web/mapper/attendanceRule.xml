@@ -43,7 +43,7 @@
 		update tbl_attendance_rules set rule_name=#{ruleName},clock_on_time=#{clockOnTime},clock_off_time=#{clockOffTime},clock_on_advance_hours=#{clockOnAdvanceHours},
 			clock_on_start_time=#{clockOnStartTime},clock_off_delay_hours=#{clockOffDelayHours},clock_off_end_time=#{clockOffEndTime},rest_start_time=#{restStartTime},
 			rest_end_time=#{restEndTime},workday=#{workday},holiday= #{holiday},holiday_flag=#{holidayFlag},flexible_time=#{flexibleTime},flexible_flag= #{flexibleFlag},
-			postpone_flag=#{postponeFlag},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clockBounds},user_or_rule_counts=#{counts}
+			postpone_flag=#{postponeFlag},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clockBounds},user_or_rule_counts=#{counts} where rid=#{rid}
 	</update>
 	
 	<select id="getRuleByUserId" parameterType="Long" resultMap="AttendanceRuleMap">

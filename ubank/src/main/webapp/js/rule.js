@@ -942,6 +942,25 @@ window.operateEvents = {
 				
 			});
 		    
+			$("#attendanceLocation_edit_confirm").unbind().bind("click", function(){
+				
+			    var table=document.getElementById("table_attendanceLocation_");
+
+				//添加行
+			    var tr = table.insertRow(table.rows.length);
+			    var rowIndex = tr.rowIndex.toString();
+			    console.log(table.rows.length);
+			    tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
+				"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
+				"<td>" + 
+				'<a href="javascript:;" onclick="$('+ "'#attendanceLocationModal_edit'" + ').modal(' + "'toggle')" + '">修改</a>' +
+				'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLoc(' + rowIndex + ')">删除</a>' + 
+				"</td>"; 
+			    
+				$('#attendanceLocationModal_edit').modal("hide")
+
+			});
+		    
 		    renderPeople("edit");
 		    $.ajax({
 				url : "getUserIdsByRid",

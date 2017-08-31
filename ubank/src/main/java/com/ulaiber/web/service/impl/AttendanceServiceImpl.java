@@ -311,9 +311,18 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean deleteRecordsByRids(List<Long> rids) {
 
 		return dao.deleteRecordsByRids(rids) > 0;
+	}
+
+	@Override
+	public List<Attendance> getRecordsByMonthAndMobile(String month, String mobile) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("month", month);
+		params.put("mobile", mobile);
+		return dao.getRecordsByMonthAndMobile(params);
 	}
 
 }
