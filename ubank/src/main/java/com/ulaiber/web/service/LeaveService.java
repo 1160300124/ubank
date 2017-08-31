@@ -14,11 +14,9 @@ public interface LeaveService {
 
     int saveAditor(LeaveRecord leaveRecord);  //保存请假审批人
 
-    List<LeaveRecord> queryApplyRecord(String userid);   //查询个人申请记录
+    List<ApplyForVO> queryApplyRecord(String userid);   //查询个人申请记录
 
     int cancelApply(String applyId); //取消请假申请
-
-    int cancelApplyAudit(String applyId); //取消请假审批人
 
     List<LeaveAudit> queryAuditor(String[] ids); //查询审批人记录
 

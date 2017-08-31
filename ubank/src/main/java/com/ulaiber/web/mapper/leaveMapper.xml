@@ -20,15 +20,22 @@
     </insert>
 
     <!--查询个人申请记录-->
-    <select id="queryApplyRecord" parameterType="String" resultType="com.ulaiber.web.model.LeaveRecord">
-        SELECT a.*,b.status FROM tbl_leave_record a left join
-        (select max(auditDate)as date,recordNo,status from tbl_leave_audit_record GROUP BY recordNo,status ) b
-        on a.id = b.recordNo  where  a.userid = #{userid}
+    <select id="queryApplyRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
+       SELECT a.*,b.status FROM tbl_leave_record a
+            left join (select max(auditDate)as date,recordNo,status from tbl_leave_audit_record GROUP BY recordNo,status ) b
+            on a.id = b.recordNo
+            left join tbl_overtime_details c on a.id = c.recordNo
+            where  a.userid = #{userid} and a.disable = '0'
     </select>
 
     <!--取消请假申请-->
     <update id="cancelApply" parameterType="String"  >
         UPDATE tbl_leave_record SET  disable = '1' WHERE id = #{applyId}
+    </update>
+
+    <!--取消请假审批人-->
+    <update id="cancelApplyAudit" parameterType="String" >
+        UPDATE tbl_leave_audit_record SET disable = '1' where recordNo = #{applyId}
     </update>
 
     <!--查询工作提醒-->
@@ -57,8 +64,10 @@
 
     <!--获取已审批记录-->
     <select id="queryAlreadRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
-        select id,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable from tbl_leave_record
-        where id = #{id}
+         select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,
+              a.status,a.disable,a.type,b.holiday,b.mode from tbl_leave_record a
+              left join tbl_overtime_details b on a.id = b.recordNo
+              where  a.id =#{id} order by a.createDate desc
     </select>
 
     <!--更新申请记录为最新的状态-->
@@ -70,4 +79,6 @@
     <select id="queryApplyRecordById" parameterType="int" resultType="Map">
         select a.reason,a.type,b.user_name from tbl_leave_record a left join tbl_users b on a.userid = b.user_id  where a.id = #{id}
     </select>
+
+
 </mapper>

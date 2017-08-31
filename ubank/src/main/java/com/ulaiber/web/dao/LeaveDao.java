@@ -14,9 +14,11 @@ import java.util.Map;
 public interface LeaveDao {
     int saveLeaveRecord(LeaveRecord leaveRecord); //申请请假
 
-    List<LeaveRecord> queryApplyRecord(String userid); // 查询个人申请记录
+    List<ApplyForVO> queryApplyRecord(String userid); // 查询个人申请记录
 
     int cancelApply(String applyId); //取消请假申请
+
+    int cancelApplyAudit(String applyId);  //取消请假审批人
 
     List<Map<String,Object>> getLeaveRecord(String userId); //查询工作提醒
 
@@ -31,4 +33,6 @@ public interface LeaveDao {
     int updateRecord(Map<String, Object> map); //更新申请记录为最新的状态
 
     Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
+
+
 }

@@ -51,7 +51,7 @@ public class LeaveController extends BaseController {
         if (result <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("申请失败");
-            logger.info("申请请假失败");
+            logger.info("申请失败");
             return resultInfo;
         }
         int result2 = leaveService.saveAditor(leaveRecord);
@@ -83,7 +83,7 @@ public class LeaveController extends BaseController {
             logger.info("用户ID为空");
             return resultInfo;
         }
-        List<LeaveRecord> list = leaveService.queryApplyRecord(userid); //查询个人申请记录
+        List<ApplyForVO> list = leaveService.queryApplyRecord(userid); //查询个人申请记录
         if(list.size() <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("加载申请记录失败");
@@ -92,7 +92,7 @@ public class LeaveController extends BaseController {
         }
         String[] ids  = new String[list.size()];
         for (int i = 0; i < list.size(); i++){
-            LeaveRecord ls = list.get(i);
+            ApplyForVO ls = list.get(i);
             ids[i] = ls.getUserid();
         }
         List<LeaveAudit> list2 = leaveService.queryAuditor(ids); //查询审批人记录
@@ -105,7 +105,7 @@ public class LeaveController extends BaseController {
         //将审批人放入对应的申请记录中
         List<LeaveAudit> resultList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++){
-            LeaveRecord ls = list.get(i);
+            ApplyForVO ls = list.get(i);
             for (int j = 0 ; j < list2.size(); j++){
                 LeaveAudit la = list2.get(j);
                 if(String.valueOf(ls.getId()).equals(la.getRecordNo()) ){
@@ -149,12 +149,6 @@ public class LeaveController extends BaseController {
             logger.info("取消请假申请失败");
             return resultInfo;
         }
-        int result2 = leaveService.cancelApplyAudit(applyId); //取消请假审批人
-        if(result2 <= 0){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("取消请假申请失败");
-            return resultInfo;
-        }
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("取消请假申请成功");
         logger.info("取消请假申请");
@@ -168,51 +162,55 @@ public class LeaveController extends BaseController {
      */
     @RequestMapping("getWorkRemind")
     @ResponseBody
-    public ReturnData workRemind(String userId){
-        ReturnData returnData = new ReturnData();
+    public ResultInfo workRemind(String userId){
+        ResultInfo resultInfo = new ResultInfo();
         if(StringUtil.isEmpty(userId)){
-            returnData.setCode(IConstants.QT_CODE_ERROR);
-            returnData.setMessage("用户ID为空");
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("用户ID为空");
             logger.info("用户ID为空");
-            return returnData;
+            return resultInfo;
         }
         List<Map<String,Object>> list = leaveService.getLeaveRecord(userId); //获取个人申请记录
-        Map<String,Object> applyMap = new HashMap<>();  //申请记录
+        RemindApplyVO remindApplyVO = new RemindApplyVO();//申请记录
+
         if(list.size() > 0 ){
-            applyMap.put("count" , list.size());
-            applyMap.put("date" , list.get(0).get("createDate"));
-            applyMap.put("type" , list.get(0).get("type"));
-            applyMap.put("applyName" , list.get(0).get("user_name"));
-            applyMap.put("reason" , list.get(0).get("reason"));
+            remindApplyVO.setCount(list.size());
+            remindApplyVO.setDate(list.get(0).get("createDate"));
+            remindApplyVO.setType(list.get(0).get("type"));
+            remindApplyVO.setApplyName(list.get(0).get("user_name"));
+            remindApplyVO.setReason(list.get(0).get("reason"));
+
         }else{
-            applyMap.put("count" , 0);
-            applyMap.put("date" , "");
-            applyMap.put("type" , "");
-            applyMap.put("applyName" , "");
-            applyMap.put("reason" , "");
+            remindApplyVO.setCount(0);
+            remindApplyVO.setDate("");
+            remindApplyVO.setType("");
+            remindApplyVO.setApplyName("");
+            remindApplyVO.setReason("");
         }
         List<AuditVO> list2 =leaveService.getLeaveAuditor(userId); //获取个人审批记录
-        Map<String,Object> auditMap = new HashMap<>();  //审批记录
+        RemindAuditVO remindAuditVO = new RemindAuditVO(); //审批记录
         if(list2.size() > 0){
             int id = Integer.parseInt(list2.get(0).getRecordNo());  //申请记录ID
             Map<String,Object> leaveRecord = leaveService.queryApplyRecordById(id); //根据申请记录ID获取申请记录
-            auditMap.put("count" ,list2.size());
-            auditMap.put("date" ,list2.get(0).getAuditDate());
-            auditMap.put("applyName" ,leaveRecord.get("user_name"));
-            auditMap.put("type" ,leaveRecord.get("type"));
-            auditMap.put("reason" ,leaveRecord.get("reason"));
+            remindAuditVO.setCount(list2.size());
+            remindAuditVO.setDate(list2.get(0).getAuditDate());
+            remindAuditVO.setType(leaveRecord.get("type"));
+            remindAuditVO.setApplyName(leaveRecord.get("user_name"));
+            remindAuditVO.setReason(leaveRecord.get("reason"));
         }else{
-            auditMap.put("count" , 0);
-            auditMap.put("date" , "");
-            auditMap.put("type" , "");
-            auditMap.put("applyName" , "");
-            auditMap.put("reason" , "");
+            remindAuditVO.setCount(0);
+            remindAuditVO.setDate("");
+            remindAuditVO.setType("");
+            remindAuditVO.setApplyName("");
+            remindAuditVO.setReason("");
         }
-        returnData.setCode(IConstants.QT_CODE_OK);
-        returnData.setMessage("查询个人工作提醒成功");
-        returnData.setApplyForData(applyMap);
-        returnData.setAuditData(auditMap);
-        return returnData;
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("applyForData" , remindApplyVO);
+        resultMap.put("auditData" , remindAuditVO);
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        resultInfo.setMessage("查询个人工作提醒成功");
+        resultInfo.setData(resultMap);
+        return resultInfo;
     }
 
     /**
@@ -473,6 +471,30 @@ public class LeaveController extends BaseController {
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("审批成功");
         logger.info("审批成功");
+        return resultInfo;
+    }
+
+    /**
+     * 获取消息总数
+     * @param userId 用户ID
+     * @return ResultInfo
+     */
+    @RequestMapping("messageTotal")
+    @ResponseBody
+    public ResultInfo messageTotal(String userId){
+        logger.info("开始获取消息总数......");
+        ResultInfo resultInfo = new ResultInfo();
+        if(StringUtil.isEmpty(userId)){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("获取消息总数失败");
+            return resultInfo;
+        }
+        List<Map<String,Object>> list = leaveService.getLeaveRecord(userId); //获取个人申请记录
+        List<AuditVO> list2 =leaveService.getLeaveAuditor(userId); //获取个人审批记录
+        int total = list.size() + list2.size();
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        resultInfo.setMessage("获取消息总数成功");
+        resultInfo.setData(total);
         return resultInfo;
     }
 

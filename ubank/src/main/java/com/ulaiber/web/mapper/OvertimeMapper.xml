@@ -9,4 +9,14 @@
  -->
 <mapper namespace="com.ulaiber.web.dao.OvertimeDao">
 
+    <!--新增加班申请记录-->
+    <insert id="addOvertimeRecord" parameterType="com.ulaiber.web.model.ApplyForVO">
+        INSERT INTO tbl_overtime_details(recordNo,mode) VALUES (#{id},#{mode})
+    </insert>
+
+    <!--新增加班记录信息-->
+    <insert id="addRecord" parameterType="com.ulaiber.web.model.ApplyForVO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tbl_leave_record (userid,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable,type)
+        VALUES (#{userid},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},#{createDate},'0','0','1')
+    </insert>
 </mapper>

@@ -100,7 +100,7 @@
 
     <!--根据用户ID获取用户名-->
     <select id="getUserById" parameterType="String" resultType="Map">
-          SELECT user_id,user_name FROM tbl_users where user_id in
+          SELECT user_id,user_name FROM tbl_users where disabled = '0' and user_id in
         <foreach collection="array" item="ids" open="(" separator="," close=")">
             #{ids}
         </foreach>

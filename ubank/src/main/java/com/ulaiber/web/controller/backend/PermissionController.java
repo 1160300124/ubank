@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 权限设置Controller
@@ -24,6 +22,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/backend/")
 public class PermissionController extends BaseController {
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Resource
     private PermissionService permissionService;
@@ -408,6 +408,8 @@ public class PermissionController extends BaseController {
             }
             String password = MD5Util.getEncryptedPwd(pwd);
             user.setLogin_password(password);
+            String date = sdf.format(new Date());
+            user.setCreateTime(date);
             int result = permissionService.addEmployee(user);
             if(result > 0){
                 user.setId(user.getId()); //设置用户ID

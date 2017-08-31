@@ -54,8 +54,8 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public List<LeaveRecord> queryApplyRecord(String userid) {
-        List<LeaveRecord> list = leaveDao.queryApplyRecord(userid);
+    public List<ApplyForVO> queryApplyRecord(String userid) {
+        List<ApplyForVO> list = leaveDao.queryApplyRecord(userid);
         return list;
     }
 
@@ -63,13 +63,8 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int cancelApply(String applyId) {
         int result = leaveDao.cancelApply(applyId);
-        return result;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int cancelApplyAudit(String applyId) {
-        return leaveAuditDao.cancelApplyAudit(applyId);
+        int result2 = leaveDao.cancelApplyAudit(applyId);
+        return result2;
     }
 
     @Override

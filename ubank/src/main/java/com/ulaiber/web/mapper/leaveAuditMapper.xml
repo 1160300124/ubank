@@ -17,10 +17,6 @@
         </foreach>
     </insert>
 
-    <!--取消请假审批人-->
-    <update id="cancelApplyAudit" parameterType="String" >
-        UPDATE tbl_leave_audit_record SET disable = '1' where recordNo = #{applyId}
-    </update>
 
     <!--查询审批人记录-->
     <select id="queryAuditor" parameterType="String" resultType="com.ulaiber.web.model.LeaveAudit">

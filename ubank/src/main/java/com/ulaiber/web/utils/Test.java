@@ -222,4 +222,31 @@ public class Test {
 		System.out.print("~~~~~~~~工作审批结果为："+result);
 	}
 
+	//获取消息总数
+	@org.junit.Test
+	public void messageTotal(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","359");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/messageTotal",map);
+		System.out.print("~~~~~~~~工作提醒结果为："+result);
+	}
+
+
+	/**-----------------------------------------------------------------------------------------------*/
+
+	//新增加班记录
+	@org.junit.Test
+	public void addOvertimeRecord(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userid","375");
+		map.put("startDate","2017-08-24");
+		map.put("endDate","2017-08-25");
+		map.put("leaveTime",12);
+		map.put("auditor","395,366");
+		map.put("reason","抓紧上线");
+		map.put("mode" , '0');
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/addOvertimeRecord",map);
+		System.out.print(result);
+	}
+
 }
