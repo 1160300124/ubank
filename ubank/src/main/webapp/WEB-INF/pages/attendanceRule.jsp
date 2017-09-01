@@ -684,7 +684,7 @@
                             <div class="people-box">
                                 <div class="search-box">
                                     <span class="glyphicon glyphicon-search search-icon"></span>
-                                    <input type="text" class="form-control search-input" placeholder="搜索" />
+                                    <input type="text" class="form-control search-input" id="people_search" placeholder="搜索" />
                                 </div>
                                 <div>
                                     <input type="checkbox"  id="checkAll" />

@@ -239,12 +239,20 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public ResultInfo refreshLocation(String longitude, String latitude, HttpServletRequest request) {
+	public ResultInfo refreshLocation(String mobile, String longitude, String latitude, HttpServletRequest request) {
 		ResultInfo retInfo = new ResultInfo();
+		AttendanceRule rule = ruleDao.getRuleByMobile(mobile);
+		if (null == rule){
+			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
+			return retInfo;
+		}
+		
 		//APP手机定位的坐标
 		String mobileLocation = longitude + "," + latitude;
-		//公司坐标
-		String companyLocation = "113.941664,22.542380";
+		//公司坐标113.941664,22.542380
+		String companyLocation = rule.getClockLocation();
 		String url = "http://restapi.amap.com/v3/distance?key=1f255ddf4f7ff1d1660b0417bee242e7&origins=" + mobileLocation + "&destination=" + companyLocation + "&type=0";
 		String result = HttpsUtil.doGet(url);
 		if (StringUtils.isNotEmpty(result)){
@@ -260,12 +268,12 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 			JSONArray array = json.getJSONArray("results");
 			//打卡规则设置里设置的打卡距离
-			long distance = 1000;
+			long distance = rule.getClockBounds();
 			long currentDistance = Long.parseLong(array.getJSONObject(0).getString("distance"));
 			if (currentDistance > distance){
 				logger.info("当前坐标离公司" + currentDistance + "m，超过设置的" + distance + "m");
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("当前坐标离公司" + currentDistance + "m，超过设置的" + distance + "m，在走进一点点就可以打卡了哟，么么哒...");
+				retInfo.setMessage("当前坐标离公司" + currentDistance + "m，超过设置的" + distance + "m。");
 				return retInfo;
 			}
 			retInfo.setCode(IConstants.QT_CODE_OK);
