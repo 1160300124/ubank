@@ -252,7 +252,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		//APP手机定位的坐标
 		String mobileLocation = longitude + "," + latitude;
 		//公司坐标113.941664,22.542380
-		String companyLocation = rule.getClockLocation();
+		String companyLocation = rule.getLongit_latit();
 		String url = "http://restapi.amap.com/v3/distance?key=1f255ddf4f7ff1d1660b0417bee242e7&origins=" + mobileLocation + "&destination=" + companyLocation + "&type=0";
 		String result = HttpsUtil.doGet(url);
 		if (StringUtils.isNotEmpty(result)){
