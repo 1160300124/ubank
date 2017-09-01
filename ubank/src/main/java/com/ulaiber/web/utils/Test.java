@@ -207,8 +207,10 @@ public class Test {
 	@org.junit.Test
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","358");
+		map.put("userId","359");
 		map.put("mark","0");
+		map.put("pageNum",1);
+		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
 		System.out.print("~~~~~~~~工作审批结果为："+result);
 	}

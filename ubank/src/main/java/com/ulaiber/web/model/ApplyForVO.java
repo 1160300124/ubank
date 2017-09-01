@@ -19,10 +19,11 @@ public class ApplyForVO implements Serializable{
     private String type;        // 记录类型； 0 请假记录， 1 加班记录
     private String createDate;  // 创建时间
     private String status;      // 审批状态
-    private String auditDate;   //当前审批人的审批日期
     private Object auditorStatus;//
     private String holiday;      // 是否节假日；0 否，1 是
     private String mode;         // 加班核算方式；0 调休，1 发工资
+    private String username;     //用户名
+    private String image;        //头像
 
     public int getId() {
         return id;
@@ -144,11 +145,19 @@ public class ApplyForVO implements Serializable{
         this.mode = mode;
     }
 
-    public String getAuditDate() {
-        return auditDate;
+    public String getUsername() {
+        return username;
     }
 
-    public void setAuditDate(String auditDate) {
-        this.auditDate = auditDate;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

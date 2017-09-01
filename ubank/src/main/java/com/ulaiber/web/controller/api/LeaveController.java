@@ -180,7 +180,6 @@ public class LeaveController extends BaseController {
             remindApplyVO.setType(list.get(0).get("type"));
             remindApplyVO.setApplyName(list.get(0).get("user_name"));
             remindApplyVO.setReason(list.get(0).get("reason"));
-
         }else{
             remindApplyVO.setCount(0);
             remindApplyVO.setDate("");
@@ -304,7 +303,8 @@ public class LeaveController extends BaseController {
                     map.put("status" , applyForVO.getStatus());
                     map.put("type" , applyForVO.getType());
                     map.put("disable" , applyForVO.getDisable());
-                    map.put("auditDate",applyForVO.getAuditDate());
+                    map.put("username",applyForVO.getUsername());
+                    map.put("image",applyForVO.getImage());
                     //判断当前数据属于哪种功能的数据
                    if(applyForVO.getType().equals("0")){  //请假
                         Map<String,Object> leaveMap = new HashMap<>();
@@ -385,8 +385,9 @@ public class LeaveController extends BaseController {
                     map.put("status" , applyForVO.getStatus());
                     map.put("type" , applyForVO.getType());
                     map.put("disable" , applyForVO.getDisable());
+                    map.put("username",applyForVO.getUsername());
+                    map.put("image",applyForVO.getImage());
                     map.put("auditorStatus",new Object());
-                    map.put("auditDate",applyForVO.getAuditDate());
                     //判断当前数据属于哪种功能的数据
                     if(applyForVO.getType().equals("0")){  //请假
                         Map<String,Object> leaveMap = new HashMap<>();
