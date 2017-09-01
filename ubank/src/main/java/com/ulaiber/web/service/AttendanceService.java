@@ -36,7 +36,7 @@ public interface AttendanceService {
 	 * 刷新地理位置坐标
 	 * @return
 	 */
-	ResultInfo refreshLocation(String longitude, String latitude, HttpServletRequest request);
+	ResultInfo refreshLocation(String mobile, String longitude, String latitude, HttpServletRequest request);
 	
 	/**
 	 * 根据条件获取记录数

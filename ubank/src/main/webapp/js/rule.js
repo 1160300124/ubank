@@ -507,6 +507,13 @@ $(function(){
 
 		advanceSettingModal.modal("show");
 	});
+	
+	
+	$("#people_search").unbind().bind("change", function(){
+		
+		console.log(1234);
+	});
+	
 
 	$("#advanceSetting_confirm").unbind().bind("click", function(){
 
@@ -976,6 +983,7 @@ window.operateEvents = {
 						zTreeObj.checkAllNodes(false);   //清空tree
 						$(data['data']).each(function(index,item){
 							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.deptId), true);
+							zTreeObj.setChkDisabled(zTreeObj.getNodeByParam("id", item.userId), false);
 							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.userId), true);
 						})
 						renderSelected("peoplesTree_edit");

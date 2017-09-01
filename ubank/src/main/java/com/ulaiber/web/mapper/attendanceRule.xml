@@ -98,4 +98,8 @@
 		select * from tbl_users_of_rules where rid=#{rid}
 	</select>
 	
+	<select id="getUserIdsByComId" parameterType="Integer" resultType="com.ulaiber.web.model.UserOfRule">
+		select * from tbl_users_of_rules where companyId=#{companyId}
+	</select>
+	
 </mapper>

@@ -1,8 +1,10 @@
 package com.ulaiber.web.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -57,26 +59,26 @@ public class Test {
 //        String response = HttpsUtil.doPost(apiUrl, params);
 //        System.out.println(response);
         
-//      String apiUrl = "http://localhost:8080/uwallet/api/v1/login";
+//      String apiUrl = "http://localhost:8080/ubank/api/v1/login";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "18503036206");
 //      params.put("login_password", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
-//      String apiUrl = "http://localhost:8080/uwallet/api/v1/getUserInfo";
-//      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//      params.put("mobile", "18503036206");
-//      String response = HttpsUtil.doPost(apiUrl, params);
-//      System.out.println(response);
+      String apiUrl = "http://localhost:8080/ubank/api/v1/getUserInfo";
+      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+      params.put("mobile", "15919477081");
+      String response = HttpsUtil.doPost(apiUrl, params);
+      System.out.println(response);
         
-//      String apiUrl = "http://10.17.1.136:8080/uwallet/api/v1/sendCaptcha";
+//      String apiUrl = "http://10.17.1.136:8080/ubank/api/v1/sendCaptcha";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "15919477086");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
-//      String apiUrl = "http://localhost:8080/uwallet/api/v1/validate";
+//      String apiUrl = "http://localhost:8080/ubank/api/v1/validate";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "15919477086");
 //      params.put("captcha", "123456");
@@ -85,7 +87,7 @@ public class Test {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
 		
-//      String apiUrl = "http://localhost:8080/uwallet/api/v1/updateForBankCard";
+//      String apiUrl = "http://localhost:8080/ubank/api/v1/updateForBankCard";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "15919477086");
 //      params.put("bankCardNo", "123456");
@@ -132,6 +134,13 @@ public class Test {
         //指定从字符或数字中生成随机字符串
         System.out.println(RandomStringUtils.random(5, true, false));  
         System.out.println(RandomStringUtils.random(5, false, true));
+        
+		List<Long> ids = new ArrayList<Long>();
+		ids.add(1L);
+		ids.add(2L);
+		ids.add(3L);
+		ids.add(4L);
+		System.out.println(ids.contains(1L));
 	}
 	
 	/* 单条短信发送,智能匹配短信模板
