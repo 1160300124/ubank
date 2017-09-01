@@ -19,15 +19,18 @@ public class IConstants
     
     //失败
     public final static int QT_CODE_ERROR = 1010;
-    
+
     //密码不一致
     public final static int QT_PWD_NOT_MATCH = 1011;
-    
+
     //验证码错误
     public final static int QT_CAPTCHA_ERROR = 1012;
-    
+
     //验证码发送错误
     public final static int QT_CAPTCHA_SEND_ERROR = 1013;
+
+    //返回空
+	public final static int QT_CODE_EMPTY = 1014;
 
     //手机号或密码错误
     public final static int QT_NAME_OR_PWD_OEEOR = 2010;

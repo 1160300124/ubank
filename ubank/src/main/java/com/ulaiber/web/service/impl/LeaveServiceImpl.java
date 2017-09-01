@@ -93,13 +93,21 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public ApplyForVO queryPeningRecord(int id) {
-        return leaveDao.queryPeningRecord(id);
+    public ApplyForVO queryPeningRecord(int id,int pageNum,int pageSize) {
+        Map<String , Object> map = new HashMap<>();
+        map.put("id" , id);
+        map.put("pageNum" , pageNum);
+        map.put("pageSize" , pageSize);
+        return leaveDao.queryPeningRecord(map);
     }
 
     @Override
-    public ApplyForVO queryAlreadRecord(int id) {
-        return leaveDao.queryAlreadRecord(id);
+    public ApplyForVO queryAlreadRecord(int id,int pageNum,int pageSize) {
+        Map<String , Object> map = new HashMap<>();
+        map.put("id" , id);
+        map.put("pageNum" , pageNum);
+        map.put("pageSize" , pageSize);
+        return leaveDao.queryAlreadRecord(map);
     }
 
     @Override
@@ -146,6 +154,20 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     @Override
     public Map<String,Object> queryApplyRecordById(int id) {
         return leaveDao.queryApplyRecordById(id);
+    }
+
+    @Override
+    public int getUserTotalByDate(String date) {
+        return leaveDao.getUserTotalByDate(date);
+    }
+
+    @Override
+    public List<User> getUserByDate(String date,int pageNum,int pageSize) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("date" , date);
+        map.put("pageNum" , pageNum);
+        map.put("pageSize" , pageSize);
+        return leaveDao.getUserByDate(map);
     }
 
 

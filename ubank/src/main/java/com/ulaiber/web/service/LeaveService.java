@@ -28,9 +28,9 @@ public interface LeaveService {
 
     List<Map<String,Object>> getAlreadyRecord(String userId);   //获取已审批记录
 
-    ApplyForVO queryPeningRecord(int id); //获取待审批记录
+    ApplyForVO queryPeningRecord(int id,int pageNum,int pageSize); //获取待审批记录
 
-    ApplyForVO queryAlreadRecord(int id); //获取已审批记录
+    ApplyForVO queryAlreadRecord(int id,int pageNum,int pageSize); //获取已审批记录
 
     List<LeaveAudit> getAuditorByUserId(String userId); //根据申请记录编号获取审批人
 
@@ -45,4 +45,8 @@ public interface LeaveService {
     int updateRecord(String recordNo,String status);  //更新申请记录为最新的状态
 
     Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
+
+    int getUserTotalByDate(String date);  //根据日期查询用户
+
+    List<User> getUserByDate(String date,int pageNum,int pageSize);  //根据日期分页查询用户
 }

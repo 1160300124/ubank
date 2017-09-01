@@ -5,6 +5,7 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.utils.StringUtil;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -158,7 +159,7 @@ public class LeaveController extends BaseController {
     /**
      * 查询工作提醒
      * @param userId 用户id
-     * @return ReturnData
+     * @return ResultInfo
      */
     @RequestMapping("getWorkRemind")
     @ResponseBody
@@ -230,37 +231,37 @@ public class LeaveController extends BaseController {
             return resultInfo;
         }
         List<Map<String,Object>> list = leaveService.getPendingRecord(userId); //获取待审批记录数量
-        List<Map<String,Object>> resultList = new ArrayList<>();
-        Map<String,Object> pendingMap = new HashMap<>();
+        List<WorkAuditRecordVO> resultList = new ArrayList<>();
+        WorkAuditRecordVO workAuditRecordVO = new WorkAuditRecordVO();
         if(list.size() >0 ){
-            pendingMap.put("mark" ,IConstants.Pengding_AUDIT_MARK );
-            pendingMap.put("count" , list.size());
-            pendingMap.put("date" , list.get(0).get("createDate"));
-            pendingMap.put("status" , list.get(0).get("status"));
+            workAuditRecordVO.setMark(IConstants.Pengding_AUDIT_MARK );
+            workAuditRecordVO.setCount(list.size());
+            workAuditRecordVO.setDate(list.get(0).get("createDate"));
+            workAuditRecordVO.setStatus(list.get(0).get("status"));
         }else{
-            pendingMap.put("mark" ,IConstants.Pengding_AUDIT_MARK );
-            pendingMap.put("count" , null);
-            pendingMap.put("date" , "");
-            pendingMap.put("status" , "");
+            workAuditRecordVO.setMark(IConstants.Pengding_AUDIT_MARK );
+            workAuditRecordVO.setCount(0);
+            workAuditRecordVO.setDate("");
+            workAuditRecordVO.setStatus("");
         }
-        resultList.add(pendingMap);
-        List<Map<String,Object>> list2 = leaveService.getAlreadyRecord(userId); //获取已审批记录数量
-        Map<String,Object> alreadyMap = new HashMap<>();
-        if(list2.size() > 0){
-            alreadyMap.put("mark" , IConstants.Already_APPLY_MARK);
-            alreadyMap.put("count" , list2.size());
-            alreadyMap.put("date" , list2.get(0).get("createDate"));
-            alreadyMap.put("status" , list2.get(0).get("status"));
-        }else{
-            alreadyMap.put("mark" , IConstants.Already_APPLY_MARK);
-            alreadyMap.put("count" , null);
-            alreadyMap.put("date" , "");
-            alreadyMap.put("status" ,"");
-        }
-        resultList.add(alreadyMap);
+       // resultList.add(workAuditRecordVO);
+//        List<Map<String,Object>> list2 = leaveService.getAlreadyRecord(userId); //获取已审批记录数量
+//        Map<String,Object> alreadyMap = new HashMap<>();
+//        if(list2.size() > 0){
+//            alreadyMap.put("mark" , IConstants.Already_APPLY_MARK);
+//            alreadyMap.put("count" , list2.size());
+//            alreadyMap.put("date" , list2.get(0).get("createDate"));
+//            alreadyMap.put("status" , list2.get(0).get("status"));
+//        }else{
+//            alreadyMap.put("mark" , IConstants.Already_APPLY_MARK);
+//            alreadyMap.put("count" , null);
+//            alreadyMap.put("date" , "");
+//            alreadyMap.put("status" ,"");
+//        }
+//        resultList.add(alreadyMap);
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("查询工作审批记录数量成功");
-        resultInfo.setData(resultList);
+        resultInfo.setData(workAuditRecordVO);
         logger.info("查询工作审批记录数量成功");
         return resultInfo;
     }
@@ -273,7 +274,7 @@ public class LeaveController extends BaseController {
      */
     @RequestMapping("queryAuditRecord")
     @ResponseBody
-    public ResultInfo queryAuditRecord(String userId,String mark){
+    public ResultInfo queryAuditRecord(String userId,String mark,int pageNum,int pageSize){
         logger.info("开始查询待批复数据");
         ResultInfo resultInfo = new ResultInfo();
         if(StringUtil.isEmpty(userId) || StringUtil.isEmpty(mark)){
@@ -289,7 +290,8 @@ public class LeaveController extends BaseController {
             if(auList.size() > 0){
                 for (int i = 0 ; i < auList.size() ; i++){
                     int id = Integer.parseInt(auList.get(i).getRecordNo());
-                    ApplyForVO applyForVO = leaveService.queryPeningRecord(id); //根据申请记录ID获取待审批记录
+                    pageNum = (pageNum - 1) * pageSize;
+                    ApplyForVO applyForVO = leaveService.queryPeningRecord(id,pageNum,pageSize); //根据申请记录ID获取待审批记录
                     Map<String ,Object> map = new HashMap<>();
                     map.put("id" , applyForVO.getId());
                     map.put("userid" , applyForVO.getUserid());
@@ -302,7 +304,7 @@ public class LeaveController extends BaseController {
                     map.put("status" , applyForVO.getStatus());
                     map.put("type" , applyForVO.getType());
                     map.put("disable" , applyForVO.getDisable());
-
+                    map.put("auditDate",applyForVO.getAuditDate());
                     //判断当前数据属于哪种功能的数据
                    if(applyForVO.getType().equals("0")){  //请假
                         Map<String,Object> leaveMap = new HashMap<>();
@@ -369,7 +371,8 @@ public class LeaveController extends BaseController {
             if(auditorList.size() > 0){
                 for (int i = 0; i < auditorList.size(); i++){
                     int id = Integer.parseInt(auditorList.get(i).getRecordNo());
-                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id); //获取已审批记录
+                    pageNum = (pageNum - 1) * pageSize;
+                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id,pageNum,pageSize); //获取已审批记录
                     Map<String ,Object> map = new HashMap<>();
                     map.put("id" , applyForVO.getId());
                     map.put("userid" , applyForVO.getUserid());
@@ -383,6 +386,7 @@ public class LeaveController extends BaseController {
                     map.put("type" , applyForVO.getType());
                     map.put("disable" , applyForVO.getDisable());
                     map.put("auditorStatus",new Object());
+                    map.put("auditDate",applyForVO.getAuditDate());
                     //判断当前数据属于哪种功能的数据
                     if(applyForVO.getType().equals("0")){  //请假
                         Map<String,Object> leaveMap = new HashMap<>();
@@ -487,6 +491,7 @@ public class LeaveController extends BaseController {
         if(StringUtil.isEmpty(userId)){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("获取消息总数失败");
+            logger.info("获取消息总数失败");
             return resultInfo;
         }
         List<Map<String,Object>> list = leaveService.getLeaveRecord(userId); //获取个人申请记录
@@ -494,8 +499,106 @@ public class LeaveController extends BaseController {
         int total = list.size() + list2.size();
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("获取消息总数成功");
+        logger.info("获取消息总数成功");
         resultInfo.setData(total);
         return resultInfo;
+    }
+
+    /**
+     * 通讯录数据同步
+     * @param date 日期
+     * @return ResultInfo
+     */
+    @RequestMapping("synchronizationData")
+    @ResponseBody
+    public ResultInfo synchronizationData(String date){
+        logger.info(">>>>>>>>>>>>>开始同步数据");
+        int total = leaveService.getUserTotalByDate(date);  //根据日期查询用户总数
+        ResultInfo resultInfo = new ResultInfo();
+        if(total <= 0){
+            resultInfo.setCode(IConstants.QT_CODE_EMPTY);
+            resultInfo.setMessage("暂时没有可更新数据");
+            logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
+            return resultInfo;
+        }
+        int pageNum = 0;
+        int pageSize = 20;
+        boolean flag = false; // true 表示数据已同步完成； false 表示还有数据需要同步；
+        String lastDate = ""; // 最新的日期
+        List<User> userList = leaveService.getUserByDate(date,pageNum,pageSize);  //根据日期分页查询用户
+        List<SynchronizationData> list = new ArrayList<>();  //存放增加或修改的数据
+        List<SynchronizationData> list2 = new ArrayList<>();  //存放删除的数据
+        Map<String,Object> resultMap = new HashMap<>();
+        int pageTotal = userList.size();
+        //如果总数大于分页查询的总数，则表示还有数据
+        if((total - pageTotal) > 0){
+            User us = userList.get(userList.size()-1); // 获取最后那条记录的创建日期
+            lastDate = us.getCreateTime();
+            for (int i = 0 ; i < userList.size() ; i++){
+                User user = userList.get(i);
+                if(user.getDisabled().equals("0")){
+                    //list.add(userList.get(i));
+                    SynchronizationData async = new SynchronizationData();
+                    async.setId(userList.get(i).getId());
+                    async.setUsername(userList.get(i).getUserName());
+                    async.setDeptName(userList.get(i).getDept_name());
+                    async.setImage(userList.get(i).getImage());
+                    async.setDisabled(userList.get(i).getDisabled());
+                    list.add(async);
+                }else{
+                    //list2.add(userList.get(i));
+                    SynchronizationData async = new SynchronizationData();
+                    async.setId(userList.get(i).getId());
+                    async.setUsername(userList.get(i).getUserName());
+                    async.setDeptName(userList.get(i).getDept_name());
+                    async.setImage(userList.get(i).getImage());
+                    async.setDisabled(userList.get(i).getDisabled());
+                    list2.add(async);
+
+                }
+            }
+            resultMap.put("NewAndUpdate" , list);
+            resultMap.put("Delete" , list2);
+            resultMap.put("LastDate",lastDate);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("同步数据成功");
+            resultInfo.setData(resultMap);
+            logger.info(">>>>>>>>>>>>>同步数据成功");
+            return resultInfo;
+        }else{
+            flag = true;
+            User us = userList.get(userList.size()-1); // 获取最后那条记录的创建日期
+            lastDate = us.getCreateTime();
+            for (int i = 0 ; i < userList.size() ; i++){
+                User user = userList.get(i);
+                if(user.getDisabled().equals("0")){
+                    SynchronizationData async = new SynchronizationData();
+                    async.setId(userList.get(i).getId());
+                    async.setUsername(userList.get(i).getUserName());
+                    async.setDeptName(userList.get(i).getDept_name());
+                    async.setImage(userList.get(i).getImage());
+                    async.setDisabled(userList.get(i).getDisabled());
+                    list.add(async);
+                }else{
+                    SynchronizationData async = new SynchronizationData();
+                    async.setId(userList.get(i).getId());
+//                    async.setUsername(userList.get(i).getUserName());
+//                    async.setDeptName(userList.get(i).getDept_name());
+//                    async.setImage(userList.get(i).getImage());
+//                    async.setDisabled(userList.get(i).getDisabled());
+                    list2.add(async);
+                }
+            }
+            resultMap.put("NewAndUpdate" , list);
+            resultMap.put("Delete" , list2);
+            resultMap.put("LastDate",lastDate);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("同步数据成功");
+            resultInfo.setData(resultMap);
+            logger.info(">>>>>>>>>>>>>同步数据成功");
+            return resultInfo;
+
+        }
     }
 
 

@@ -251,4 +251,13 @@ public class Test {
 		System.out.print(result);
 	}
 
+	//同步数据
+	@org.junit.Test
+	public void synchronizationData(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("date","2017-08-01");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
+		System.out.print("~~~~~~~~同步数据结果为："+result);
+	}
+
 }

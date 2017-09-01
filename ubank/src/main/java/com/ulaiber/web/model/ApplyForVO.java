@@ -19,6 +19,7 @@ public class ApplyForVO implements Serializable{
     private String type;        // 记录类型； 0 请假记录， 1 加班记录
     private String createDate;  // 创建时间
     private String status;      // 审批状态
+    private String auditDate;   //当前审批人的审批日期
     private Object auditorStatus;//
     private String holiday;      // 是否节假日；0 否，1 是
     private String mode;         // 加班核算方式；0 调休，1 发工资
@@ -141,5 +142,13 @@ public class ApplyForVO implements Serializable{
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public String getAuditDate() {
+        return auditDate;
+    }
+
+    public void setAuditDate(String auditDate) {
+        this.auditDate = auditDate;
     }
 }

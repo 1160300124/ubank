@@ -103,6 +103,9 @@ public class User implements Serializable {
 	//员工头像
 	private String image;
 
+	//是否作废
+	private String disabled;
+
 	public long getId() {
 		return id;
 	}
@@ -365,5 +368,13 @@ public class User implements Serializable {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(String disabled) {
+		this.disabled = disabled;
 	}
 }
