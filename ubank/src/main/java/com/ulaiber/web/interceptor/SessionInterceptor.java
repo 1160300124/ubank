@@ -3,6 +3,7 @@ package com.ulaiber.web.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				
 			}  
 		} else if (uri.contains("/api/v1/")){
-//			根据ticket和token获取用户
+			//根据ticket和token获取用户
 //			String login_ticket = request.getHeader("login_ticket");
 //			String access_token = request.getHeader("access_token");
 //			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
@@ -67,7 +68,14 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 //				response.setCharacterEncoding("UTF-8");
 //				response.sendError(HttpStatus.UNAUTHORIZED.value());
 //				return false;  
-//			} 
+//			}
+//			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
+//				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
+//					response.setCharacterEncoding("UTF-8");
+//					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
+//					return false;
+//				}
+//			}
 		}
 		
 		

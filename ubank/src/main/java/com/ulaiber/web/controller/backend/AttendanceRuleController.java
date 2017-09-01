@@ -107,6 +107,11 @@ public class AttendanceRuleController extends BaseController {
 		
 		List<Departments> depts = permissionSerivce.getDeptByCom(conuser.getCompanyNumber());
 		List<User> users = userService.getUsersByComNum(conuser.getCompanyNumber());
+		List<Long> userIds = new ArrayList<Long>();
+		List<UserOfRule> uofs = service.getUserIdsByComId(Integer.parseInt(conuser.getCompanyNumber()));
+		for (UserOfRule uof : uofs){
+			userIds.add(uof.getUserId());
+		}
 		for (Departments dept : depts){
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			for (User user : users){
@@ -114,6 +119,9 @@ public class AttendanceRuleController extends BaseController {
 					Map<String, Object> userMap = new HashMap<String, Object>();
 					userMap.put("id", user.getId());
 					userMap.put("name", user.getUserName());
+					if (userIds.contains(user.getId())){
+						userMap.put("chkDisabled", true);
+					}
 					list.add(userMap);
 				}
 			}

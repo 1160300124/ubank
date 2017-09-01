@@ -70,9 +70,6 @@ public class AttendanceApiController extends BaseController {
 			return data;
 		}
 
-		data.put("clockOnTime", rule.getClockOnTime());
-		data.put("clockOffTime", rule.getClockOffTime());
-		
 		List<Attendance> list = service.getRecordsByMonthAndMobile(month, mobile);
 		data.put("records", list);
 		return data;
@@ -94,13 +91,21 @@ public class AttendanceApiController extends BaseController {
 			return data;
 		}
 
-		data.put("clockOnTime", rule.getClockOnTime());
-		data.put("clockOffTime", rule.getClockOffTime());
-		
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
-//		String datetime = "2017-08-19 00:30";
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
+		
+		data.put("clockOnTime", rule.getClockOnTime());
+		data.put("clockOffTime", rule.getClockOffTime());
+		data.put("clockDate", today);
+		
+		String yesterday = "";
+		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
+		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
+			//转钟后的前一天日期 yyyy-MM-dd 
+			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
+			data.put("clockDate", yesterday);
+		}
 		
 		if (StringUtils.isNotEmpty(date)){
 			today = date;
@@ -129,6 +134,7 @@ public class AttendanceApiController extends BaseController {
 			data.put("isRestDay", isRestDay);
 			return data;
 		}
+		
 		String tomorrow = "";
 		if (StringUtils.isNotEmpty(date)){
 			//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
@@ -144,6 +150,7 @@ public class AttendanceApiController extends BaseController {
 			data.put("records", records);
 			return data;
 		}
+		
 		String clockOffTime = rule.getClockOffTime();
 		//是否开启弹性时间
 		if (rule.getFlexibleFlag() == 0){
@@ -151,12 +158,6 @@ public class AttendanceApiController extends BaseController {
 			if (rule.getPostponeFlag() == 0){
 				clockOffTime = DateTimeUtil.getfutureTime(today + " " + rule.getClockOffTime(), 0, 0, rule.getFlexibleTime()).split(" ")[1];
 			}
-		}
-		String yesterday = "";
-		//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
-		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
-			//转钟后的前一天日期 yyyy-MM-dd 
-			yesterday = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
 		}
 		
 		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡
@@ -214,7 +215,7 @@ public class AttendanceApiController extends BaseController {
 		}
 		
 		//检查打卡的位置是否在设置范围内
-		ResultInfo result = service.refreshLocation(longitude, latitude, request);
+		ResultInfo result = service.refreshLocation(mobile, longitude, latitude, request);
 		if (result.getCode() == IConstants.QT_CODE_ERROR){
 			logger.error("不在设置的打卡范围之内，请刷新位置。");
 			info.setCode(IConstants.QT_CODE_ERROR);
@@ -254,7 +255,7 @@ public class AttendanceApiController extends BaseController {
 
 	@RequestMapping(value = "refreshLocation", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo refreshLocation(String longitude, String latitude, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo refreshLocation(String mobile, String longitude, String latitude, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("refreshLocation start...");
 		ResultInfo info = new ResultInfo();
 		if (StringUtils.isEmpty(longitude) || StringUtils.isEmpty(latitude)){
@@ -262,7 +263,7 @@ public class AttendanceApiController extends BaseController {
 			info.setMessage("经度或纬度不能为空。");
 			return info;
 		}
-		info = service.refreshLocation(longitude, latitude, request);
+		info = service.refreshLocation(mobile, longitude, latitude, request);
 		logger.debug("refreshLocation end...");
 		return info;
 	}

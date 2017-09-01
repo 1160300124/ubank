@@ -1,7 +1,6 @@
 package com.ulaiber.web.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -16,7 +15,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

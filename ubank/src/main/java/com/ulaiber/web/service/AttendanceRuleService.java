@@ -79,4 +79,11 @@ public interface AttendanceRuleService {
 	 */
 	List<UserOfRule> getUserIdsByRid(Long rid);
 	
+	/**
+	 * 查询公司下的打卡人员
+	 * @param companyId
+	 * @return
+	 */
+	List<UserOfRule> getUserIdsByComId(int companyId);
+	
 }
