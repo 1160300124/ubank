@@ -18,13 +18,13 @@ public interface LeaveAuditDao {
 
     List<AuditVO> getLeaveAuditor(String userId); //获取个人所有审批记录
 
-    List<LeaveAudit> getAuditorByUserId(String userId); //根据申请记录编号获取审批人
+    List<LeaveAudit> getAuditorByUserId(Map<String, Object> map); //根据申请记录编号获取审批人
 
     List<LeaveAudit> getAuditorBySort(Map<String, Object> map); //根据排序号和申请记录编号获取审批人
 
-    List<LeaveAudit> queryAuditorByRecord(String recordNo); //根据申请记录号查询待审批人记录
+    List<AuditVO> queryAuditorByRecord(String recordNo); //根据申请记录号查询待审批人记录
 
-    List<LeaveAudit> queryAuditorByUserId(String userId); //根据申请记录编号获取已审批人
+    List<LeaveAudit> queryAuditorByUserId(Map<String, Object> map); //根据申请记录编号获取已审批人
 
     int confirmAudit(Map<String, Object> map);  //确认审批
 }

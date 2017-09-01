@@ -284,13 +284,13 @@ public class LeaveController extends BaseController {
         }
         //0 待审批，1 已审批
         if(mark.equals("0")){
-            List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId);  //根据申请记录编号获取待审批人
+            pageNum = (pageNum - 1) * pageSize;
+            List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId,pageNum,pageSize);  //根据申请记录编号获取待审批人
             List<Map<String,Object>> list = new ArrayList<>();
             if(auList.size() > 0){
                 for (int i = 0 ; i < auList.size() ; i++){
                     int id = Integer.parseInt(auList.get(i).getRecordNo());
-                    pageNum = (pageNum - 1) * pageSize;
-                    ApplyForVO applyForVO = leaveService.queryPeningRecord(id,pageNum,pageSize); //根据申请记录ID获取待审批记录
+                    ApplyForVO applyForVO = leaveService.queryPeningRecord(id,userId); //根据申请记录ID获取待审批记录
                     Map<String ,Object> map = new HashMap<>();
                     map.put("id" , applyForVO.getId());
                     map.put("userid" , applyForVO.getUserid());
@@ -339,7 +339,7 @@ public class LeaveController extends BaseController {
                     //如果当前审批人的状态为待审批，则执行一下代码
                     if(status.equals("0")){
                         //获取当前记录所有审批人，放入对应的记录中
-                        List<LeaveAudit> list3 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
+                        List<AuditVO> list3 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
                         for (int j = 0 ; j < list.size() ; j++){
                             Map<String,Object> listMap = list.get(j);
                             if(String.valueOf(listMap.get("id")).equals(auList.get(i).getRecordNo())){
@@ -366,13 +366,13 @@ public class LeaveController extends BaseController {
             logger.info("查询待审批数据成功");
             return resultInfo;
         }else if(mark.equals("1")){
-            List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId);  //根据申请记录编号获取已审批人
+            pageNum = (pageNum - 1) * pageSize;
+            List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId,pageNum,pageSize);  //根据申请记录编号获取已审批人
             List<Map<String,Object>> list = new ArrayList<>();
             if(auditorList.size() > 0){
                 for (int i = 0; i < auditorList.size(); i++){
                     int id = Integer.parseInt(auditorList.get(i).getRecordNo());
-                    pageNum = (pageNum - 1) * pageSize;
-                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id,pageNum,pageSize); //获取已审批记录
+                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id,userId); //获取已审批记录
                     Map<String ,Object> map = new HashMap<>();
                     map.put("id" , applyForVO.getId());
                     map.put("userid" , applyForVO.getUserid());
@@ -401,7 +401,7 @@ public class LeaveController extends BaseController {
                     }
                     list.add(map);
                     String recordNo = auditorList.get(i).getRecordNo();
-                    List<LeaveAudit> list2 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
+                    List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
                     for (int j = 0; j < list.size(); j++){
                         Map<String,Object> listMap = list.get(j);
                         if(String.valueOf(listMap.get("id")).equals(auditorList.get(i).getRecordNo())){
@@ -438,7 +438,7 @@ public class LeaveController extends BaseController {
      */
     @RequestMapping("confirmAudit")
     @ResponseBody
-    public ResultInfo confirmAudit(String userId,String recordNo,String status){
+    public ResultInfo confirmAudit(String userId,String recordNo,String status,String reason){
         logger.info("开始确认审批操作");
         ResultInfo resultInfo = new ResultInfo();
         if(StringUtil.isEmpty(userId)){
@@ -459,7 +459,7 @@ public class LeaveController extends BaseController {
             logger.info("审批状态为空");
             return resultInfo;
         }
-        int result = leaveService.confirmAudit(userId,recordNo,status);
+        int result = leaveService.confirmAudit(userId,recordNo,status,reason);
         if(result <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("审批失败");
@@ -517,7 +517,7 @@ public class LeaveController extends BaseController {
         int total = leaveService.getUserTotalByDate(date);  //根据日期查询用户总数
         ResultInfo resultInfo = new ResultInfo();
         if(total <= 0){
-            resultInfo.setCode(IConstants.QT_CODE_EMPTY);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("暂时没有可更新数据");
             logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
             return resultInfo;

@@ -93,26 +93,28 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public ApplyForVO queryPeningRecord(int id,int pageNum,int pageSize) {
+    public ApplyForVO queryPeningRecord(int id,String userId) {
         Map<String , Object> map = new HashMap<>();
         map.put("id" , id);
-        map.put("pageNum" , pageNum);
-        map.put("pageSize" , pageSize);
+        map.put("userId" , userId);
         return leaveDao.queryPeningRecord(map);
     }
 
     @Override
-    public ApplyForVO queryAlreadRecord(int id,int pageNum,int pageSize) {
+    public ApplyForVO queryAlreadRecord(int id,String userId) {
         Map<String , Object> map = new HashMap<>();
         map.put("id" , id);
-        map.put("pageNum" , pageNum);
-        map.put("pageSize" , pageSize);
+        map.put("userId" , userId);
         return leaveDao.queryAlreadRecord(map);
     }
 
     @Override
-    public List<LeaveAudit> getAuditorByUserId( String userId) {
-        return leaveAuditDao.getAuditorByUserId(userId);
+    public List<LeaveAudit> getAuditorByUserId( String userId,int pageNum,int pageSize) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId" ,userId);
+        map.put("pageNum" ,pageNum);
+        map.put("pageSize" ,pageSize);
+        return leaveAuditDao.getAuditorByUserId(map);
     }
 
     @Override
@@ -124,21 +126,26 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public List<LeaveAudit> queryAuditorByRecord(String recordNo) {
+    public List<AuditVO> queryAuditorByRecord(String recordNo) {
         return leaveAuditDao.queryAuditorByRecord(recordNo);
     }
 
     @Override
-    public List<LeaveAudit> queryAuditorByUserId(String userId) {
-        return leaveAuditDao.queryAuditorByUserId(userId);
+    public List<LeaveAudit> queryAuditorByUserId(String userId,int pageNum,int pageSize) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId" ,userId);
+        map.put("pageNum" ,pageNum);
+        map.put("pageSize" ,pageSize);
+        return leaveAuditDao.queryAuditorByUserId(map);
     }
 
     @Override
-    public int confirmAudit(String userId, String recordNo, String status) {
+    public int confirmAudit(String userId, String recordNo, String status,String reason) {
         Map<String,Object> map = new HashMap<>();
         map.put("userId" , userId);
         map.put("recordNo" , recordNo);
         map.put("status" , status);
+        map.put("reason",reason);
         map.put("date",sdf.format(new Date()));
         return leaveAuditDao.confirmAudit(map);
     }

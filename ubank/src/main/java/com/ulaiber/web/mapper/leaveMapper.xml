@@ -60,16 +60,18 @@
               a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image  from tbl_leave_record a
               left join tbl_overtime_details b on a.id = b.recordNo
               left join tbl_users c on a.userid = c.user_id
-              where a.disable = '0' and  a.id =#{id} order by a.createDate desc limit #{pageNum},#{pageSize}
+              where a.disable = '0' and  a.auditor like concat('%',#{userId},'%') and a.id = #{id} and a.status = '0'
+              order by a.createDate desc
     </select>
 
     <!--获取已审批记录-->
     <select id="queryAlreadRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
          select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,
-              a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image from tbl_leave_record a
+              a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image  from tbl_leave_record a
               left join tbl_overtime_details b on a.id = b.recordNo
-               left join tbl_users c on a.userid = c.user_id
-              where a.disable = '0' and  a.id =#{id} order by a.createDate desc limit #{pageNum},#{pageSize}
+              left join tbl_users c on a.userid = c.user_id
+              where a.disable = '0' and  a.auditor like concat('%',#{userId},'%') and a.id = #{id} and a.status &lt;&gt; '0'
+              order by a.createDate desc
     </select>
 
     <!--更新申请记录为最新的状态-->

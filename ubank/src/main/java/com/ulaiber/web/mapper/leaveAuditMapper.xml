@@ -28,12 +28,12 @@
 
     <!--获取个人所有审批记录-->
     <select id="getLeaveAuditor" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
-        select id,recordNo,userid,auditor,auditDate,status from tbl_leave_audit_record WHERE disable = '0' and auditor = #{userId} ORDER BY auditDate
+        select id,recordNo,userid,auditor,auditDate,status from tbl_leave_audit_record WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate
     </select>
 
     <!--根据申请记录编号获取审批人-->
-    <select id="getAuditorByUserId" parameterType="String" resultType="com.ulaiber.web.model.LeaveAudit" >
-        select recordNo,auditor,sort from tbl_leave_audit_record where disable = '0' and   auditor = #{userId} and status = '0'
+    <select id="getAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit" >
+        select recordNo,auditor,sort from tbl_leave_audit_record where disable = '0' and   auditor = #{userId} and status = '0' limit #{pageNum},#{pageSize}
     </select>
 
     <!--根据排序号和申请记录编号获取审批-->
@@ -42,8 +42,10 @@
     </select>
 
     <!--根据申请记录号查询审批人记录-->
-    <select id="queryAuditorByRecord" parameterType="String" resultType="com.ulaiber.web.model.LeaveAudit">
-         select status,sort,auditDate from tbl_leave_audit_record where disable = '0' and  recordNo = #{recordNo}
+    <select id="queryAuditorByRecord" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
+         select a.status,a.sort,a.auditDate,b.user_name as username,b.image from tbl_leave_audit_record a
+            left join tbl_users b on a.auditor = b.user_id
+            where disable = '0' and  recordNo = #{recordNo}
     </select>
 
     <!--根据申请记录编号获取已审批人-->
@@ -53,6 +55,6 @@
 
     <!--确认审批-->
     <update id="confirmAudit" parameterType="Map" >
-        UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date} where recordNo = #{recordNo} and auditor = #{userId}
+        UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date},reason = #{reason} where recordNo = #{recordNo} and auditor = #{userId}
     </update>
 </mapper>

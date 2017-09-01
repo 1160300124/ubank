@@ -28,19 +28,19 @@ public interface LeaveService {
 
     List<Map<String,Object>> getAlreadyRecord(String userId);   //获取已审批记录
 
-    ApplyForVO queryPeningRecord(int id,int pageNum,int pageSize); //获取待审批记录
+    ApplyForVO queryPeningRecord(int id,String userId); //获取待审批记录
 
-    ApplyForVO queryAlreadRecord(int id,int pageNum,int pageSize); //获取已审批记录
+    ApplyForVO queryAlreadRecord(int id,String userId); //获取已审批记录
 
-    List<LeaveAudit> getAuditorByUserId(String userId); //根据申请记录编号获取审批人
+    List<LeaveAudit> getAuditorByUserId(String userId,int pageNum,int pageSize); //根据申请记录编号获取审批人
 
     List<LeaveAudit> getAuditorBySort(String recordNo, int sortValue); //根据排序号和申请记录编号获取审批人
 
-    List<LeaveAudit> queryAuditorByRecord(String recordNo);  //根据申请记录号查询待审批人记录
+    List<AuditVO> queryAuditorByRecord(String recordNo);  //根据申请记录号查询待审批人记录
 
-    List<LeaveAudit> queryAuditorByUserId(String userId);  //根据申请记录编号获取已审批人
+    List<LeaveAudit> queryAuditorByUserId(String userId,int pageNum,int pageSize);  //根据申请记录编号获取已审批人
 
-    int confirmAudit(String userId, String recordNo, String status);  //确认审批
+    int confirmAudit(String userId, String recordNo, String status,String reason);  //确认审批
 
     int updateRecord(String recordNo,String status);  //更新申请记录为最新的状态
 

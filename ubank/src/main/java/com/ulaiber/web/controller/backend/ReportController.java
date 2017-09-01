@@ -1,10 +1,7 @@
 package com.ulaiber.web.controller.backend;
 
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.LeaveAudit;
-import com.ulaiber.web.model.LeaveReportVO;
-import com.ulaiber.web.model.LeaveReturnVO;
-import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReportService;
 import org.apache.ibatis.annotations.Param;
@@ -74,7 +71,7 @@ public class ReportController extends BaseController {
                 }
                 username = username.substring(0,(username.length() - 1));
                 list.get(i).setAuditor(username);
-                List<LeaveAudit> list2 = leaveService.queryAuditorByRecord(recordNo);
+                List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo);
                 if (list2.size() > 0){
                     int index = 0;
                     for (int j = 0; j < list2.size() ; j++){
