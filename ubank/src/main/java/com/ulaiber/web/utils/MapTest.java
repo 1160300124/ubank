@@ -28,29 +28,30 @@ public class MapTest {
 
         String startLonLat = getLonLat(start);
         String endLonLat = getLonLat(end);
-
+        endLonLat +=  "|" + getLonLat("海王银河科技大厦");
         System.out.println(startLonLat);
         System.out.println(endLonLat);
         Long dis = getDistance(startLonLat,endLonLat);
         System.out.println(dis);
         
-        Distribution startdis = new Distribution();
-        startdis.setLongitude(Double.parseDouble(startLonLat.split(",")[0]));
-        startdis.setDimensionality(Double.parseDouble(startLonLat.split(",")[1]));
-        Distribution enddis = new Distribution();
-        enddis.setLongitude(Double.parseDouble(endLonLat.split(",")[0]));
-        enddis.setDimensionality(Double.parseDouble(endLonLat.split(",")[1]));
-        Distribution dist = new Distribution();
-        double distance = dist.getDistance(startdis, enddis);
-        System.out.println(distance);
+//        Distribution startdis = new Distribution();
+//        startdis.setLongitude(Double.parseDouble(startLonLat.split(",")[0]));
+//        startdis.setDimensionality(Double.parseDouble(startLonLat.split(",")[1]));
+//        Distribution enddis = new Distribution();
+//        enddis.setLongitude(Double.parseDouble(endLonLat.split(",")[0]));
+//        enddis.setDimensionality(Double.parseDouble(endLonLat.split(",")[1]));
+//        Distribution dist = new Distribution();
+//        double distance = dist.getDistance(startdis, enddis);
+//        System.out.println(distance);
         
         
-//        String apiUrl1 = "http://10.17.1.136:8080/ubank/api/v1/refreshLocation";
-//        Map<String, Object> params1 = new HashMap<String, Object>();//请求参数集合
-//        params1.put("longitude", "113.944173");
-//        params1.put("latitude", "22.538667");
-//        String response1 = HttpsUtil.doPost1(apiUrl1, params1);
-//        System.out.println(response1);
+        String apiUrl1 = "http://localhost:8080/ubank/api/v1/refreshLocation";
+        Map<String, Object> params1 = new HashMap<String, Object>();//请求参数集合
+        params1.put("mobile", "15919477086");
+        params1.put("longitude", "113.944173");
+        params1.put("latitude", "22.538667");
+        String response1 = HttpsUtil.doPost1(apiUrl1, params1);
+        System.out.println(response1);
         
 //        String apiUrl = "http://10.17.1.136:8080/ubank/api/v1/clock";
 //        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
@@ -62,12 +63,12 @@ public class MapTest {
 //        String response = HttpsUtil.doPost1(apiUrl, params);
 //        System.out.println(response);
 //        
-        String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
-        Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
-        params2.put("mobile", "15919477086");
-        params2.put("date", "2017-08-21");
-        String response2 = HttpsUtil.doGet(apiUrl2, params2);
-        System.out.println(response2);
+//        String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
+//        Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
+//        params2.put("mobile", "15919477086");
+//        params2.put("date", "2017-08-21");
+//        String response2 = HttpsUtil.doGet(apiUrl2, params2);
+//        System.out.println(response2);
         
 //        String apiUrl3 = "http://localhost:8080/ubank/api/v1/getRecordsForMonth";
 //        Map<String, Object> params3 = new HashMap<String, Object>();//请求参数集合
@@ -90,7 +91,7 @@ public class MapTest {
     private static Long getDistance(String startLonLat, String endLonLat){
         //返回起始地startAddr与目的地endAddr之间的距离，单位：米
         Long result = new Long(0);
-        String queryUrl = "http://restapi.amap.com/v3/distance?key=1f255ddf4f7ff1d1660b0417bee242e7&origins="+startLonLat+"&destination="+endLonLat+"&type=0";
+        String queryUrl = "http://restapi.amap.com/v3/distance?key=1f255ddf4f7ff1d1660b0417bee242e7&origins="+endLonLat+"&destination="+startLonLat+"&type=0";
         String queryResult = HttpsUtil.doGet(queryUrl);
         System.out.println(queryResult);
         JSONObject jo = new JSONObject().fromObject(queryResult);

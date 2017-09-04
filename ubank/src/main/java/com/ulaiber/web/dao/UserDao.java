@@ -112,5 +112,5 @@ public interface UserDao {
      * @param comNum
      * @return
      */
-    List<User> getUsersByComNum(String comNum);
+    List<User> getUsersByComNum(Map<String, Object> params);
 }

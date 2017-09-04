@@ -18,7 +18,7 @@
 	            <label class="col-sm-1 control-label" for="dept">部门</label>
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="dept">
-                   	  	 <option value=""></option>
+                   	  	 <option value="">请选择部门</option>
                    	  	 <option value="40025">技术部</option>
                    	  	 <option value="40026">财务部</option>
                    	  </select>
@@ -32,7 +32,7 @@
 	           <label class="col-sm-1 control-label" for="type">打卡类型</label>
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="type">
-                   	  	 <option value=""></option>
+                   	  	 <option value="">请选择打卡类型</option>
                    	  	 <option value="0">签到</option>
                    	  	 <option value="1">签退</option>
                    	  </select>
@@ -42,7 +42,7 @@
 	            <label class="col-sm-1 control-label" for="status">状态</label>
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="status">
-                   	  	 <option value=""></option>
+                   	  	 <option value="">请选择状态</option>
                    	  	 <option value="0">正常</option>
                    	  	 <option value="1">迟到</option>
                    	  	 <option value="2">早退</option>
