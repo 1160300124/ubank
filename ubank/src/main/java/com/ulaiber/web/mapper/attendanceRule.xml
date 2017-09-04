@@ -17,6 +17,7 @@
     	<result column="clock_on_start_time" property="clockOnStartTime" jdbcType="VARCHAR" />
     	<result column="clock_off_delay_hours" property="clockOffDelayHours" jdbcType="INTEGER" />
     	<result column="clock_off_end_time" property="clockOffEndTime" jdbcType="VARCHAR" />
+    	<result column="rest_flag" property="restFlag" jdbcType="INTEGER" />
 	   	<result column="rest_start_time" property="restStartTime" jdbcType="VARCHAR" />
     	<result column="rest_end_time" property="restEndTime" jdbcType="VARCHAR" />
    		<result column="workday" property="workday" jdbcType="VARCHAR" />
@@ -34,14 +35,14 @@
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="AttendanceRule" useGeneratedKeys="true" keyProperty="rid">
 		insert into tbl_attendance_rules(rule_name,clock_on_time,clock_off_time,clock_on_advance_hours,clock_on_start_time,clock_off_delay_hours,clock_off_end_time,
-			rest_start_time,rest_end_time,workday,holiday,holiday_flag,flexible_time,flexible_flag,postpone_flag,longit_latit,clock_location,clock_bounds,user_or_rule_counts)
-		values(#{ruleName}, #{clockOnTime}, #{clockOffTime}, #{clockOnAdvanceHours}, #{clockOnStartTime}, #{clockOffDelayHours}, #{clockOffEndTime}, #{restStartTime},
+			rest_flag,rest_start_time,rest_end_time,workday,holiday,holiday_flag,flexible_time,flexible_flag,postpone_flag,longit_latit,clock_location,clock_bounds,user_or_rule_counts)
+		values(#{ruleName}, #{clockOnTime}, #{clockOffTime}, #{clockOnAdvanceHours}, #{clockOnStartTime}, #{clockOffDelayHours}, #{clockOffEndTime}, #{restFlag}, #{restStartTime},
 			#{restEndTime}, #{workday}, #{holiday}, #{holidayFlag}, #{flexibleTime}, #{flexibleFlag}, #{postponeFlag}, #{longit_latit}, #{clockLocation}, #{clockBounds},#{counts}) 
 	</insert>
 	
 	<update id="update" parameterType="AttendanceRule">
 		update tbl_attendance_rules set rule_name=#{ruleName},clock_on_time=#{clockOnTime},clock_off_time=#{clockOffTime},clock_on_advance_hours=#{clockOnAdvanceHours},
-			clock_on_start_time=#{clockOnStartTime},clock_off_delay_hours=#{clockOffDelayHours},clock_off_end_time=#{clockOffEndTime},rest_start_time=#{restStartTime},
+			clock_on_start_time=#{clockOnStartTime},clock_off_delay_hours=#{clockOffDelayHours},clock_off_end_time=#{clockOffEndTime},rest_flag=#{restFlag},rest_start_time=#{restStartTime},
 			rest_end_time=#{restEndTime},workday=#{workday},holiday= #{holiday},holiday_flag=#{holidayFlag},flexible_time=#{flexibleTime},flexible_flag= #{flexibleFlag},
 			postpone_flag=#{postponeFlag},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clockBounds},user_or_rule_counts=#{counts} where rid=#{rid}
 	</update>

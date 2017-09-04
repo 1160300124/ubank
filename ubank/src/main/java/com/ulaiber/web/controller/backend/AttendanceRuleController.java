@@ -83,16 +83,20 @@ public class AttendanceRuleController extends BaseController {
 		rule.setClockOffEndTime(clockOffEndTime);
 		
 		User user = getUserFromSession(request);
-		if (service.save(rule, data, user.getCompanyNumber())){
-			logger.info("新增考勤规则成功。");
-			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("新增考勤规则成功。");
-		} else {
-			logger.info("新增考勤规则失败。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("新增考勤规则失败。");
+		try {
+			
+			if (service.save(rule, data, user.getCompanyNumber())){
+				logger.info("新增考勤规则成功。");
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("新增考勤规则成功。");
+			} else {
+				logger.info("新增考勤规则失败。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("新增考勤规则失败。");
+			}
+		} catch (Exception e) {
+			logger.error("addRules exception: " , e);
 		}
-		
 		
 		
 		return info;
@@ -100,39 +104,43 @@ public class AttendanceRuleController extends BaseController {
 	
 	@RequestMapping(value = "getDeptsAndUsers", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map<String, Object>> getDeptsAndUsers(HttpServletRequest request, HttpServletResponse response){
+	public List<Map<String, Object>> getDeptsAndUsers(String search, HttpServletRequest request, HttpServletResponse response){
 		
 		User conuser = getUserFromSession(request);
 		List<Map<String, Object>> tree = new ArrayList<Map<String, Object>>();
-		
-		List<Departments> depts = permissionSerivce.getDeptByCom(conuser.getCompanyNumber());
-		List<User> users = userService.getUsersByComNum(conuser.getCompanyNumber());
-		List<Long> userIds = new ArrayList<Long>();
-		List<UserOfRule> uofs = service.getUserIdsByComId(Integer.parseInt(conuser.getCompanyNumber()));
-		for (UserOfRule uof : uofs){
-			userIds.add(uof.getUserId());
-		}
-		for (Departments dept : depts){
-			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			for (User user : users){
-				if (StringUtils.equals(dept.getDept_number(), user.getDept_number())){
-					Map<String, Object> userMap = new HashMap<String, Object>();
-					userMap.put("id", user.getId());
-					userMap.put("name", user.getUserName());
+		try {
+			List<Departments> depts = permissionSerivce.getDeptByCom(conuser.getCompanyNumber());
+			List<User> users = userService.getUsersByComNum(conuser.getCompanyNumber(), search);
+			List<Long> userIds = new ArrayList<Long>();
+			List<UserOfRule> uofs = service.getUserIdsByComId(Integer.parseInt(conuser.getCompanyNumber()));
+			for (UserOfRule uof : uofs){
+				userIds.add(uof.getUserId());
+			}
+			for (Departments dept : depts){
+				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+				for (User user : users){
+					if (StringUtils.equals(dept.getDept_number(), user.getDept_number())){
+						Map<String, Object> userMap = new HashMap<String, Object>();
+						userMap.put("id", user.getId());
+						userMap.put("name", user.getUserName());
 					if (userIds.contains(user.getId())){
 						userMap.put("chkDisabled", true);
 					}
-					list.add(userMap);
+						list.add(userMap);
+					}
 				}
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("id", dept.getDept_number());
+				map.put("name", dept.getName());
+				map.put("children" , list);
+				map.put("isParent", true);//设置根节点为父节点
+				map.put("open", true); //根节点展开
+				tree.add(map);
 			}
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("id", dept.getDept_number());
-			map.put("name", dept.getName());
-			map.put("children" , list);
-			map.put("isParent", true);//设置根节点为父节点
-			map.put("open", true); //根节点展开
-			tree.add(map);
+		} catch (Exception e) {
+			logger.error("getDeptsAndUsers exception:", e);
 		}
+		
 		return tree;
 	}
 	
@@ -178,15 +186,20 @@ public class AttendanceRuleController extends BaseController {
 		rule.setClockOffEndTime(clockOffEndTime);
 		
 		User user = getUserFromSession(request);
-		boolean flag = service.update(rule, data, user.getCompanyNumber());
-		 if (flag){
-			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("修改成功");;
-		} else {
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("修改失败");
+		try {
+
+			boolean flag = service.update(rule, data, user.getCompanyNumber());
+			if (flag){
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("修改成功");;
+			} else {
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("修改失败");
+			}
+		} catch (Exception e) {
+			logger.error("updateRule exception: ", e);
 		}
-		 logger.debug("updateRule end...");
+		logger.debug("updateRule end...");
 		return info;
 	}
 	

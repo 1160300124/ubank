@@ -199,7 +199,8 @@
 	                        <div class="attendance-location">
 	                        	<label class="control-label" for="ds_host"></label>
 								<div class="add-location">
-			                        <a href="javascript:;" onclick="$('#attendanceLocationModal').modal('toggle')">+&nbsp;&nbsp;添加考勤地点</a>                        
+									<input class="form-control" id="location_type" type="hidden"/>
+			                        <a href="javascript:;" id="attendance_location">+&nbsp;&nbsp;添加考勤地点</a>                        
 	                    		</div>
 	                    		</div>
 	                        </div>
@@ -231,11 +232,11 @@
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
 						&times;
 					</button>
-					<h4 class="modal-title" id="myModalLabel">新增考勤规则</h4>
+					<h4 class="modal-title" id="myModalLabel">修改考勤规则</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form" id="edit_form">
-						<input class="form-control" id="rule_id" type="hidden" placeholder="请输入..."/>
+						<input class="form-control" id="rule_id" type="hidden"/>
 						<div class="form-group">
 	                       <label class="col-sm-2 control-label" for="rule_name">规则名称</label>
 	                       <div class="col-sm-8">
@@ -378,7 +379,8 @@
 	                        <div class="attendance-location">
 	                        	<label class="control-label" for="ds_host"></label>
 								<div class="add-location">
-			                        <a href="javascript:;" onclick="$('#attendanceLocationModal_edit').modal('toggle')">+&nbsp;&nbsp;添加考勤地点</a>                        
+									<input class="form-control" id="location_type_" type="hidden"/>
+			                        <a href="javascript:;" id="attendance_location_">+&nbsp;&nbsp;添加考勤地点</a>                        
 	                    		</div>
 	                    		</div>
 	                        </div>
@@ -636,7 +638,7 @@
                     <h4 class="modal-title">添加考勤地点</h4>
                 </div>
                 <div class="modal-body">
-                <iframe id="gaodeMapIframe" src="<%=request.getContextPath()%>/gaode.jsp" style="width:100%;height:600px;background-color:#ccc;border:0px">
+                <iframe id="gaodeMapIframe" name ="gaodeMapIframeName" src="<%=request.getContextPath()%>/gaode.jsp" style="width:100%;height:600px;background-color:#ccc;border:0px">
                 
                 </iframe>
                 </div>
@@ -654,10 +656,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">添加考勤地点</h4>
+                    <h4 class="modal-title">修改考勤地点</h4>
                 </div>
                 <div class="modal-body">
-                <iframe id="gaodeMapIframe" src="<%=request.getContextPath()%>/gaode.jsp" style="width:100%;height:600px;background-color:#ccc;border:0px">
+                <iframe id="gaodeMapIframe_edit" name ="gaodeMapIframeName_edit" src="<%=request.getContextPath()%>/gaode.jsp" style="width:100%;height:600px;background-color:#ccc;border:0px">
                 
                 </iframe>
                 </div>
@@ -726,7 +728,7 @@
                             <div class="people-box">
                                 <div class="search-box">
                                     <span class="glyphicon glyphicon-search search-icon"></span>
-                                    <input type="text" class="form-control search-input" placeholder="搜索" />
+                                    <input type="text" class="form-control search-input" id="people_search_" placeholder="搜索" />
                                 </div>
                                 <div>
                                     <input type="checkbox"  id="checkAll_edit" />

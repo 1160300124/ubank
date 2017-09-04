@@ -121,5 +121,5 @@ public interface UserService {
 	 * @param comNum
 	 * @return
 	 */
-	List<User> getUsersByComNum(String comNum);
+	List<User> getUsersByComNum(String comNum, String search);
 }

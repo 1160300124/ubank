@@ -55,12 +55,12 @@ public class BackendLoginController extends BaseController {
 	public ResultInfo login(User user, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("backend login start...");
 		ResultInfo retInfo = new ResultInfo();
-		if (!ObjUtil.notEmpty(user.getUserName()) || !ObjUtil.notEmpty(user.getLogin_password())){
+		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getLogin_password())){
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("userName or password is empty.");
+			retInfo.setMessage("mobile or password is empty.");
 			return retInfo;
 		}
-		User dbuser = userService.getUserByName(user.getUserName());
+		User dbuser = userService.findByMobile(user.getMobile());
 		if (!ObjUtil.notEmpty(dbuser)){
 			retInfo.setCode(IConstants.QT_MOBILE_NOT_EXISTS);
 			retInfo.setMessage("user not exists.");

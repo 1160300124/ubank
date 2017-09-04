@@ -1,6 +1,9 @@
 package com.ulaiber.web.utils;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -85,7 +88,7 @@ public class HttpsUtil {
      * @return 
      */  
     public static String doGet(String url, Map<String, Object> params) {  
-        String apiUrl = url;  
+        String apiUrl = url;
         StringBuffer param = new StringBuffer();  
         int i = 0;  
         for (String key : params.keySet()) {  
@@ -99,8 +102,10 @@ public class HttpsUtil {
         apiUrl += param;  
         String result = null;  
         HttpClient httpclient = new DefaultHttpClient();  
-        try {  
-            HttpGet httpGet = new HttpGet(apiUrl);  
+        try {
+            URL newUrl = new URL(apiUrl);
+            URI uri = new URI(newUrl.getProtocol(), newUrl.getHost(), newUrl.getPath(), newUrl.getQuery(), null);
+            HttpGet httpGet = new HttpGet(uri);  
             HttpResponse response = httpclient.execute(httpGet);  
             int statusCode = response.getStatusLine().getStatusCode();  
   
@@ -112,7 +117,9 @@ public class HttpsUtil {
             }  
         } catch (IOException e) {  
             e.printStackTrace();  
-        }  
+        } catch (URISyntaxException e) {
+			e.printStackTrace();
+		}  
         return result;  
     }
     
