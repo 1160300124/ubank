@@ -156,6 +156,7 @@ $(function(){
 		var isRestChecked = addModal.find("#input-rest").prop("checked");
 		var restStartTime = addModal.find("#rest_start_time").val();
 		var resteEndTime = addModal.find("#rest_end_time").val();
+		params.restFlag = isRestChecked ? 0 : 1;
 		if (isRestChecked){
 			if (restStartTime == null || restStartTime == "" || restStartTime == undefined){
 				Ewin.alert("请选择休息开始时间。");
@@ -193,11 +194,23 @@ $(function(){
 		params.clockOffDelayHours = workOffAfterHours;
 
 		var table = document.getElementById("table_attendanceLocation");
-		var clockLocation = table.rows[0].cells[0].innerHTML;
-		var longit_latit = table.rows[0].cells[1].innerHTML;
-		params.longit_latit = longit_latit;
-		params.clockLocation = clockLocation;
-
+		if (table.rows.length <= 0){
+			Ewin.alert("请添加考勤地点。");
+			return false;
+		}
+		var clockLocation = "";
+		var longit_latit = "";
+		for (var i = 0; i < table.rows.length; i++){
+			clockLocation += table.rows[i].cells[0].innerHTML + ",";
+			longit_latit += table.rows[i].cells[1].innerHTML + "|";
+		}
+		if (clockLocation == "" || longit_latit == ""){
+			Ewin.alert("请添加考勤地点。");
+			return false;
+		}
+		params.longit_latit = longit_latit.substring(0, longit_latit.length - 1);
+		params.clockLocation = clockLocation.substring(0, clockLocation.length - 1);
+		
 		var bounds = $("#bounds").val();
 		params.clockBounds = bounds;
 		
@@ -287,6 +300,7 @@ $(function(){
 		var isRestChecked = editModal.find("#input-rest").prop("checked");
 		var restStartTime = editModal.find("#rest_start_time").val();
 		var resteEndTime = editModal.find("#rest_end_time").val();
+		params.restFlag = isRestChecked ? 0 : 1;
 		if (isRestChecked){
 			if (restStartTime == null || restStartTime == "" || restStartTime == undefined){
 				Ewin.alert("请选择休息开始时间。");
@@ -324,10 +338,22 @@ $(function(){
 		params.clockOffDelayHours = workOffAfterHours;
 
 		var table = document.getElementById("table_attendanceLocation_");
-		var clockLocation = table.rows[0].cells[0].innerHTML;
-		var longit_latit = table.rows[0].cells[1].innerHTML;
-		params.longit_latit = longit_latit;
-		params.clockLocation = clockLocation;
+		if (table.rows.length <= 0){
+			Ewin.alert("请添加考勤地点。");
+			return false;
+		}
+		var clockLocation = "";
+		var longit_latit = "";
+		for (var i = 0; i < table.rows.length; i++){
+			clockLocation += table.rows[i].cells[0].innerHTML + ",";
+			longit_latit += table.rows[i].cells[1].innerHTML + "|";
+		}
+		if (clockLocation == "" || longit_latit == ""){
+			Ewin.alert("请添加考勤地点。");
+			return false;
+		}
+		params.longit_latit = longit_latit.substring(0, longit_latit.length - 1);
+		params.clockLocation = clockLocation.substring(0, clockLocation.length - 1);
 
 		var bounds = editModal.find("#bounds").val();
 		params.clockBounds = bounds;
@@ -509,12 +535,13 @@ $(function(){
 	});
 	
 	
-	$("#people_search").unbind().bind("change", function(){
+	$("#people_search").unbind().bind("input propertychange", function(){
 		
-		console.log(1234);
+		var search = $("#people_search").val();
+		renderPeople("add", search);
+		
 	});
 	
-
 	$("#advanceSetting_confirm").unbind().bind("click", function(){
 
 		var settingModal = $("#advanceSettingModal");
@@ -707,32 +734,55 @@ $(function(){
 			})
 
 		}) 
-	}
+	};
 	
+	$("#attendance_location").unbind().bind("click", function(){
+		var table = document.getElementById("table_attendanceLocation");
+		if (table.rows.length >= 3){
+    		Ewin.alert("考勤地点最多只能添加3个。");
+    		return false;
+    	}
+		clearMap();
+		$("#location_type").val("-1");
+		$('#attendanceLocationModal').modal("show");
+	});
 	
 	$("#attendanceLocation_confirm").unbind().bind("click", function(){
 		
-//		var table = $("#table_attendanceLocation");
-	    var table=document.getElementById("table_attendanceLocation");
-
-		//添加行
-	    var tr = table.insertRow(table.rows.length);
-	    var rowIndex = tr.rowIndex.toString();
-	    console.log(table.rows.length);
-	    tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
-		"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
-		"<td>" + 
-		'<a href="javascript:;" onclick="$('+ "'#attendanceLocationModal'" + ').modal(' + "'toggle')" + '">修改</a>' +
-		'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ')">删除</a>' + 
-		"</td>"; 
+	    var table = document.getElementById("table_attendanceLocation");
+	    var type = $("#location_type").val();
+	    if (type == "-1"){
+	    	if (table.rows.length >= 3){
+	    		Ewin.alert("考勤地点最多只能添加3个。");
+	    		return false;
+	    	}
+	    	//添加行
+	    	var tr = table.insertRow(table.rows.length);
+	    	var rowIndex = tr.rowIndex.toString();
+	    	tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
+	    	"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
+	    	"<td>" + 
+	    	'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal\')">修改</a>' +
+	    	'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal\',\'table_attendanceLocation\')">删除</a>' + 
+	    	"</td>"; 
+	    } else {
+	    	var tr = table.rows[type];
+			tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
+			"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
+			"<td>" + 
+			'<a href="javascript:;" onclick="updateLocation('  + tr.rowIndex + ',\'attendanceLocationModal\')">修改</a>' +
+			'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + tr.rowIndex + ',\'attendanceLocationModal\',\'table_attendanceLocation\')">删除</a>' + 
+			"</td>"; 
+	    }
 	    
-		$('#attendanceLocationModal').modal("hide")
+		$('#attendanceLocationModal').modal("hide");
 
 	});
 	
 	$("#attendance_people_").unbind().bind("click", function(){
 		
 		renderPeople("add");
+		$("#people_search").val("");
 		$('#attendancePeopleModal').modal("show");
 
 		
@@ -748,6 +798,10 @@ $(function(){
 	        }
 	        count = count + 1;
 	    })
+	    if (count <= 0){
+	    	Ewin.alert("请选择考勤人员。");
+	    	return false;
+	    }
 		$('#attendance_people_').val(count + '人');
 		$('#attendancePeopleModal').modal("hide");
 
@@ -802,12 +856,16 @@ function renderSelected(treeId) {
 
 
 //选择部门与人员modal 所有员工渲染
-function renderPeople(flag) {
-	
+function renderPeople(flag, search) {
+	if (search == undefined){
+		search == "";
+	}
 	$.ajax({
 		url : "getDeptsAndUsers",
 		type: "get",
-		data : {},
+		data : {
+			search : search
+		},
 		async : false, 
 		dataType : "json",
 		success : function(data, status) {
@@ -822,14 +880,38 @@ function renderPeople(flag) {
 		}
 	});
 	
-    //renderSelected();
 }
 
-function deleteLocation(trid){
-	var tab = document.getElementById("table_attendanceLocation");
-//	var row = document.getElementById(trid);   
-//    var index = row.rowIndex;//rowIndex属性为tr的索引值，从0开始
-    tab.deleteRow(trid);  //从table中删除
+function clearMap(){
+	$("#gaodeMapIframe").contents().find("#attendance_addr").val("");
+	$("#gaodeMapIframe").contents().find("#hidden_addr").val("");
+	document.gaodeMapIframeName.map.clearMap();
+	$("#gaodeMapIframe_edit").contents().find("#attendance_addr").val("");
+	$("#gaodeMapIframe_edit").contents().find("#hidden_addr").val("");
+	document.gaodeMapIframeName_edit.map.clearMap();
+}
+
+function updateLocation(trid, modalId){
+	clearMap();
+	if (modalId == "attendanceLocationModal"){
+		$("#location_type").val(trid);
+	} else {
+		$("#location_type_").val(trid);
+	}
+	$("#" + modalId).modal("show");
+}
+
+function deleteLocation(trid, modalId, tableId){
+	var table = document.getElementById(tableId);
+	table.deleteRow(trid);  //从table中删除
+    for(i = trid; i < table.rows.length; i++){
+    	table.rows[i].innerHTML = "<td>" + table.rows[i].cells[0].innerHTML + "</td>" + 
+		"<td style='display:none'>" + table.rows[i].cells[1].innerHTML + "</td>" + 
+		"<td>" + 
+		'<a href="javascript:;" onclick="updateLocation(' + i + ',\'' +  modalId + '\')">修改</a>' +
+		'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' +  i + ',\'' +  modalId + '\',\'' + tableId + '\')">删除</a>' + 
+		"</td>"; 
+    }
 }
 
 function holidayFormatter(value, row, index) {
@@ -877,6 +959,11 @@ window.operateEvents = {
 			editModal.find("#rule_name").val(row.ruleName);
 			editModal.find("#start_time").val(row.clockOnTime);
 			editModal.find("#end_time").val(row.clockOffTime);
+			if (row.restFlag == 0){
+				editModal.find("#input-rest").iCheck('check');
+			} else {
+				editModal.find("#input-rest").iCheck('uncheck');
+			}
 			editModal.find("#rest_start_time").val(row.restStartTime);
 			editModal.find("#rest_end_time").val(row.restEndTime);
 			
@@ -929,40 +1016,67 @@ window.operateEvents = {
 			editModal.find("#bounds").val(row.clockBounds);
 			
 			var table = document.getElementById("table_attendanceLocation_");
-
-			//添加行
-		    var tr = table.insertRow(table.rows.length);
-		    var rowIndex = tr.rowIndex.toString();
-		    console.log(table.rows.length);
-		    tr.innerHTML = "<td>" + row.clockLocation + "</td>" + 
-			"<td style='display:none'>" + row.longit_latit + "</td>" + 
-			"<td>" + 
-			'<a href="javascript:;" onclick="$('+ "'#attendanceLocationModal'" + ').modal(' + "'toggle')" + '">修改</a>' +
-			'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLoc(' + rowIndex + ')">删除</a>' + 
-			"</td>"; 
+			var locations = row.clockLocation.split(",");
+			var longit_latits = row.longit_latit.split("|");
+			for (var i in  locations){
+				var tr = table.insertRow(table.rows.length);
+				var rowIndex = tr.rowIndex.toString();
+				tr.innerHTML = "<td>" + locations[i] + "</td>" + 
+				"<td style='display:none'>" + longit_latits[i] + "</td>" + 
+				"<td>" + 
+				'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
+				'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
+				"</td>"; 
+			}
 		    
 		    editModal.find('#attendance_people__').val(row.counts + '人');
 		    
 		    editModal.find("#attendance_people__").unbind().bind("click", function(){
 				
+		    	$("#people_search_").val("");
 				$('#attendancePeopleModal_edit').modal("show");
 				
 			});
 		    
+			$("#attendance_location_").unbind().bind("click", function(){
+				var table = document.getElementById("table_attendanceLocation_");
+				if (table.rows.length >= 3){
+		    		Ewin.alert("考勤地点最多只能添加3个。");
+		    		return false;
+		    	}
+				clearMap();
+				editModal.find("#location_type_").val("-1");
+				$('#attendanceLocationModal_edit').modal("show");
+			});
+		    
 			$("#attendanceLocation_edit_confirm").unbind().bind("click", function(){
 				
-			    var table=document.getElementById("table_attendanceLocation_");
+			    var table = document.getElementById("table_attendanceLocation_");
 
-				//添加行
-			    var tr = table.insertRow(table.rows.length);
-			    var rowIndex = tr.rowIndex.toString();
-			    console.log(table.rows.length);
-			    tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
-				"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
-				"<td>" + 
-				'<a href="javascript:;" onclick="$('+ "'#attendanceLocationModal_edit'" + ').modal(' + "'toggle')" + '">修改</a>' +
-				'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLoc(' + rowIndex + ')">删除</a>' + 
-				"</td>"; 
+			    var type = editModal.find("#location_type_").val();
+			    if (type == "-1"){
+			    	if (table.rows.length >= 3){
+			    		Ewin.alert("考勤地点最多只能添加3个。");
+			    		return false;
+			    	}
+			    	//添加行
+			    	var tr = table.insertRow(table.rows.length);
+			    	var rowIndex = tr.rowIndex.toString();
+			    	tr.innerHTML = "<td>" + $("#gaodeMapIframe_edit").contents().find("#attendance_addr").val() + "</td>" + 
+			    	"<td style='display:none'>" + $("#gaodeMapIframe_edit").contents().find("#hidden_addr").val() + "</td>" + 
+			    	"<td>" + 
+			    	'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
+			    	'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
+			    	"</td>"; 
+			    } else {
+			    	var tr = table.rows[type];
+					tr.innerHTML = "<td>" + $("#gaodeMapIframe_edit").contents().find("#attendance_addr").val() + "</td>" + 
+					"<td style='display:none'>" + $("#gaodeMapIframe_edit").contents().find("#hidden_addr").val() + "</td>" + 
+					"<td>" + 
+					'<a href="javascript:;" onclick="updateLocation('  + tr.rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
+					'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + tr.rowIndex + ',\'attendanceLocationModal_edit,\'table_attendanceLocation_\')">删除</a>' + 
+					"</td>"; 
+			    }
 			    
 				$('#attendanceLocationModal_edit').modal("hide")
 
@@ -1012,9 +1126,20 @@ window.operateEvents = {
 			        }
 			        count = count + 1;
 			    })
+			    if (count <= 0){
+			    	Ewin.alert("请选择考勤人员。");
+			    	return false;
+			    }
 				$('#attendance_people__').val(count + '人');
 				$('#attendancePeopleModal_edit').modal("hide");
 
+			});
+			
+			$("#people_search_").unbind().bind("input propertychange", function(){
+				
+				var search = $("#people_search_").val();
+				renderPeople("edit", search);
+				
 			});
 			
 			editModal.modal("show");

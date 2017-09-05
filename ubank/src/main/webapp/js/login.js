@@ -1,9 +1,9 @@
 $(function () {
 	
 	function validate(){
-		var name = $("#username").val();
-		if(name == "" || name.length == 0){
-			$(".form-error").text("用户名不能为空！");
+		var mobile = $("#mobile").val();
+		if(mobile == "" || mobile.length == 0){
+			$(".form-error").text("手机号不能为空！");
 			return false;
 		}
 	    //检查密码
@@ -21,14 +21,14 @@ $(function () {
 		$("#btn_login").attr("disabled", true);
 		if (validate()){
 			
-			var name = $("#username").val();
+			var mobile = $("#mobile").val();
 			var password = $("#password").val();
 			
 			$.ajax({
 				url : "login",
 				type: "post",
 				data : {
-					userName :name ,
+					mobile :mobile ,
 					login_password : password
 				},
 				async : true, 
@@ -40,7 +40,7 @@ $(function () {
 						window.location = "index";
 						
 					}else{
-						$(".form-error").text("用户名或密码错误！");
+						$(".form-error").text("手机号或密码错误！");
 					}
 				},
 				error : function(data, status, e) {

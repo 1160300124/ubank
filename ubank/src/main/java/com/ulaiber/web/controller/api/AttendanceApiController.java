@@ -87,6 +87,7 @@ public class AttendanceApiController extends BaseController {
 		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
 		if (null == rule){
 			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			data.put("type", 5);
 			data.put("message", "用户 {" + mobile + "}没有设置考勤规则，请先设置。");
 			return data;
 		}

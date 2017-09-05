@@ -207,7 +207,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
-	public List<User> getUsersByComNum(String comNum) {
-		return mapper.getUsersByComNum(comNum);
+	public List<User> getUsersByComNum(String comNum, String search) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("comNum", comNum);
+		params.put("search", search);
+		return mapper.getUsersByComNum(params);
 	}
 }

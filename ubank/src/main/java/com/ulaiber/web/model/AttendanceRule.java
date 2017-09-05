@@ -51,6 +51,11 @@ public class AttendanceRule {
 	private String clockOffEndTime;
 	
 	/**
+	 * 是否设置修改时间段  0:设置休息时间段, 1:不设置休息时间段
+	 */
+	private int restFlag;
+	
+	/**
 	 * 休息开始时间
 	 */
 	private String restStartTime;
@@ -172,6 +177,14 @@ public class AttendanceRule {
 
 	public void setClockOffEndTime(String clockOffEndTime) {
 		this.clockOffEndTime = clockOffEndTime;
+	}
+
+	public int getRestFlag() {
+		return restFlag;
+	}
+
+	public void setRestFlag(int restFlag) {
+		this.restFlag = restFlag;
 	}
 
 	public String getRestStartTime() {

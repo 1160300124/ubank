@@ -29,7 +29,7 @@
         <h3>用户登录</h3>
         <form class="login-form">
             <div class="login-form-input">
-                <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名">
+                <input type="text" class="form-control" id="mobile" name="mobile" placeholder="请输入手机号">
                 <i class="icon-user-one"></i>
             </div>
             <div class="login-form-input">

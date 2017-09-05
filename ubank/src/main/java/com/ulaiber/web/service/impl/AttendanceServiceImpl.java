@@ -253,10 +253,10 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		String mobileLocation = longitude + "," + latitude;
 		//公司坐标113.941664,22.542380
 		String companyLocation = rule.getLongit_latit();
-		String url = "http://restapi.amap.com/v3/distance?key=1f255ddf4f7ff1d1660b0417bee242e7&origins=" + mobileLocation + "&destination=" + companyLocation + "&type=0";
+		String url = "http://restapi.amap.com/v3/distance?key=1f255ddf4f7ff1d1660b0417bee242e7&origins=" + companyLocation + "&destination=" + mobileLocation + "&type=0";
 		String result = HttpsUtil.doGet(url);
 		if (StringUtils.isNotEmpty(result)){
-			//{"status":"1","info":"OK","infocode":"10000","results":[{"origin_id":"1","dest_id":"1","distance":"487","duration":"0"}]}
+			//{"status":"1","info":"OK","infocode":"10000","results":[{"origin_id":"1","dest_id":"1","distance":"487","duration":"0"},{"origin_id":"2","dest_id":"1","distance":"338","duration":"0"}]}
 			JSONObject json = JSONObject.parseObject(result);
 			if (!StringUtils.equals(json.getString("status"), "1")){
 				String infocode = json.getString("infocode");
@@ -269,15 +269,24 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			JSONArray array = json.getJSONArray("results");
 			//打卡规则设置里设置的打卡距离
 			long distance = rule.getClockBounds();
-			long currentDistance = Long.parseLong(array.getJSONObject(0).getString("distance"));
-			if (currentDistance > distance){
-				logger.info("当前坐标离公司" + currentDistance + "m，超过设置的" + distance + "m");
+			//最小的距离
+			long minDistance = Long.parseLong(array.getJSONObject(0).getString("distance"));
+			for (Object obj : array){
+				JSONObject jsonObject = (JSONObject)obj;
+				//当前距离
+				long currentDistance = Long.parseLong(jsonObject.getString("distance"));
+				if (minDistance > currentDistance){
+					minDistance = currentDistance;
+				}
+			}
+			if (minDistance > distance){
+				logger.info("当前坐标离公司" + minDistance + "m，超过设置的" + distance + "m");
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("当前坐标离公司" + currentDistance + "m，超过设置的" + distance + "m。");
+				retInfo.setMessage("当前坐标离公司" + minDistance + "m，超过设置的" + distance + "m。");
 				return retInfo;
 			}
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("当前坐标离公司" + currentDistance + "m，可以打卡。");
+			retInfo.setMessage("当前坐标离公司" + minDistance + "m，可以打卡。");
 		}
 		return retInfo;
 	}
