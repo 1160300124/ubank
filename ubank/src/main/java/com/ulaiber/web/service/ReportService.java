@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public interface ReportService {
 
-    int getLeaveCount(String sysflag, String groupNumber); //获取申请记录总数
+    int getLeaveCount(String sysflag, String groupNumber,int pageNum,int pageSize); //获取申请记录总数
 
-    List<LeaveReturnVO> leaveQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber,String[] comArr); // 申请记录查询
+    List<LeaveReturnVO> leaveQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber,String[] comArr,int pageNum,int pageSize); // 申请记录查询
 
     List<Map<String,Object>> getUserById(String[] ids); //根据用户ID获取用户名
 }

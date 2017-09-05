@@ -14,11 +14,11 @@ public interface LeaveService {
 
     int saveAditor(LeaveRecord leaveRecord);  //保存请假审批人
 
-    List<ApplyForVO> queryApplyRecord(String userid);   //查询个人申请记录
+    List<ApplyForVO> queryApplyRecord(String userid,int pageNum,int pageSize);   //查询个人申请记录
 
     int cancelApply(String applyId); //取消请假申请
 
-    List<LeaveAudit> queryAuditor(String[] ids); //查询审批人记录
+    List<LeaveAudit> queryAuditor(int[] ids); //查询审批人记录
 
     List<Map<String,Object>> getLeaveRecord(String userId);  //查询工作提醒
 

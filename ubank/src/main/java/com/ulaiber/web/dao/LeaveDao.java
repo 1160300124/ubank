@@ -14,7 +14,7 @@ import java.util.Map;
 public interface LeaveDao {
     int saveLeaveRecord(LeaveRecord leaveRecord); //申请请假
 
-    List<ApplyForVO> queryApplyRecord(String userid); // 查询个人申请记录
+    List<ApplyForVO> queryApplyRecord(Map<String, Object> map); // 查询个人申请记录
 
     int cancelApply(String applyId); //取消请假申请
 

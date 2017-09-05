@@ -20,12 +20,11 @@
     </insert>
 
     <!--查询个人申请记录-->
-    <select id="queryApplyRecord" parameterType="String" resultType="com.ulaiber.web.model.ApplyForVO">
+    <select id="queryApplyRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
        SELECT a.*,b.status FROM tbl_leave_record a
             left join (select max(auditDate)as date,recordNo,status from tbl_leave_audit_record GROUP BY recordNo,status ) b
-            on a.id = b.recordNo
-            left join tbl_overtime_details c on a.id = c.recordNo
-            where a.disable = '0' and a.userid = #{userid}
+            on a.id = b.recordNo left join tbl_overtime_details c on a.id = c.recordNo
+            where a.disable = '0' and a.userid = #{userid} limit #{pageNum},#{pageSize}
     </select>
 
     <!--取消请假申请-->
@@ -86,7 +85,11 @@
 
     <!--根据日期查询用户-->
     <select id="getUserTotalByDate" parameterType="String" resultType="int">
-         select count(user_id) as total from tbl_users where disabled = '0' and createTime > #{date}
+         select count(user_id) as total from tbl_users where disabled = '0'
+        <if test='_parameter != "" and _parameter != null'>
+            and createTime > #{date}
+        </if>
+
     </select>
 
     <!--根据日期分页查询用户-->
@@ -94,6 +97,10 @@
       select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime  from tbl_users a
         left join tbl_roots b on a.user_id = b.userid
         left join tbl_departments c on b.dept_number = c.dept_number
-        where a.disabled = '0' and  a.createTime > #{date} order by a.createTime desc limit #{pageNum},#{pageSize}
+        where a.disabled = '0'
+        <if test='date != "" and date != null'>
+            and  a.createTime > #{date}
+        </if>
+        order by a.createTime desc limit #{pageNum},#{pageSize}
     </select>
 </mapper>

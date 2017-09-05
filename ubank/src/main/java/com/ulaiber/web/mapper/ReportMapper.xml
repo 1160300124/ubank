@@ -55,7 +55,7 @@
                 <if  test= 'result != "" and result != null'>
                     and a.status = #{result}
                 </if>
-
+                order by a.createDate DESC limit #{pageNum},#{pageSize}
             </if>
             <if test= 'sysflag != "0"'>
                 <choose>
@@ -95,6 +95,7 @@
                 <if  test= 'result != "" and result != null'>
                     and a.status = #{result}
                 </if>
+                order by a.createDate DESC limit #{pageNum},#{pageSize}
             </if>
     </select>
 

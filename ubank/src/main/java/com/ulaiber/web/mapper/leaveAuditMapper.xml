@@ -19,8 +19,8 @@
 
 
     <!--查询审批人记录-->
-    <select id="queryAuditor" parameterType="String" resultType="com.ulaiber.web.model.LeaveAudit">
-        SELECT id,auditor,recordNo,status,userid,disable from tbl_leave_audit_record where disable = '0' userid in
+    <select id="queryAuditor" parameterType="int" resultType="com.ulaiber.web.model.LeaveAudit">
+        SELECT id,auditor,recordNo,status,userid,disable from tbl_leave_audit_record where disable = '0' and recordNo in
         <foreach collection="array" item="ids" open="(" separator="," close=")">
             #{ids}
         </foreach>
@@ -33,7 +33,7 @@
 
     <!--根据申请记录编号获取审批人-->
     <select id="getAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit" >
-        select recordNo,auditor,sort from tbl_leave_audit_record where disable = '0' and   auditor = #{userId} and status = '0' limit #{pageNum},#{pageSize}
+        select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and   auditor = #{userId} and status = '0' order by auditDate limit #{pageNum},#{pageSize}
     </select>
 
     <!--根据排序号和申请记录编号获取审批-->
@@ -43,14 +43,14 @@
 
     <!--根据申请记录号查询审批人记录-->
     <select id="queryAuditorByRecord" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
-         select a.status,a.sort,a.auditDate,b.user_name as username,b.image from tbl_leave_audit_record a
+         select a.status,a.sort,a.auditor,a.auditDate,b.user_name as username,b.image from tbl_leave_audit_record a
             left join tbl_users b on a.auditor = b.user_id
-            where disable = '0' and  recordNo = #{recordNo}
+            where disable = '0' and  recordNo = #{recordNo} order by a.auditDate DESC
     </select>
 
     <!--根据申请记录编号获取已审批人-->
-    <select id="queryAuditorByUserId" parameterType="String" resultType="com.ulaiber.web.model.LeaveAudit">
-        select recordNo,auditor,sort from tbl_leave_audit_record where disable = '0' and  auditor = #{userId} and status &lt;&gt; '0'
+    <select id="queryAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit">
+        select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and  auditor = #{userId} and status &lt;&gt; '0' limit #{pageNum},#{pageSize}
     </select>
 
     <!--确认审批-->

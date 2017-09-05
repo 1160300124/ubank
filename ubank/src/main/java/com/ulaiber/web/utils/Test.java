@@ -180,7 +180,9 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userid","369");
+		map.put("userid","336");
+		map.put("pageNum",1);
+		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
 		System.out.print(result);
 	}
@@ -216,7 +218,7 @@ public class Test {
 	@org.junit.Test
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
+		map.put("userId","1");
 		map.put("mark","0");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
@@ -266,7 +268,7 @@ public class Test {
 	@org.junit.Test
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("date","2017-08-01");
+		map.put("date","");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
 		System.out.print("~~~~~~~~同步数据结果为："+result);
 	}

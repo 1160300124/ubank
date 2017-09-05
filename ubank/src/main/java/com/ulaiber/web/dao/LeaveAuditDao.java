@@ -14,7 +14,7 @@ public interface LeaveAuditDao {
 
     int saveAditor(List<Map<String, Object>> list); //保存请假审批人
 
-    List<LeaveAudit> queryAuditor(String[] ids); //查询审批人记录
+    List<LeaveAudit> queryAuditor(int[] ids); //查询审批人记录
 
     List<AuditVO> getLeaveAuditor(String userId); //获取个人所有审批记录
 

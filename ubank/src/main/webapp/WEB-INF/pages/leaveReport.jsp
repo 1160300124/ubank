@@ -62,13 +62,16 @@
                 <button onclick="LeaveFun.reset()" type="button" class="btn btn-default">
                     <span class="fa icon-search" aria-hidden="true"></span>查询
                 </button>
+                <button onclick="exportExcel()" type="button" class="btn btn-default">
+                    <span class="fa icon-search" aria-hidden="true"></span>导出
+                </button>
             </div>
         </form>
         <%--数据表格--%>
         <table id="leave_table" > </table>
     </div>
 </div>
-<script src="<%=request.getContextPath()%>/js/jquery/jquery.jsontotable.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery/jquery.tabletojson.js" type="text/javascript"></script>
 <script type="text/javascript">
 
     $(function () {
@@ -275,7 +278,41 @@
                 }
             })
         }
+    };
+
+    //导出excel
+    function exportExcel() {
+        debugger;
+        var table = $('#leave_table').tableToJSON();
+        var fileName = 'Excel';
+        console.info(table);
+        var json = JSON.stringify(table);
+        var nodes = $("#leave_table thead tr").children().children('div .th-inner');
+        var header = "";
+        $.each(nodes,function (i,items) {
+            header += $(this).text() + ",";
+        });
+        header = header.substr(1,(header.length-1));
+        //调用post函数
+        post('exportExcel',{fileName : fileName,header : header,json : json});
     }
+
+    function post(url, params) {
+        var temp = document.createElement("form");
+        temp.action = url;
+        temp.method = "post";
+        temp.style.display = "none";
+        for (var x in params) {
+            var opt = document.createElement("input");
+            opt.name = x;
+            opt.value = params[x];
+            temp.appendChild(opt);
+        }
+        document.body.appendChild(temp);
+        temp.submit();
+        return temp;
+    }
+
 </script>
 
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

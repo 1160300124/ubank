@@ -4,6 +4,7 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReportService;
+import com.ulaiber.web.utils.ExportExcel;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -56,9 +59,9 @@ public class ReportController extends BaseController {
         if (pageNum < 0){
             pageNum = 0;
         }
-        int total = reportService.getLeaveCount(sysflag,groupNumber); //获取申请记录总数
+        int total = reportService.getLeaveCount(sysflag,groupNumber,pageNum,pageSize); //获取申请记录总数
         String[] comArr = companyNumber.split(",");
-        List<LeaveReturnVO> list = reportService.leaveQuery(leaveReportVO,sysflag,groupNumber,comArr);
+        List<LeaveReturnVO> list = reportService.leaveQuery(leaveReportVO,sysflag,groupNumber,comArr,pageNum,pageSize);
         //根据申请记录ID申请记录审批结果
         if(list.size() > 0){
             for (int i = 0 ; i < list.size(); i++){
@@ -69,7 +72,9 @@ public class ReportController extends BaseController {
                 for (int l = 0 ; l < user.size() ; l++){
                     username += user.get(l).get("user_name") + ",";
                 }
-                username = username.substring(0,(username.length() - 1));
+                if(user.size() >0){
+                    username = username.substring(0,(username.length() - 1));
+                }
                 list.get(i).setAuditor(username);
                 List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo);
                 if (list2.size() > 0){
@@ -94,5 +99,20 @@ public class ReportController extends BaseController {
 
     }
 
-
+    /**
+     * 导出excel
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @RequestMapping("exportExcel")
+    @ResponseBody
+    public void Export(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        String jsonStr = request.getParameter("json");  //json字符串
+        String sheader = request.getParameter("header"); //表格表头
+        String fileName = request.getParameter("fileName") + ".xls";  //表格文件名
+        String title = request.getParameter("fileName");  // 表格标题名
+        ExportExcel exportExcel = new ExportExcel();
+        exportExcel.export(jsonStr,sheader,fileName,title,response,request);
+    }
 }

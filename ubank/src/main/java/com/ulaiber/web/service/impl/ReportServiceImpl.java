@@ -24,8 +24,10 @@ public class ReportServiceImpl extends BaseService implements ReportService {
     private ReportDao reportDao;
 
     @Override
-    public int getLeaveCount(String sysflag, String groupNumber) {
+    public int getLeaveCount(String sysflag, String groupNumber,int pageNum,int pageSize) {
         Map<String ,Object > map = new HashMap<String,Object>();
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
         map.put("sysflag" , sysflag);
         map.put("groupNumber" , groupNumber);
         int total = reportDao.getLeaveCount(map);
@@ -33,11 +35,13 @@ public class ReportServiceImpl extends BaseService implements ReportService {
     }
 
     @Override
-    public List<LeaveReturnVO> leaveQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber,String[] comArr) {
+    public List<LeaveReturnVO> leaveQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber,String[] comArr,int pageNum,int pageSize) {
         Map<String,Object> map = new HashMap<>();
         map.put("sysflag" , sysflag);
         map.put("groupNumber" , groupNumber);
         map.put("companyNumber" , comArr);
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
         map.put("companyNum" , leaveReportVO.getCompanyNum());
         map.put("deptNum" , leaveReportVO.getDeptNum());
         map.put("startDate" , leaveReportVO.getStartDate());
