@@ -312,6 +312,7 @@ public class PermissionController extends BaseController {
                 return resultInfo;
             }
             int msg = permissionService.deleteComByNum(comNum); //根据公司编号删除银行账户信息表中的数据
+            company.setCompanyNumber(Integer.parseInt(comNum));
             int result = permissionService.updateCompany(company); //更新银行信息表
             for (int i = 0;i <list.size();i++){
                 list.get(i).put("companyNumber",comNum);

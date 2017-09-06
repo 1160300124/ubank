@@ -148,7 +148,7 @@
     <!--//更新银行信息表-->
     <update id="updateCompany" parameterType="com.ulaiber.web.model.Company" >
         UPDATE tbl_company SET name= #{name}, legalPerson = #{legalPerson} ,
-         account = #{account} , group_num = #{group_num} , details = #{details} WHERE name = #{name}
+         account = #{account} , group_num = #{group_num} , details = #{details} WHERE companyNumber = #{companyNumber}
     </update>
 
     <!--获取所有公司信息-->

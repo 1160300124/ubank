@@ -282,7 +282,6 @@
 
     //导出excel
     function exportExcel() {
-        debugger;
         var table = $('#leave_table').tableToJSON();
         var fileName = 'Excel';
         console.info(table);
