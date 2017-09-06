@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.LeaveAuditDao">
+
+    <!--保存请假审批人-->
+    <insert id="saveAditor" parameterType="java.util.List" >
+        INSERT INTO tbl_leave_audit_record (recordNo,userid,auditor,auditDate,status,disable,sort)  VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+            (#{items.recordNo},#{items.userid},#{items.auditor},#{items.auditDate},'0','0',#{items.sort})
+        </foreach>
+    </insert>
+
+
+    <!--查询审批人记录-->
+    <select id="queryAuditor" parameterType="int" resultType="com.ulaiber.web.model.LeaveAudit">
+        SELECT id,auditor,recordNo,status,userid,disable from tbl_leave_audit_record where disable = '0' and recordNo in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </select>
+
+    <!--获取个人所有审批记录-->
+    <select id="getLeaveAuditor" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
+        select id,recordNo,userid,auditor,auditDate,status from tbl_leave_audit_record WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate
+    </select>
+
+    <!--根据申请记录编号获取审批人-->
+    <select id="getAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit" >
+        select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and   auditor = #{userId} and status = '0' order by auditDate limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--根据排序号和申请记录编号获取审批-->
+    <select id="getAuditorBySort" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit">
+         select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and  recordNo = #{recordNo} and sort = #{sort}
+    </select>
+
+    <!--根据申请记录号查询审批人记录-->
+    <select id="queryAuditorByRecord" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
+         select a.status,a.sort,a.auditor,a.auditDate,b.user_name as username,b.image from tbl_leave_audit_record a
+            left join tbl_users b on a.auditor = b.user_id
+            where disable = '0' and  recordNo = #{recordNo} order by a.auditDate DESC
+    </select>
+
+    <!--根据申请记录编号获取已审批人-->
+    <select id="queryAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit">
+        select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and  auditor = #{userId} and status &lt;&gt; '0' limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--确认审批-->
+    <update id="confirmAudit" parameterType="Map" >
+        UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date},reason = #{reason} where recordNo = #{recordNo} and auditor = #{userId}
+    </update>
+</mapper>

@@ -32,6 +32,7 @@
     	<result property="groupNumber" column="groupNumber" jdbcType="VARCHAR" />
     	<result property="companyNumber" column="companyNumber" jdbcType="VARCHAR" />
     	<result property="dept_number" column="dept_number" jdbcType="VARCHAR" />
+    	<result property="com_name" column="com_name" jdbcType="VARCHAR" />
     	<result property="remark" column="remark" jdbcType="VARCHAR" />
     	<result property="login_fail_num" column="login_fail_num" jdbcType="INTEGER" />
     	<result property="login_fail_time" column="login_fail_time" jdbcType="VARCHAR" />
@@ -39,9 +40,9 @@
     	<association property="bank" column="bankNo" javaType="Bank" select="com.ulaiber.web.dao.BankDao.getBankByBankNo" />
    </resultMap>
   
-	<insert id="save" parameterType="User">
-		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime)
-		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime})
+	<insert id="save" parameterType="User"  useGeneratedKeys="true" keyProperty="id">
+		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime,disabled)
+		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime},'0')
 	</insert>
 	
 	<update id="update" parameterType="User">
@@ -65,21 +66,26 @@
 	</delete>
 	
 	<select id="getUserByTicketAndToken" parameterType="User" resultMap="UserMap">
-		select * from tbl_users where login_ticket=#{login_ticket} and access_token=#{access_token}
+		select user_id,user_name,mobile from tbl_users where disabled = '0' and login_ticket=#{login_ticket} and access_token=#{access_token}
 	</select>
 	
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getUserByMobile" parameterType="String" resultMap="UserMap">
-		select * from tbl_users where mobile=#{mobile}
+		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,l.companyNumber,r.sysflag,c.name as com_name from tbl_users u
+		left join tbl_roots r on u.user_id = r.userid left join tbl_roles l on u.role_id = l.role_id left join tbl_company c on r.companyNumber = c.companyNumber
+		where disabled = '0' and u.mobile=#{mobile}
 	</select>
 	
 	<select id="findAll" resultMap="UserMap">
-		select * from tbl_users
+		select * from tbl_users where disabled = '0'
 	</select>
 	
 	<select id="getUserByName" resultMap="UserMap">
-		select a.*,b.sysflag from tbl_users a  left join tbl_roles b on a.role_id = b.role_id
-		 where a.user_name=#{userName}
+		select a.*,b.groupNumber,b.dept_number,c.companyNumber,b.sysflag,e.name as com_name from tbl_users a
+		LEFT join tbl_roots b on a.user_id = b.userid
+		left join tbl_roles c on a.role_id = c.role_id
+		left join tbl_company e on b.companyNumber = e.companyNumber
+		 where disabled = '0' and a.user_name = #{userName}
 	</select>
 
 	<!--获取系统所有菜单-->
@@ -87,11 +93,25 @@
 		 select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
 		where a.code in(
 		select b.menuNumber from tbl_users a  left join tbl_roleMenu b on a.role_id = b.role_id
-		where a.user_name = #{userName})
+		where a.disabled = '0' and a.user_name = #{userName})
 	 </select>
 
 	<!--获取系统所有菜单-->
-	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" >
-		select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
+	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" parameterType="Map">
+		select distinct  a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a left join tbl_roleMenu b on a.code = b.menuNumber where 1=1
+		<if test='sysflag == "1"'>
+			and b.role_id = #{roleid}
+		</if>
 	</select>
+	
+	<select id="getUsersByComNum" parameterType="Map" resultMap="UserMap">
+		select u.user_id,u.user_name,r.groupNumber,r.dept_number,r.companyNumber,r.sysflag from tbl_users u
+		LEFT join tbl_roots r on u.user_id = r.userid
+		left join tbl_roles l on u.role_id = l.role_id
+		where u.disabled = '0' and r.companyNumber = #{comNum}
+		<if test="search != null and search != ''">
+			and u.user_name like concat('%',#{search},'%')
+		</if>
+	</select>
+	
 </mapper>

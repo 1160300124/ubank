@@ -1,7 +1,9 @@
 package com.ulaiber.web.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -16,7 +18,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -87,7 +88,7 @@ public class HttpsUtil {
      * @return 
      */  
     public static String doGet(String url, Map<String, Object> params) {  
-        String apiUrl = url;  
+        String apiUrl = url;
         StringBuffer param = new StringBuffer();  
         int i = 0;  
         for (String key : params.keySet()) {  
@@ -101,8 +102,10 @@ public class HttpsUtil {
         apiUrl += param;  
         String result = null;  
         HttpClient httpclient = new DefaultHttpClient();  
-        try {  
-            HttpGet httpGet = new HttpGet(apiUrl);  
+        try {
+            URL newUrl = new URL(apiUrl);
+            URI uri = new URI(newUrl.getProtocol(), newUrl.getHost(), newUrl.getPath(), newUrl.getQuery(), null);
+            HttpGet httpGet = new HttpGet(uri);  
             HttpResponse response = httpclient.execute(httpGet);  
             int statusCode = response.getStatusLine().getStatusCode();  
   
@@ -110,12 +113,13 @@ public class HttpsUtil {
   
             HttpEntity entity = response.getEntity();  
             if (entity != null) {  
-                InputStream instream = entity.getContent();  
-                result = IOUtils.toString(instream, "UTF-8");  
+            	result = EntityUtils.toString(entity, "UTF-8");
             }  
         } catch (IOException e) {  
             e.printStackTrace();  
-        }  
+        } catch (URISyntaxException e) {
+			e.printStackTrace();
+		}  
         return result;  
     }
     

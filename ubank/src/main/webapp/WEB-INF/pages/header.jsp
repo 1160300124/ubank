@@ -7,18 +7,25 @@
 	<title>优发展银行管理系统</title>
 	<link rel="shortcut icon" href="<%=request.getContextPath()%>/images/login_logo.png" type="image/x-icon">
 	<link href="<%=request.getContextPath()%>/css/font-awesome/font-awesome.min.css" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-treeview.css" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-datetimepicker.min.css" rel="stylesheet" />	
 	<link href="<%=request.getContextPath()%>/css/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap-table/bootstrap-theme.min.css" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/zTreeStyle.css" rel="stylesheet" />
+	<link href="<%=request.getContextPath()%>/css/icheck/skins/all.css" rel="stylesheet" />
+    <link href="<%=request.getContextPath()%>/css/metroStyle/metroStyle.css" rel="stylesheet">
 	<link href="<%=request.getContextPath()%>/css/index.css" rel="stylesheet" />
 	<script src="<%=request.getContextPath()%>/js/jquery/jquery-3.1.0.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/jquery/jquery-1.12.3.min.js" type="text/javascript" ></script>
-	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-treeview.css" rel="stylesheet" />
-	<link href="<%=request.getContextPath()%>/css/zTreeStyle.css" rel="stylesheet" />
 	<script src="<%=request.getContextPath()%>/js/jquery/ajaxfileupload.js" type="text/javascript" ></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.min.js" type="text/javascript" ></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-datetimepicker.fr.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/icheck/icheck.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/common.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/confirm.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-treeview.js" type="text/javascript"></script>
@@ -44,7 +51,7 @@
 			<li>退出</li>
 		</ul>
 	</div>
-	<span class="fr">深圳市优玩付信息技术有限公司</span>
+	<span class="fr">${BACKENDUSER.com_name}</span>
 </div>
 <!-- 公共导航菜单 -->
 <div class="nav">
@@ -68,11 +75,11 @@
 
 
 <script type="text/javascript">
-	var GROUPNUMBER = ${BACKENDUSER.groupNumber}; //当前用户所属集团编号
-	var SYSFLAG = ${BACKENDUSER.sysflag}; //角色表示，0 表示管理所有集团的超级管理员；1 表示集团里的超级管理员
-	var COMPANYNUMBER = ${BACKENDUSER.companyNumber};  //当前用户所属公司
-	var DEPTNUMBER = ${BACKENDUSER.dept_number};		//当前用户所属部门
-
+	var GROUPNUMBER = "${BACKENDUSER.groupNumber}"; //当前用户所属集团编号
+	var SYSFLAG = "${BACKENDUSER.sysflag}"; //角色表示，0 表示管理所有集团的超级管理员；1 表示集团里的超级管理员
+	var COMPANYNUMBER = "${BACKENDUSER.companyNumber}";  //当前用户所属公司
+    var DEPTNUMBER = "${BACKENDUSER.dept_number}";		//当前用户所属部门
+    var ROLEID = "${BACKENDUSER.role_id}";		//当前用户角色ID
     $(function () {
         //获取系统菜单
         $.ajax({

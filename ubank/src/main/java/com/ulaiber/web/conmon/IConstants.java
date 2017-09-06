@@ -19,15 +19,18 @@ public class IConstants
     
     //失败
     public final static int QT_CODE_ERROR = 1010;
-    
+
     //密码不一致
     public final static int QT_PWD_NOT_MATCH = 1011;
-    
+
     //验证码错误
     public final static int QT_CAPTCHA_ERROR = 1012;
-    
+
     //验证码发送错误
     public final static int QT_CAPTCHA_SEND_ERROR = 1013;
+
+    //返回空
+	public final static int QT_CODE_EMPTY = 1014;
 
     //手机号或密码错误
     public final static int QT_NAME_OR_PWD_OEEOR = 2010;
@@ -55,6 +58,18 @@ public class IConstants
     
     //更改绑定银行卡失败错误码
     public final static int QT_BIND_BANKCARD_ERROR = 3014; 
+    
+    //不能打上班卡
+    public final static int QT_CANNOT_CLOCK_ON = 4001;
+    
+    //不能打下班卡
+    public final static int QT_CANNOT_CLOCK_OFF = 4002;
+    
+    //不要频繁打卡
+    public final static int QT_CANNOT_CLOCK_FREQUENTLY = 4003;
+    
+    //休息日
+    public final static int QT_REST_DAY = 4004;
     
     //短信模板
 	public final static String SMS_TEMPLATE = "【优发展】您的验证码是#code#。如非本人操作，请忽略本短信";
@@ -110,5 +125,32 @@ public class IConstants
 	
 	//文件操作的缓存大小
 	public static final int FILE_OPERA_BUFFER = 1024 ;
+	
+	/**
+	 * 工作日 1：周一  2：周二 3：周三  4：周四  5：周五  6：周六  7：周日
+	 */
+	public static Map<String, String> WORK_DAY = new HashMap<String, String>(); 
+
+	static {
+		WORK_DAY.put("1", "周一");
+		WORK_DAY.put("2", "周二");
+		WORK_DAY.put("3", "周三");
+		WORK_DAY.put("4", "周四");
+		WORK_DAY.put("5", "周五");
+		WORK_DAY.put("6", "周六");
+		WORK_DAY.put("7", "周日");
+	}
+
+	//个人待审批记录标识
+	public static final int Pengding_AUDIT_MARK = 0;
+
+	//个人已审批记录标识
+	public static final int Already_APPLY_MARK = 1;
+
+	//是否显示审批按钮标识 0 否，1 是
+	public static final int ENABLED = 1;
+
+	//是否显示审批按钮标识 0 否，1 是
+	public static final int DISABLED = 0;
 
 }

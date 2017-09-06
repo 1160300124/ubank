@@ -27,11 +27,11 @@ public interface PermissionService {
 
     int addDept(Departments dept);  //新增部门
 
-    List<Departments> departmentQuery(String search, int pageSize, int pageNum,String sysflag,String companyNumber);  //获取所有部门信息
+    List<Departments> departmentQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr);  //获取所有部门信息
 
     int getTotal(String sysflag,String groupNumber); //获取集团总数
 
-    int getDeptTotal();  //获取部门总数
+    int getDeptTotal(String sysflag,String[] comArr);  //获取部门总数
 
     int editDept(Departments dept); //修改部门
 
@@ -59,13 +59,13 @@ public interface PermissionService {
 
     List<Departments> getAllDept(); //获取所有部门信息
 
-    User getEmpByName(String userName);  //根据员工姓名查询对应的信息
+    User getEmpByName(String userName,String mobile);  //根据员工姓名查询对应的信息
 
     int addEmployee(User user);  //新增员工信息
 
-    int getEmpTotal(String sysflag,String companyNumber); //获取员工总数
+    int getEmpTotal(String sysflag,String[] comArr); //获取员工总数
 
-    List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String companyNumber); //分页查询员工信息
+    List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr); //分页查询员工信息
 
     int editEmp(User user); //修改员工信息
 
@@ -75,7 +75,7 @@ public interface PermissionService {
 
     List<Roles> getRoleByName(String roleName);  //根据角色名，获取角色信息
 
-    int addRole(String com_numbers, String roleName); //新增角色信息
+    int addRole(String com_numbers, String roleName,String names); //新增角色信息
 
     int settingRoleMenu(String roleId, String menuId); //设置角色权限
 
@@ -83,9 +83,9 @@ public interface PermissionService {
 
     int getRoleTotal(String sysflag,String companyNumber);  //获取角色总数
 
-    List<Roles> roleQuery(String search, int pageSize, int pageNum,String sysflag,String companyNumber);  //分页查询角色信息
+    List<Roles> roleQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr);  //分页查询角色信息
 
-    int modifyRole(String com_numbers, String roleName , String roleId);  //修改角色信息
+    int modifyRole(String com_numbers, String roleName , String roleId,String names);  //修改角色信息
 
     int deleteRoles(String[] idsArr); //删除角色信息
 
@@ -107,4 +107,21 @@ public interface PermissionService {
     int addPermission(User user);   //新增用户权限层级信息
 
     int deleteRoleMenuByRoleId(String roleId); // 根据角色id，删除对应的菜单
+
+    List<Company> getComByGroup(String groupNum); //根据集团获取公司名
+
+    List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
+
+    int editRoots(User user); //修改权限对应关系表
+
+    List<Company> getAllCompanybyGroupNum(String sysflag, String groupNumber);
+
+    List<Departments> queryAllDept(String sysflag, String companyNumber); //根据当前角色所属公司编号，查询对应的部门
+
+    List<Departments> getDeptEmpCount();  //获取各个部门员工人数
+
+    int deleteRoots(String[] number); //删除权限层级表中的记录
+    
+    List<Company> getCompanysByNums(String[] nums); //根据公司编号查询公司
+
 }

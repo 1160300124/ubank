@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface EmployeeDao {
 
-    User getEmpByName(String userName);//根据员工姓名查询对应的信息
+    User getEmpByName(Map<String, Object> map);//根据员工姓名查询对应的信息
 
     int addEmployee(User user);   //新增员工信息
 
@@ -21,5 +21,9 @@ public interface EmployeeDao {
 
     int editEmp(User User); //修改员工信息
 
-    int empDlete(String[] number);  //根据员工编号删除对应的员工
+    int empDelete(String[] number);  //根据员工编号删除对应的员工
+
+    int editRoots(User user);  //修改权限对应关系表
+
+    int deleteRoots(String[] number); //删除权限层级表中的记录
 }

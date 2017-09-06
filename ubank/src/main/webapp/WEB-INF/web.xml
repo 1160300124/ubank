@@ -45,6 +45,15 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+  
+<!--   <security-constraint>  
+	  <web-resource-collection >  
+	    <web-resource-name >SSL</web-resource-name>  
+	    <url-pattern>/*</url-pattern>这里表示所有页面都必须使用https协议  
+		</web-resource-collection>
+  </security-constraint>   -->
+  
+
   <error-page>
     <error-code>405</error-code>
     <location>/404.jsp</location>

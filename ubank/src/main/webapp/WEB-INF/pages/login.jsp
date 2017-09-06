@@ -29,7 +29,7 @@
         <h3>用户登录</h3>
         <form class="login-form">
             <div class="login-form-input">
-                <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名">
+                <input type="text" class="form-control" id="mobile" name="mobile" placeholder="请输入手机号">
                 <i class="icon-user-one"></i>
             </div>
             <div class="login-form-input">
@@ -42,6 +42,13 @@
         </form>
     </div>
 
+</div>
+<div class="login-footer">
+	<div>
+    <p><span class="m-right-30">邮箱：ulaiber@ulaiber.com</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>公司地址：广东省深圳市南山科技园麻雀岭工业区M-10</span></p>
+    <p style="font-size: .8em; color: gray;"><span class="m-right-30">服务热线：400-803-0906</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>广州优融网络科技有限责任公司      版权所有</span></p>
+    <p style="font-size: .8em;"><span class="m-right-30"><a href="http://www.miitbeian.gov.cn">粤ICP备16025491号-4</a></span></p>
+    </div>
 </div>
 
 <script src="<%=request.getContextPath()%>/js/jquery/jquery-1.12.3.min.js" type="text/javascript"></script>

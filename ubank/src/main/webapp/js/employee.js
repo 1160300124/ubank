@@ -1,8 +1,8 @@
 //arr function
 $(function () {
-    EmployeeFun.emp_getCompany();
-    EmployeeFun.emp_getDept();
     EmployeeFun.emp_getAllGroup();
+   // EmployeeFun.emp_getCompany();
+    //EmployeeFun.emp_getDept();
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
     EmployeeFun.getAllRoles();
@@ -35,19 +35,22 @@ var EmployeeFun = {
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
+                {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
+                {field : 'com_name', title : '所属公司', width: 130, align : 'left'},
+                {field : 'dept_name', title : '所属部门', width: 130, align : 'left'},
+                {field : 'role_name', title : '所属角色', width: 130, align : 'left'},
+                {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
+                {field : 'bankName', title : '绑定银行', width: 130, align : 'left'},
+                {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},
+                {field : 'mobile', title : '预留手机号', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false},
                 {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
                 {field : 'id', title : '员工编号', width: 130, align : 'left',visible : false},
                 {field : 'role_id', title : '角色id', width: 60, align : 'left',visible : false},
-                {field : 'userName', title : '员工姓名', width: 130, align : 'left'},
-                {field : 'dept_name', title : '部门', width: 130, align : 'left'},
-                {field : 'com_name', title : '公司', width: 130, align : 'left'},
-                {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
-                {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false},
-                {field : 'bankName', title : '绑定银行', width: 130, align : 'left'},
-                {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},
-                {field : 'mobile', title : '预留手机号', width: 130, align : 'left'}
+                {field : 'dept_name', title : '部门名称', width: 60, align : 'left',visible : false},
+                {field : 'com_name', title : '公司名称', width: 60, align : 'left',visible : false},
+                {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false}
 
             ]
         });
@@ -77,53 +80,56 @@ var EmployeeFun = {
         });
     },
     //获取所有公司
-    emp_getCompany : function () {
+    emp_getCompany : function (groupNum) {
+        $("#emp_select").empty();
         $.ajax({
-            url : 'getAllCom',
+            url : 'getComByGroup',
             dataType : 'json',
             type : 'post',
             data:  {
-                "groupNumber" : GROUPNUMBER,
-                "sysflag" : SYSFLAG
+                "groupNum" : groupNum
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取公司失败，请联系管理员");
+                   // Ewin.alert("获取公司失败");
                     return;
                 }
-                var option = "";
+
+                var option = "<option value=''>请选择</option>";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
                 }
-                $("#emp_select").append(option);
+                $("#emp_select").html(option);
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
     //获取所有部门
-    emp_getDept : function () {
+    emp_getDept : function (comNum) {
+        $("#emp_select_dept").empty();
         $.ajax({
-            url : 'getAllDept',
+            url : 'getDeptByCom',
             dataType : 'json',
             type : 'post',
-            data:  {},
+            data:  {
+                "comNum" : comNum
+            },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取部门失败，请联系管理员");
                     return;
                 }
                 var option = "";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
                 }
-                $("#emp_select_dept").append(option);
+                $("#emp_select_dept").html(option);
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -139,10 +145,10 @@ var EmployeeFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据，，请联系管理员");
+                    // Ewin.alert("没有集团数据");
                     return;
                 }
-                var option = "";
+                var option = "<option value=''>请选择</option>";
                 for (var i = 0; i < data.length; i++){
                     option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
                 }
@@ -150,7 +156,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -169,14 +175,18 @@ var EmployeeFun = {
                     return;
                 }
                 var option = "";
+                    option = "<option value='0'>员工</option>";
                 for (var i = 0; i < data.length; i++){
+                    if(data[i].role_id == 0){
+                        continue;
+                    }
                     option += "<option value='"+data[i].role_id+"'>"+data[i].role_name+"</option>";
                 }
                 $("#emp_select_role").html(option);
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -189,7 +199,7 @@ var EmployeeFun = {
             data:  {},
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取银行失败，请联系管理员");
+                    Ewin.alert("获取银行失败");
                     return;
                 }
                 var option = "";
@@ -200,7 +210,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -208,7 +218,7 @@ var EmployeeFun = {
     addEmp: function () {
         var mobile = $("input[name=mobile]").val();
         var userName = $("input[name=userName]").val();
-        var pwd = mobile.substr(7,4);
+        var pwd = mobile.substr(5,6);
         var cardNo = $("input[name=cardNo]").val();
         var bankCardNo = $("input[name=bankCardNo]").val();
         var com = $("#emp_select").val();
@@ -216,14 +226,14 @@ var EmployeeFun = {
         var bank = $("#emp_select_bank").val();
         var role = $("#emp_select_role").val();
         var group = $("#emp_select_group").val();
-        if(com == ""){
-            Ewin.alert("公司不能为空");
-            return;
-        }
-        if(dept == ""){
-            Ewin.alert("部门不能为空");
-            return;
-        }
+        // if(com == ""){
+        //     Ewin.alert("公司不能为空");
+        //     return;
+        // }
+        // if(dept == ""){
+        //     Ewin.alert("部门不能为空");
+        //     return;
+        // }
         if(bank == ""){
             Ewin.alert("银行不能为空");
             return;
@@ -273,7 +283,7 @@ var EmployeeFun = {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }else{
                     Ewin.alert(data.message);
                     $("#employee_form")[0].reset();
@@ -283,7 +293,7 @@ var EmployeeFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -299,18 +309,74 @@ var EmployeeFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
+        this.emp_queryAllCom(); //加载公司信息
+        this.emp_queryAllDept(); //加载部门信息
         $("input[name=id]").val(row[0].id);
-        $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=mobile]").val(row[0].mobile);
+        $("input[name=bankCardNo]").val(row[0].bankCardNo);
         $("input[name=userName]").val(row[0].userName);
         $("input[name=cardNo]").val(row[0].cardNo);
-        $("#emp_select").find("option[value="+row[0].companyNumber+"]").attr("selected","selected");
-        $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").attr("selected","selected");
-        $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").attr("selected","selected");
-        $("#emp_select_role").find("option[value="+row[0].role_id+"]").attr("selected","selected");
-        $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").attr("selected","selected");
+        $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
+        $("#emp_select").find("option[value="+row[0].companyNumber+"]").prop("selected","selected");
+        // $("#emp_select_dept").html("<option value='" + row[0].dept_number + "'>"+row[0].dept_name+"</option>");
+        //  $("#emp_select").html("<option value='" + row[0].companyNumber + "'>"+(row[0].com_name != undefined ? row[0].com_name : '')+"</option>");
+        $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
+        $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").prop("selected","selected");
+        $("#emp_select_role").find("option[value="+row[0].role_id+"]").prop("selected","selected");
         $("#employee_modal").modal("show");
 
+    },
+    //点击修改，加载公司信息
+    emp_queryAllCom : function () {
+        $.ajax({
+            url : 'getAllCom',
+            dataType : 'json',
+            type : 'post',
+            async : false,
+            data : {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    return;
+                }
+                var option = "<option value=''>请选择</option>";
+                for (var i = 0; i < data.length; i++){
+                    option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
+                }
+                $("#emp_select").html(option);
+            },
+            error : function () {
+                Ewin.alert("获取公司失败");
+            }
+        });
+    },
+    //点击修改，加载部门信息
+    emp_queryAllDept : function (data) {
+        $.ajax({
+            url : 'queryAllDept',
+            dataType : 'json',
+            type : 'post',
+            async : false,
+            data : {
+                "companyNumber" : COMPANYNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    return;
+                }
+                var option = "";
+                for (var i = 0; i < data.length; i++){
+                    option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
+                }
+                $("#emp_select_dept").html(option);
+            },
+            error : function () {
+                Ewin.alert("获取部门失败");
+            }
+        });
     },
     //删除
     emp_delete : function (e) {
@@ -344,7 +410,7 @@ var EmployeeFun = {
                             if(data.code == 300){
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }else{
                                 Ewin.alert(data.message);
                                 //$("#employee_form")[0].reset();
@@ -355,7 +421,7 @@ var EmployeeFun = {
 
                         },
                         error : function () {
-                            Ewin.alert("操作异常，请联系管理员");
+                            Ewin.alert("操作异常");
                         }
                     })
 
@@ -366,4 +432,18 @@ var EmployeeFun = {
     }
 
 
-}
+};
+
+//选择框监听事件
+$("#emp_select_group").change(function(){
+    var groupNum = $(this).val();
+    if(groupNum != ''){
+        EmployeeFun.emp_getCompany(groupNum);
+    }
+});
+
+//选择框监听事件
+$("#emp_select").change(function () {
+    var comNum = $(this).val();
+    EmployeeFun.emp_getDept(comNum);
+});

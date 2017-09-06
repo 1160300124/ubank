@@ -8,5 +8,5 @@ import com.ulaiber.web.model.User;
  */
 public interface LevelInfoDao {
 
-    int addPermission(User user) ; //新增用户权限层级信息
+    int addPermission(User user); //新增用户权限层级信息
 }

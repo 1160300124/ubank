@@ -187,8 +187,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
-	public List<Menu> getAllMenu() {
-		return mapper.getAllMenu();
+	public List<Menu> getAllMenu(String roleid,String sysflag) {
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("roleid" , roleid);
+		map.put("sysflag" , sysflag);
+		return mapper.getAllMenu(map);
 	}
 
 	@Override
@@ -201,5 +204,13 @@ public class UserServiceImpl extends BaseService implements UserService {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public List<User> getUsersByComNum(String comNum, String search) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("comNum", comNum);
+		params.put("search", search);
+		return mapper.getUsersByComNum(params);
 	}
 }

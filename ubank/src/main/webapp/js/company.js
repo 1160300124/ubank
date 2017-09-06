@@ -39,17 +39,21 @@ var CompanyFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据，，请联系管理员");
+                    Ewin.alert("没有集团数据");
                     return;
                 }
                 var option = "";
                 for (var i = 0; i < data.length; i++){
-                    option += "<option value='"+data[i].groupNumber+"'>"+data[i].name+"</option>";
+                  //  if(groupNum == data[i].groupNumber){
+                  //      option += "<option value='"+ data[i].groupNumber +"' selected='selected'>"+ data[i].name +"</option>";
+                   // }else{
+                        option += "<option value='"+ data[i].groupNumber +"'>"+data[i].name+"</option>";
+                   // }
                 }
-                $("#group_select").append(option);
+                $("#group_select").html(option);
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -62,7 +66,7 @@ var CompanyFun = {
             data:  {},
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取银行失败，请联系管理员");
+                    Ewin.alert("获取银行失败");
                     return;
                 }
                 var option = "";
@@ -74,7 +78,7 @@ var CompanyFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -93,15 +97,16 @@ var CompanyFun = {
             search : true, //搜索框
             searchText : ' ', //初始化搜索文字
             pageNumber : 1, // 初始化加载第一页，默认第一页
-            pageSize : 20, // 每页的记录行数
-            pageList : [20,30,40], // 可供选择的每页的行数
+            pageSize : 10, // 每页的记录行数
+            pageList : [10,20,30,40], // 可供选择的每页的行数
             showRefresh : true, //刷新按钮
             showToggle :true,   //切换试图（table/card）按钮
-           // showColumns : true,
+            //showColumns : true,
             clickToSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
                 {field : 'name', title : '公司名称', width: 130, align : 'left'},
+                {field : 'groupName', title : '集团名称', width: 130, align : 'left'},
                 {field : 'account', title : '银行账户', width: 130, align : 'left',
                     formatter : function (value,row,index) {
                         var arr = [];
@@ -113,8 +118,6 @@ var CompanyFun = {
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'legalPerson', title : '公司法人', width: 130, align : 'left',visible : false},
                 {field : 'group_num', title : '集团编号', width: 130, align : 'left',visible : false}
-
-
             ]
         });
     },
@@ -167,12 +170,18 @@ var CompanyFun = {
         }else if(!Validate.regNumber(accounts)){
             Ewin.alert("公司账号格式不合法，请重新输入");
             return;
+        }else if(accounts.length > 25){
+            Ewin.alert("字符超出范围");
+            return;
         }
         if(customer == ""){
             Ewin.alert("公司客户号不能为空");
             return;
         }else if(!Validate.regNumAndLetter(customer)){
             Ewin.alert("公司客户号格式不合法，请重新输入");
+            return;
+        }else if(customer.length > 25){
+            Ewin.alert("字符超出范围");
             return;
         }
         if(certificateNumber == ""){
@@ -181,6 +190,9 @@ var CompanyFun = {
         }else if(!Validate.NumberAndLetter(certificateNumber)){
             Ewin.alert("证书编号格式不合法，请重新输入");
             return;
+        }else if(certificateNumber.length > 25){
+            Ewin.alert("字符超出范围");
+            return;
         }
         if(authorizationCode == ""){
             Ewin.alert("银行数字证书授权码不能为空");
@@ -188,9 +200,23 @@ var CompanyFun = {
         }else if(!Validate.NumberAndLetter(authorizationCode)){
             Ewin.alert("银行数字证书授权码格式不合法，请重新输入");
             return;
-
+        }else if(authorizationCode.length > 25){
+            Ewin.alert("字符超出范围");
+            return;
         }
 
+        //判断公司账户是否重复
+        var accArray = [];
+        $(".form-box>.add-form-item").find("input[name='accounts']").each(function () {
+            accArray.push($(this).val());
+        });
+        var nary = accArray.sort();
+        for (var i = 0; i <accArray.length; i++){
+            if(nary[i] == nary[i+1]){
+                Ewin.alert("公司账户有重复，请重新添加");
+                return;
+            }
+        }
         //获取所有账户信息
         var arr=[];
         var allBankAccount = [];
@@ -219,7 +245,7 @@ var CompanyFun = {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常，请联系管理员");
+                    Ewin.alert("操作异常");
                 }else{
                     $("#company_form")[0].reset();
                     $("#company_modal").modal("hide");
@@ -229,15 +255,13 @@ var CompanyFun = {
 
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
     //打开修改框
     openEdit : function () {
         var row = $('#company_table').bootstrapTable('getSelections');
-        flag = 1;
-        comNum = row[0].companyNumber;
         $(".modal-title").html("修改");
         if(row.length > 1){
             Ewin.alert("不能多选，请重新选择");
@@ -246,6 +270,10 @@ var CompanyFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
+        flag = 1;
+        comNum = row[0].companyNumber;
+        var groupNum = row[0].group_num;
+       // CompanyFun.getAllGroup(groupNum);
         //根据银行账户编号获取银行账户信息
         $.ajax({
             url : 'getBankAccountByNum',
@@ -255,7 +283,7 @@ var CompanyFun = {
                 "accountNum" : row[0].account
             },
             success : function (data) {
-                $("#group_select").find("option[value="+row[0].group_num+"]").attr("selected",true);
+                $("#group_select").find("option[value="+row[0].group_num+"]").prop("selected","selected");
                 $("#companyName").val(row[0].name);
                 $("input[name=legalPerson]").val(row[0].legalPerson);
                 $("#com_area").val(row[0].details);
@@ -316,7 +344,7 @@ var CompanyFun = {
                 $("#company_modal").modal("show");
             },
             error : function () {
-                Ewin.alert("操作异常，请联系管理员");
+                Ewin.alert("操作异常");
             }
         })
     },
@@ -353,7 +381,7 @@ var CompanyFun = {
                                 Confirm.hide();
                                 Ewin.alert(data.message);
                             }else if(data.code == 500){
-                                Ewin.alert("操作异常，请联系管理员");
+                                Ewin.alert("操作异常");
                             }else{
                                 Confirm.hide();
                                 Ewin.alert(data.message);
@@ -362,7 +390,7 @@ var CompanyFun = {
 
                         },
                         error : function () {
-                            Ewin.alert("操作异常，请联系管理员");
+                            Ewin.alert("操作异常");
                         }
                     })
 

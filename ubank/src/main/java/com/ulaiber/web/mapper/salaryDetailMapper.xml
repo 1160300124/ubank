@@ -19,7 +19,7 @@
     	<result column="remark" property="remark" jdbcType="VARCHAR" />
    </resultMap>
    
-  	<!-- 批量插入生成的兑换码 -->
+  	<!-- 批量插入-->
     <insert id ="saveBatch" parameterType="java.util.List" useGeneratedKeys="true">
          insert into tbl_salaries_detail(sid, userName, cardNo, salaries, salaryDate, remark) values
          <foreach collection ="list" item="detail" index= "index" separator =",">

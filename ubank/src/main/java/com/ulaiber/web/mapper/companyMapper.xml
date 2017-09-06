@@ -43,4 +43,18 @@
             #{numberArr}
         </foreach>
     </select>
+
+    <!--根据集团获取公司名-->
+    <select id="getComByGroup" parameterType="String" resultType="com.ulaiber.web.model.Company">
+        select * from tbl_company where group_num = #{groupNum}
+
+    </select>
+    
+    <!--根据公司名称获取公司信息-->
+    <select id="getCompanysByNums" resultType="com.ulaiber.web.model.Company" parameterType="String">
+        SELECT companyNumber,name FROM tbl_company where companyNumber in
+        <foreach collection="array" item="num" open="(" separator="," close=")">
+            #{num}
+        </foreach>
+    </select>
 </mapper>

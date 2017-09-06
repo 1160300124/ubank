@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.service.PermissionService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class UserController extends BaseController{
 	
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private PermissionService permissionService;
 	
 	/**
 	 * 注册激活钱包
@@ -84,6 +88,8 @@ public class UserController extends BaseController{
 		if (isSuccessed){
 			user.setBank(bank);
 			if (userService.save(user)){
+				user.setId(user.getId());
+				int result = permissionService.addPermission(user);  //新增用户权限层级信息
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("注册成功。");
 				logger.info(user.getMobile() + " register successed.");
@@ -143,6 +149,8 @@ public class UserController extends BaseController{
 			tempUser.setBankCardNo(user.getBankCardNo());
 			tempUser.setBank(user.getBank());
 			tempUser.setCardNo(user.getCardNo());
+			tempUser.setCompanyId(user.getCompanyId());
+			tempUser.setCom_name(user.getCom_name());
 			//TODO 调二类户接口查询余额
 			double balance = 0.00;
 			tempUser.setBalance(balance);

@@ -311,7 +311,7 @@
      */
     bootstrapCombotree.prototype.getValue = function (target) {
         return $(target).data("value");
-    }
+    };
 
     /**
      * 为组件赋值

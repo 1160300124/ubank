@@ -13,51 +13,74 @@
     </resultMap>
 
     <!--根据员工姓名查询对应的信息-->
-    <select id="getEmpByName" parameterType="String" resultType="com.ulaiber.web.model.User">
-        SELECT * from tbl_users where user_name = #{userName}
+    <select id="getEmpByName" parameterType="Map" resultType="com.ulaiber.web.model.User">
+        SELECT * from tbl_users where disabled = '0' and user_name = #{userName} or mobile = #{mobile}
     </select>
 
     <!--新增员工信息-->
     <insert id="addEmployee" parameterType="com.ulaiber.web.model.User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,groupNumber,companyNumber,dept_number,bankNo,bankCardNo,role_id)
-            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{groupNumber},#{companyNumber},#{dept_number},#{bankNo},#{bankCardNo},#{role_id})
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id ,createTime,disabled)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id},#{createTime},'0')
     </insert>
 
     <!--修改员工信息-->
     <update id="editEmp" parameterType="com.ulaiber.web.model.User">
-        UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo} ,
-        companyNumber = #{companyNumber},dept_number = #{dept_number},bankNo = #{bankNo}, bankCardNo = #{bankCardNo},
-        groupNumber = #{groupNumber},role_id = #{role_id}
+        UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo}
+              ,bankNo = #{bankNo}, bankCardNo = #{bankCardNo},role_id = #{role_id}
           where user_id = #{id}
+    </update>
+
+    <!--修改权限对应关系表-->
+    <update id="editRoots" parameterType="com.ulaiber.web.model.User">
+        UPDATE tbl_roots set groupNumber = #{groupNumber},companyNumber = #{companyNumber},dept_number = #{dept_number}
+        where userid = #{id}
     </update>
 
     <!--获取员工总数-->
     <select id="getEmpTotal" resultType="int">
-        select count(user_name) as total from tbl_users
+        select count(a.user_name) as total from tbl_users a left join tbl_roots b on a.user_id = b.userid
         <if test = 'sysflag == "1"'>
-            where companyNumber = #{companyNumber}
+            where a.disabled = '0' and  b.companyNumber in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                #{companyNumber}
+            </foreach>
         </if>
     </select>
 
     <!-- 分页查询员工信息-->
     <select id="empQuery" parameterType="Map" resultType="com.ulaiber.web.model.User">
-        select b.name as com_name,c.name as dept_name,d.bankName ,a.companyNumber,a.role_id,
-        a.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,a.mobile,a.cardNo from tbl_users a
-        LEFT JOIN tbl_company b on a.companyNumber = b.companyNumber
-        left join tbl_departments c on a.dept_number = c.dept_number
-        left join tbl_banks d on a.bankNo = d.bankNo where 1=1
+        select d.bankName ,e.companyNumber,a.role_id,a.mobile,a.cardNo,
+        e.dept_number,a.user_id as id,a.user_name as userName,a.bankNo,a.bankCardNo,
+        b.name as com_name,c.name as dept_name,e.groupNumber , f.role_name from tbl_users a
+        left join tbl_banks d on a.bankNo = d.bankNo
+        left join tbl_roots e on a.user_id = e.userid
+        LEFT JOIN tbl_company b on e.companyNumber = b.companyNumber
+        left join tbl_departments c on e.dept_number = c.dept_number
+        left join tbl_roles f on a.role_id = f.role_id where 1=1 and disabled = '0'
         <if test="search != null and search != ''">
             and  a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
         </if>
         <if test = 'sysflag == "1"'>
-            and a.companyNumber = #{companyNumber}
+            and e.companyNumber  in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                 #{companyNumber}
+            </foreach>
         </if>
         limit #{pageNum},#{pageSize}
     </select>
 
     <!-- 根据员工编号删除对应的员工-->
-    <delete id="empDlete" parameterType="String">
-        DELETE FROM tbl_users where user_id in
+    <update id="empDelete" parameterType="String">
+        /*DELETE FROM tbl_users where user_id in*/
+        UPDATE tbl_users set disabled = '1' where user_id in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </update>
+
+    <!--删除权限层级表中的记录-->
+    <delete id="deleteRoots" parameterType="String">
+        DELETE FROM tbl_roots where userid in
         <foreach collection="array" item="number" open="(" separator="," close=")">
             #{number}
         </foreach>

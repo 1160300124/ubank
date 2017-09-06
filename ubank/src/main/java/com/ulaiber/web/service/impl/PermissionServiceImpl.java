@@ -4,6 +4,7 @@ import com.ulaiber.web.dao.*;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,13 +104,17 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Departments> departmentQuery(String search, int pageSize, int pageNum,String sysflag,String companyNumber) {
+    public List<Departments> departmentQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr) {
         Map<String,Object> map = new HashMap<String,Object>();
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
         map.put("search" ,search );
         map.put("pageSize" , pageSize);
         map.put("pageNum" , pageNum);
         map.put("sysflag" , sysflag);
-        map.put("companyNumber" , companyNumber);
+        map.put("companyNumber" , arr);
         List<Departments> list  = permissionDao.departmentQuery(map);
         return list;
     }
@@ -124,8 +129,15 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public int getDeptTotal() {
-        int result = permissionDao.getDeptTotal();
+    public int getDeptTotal(String sysflag,String[] comArr) {
+        Map<String,Object> map  = new HashMap<String,Object>();
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
+        map.put("sysflag" , sysflag);
+        map.put("companyNumber" , arr);
+        int result = permissionDao.getDeptTotal(map);
         return result;
     }
 
@@ -206,12 +218,42 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> getAllCompany(String sysflag,String groupNumber) {
+    public List<Company> getAllCompany(String sysflag, String groupNumber) {
+        Map<String ,Object> map = new HashMap<String , Object>();
+        map.put("sysflag",sysflag);
+        map.put("groupNumber",groupNumber);
+        List<Company> list = permissionDao.getAllCompany(map);
+        return list;
+    }
+
+    @Override
+    public List<Company> getAllCompanybyGroupNum(String sysflag,String groupNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("sysflag" , sysflag);
         map.put("groupNumber" , groupNumber);
-        List<Company> list = permissionDao.getAllCompany(map);
+     //   List<Company> list = permissionDao.getAllCompany(map);
+        List<Company> list = rolesDao.getAllCompanybyGroupNum(map);
         return list;
+    }
+
+    @Override
+    public List<Departments> queryAllDept(String sysflag, String companyNumber) {
+        Map<String,Object> map = new HashMap<String ,Object>();
+        map.put("sysflag" , sysflag);
+        map.put("companyNumber" , companyNumber);
+        List<Departments> list = permissionDao.queryAllDept(map);
+        return list;
+    }
+
+    @Override
+    public List<Departments> getDeptEmpCount() {
+        List<Departments> list = permissionDao.getDeptEmpCount();
+        return list;
+    }
+
+    @Override
+    public int deleteRoots(String[] number) {
+        return employeeDao.deleteRoots(number);
     }
 
     @Override
@@ -221,8 +263,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public User getEmpByName(String userName) {
-        User emp = employeeDao.getEmpByName(userName);
+    public User getEmpByName(String userName,String mobile) {
+        Map<String,Object> map = new HashMap<String ,Object>();
+        map.put("userName" ,userName);
+        map.put("mobile" ,mobile);
+        User emp = employeeDao.getEmpByName(map);
         return emp;
     }
 
@@ -234,22 +279,30 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public int getEmpTotal(String sysflag,String companyNumber) {
+    public int getEmpTotal(String sysflag,String[] comArr) {
         Map<String,Object> map = new HashMap<String,Object>();
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
         map.put("sysflag" , sysflag);
-        map.put("companyNumber" , companyNumber);
+        map.put("companyNumber" , arr);
         int total = employeeDao.getEmpTotal(map);
         return total;
     }
 
     @Override
-    public List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String companyNumber) {
+    public List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr) {
         Map<String,Object> map = new HashMap<String,Object>();
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
         map.put("search" ,search );
         map.put("pageSize" , pageSize);
         map.put("pageNum" , pageNum);
         map.put("sysflag" , sysflag);
-        map.put("companyNumber" , companyNumber);
+        map.put("companyNumber" , arr);
         List<User> result = employeeDao.empQuery(map);
         return result;
     }
@@ -263,15 +316,16 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     public int empDelete(String[] number) {
-        int result = employeeDao.empDlete(number);
+        int result = employeeDao.empDelete(number);
         return result;
     }
 
     @Override
     public List<Roles> roleAllQuery(String sysflag,String companyNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
+        String[] comArr = companyNumber.split(",");
         map.put("sysflag" , sysflag);
-        map.put("companyNumber" , companyNumber);
+        map.put("companyNumber" , comArr);
         List<Roles> list = rolesDao.roleAllQuery(map);
         return list;
     }
@@ -284,10 +338,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int addRole(String com_numbers, String roleName) {
+    public int addRole(String com_numbers, String roleName,String names) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
         map.put("roleName" , roleName);
+        map.put("names" , names);
         int result = rolesDao.addRole(map);
         return result;
     }
@@ -316,31 +371,41 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     @Override
     public int getRoleTotal(String sysflag,String companyNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
+        String[] comArr = companyNumber.split(",");
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
         map.put("sysflag" , sysflag);
-        map.put("companyNumber" , companyNumber);
+        map.put("companyNumber" , arr);
         int total = roleMenuDao.getRoleTotal(map);
         return total;
     }
 
     @Override
-    public List<Roles> roleQuery(String search, int pageSize, int pageNum,String sysflag,String companyNumber) {
+    public List<Roles> roleQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr) {
         Map<String,Object> map = new HashMap<String,Object>();
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
         map.put("search" , search);
         map.put("pageSize" , pageSize);
         map.put("pageNum" , pageNum);
         map.put("sysflag" , sysflag);
-        map.put("companyNumber" , companyNumber);
+        map.put("companyNumber" , arr);
         List<Roles> list = rolesDao.roleQuery(map);
         return list;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int modifyRole(String com_numbers, String roleName,String roleId) {
+    public int modifyRole(String com_numbers, String roleName,String roleId,String names) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
         map.put("roleName" , roleName);
         map.put("roleId" , roleId);
+        map.put("names" , names);
         int result = rolesDao.modifyRole(map);
         return result;
     }
@@ -409,6 +474,29 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     public int deleteRoleMenuByRoleId(String roleId) {
         return roleMenuDao.deleteRoleMenuByRoleId(roleId);
     }
+
+    @Override
+    public List<Company> getComByGroup(String groupNum) {
+        List<Company> list = companyDao.getComByGroup(groupNum);
+        return list;
+    }
+
+    @Override
+    public List<Departments> getDeptByCom(String comNum) {
+        List<Departments> list = permissionDao.getDeptByCom(comNum);
+        return list;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int editRoots(User user) {
+        return employeeDao.editRoots(user);
+    }
+
+	@Override
+	public List<Company> getCompanysByNums(String[] nums) {
+		return companyDao.getCompanysByNums(nums);
+	}
 
 
 }

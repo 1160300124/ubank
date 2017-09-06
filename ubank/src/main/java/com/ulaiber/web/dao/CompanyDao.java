@@ -21,4 +21,8 @@ public interface CompanyDao {
     int deleteCompanys(String[] idsArr); //删除公司信息
 
     List<Company> queryComByGroupid(String[] numberArr); //根据集团编号查询是否存在公司
+
+    List<Company> getComByGroup(String groupNum); //根据集团获取公司名
+    
+    List<Company> getCompanysByNums(String[] nums); //根据公司编号查询公司
 }

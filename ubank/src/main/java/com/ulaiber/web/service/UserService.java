@@ -111,8 +111,15 @@ public interface UserService {
 	boolean validatePayPwd(String mobile, String password);
 
 	/**
-	 * 获取所有系统菜单
+	 * 获取所有系统菜单 
 	 * @return
 	 */
-	List<Menu> getAllMenu();
+	List<Menu> getAllMenu(String roleid,String sysflag);
+	
+	/**
+	 * 获取一个公司的各个部门下的所有用户
+	 * @param comNum
+	 * @return
+	 */
+	List<User> getUsersByComNum(String comNum, String search);
 }
