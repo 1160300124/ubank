@@ -27,6 +27,9 @@ public class User implements Serializable {
 
 	//银行预留手机号码
 	private String reserve_mobile;
+	
+	//用户所属公司ID
+	private int companyId;
 
 	//集团编号
 	private String groupNumber;
@@ -172,6 +175,14 @@ public class User implements Serializable {
 
 	public String getGroupNumber() {
 		return groupNumber;
+	}
+
+	public int getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(int companyId) {
+		this.companyId = companyId;
 	}
 
 	public void setGroupNumber(String groupNumber) {

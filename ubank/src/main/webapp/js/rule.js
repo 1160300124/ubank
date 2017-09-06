@@ -364,17 +364,34 @@ $(function(){
 	    var result = "";
 	    $(selectedPeoples).each(function(index,item){
 	        if (item.isParent) {
-	        	var childrenNodes = item.children;
-	        	var nodes = "";
-	        	if (childrenNodes) {
-	                for (var i = 0; i < childrenNodes.length; i++) {
-	                	if (childrenNodes[i].checked){
-	                		nodes += childrenNodes[i].id + ",";
+	        	var deptChildrenNodes = item.children;
+	        	var deptNodes = "";
+	        	if (deptChildrenNodes) {
+	                for (var i = 0; i < deptChildrenNodes.length; i++) {
+	                	var nodes = "";
+	                	if (deptChildrenNodes[i].isParent){
+	                		var childrenNodes = deptChildrenNodes[i].children;
+	                		for (var j = 0; j < childrenNodes.length; j++){
+	                			if (childrenNodes[j].checked){
+	                				nodes += childrenNodes[j].id + ",";
+	                			}
+	                		}
+	                		if (nodes == "" || nodes == null){
+	                			continue;
+	                		}
+	                		deptNodes += deptChildrenNodes[i].id + "_" + nodes.substring(0, nodes.length - 1) + "-";
+	                		
 	                	}
+	                	
 	                }
 	            }
-        	result += item.id + "=" + nodes.substring(0, nodes.length - 1) + "-";
-            return;
+	        	
+	        	if (deptNodes == "" || deptNodes == null){
+	        		return;
+	        	}
+	        	
+		    	result += item.id + "=" + deptNodes.substring(0, deptNodes.length - 1) + "|";
+		        return;
 	        }
 	        count = count + 1;
 	    });
@@ -751,24 +768,32 @@ $(function(){
 		
 	    var table = document.getElementById("table_attendanceLocation");
 	    var type = $("#location_type").val();
+	    var location = $("#gaodeMapIframe").contents().find("#attendance_addr").val();
+	    var longit_latit = $("#gaodeMapIframe").contents().find("#hidden_addr").val();
 	    if (type == "-1"){
 	    	if (table.rows.length >= 3){
 	    		Ewin.alert("考勤地点最多只能添加3个。");
 	    		return false;
 	    	}
+	    	for (var i = 0; i < table.rows.length; i++){
+	    		if (location == table.rows[i].cells[0].innerHTML){
+	    			Ewin.alert("您已经添加了 '" + location + "' ,请 不要重复添加。");
+		    		return false;
+	    		}
+	    	}
 	    	//添加行
 	    	var tr = table.insertRow(table.rows.length);
 	    	var rowIndex = tr.rowIndex.toString();
-	    	tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
-	    	"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
+	    	tr.innerHTML = "<td>" + location + "</td>" + 
+	    	"<td style='display:none'>" + longit_latit + "</td>" + 
 	    	"<td>" + 
 	    	'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal\')">修改</a>' +
 	    	'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal\',\'table_attendanceLocation\')">删除</a>' + 
 	    	"</td>"; 
 	    } else {
 	    	var tr = table.rows[type];
-			tr.innerHTML = "<td>" + $("#gaodeMapIframe").contents().find("#attendance_addr").val() + "</td>" + 
-			"<td style='display:none'>" + $("#gaodeMapIframe").contents().find("#hidden_addr").val() + "</td>" + 
+			tr.innerHTML = "<td>" + location + "</td>" + 
+			"<td style='display:none'>" + longit_latit + "</td>" + 
 			"<td>" + 
 			'<a href="javascript:;" onclick="updateLocation('  + tr.rowIndex + ',\'attendanceLocationModal\')">修改</a>' +
 			'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + tr.rowIndex + ',\'attendanceLocationModal\',\'table_attendanceLocation\')">删除</a>' + 
@@ -793,7 +818,7 @@ $(function(){
 	    var selectedPeoples = zTreeObj.getCheckedNodes(true);
 	    var count = 0;
 	    $(selectedPeoples).each(function(index,item){
-	        if (item.parentTId === null) {
+	        if (item.isParent) {
 	        	return;
 	        }
 	        count = count + 1;
@@ -1054,27 +1079,35 @@ window.operateEvents = {
 			    var table = document.getElementById("table_attendanceLocation_");
 
 			    var type = editModal.find("#location_type_").val();
+			    var location = $("#gaodeMapIframe_edit").contents().find("#attendance_addr").val();
+			    var longit_latit = $("#gaodeMapIframe_edit").contents().find("#hidden_addr").val();
 			    if (type == "-1"){
 			    	if (table.rows.length >= 3){
 			    		Ewin.alert("考勤地点最多只能添加3个。");
 			    		return false;
 			    	}
+			    	for (var i = 0; i < table.rows.length; i++){
+			    		if (location == table.rows[i].cells[0].innerHTML){
+			    			Ewin.alert("您已经添加了 '" + location + "' ,请不要重复添加。");
+				    		return false;
+			    		}
+			    	}
 			    	//添加行
 			    	var tr = table.insertRow(table.rows.length);
 			    	var rowIndex = tr.rowIndex.toString();
-			    	tr.innerHTML = "<td>" + $("#gaodeMapIframe_edit").contents().find("#attendance_addr").val() + "</td>" + 
-			    	"<td style='display:none'>" + $("#gaodeMapIframe_edit").contents().find("#hidden_addr").val() + "</td>" + 
+			    	tr.innerHTML = "<td>" + location + "</td>" + 
+			    	"<td style='display:none'>" + longit_latit + "</td>" + 
 			    	"<td>" + 
 			    	'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
 			    	'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
 			    	"</td>"; 
 			    } else {
 			    	var tr = table.rows[type];
-					tr.innerHTML = "<td>" + $("#gaodeMapIframe_edit").contents().find("#attendance_addr").val() + "</td>" + 
-					"<td style='display:none'>" + $("#gaodeMapIframe_edit").contents().find("#hidden_addr").val() + "</td>" + 
+					tr.innerHTML = "<td>" + location + "</td>" + 
+					"<td style='display:none'>" + longit_latit + "</td>" + 
 					"<td>" + 
 					'<a href="javascript:;" onclick="updateLocation('  + tr.rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
-					'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + tr.rowIndex + ',\'attendanceLocationModal_edit,\'table_attendanceLocation_\')">删除</a>' + 
+					'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + tr.rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
 					"</td>"; 
 			    }
 			    
@@ -1096,6 +1129,7 @@ window.operateEvents = {
 						var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree_edit");
 						zTreeObj.checkAllNodes(false);   //清空tree
 						$(data['data']).each(function(index,item){
+							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.companyId), true);
 							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.deptId), true);
 							zTreeObj.setChkDisabled(zTreeObj.getNodeByParam("id", item.userId), false);
 							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.userId), true);
@@ -1121,7 +1155,7 @@ window.operateEvents = {
 			    var selectedPeoples = zTreeObj.getCheckedNodes(true);
 			    var count = 0;
 			    $(selectedPeoples).each(function(index,item){
-			        if (item.parentTId === null) {
+			        if (item.isParent) {
 			            return;
 			        }
 			        count = count + 1;

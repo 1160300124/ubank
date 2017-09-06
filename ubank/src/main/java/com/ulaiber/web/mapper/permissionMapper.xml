@@ -183,7 +183,7 @@
 
     <!--根据公司编号获取部门-->
     <select id="getDeptByCom" parameterType="String" resultType="com.ulaiber.web.model.Departments">
-        select * from tbl_departments where company_num = #{comNum}
+        select d.*,c.name comName from tbl_departments d left join tbl_company c on d.company_num=c.companyNumber where d.company_num = #{comNum}
     </select>
 
     <!--根据当前角色所属公司编号，查询对应的部门-->

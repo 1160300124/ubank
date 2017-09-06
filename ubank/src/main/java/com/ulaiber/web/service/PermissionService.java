@@ -121,4 +121,7 @@ public interface PermissionService {
     List<Departments> getDeptEmpCount();  //获取各个部门员工人数
 
     int deleteRoots(String[] number); //删除权限层级表中的记录
+    
+    List<Company> getCompanysByNums(String[] nums); //根据公司编号查询公司
+
 }

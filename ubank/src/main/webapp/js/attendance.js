@@ -59,9 +59,9 @@ $(function(){
 		var params = {};
 		var company = {};
 		var dept = {};
-		company.companyNumber = $("#company").val();
+		company.companyNumber = $("#company_select").val();
 		params.company = company;
-	    dept.dept_number = $("#dept").val();
+	    dept.dept_number = $("#dept_select").val();
 		params.dept = dept;
 		params.userName = $("#user_name").val();
 		params.clockType = $("#type").val();
@@ -103,6 +103,68 @@ $(function(){
 
 		$("#btn_search").attr("disabled", false);
 
+	});
+	
+	loadCompanys();
+	function loadCompanys(){
+		var select = $("#company_select").empty();
+		select.append("<option value=''>请选择公司</option>");
+		
+		$.ajax({
+			url : "getCompanys",
+			type: "get",
+			data : {},
+			async : true, 
+			dataType : "json",
+			success : function(data, status) {
+				if(data.length <= 0){
+                    return;
+                }
+				
+				for (var i in data){
+					var option = "<option value='" + data[i].companyNumber + "'>" + data[i].name + "</option>";
+					select.append(option);
+				}
+			},
+			error : function(data, status, e) {
+				Ewin.alert("系统内部错误！");
+			}
+		});
+		
+	}
+	
+	
+	$("#company_select").unbind().bind("change", function(){
+		
+		var select = $("#dept_select").empty();
+		select.append("<option value=''>请选择部门</option>");
+		var comNum = $("#company_select").val();
+		if (comNum == "" || comNum == null || comNum == undefined){
+			return false;
+		}
+		
+		$.ajax({
+			url : "getDeptByCom",
+			type: "post",
+			data : {
+				"comNum" : comNum
+			},
+			async : true, 
+			dataType : "json",
+			success : function(data, status) {
+				if(data.length <= 0){
+                    return;
+                }
+				for (var i in data){
+					var option = "<option value='" + data[i].dept_number + "'>" + data[i].name + "</option>";
+					select.append(option);
+				}
+			},
+			error : function(data, status, e) {
+				Ewin.alert("系统内部错误！");
+			}
+		});
+		
 	});
 
 });

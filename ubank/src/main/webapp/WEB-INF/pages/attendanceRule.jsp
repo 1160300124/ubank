@@ -673,7 +673,7 @@
     
      <!-- 模态框（Modal） -->
     <div class="modal fade" tabindex="-1" role="dialog" id="attendancePeopleModal">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document" style="width:40%">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -715,7 +715,7 @@
     
          <!-- 模态框（Modal） -->
     <div class="modal fade" tabindex="-1" role="dialog" id="attendancePeopleModal_edit">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document" style="width:40%">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
