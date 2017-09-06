@@ -9,18 +9,15 @@
 			<div class="form-group">
 				<label class="col-sm-1 control-label" for="company">公司</label>
 	            <div class="col-sm-2">
-                   	  <select class="form-control" id="company">
+                   	  <select class="form-control" id="company_select">
                    	  	 <option value="">请选择公司</option>
-                   	  	 <option value="20047">深圳市优融网络科技有限公司</option>
                    	  </select>
 	            </div>
 	            
 	            <label class="col-sm-1 control-label" for="dept">部门</label>
 	            <div class="col-sm-2 ">
-	                  <select class="form-control" id="dept">
+	                  <select class="form-control" id="dept_select">
                    	  	 <option value="">请选择部门</option>
-                   	  	 <option value="40025">技术部</option>
-                   	  	 <option value="40026">财务部</option>
                    	  </select>
 	            </div>
 	            
