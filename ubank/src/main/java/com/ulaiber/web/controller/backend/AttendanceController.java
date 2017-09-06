@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.AttendanceService;
+import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.ObjUtil;
 
 /** 
@@ -56,6 +59,9 @@ public class AttendanceController extends BaseController {
 	
 	@Autowired
 	private AttendanceService service;
+	
+	@Autowired
+	private PermissionService permissionService;
 	
 	@RequestMapping(value = "attendance", method = RequestMethod.GET)
 	public String attendance(HttpServletRequest request, HttpServletResponse response){
@@ -116,4 +122,15 @@ public class AttendanceController extends BaseController {
 		return info;
 	}
 
+	@RequestMapping(value = "getCompanys", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Company> getCompanys(HttpServletRequest request, HttpServletResponse response){
+		logger.debug("getCompanys start...");
+		User user = getUserFromSession(request);
+		String[] companyNums = user.getCompanyNumber().split(",");
+		List<Company> companys = permissionService.getCompanysByNums(companyNums);
+		logger.debug("getCompanys end...");
+		return companys;
+	}
+	
 }

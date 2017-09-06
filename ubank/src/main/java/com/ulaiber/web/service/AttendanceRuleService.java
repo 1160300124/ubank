@@ -28,7 +28,7 @@ public interface AttendanceRuleService {
 	 * @param rule
 	 * @return
 	 */
-	boolean update(AttendanceRule rule, String data, String companyId);
+	boolean update(AttendanceRule rule, String data);
 	
 	/**
 	 * 根据userId获取考勤规则

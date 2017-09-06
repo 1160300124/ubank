@@ -493,5 +493,10 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         return employeeDao.editRoots(user);
     }
 
+	@Override
+	public List<Company> getCompanysByNums(String[] nums) {
+		return companyDao.getCompanysByNums(nums);
+	}
+
 
 }

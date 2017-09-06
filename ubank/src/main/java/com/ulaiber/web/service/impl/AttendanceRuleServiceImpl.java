@@ -64,32 +64,35 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean update(AttendanceRule rule, String data, String companyId) {
+	public boolean update(AttendanceRule rule, String data) {
 		if (dao.update(rule)){
-			if (StringUtils.isNotEmpty(data)){
-				String[] deptId_userIds = data.split("-");
-				for (String deptId_userId : deptId_userIds) {
-					String deptId = deptId_userId.split("=")[0];
-					String[] userIds = deptId_userId.split("=")[1].split(",");
+			List<Long> rids = new ArrayList<Long>();
+			rids.add(rule.getRid());
+			//先删除所有与rid绑定的userId,在批量插入
+			dao.deleteUserOfRulesByRids(rids);
+			
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			String[] companyId_deptId_userIds = data.split("\\|");
+			for (String companyId_deptId_userId : companyId_deptId_userIds) {
+				String companyId = companyId_deptId_userId.split("=")[0];
+				String[] deptId_userIds = companyId_deptId_userId.split("=")[1].split("-");
+				for (String deptId_userId : deptId_userIds){
+					String deptId = deptId_userId.split("_")[0];
+					String[] userIds = deptId_userId.split("_")[1].split(",");
 					List<String> idList = Arrays.asList(userIds);
-					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 					for (String id : idList){
 						Map<String ,Object> map = new HashMap<String, Object>();
 						map.put("userId", id);
 						map.put("rid", rule.getRid());
 						map.put("deptId", deptId);
-						map.put("companyId", Integer.parseInt(companyId));
+						map.put("companyId", companyId);
 						list.add(map);
 					}
-					List<Long> rids = new ArrayList<Long>();
-					rids.add(rule.getRid());
-					//先删除所有与rid绑定的userId,在批量插入
-					dao.deleteUserOfRulesByRids(rids);
-					if (dao.batchInsertUserOfRule(list) > 0){
-						
-					}
 				}
+
 			}
+			
+			dao.batchInsertUserOfRule(list);
 		}
 
 		return true;
