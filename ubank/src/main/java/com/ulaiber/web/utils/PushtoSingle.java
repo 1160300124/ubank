@@ -6,7 +6,15 @@ import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.exceptions.RequestException;
 import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.LinkTemplate;
+import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
+import com.ulaiber.web.conmon.IConstants;
+import net.sf.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 个人用户消息推送
@@ -23,9 +31,16 @@ public class PushtoSingle {
     //别名推送方式
     // static String Alias = "";
 
-    public static void singlePush(String CID) throws Exception {
+    /**
+     *
+     * @param CID 个人用户clientid
+     * @param type 待审批和已审批标识
+     * @throws Exception
+     */
+    public static void singlePush(String CID,int type,String content,String title) throws Exception {
         IGtPush push = new IGtPush(host, appKey, masterSecret);
-        LinkTemplate template = linkTemplateDemo();
+        //LinkTemplate template = linkTemplateDemo();
+        TransmissionTemplate template = transmissionTemplateDemo(type,content,title);
         SingleMessage message = new SingleMessage();
         message.setOffline(true);
         // 离线有效时间，单位为毫秒，可选
@@ -71,6 +86,29 @@ public class PushtoSingle {
         template.setStyle(style);
         // 设置打开的网址地址
         template.setUrl("http://www.baidu.com");
+        return template;
+    }
+
+    /**
+     * 透传信息模板
+     * @return
+     */
+    public static TransmissionTemplate transmissionTemplateDemo(int type,String content,String title) {
+        TransmissionTemplate template = new TransmissionTemplate();
+        template.setAppId(appId);
+        template.setAppkey(appKey);
+        // 透传消息设置，1为强制启动应用，客户端接收到消息后就会立即启动应用；2为等待应用启动
+        template.setTransmissionType(2);
+        List<Map<String,Object>> list = new ArrayList<>();
+        Map<String,Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("content",content);
+        map.put("title",title);
+        list.add(map);
+        String msg = JSONArray.fromObject(list).toString();
+        template.setTransmissionContent(msg);
+        // 设置定时展示时间
+        // template.setDuration("2015-01-16 11:40:00", "2015-01-16 12:24:00");
         return template;
     }
 }

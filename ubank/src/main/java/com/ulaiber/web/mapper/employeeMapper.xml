@@ -38,9 +38,9 @@
 
     <!--获取员工总数-->
     <select id="getEmpTotal" resultType="int">
-        select count(a.user_name) as total from tbl_users a left join tbl_roots b on a.user_id = b.userid
+        select count(a.user_name) as total from tbl_users a left join tbl_roots b on a.user_id = b.userid where a.disabled = '0'
         <if test = 'sysflag == "1"'>
-            where a.disabled = '0' and  b.companyNumber in
+            and  b.companyNumber in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                 #{companyNumber}
             </foreach>
@@ -56,7 +56,7 @@
         left join tbl_roots e on a.user_id = e.userid
         LEFT JOIN tbl_company b on e.companyNumber = b.companyNumber
         left join tbl_departments c on e.dept_number = c.dept_number
-        left join tbl_roles f on a.role_id = f.role_id where 1=1 and disabled = '0'
+        left join tbl_roles f on a.role_id = f.role_id where a.disabled = '0'
         <if test="search != null and search != ''">
             and  a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
         </if>

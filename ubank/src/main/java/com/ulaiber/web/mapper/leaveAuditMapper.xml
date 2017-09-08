@@ -55,11 +55,17 @@
 
     <!--确认审批-->
     <update id="confirmAudit" parameterType="Map" >
-        UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date},reason = #{reason} where recordNo = #{recordNo} and auditor = #{userId}
+        UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date},reason = #{reason}
+            where recordNo = #{recordNo} and auditor = #{userId}
     </update>
 
     <!--查询用户个推CID-->
     <select id="queryCIDByUserid" parameterType="int" resultType="String">
         select CID from tbl_users where user_id = #{userid}
+    </select>
+
+    <!--获取当前被审批记录的用户ID-->
+    <select id="queryUserIdByRecordNo" parameterType="Map" resultType="String">
+        SELECT userid FROM tbl_leave_audit_record where  recordNo = #{recordNo} and auditor = #{userId}
     </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.ulaiber.web.service.impl;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.LeaveAuditDao;
 import com.ulaiber.web.dao.LeaveDao;
 import com.ulaiber.web.model.*;
@@ -55,9 +56,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         int result = leaveAuditDao.saveAditor(list);
         if(result > 0 ){
             String cid = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+            int type = IConstants.PENGDING;
+            //消息内容
+            String content = ">>>>>>>测试推送信息!";
+            //消息标题
+            String title = "您有个待审批未处理";
             try {
                 //推送审批信息致第一个审批人
-                PushtoSingle.singlePush(cid);
+                PushtoSingle.singlePush(cid,type,content,title);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -163,7 +169,26 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("status" , status);
         map.put("reason",reason);
         map.put("date",sdf.format(new Date()));
-        return leaveAuditDao.confirmAudit(map);
+        int result = leaveAuditDao.confirmAudit(map);
+        //获取当前被审批记录的用户ID
+        Map<String,Object> param = new HashMap<>();
+        param.put("userId",userId);
+        param.put("recordNo",recordNo);
+        String resultMap = leaveAuditDao.queryUserIdByRecordNo(param);
+        int userid = Integer.parseInt(resultMap);
+        String cid = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        String content = ">>>>>>>>>您有一条已审批的记录";
+        String title = "您有一条已审批的记录";
+        if(result > 0){
+            int type = IConstants.ALREADY;
+            String CID = "";
+            try {
+                PushtoSingle.singlePush(cid,type,content,title);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
