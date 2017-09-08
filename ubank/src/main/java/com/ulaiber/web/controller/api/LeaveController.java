@@ -40,7 +40,8 @@ public class LeaveController extends BaseController {
         logger.info("开始保存申请请假记录");
         String date = sdf.format(new Date());
         leaveRecord.setCreateDate(date);
-        int result = leaveService.saveLeaveRecord(leaveRecord); //保存申请记录
+        //保存申请记录
+        int result = leaveService.saveLeaveRecord(leaveRecord);
         ResultInfo resultInfo = new ResultInfo();
         if(StringUtil.isEmpty(leaveRecord.getUserid())){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -84,7 +85,8 @@ public class LeaveController extends BaseController {
             return resultInfo;
         }
         pageNum = (pageNum - 1) * pageSize;
-        List<ApplyForVO> list = leaveService.queryApplyRecord(userid,pageNum,pageSize); //查询个人申请记录
+        //查询个人申请记录
+        List<ApplyForVO> list = leaveService.queryApplyRecord(userid,pageNum,pageSize);
         if(list.size() <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("加载申请记录失败");
@@ -96,7 +98,8 @@ public class LeaveController extends BaseController {
             ApplyForVO ls = list.get(i);
             ids[i] = ls.getId();
         }
-        List<LeaveAudit> list2 = leaveService.queryAuditor(ids); //查询审批人记录
+        //查询审批人记录
+        List<LeaveAudit> list2 = leaveService.queryAuditor(ids);
         if(list2.size() <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("查询申请记录失败");
@@ -171,8 +174,10 @@ public class LeaveController extends BaseController {
             logger.info("用户ID为空");
             return resultInfo;
         }
-        List<Map<String,Object>> list = leaveService.getLeaveRecord(userId); //获取个人申请记录
-        RemindApplyVO remindApplyVO = new RemindApplyVO();//申请记录
+        //获取个人申请记录
+        List<Map<String,Object>> list = leaveService.getLeaveRecord(userId);
+        //申请记录
+        RemindApplyVO remindApplyVO = new RemindApplyVO();
 
         if(list.size() > 0 ){
             remindApplyVO.setCount(list.size());
@@ -187,11 +192,15 @@ public class LeaveController extends BaseController {
             remindApplyVO.setApplyName("");
             remindApplyVO.setReason("");
         }
-        List<AuditVO> list2 =leaveService.getLeaveAuditor(userId); //获取个人审批记录
-        RemindAuditVO remindAuditVO = new RemindAuditVO(); //审批记录
+        //获取个人审批记录
+        List<AuditVO> list2 =leaveService.getLeaveAuditor(userId);
+        //审批记录
+        RemindAuditVO remindAuditVO = new RemindAuditVO();
         if(list2.size() > 0){
-            int id = Integer.parseInt(list2.get(0).getRecordNo());  //申请记录ID
-            Map<String,Object> leaveRecord = leaveService.queryApplyRecordById(id); //根据申请记录ID获取申请记录
+            //申请记录ID
+            int id = Integer.parseInt(list2.get(0).getRecordNo());
+            //根据申请记录ID获取申请记录
+            Map<String,Object> leaveRecord = leaveService.queryApplyRecordById(id);
             remindAuditVO.setCount(list2.size());
             remindAuditVO.setDate(list2.get(0).getAuditDate());
             remindAuditVO.setType(leaveRecord.get("type"));
@@ -229,7 +238,8 @@ public class LeaveController extends BaseController {
             logger.info("用户ID为空");
             return resultInfo;
         }
-        List<Map<String,Object>> list = leaveService.getPendingRecord(userId); //获取待审批记录数量
+        //获取待审批记录数量
+        List<Map<String,Object>> list = leaveService.getPendingRecord(userId);
         List<WorkAuditRecordVO> resultList = new ArrayList<>();
         WorkAuditRecordVO workAuditRecordVO = new WorkAuditRecordVO();
         if(list.size() >0 ){
@@ -294,7 +304,8 @@ public class LeaveController extends BaseController {
             List<Map<String,Object>> list = new ArrayList<>();
             Map<String,Object> resultMap = new HashMap<>();
             while (count < 10){
-                List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId,pageNum,pageSize);  //根据申请记录编号获取待审批人
+                //根据申请记录编号获取待审批人
+                List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId,pageNum,pageSize);
                 if(auList.size() > 0 ){
                     Map<String,Object> auditMap = Audit(userId,auList,pageNum,count);
                     List<Map<String,Object>> auditList = (List<Map<String, Object>>) auditMap.get("item");
@@ -320,12 +331,14 @@ public class LeaveController extends BaseController {
             logger.info("查询待审批数据成功");
             return resultInfo;
         }else if(mark.equals("1")){
-            List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId,pageNum,pageSize);  //根据申请记录编号获取已审批人
+            //根据申请记录编号获取已审批人
+            List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId,pageNum,pageSize);
             List<Map<String,Object>> list = new ArrayList<>();
             if(auditorList.size() > 0){
                 for (int i = 0; i < auditorList.size(); i++){
                     int id = Integer.parseInt(auditorList.get(i).getRecordNo());
-                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id,userId); //获取已审批记录
+                    //获取已审批记录
+                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id,userId);
                     Map<String ,Object> map = new HashMap<>();
                     map.put("id" , applyForVO.getId());
                     map.put("userid" , applyForVO.getUserid());
@@ -354,7 +367,8 @@ public class LeaveController extends BaseController {
                     }
                     list.add(map);
                     String recordNo = auditorList.get(i).getRecordNo();
-                    List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
+                    //根据申请记录号查询审批人记录
+                    List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo);
                     for (int j = 0; j < list.size(); j++){
                         Map<String,Object> listMap = list.get(j);
                         if(String.valueOf(listMap.get("id")).equals(auditorList.get(i).getRecordNo())){
@@ -391,7 +405,8 @@ public class LeaveController extends BaseController {
             pageNum += 1;
             resultMap.put("pageNum",pageNum);
             int id = Integer.parseInt(auList.get(i).getRecordNo());
-            ApplyForVO applyForVO = leaveService.queryPeningRecord(id,userId); //根据申请记录ID获取待审批记录
+            //根据申请记录ID获取待审批记录
+            ApplyForVO applyForVO = leaveService.queryPeningRecord(id,userId);
             Map<String ,Object> map = new HashMap<>();
             map.put("id" , applyForVO.getId());
             map.put("userid" , applyForVO.getUserid());
@@ -426,14 +441,16 @@ public class LeaveController extends BaseController {
             String status = "";
             if(sortValue != 0){
                 recordNo = auList.get(i).getRecordNo();
-                List<LeaveAudit> list2 = leaveService.getAuditorBySort(recordNo,sortValue);  //根据排序号和申请记录编号获取审批人
+                //根据排序号和申请记录编号获取审批人
+                List<LeaveAudit> list2 = leaveService.getAuditorBySort(recordNo,sortValue);
                 status = list2.get(0).getStatus();
                 //如果当前审批人的上一个人没有做审批处理，则移除当前记录
                 if(!status.equals("0") && !status.equals("1")){
                     list.add(map);
                     count += 1;
                     resultMap.put("count",count);
-                    List<AuditVO> list3 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
+                    //根据申请记录号查询审批人记录
+                    List<AuditVO> list3 = leaveService.queryAuditorByRecord(recordNo);
                     for (int j = 0 ; j < list.size() ; j++){
                         Map<String,Object> listMap = list.get(j);
                         if(String.valueOf(listMap.get("id")).equals(auList.get(i).getRecordNo())){
@@ -450,7 +467,8 @@ public class LeaveController extends BaseController {
                 count += 1;
                 resultMap.put("count",count);
                 recordNo = auList.get(i).getRecordNo();
-                List<AuditVO> list4 = leaveService.queryAuditorByRecord(recordNo); //根据申请记录号查询审批人记录
+                //根据申请记录号查询审批人记录
+                List<AuditVO> list4 = leaveService.queryAuditorByRecord(recordNo);
                 for (int j = 0 ; j < list.size() ; j++){
                     Map<String,Object> listMap = list.get(j);
                     if(String.valueOf(listMap.get("id")).equals(auList.get(i).getRecordNo())){
@@ -504,7 +522,8 @@ public class LeaveController extends BaseController {
             logger.info("审批失败");
             return resultInfo;
         }
-        int result2 = leaveService.updateRecord(recordNo,status);  //更新申请记录为最新的状态
+        //更新申请记录为最新的状态
+        int result2 = leaveService.updateRecord(recordNo,status);
         if(result2 <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("审批失败");
@@ -533,8 +552,10 @@ public class LeaveController extends BaseController {
             logger.info("获取消息总数失败");
             return resultInfo;
         }
-        List<Map<String,Object>> list = leaveService.getLeaveRecord(userId); //获取个人申请记录
-        List<AuditVO> list2 =leaveService.getLeaveAuditor(userId); //获取个人审批记录
+        //获取个人申请记录
+        List<Map<String,Object>> list = leaveService.getLeaveRecord(userId);
+        //获取个人审批记录
+        List<AuditVO> list2 =leaveService.getLeaveAuditor(userId);
         int total = list.size() + list2.size();
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("获取消息总数成功");
@@ -550,9 +571,10 @@ public class LeaveController extends BaseController {
      */
     @RequestMapping("synchronizationData")
     @ResponseBody
-    public ResultInfo synchronizationData(String date){
+    public ResultInfo synchronizationData(String date,int pageNum,int pageSize){
         logger.info(">>>>>>>>>>>>>开始同步数据");
-        int total = leaveService.getUserTotalByDate(date);  //根据日期查询用户总数
+        //根据日期查询用户总数
+        int total = leaveService.getUserTotalByDate(date);
         ResultInfo resultInfo = new ResultInfo();
         if(total <= 0){
             resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -560,54 +582,74 @@ public class LeaveController extends BaseController {
             logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
             return resultInfo;
         }
-        int pageNum = 0;
-        int pageSize = 20;
-        boolean flag = false; // true 表示数据已同步完成； false 表示还有数据需要同步；
-        String lastDate = ""; // 最新的日期
-        List<User> userList = leaveService.getUserByDate(date,pageNum,pageSize);  //根据日期分页查询用户
-        List<SynchronizationData> list = new ArrayList<>();  //存放增加或修改的数据
-        List<SynchronizationData> list2 = new ArrayList<>();  //存放删除的数据
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        // true 表示数据已同步完成； false 表示还有数据需要同步；
+        boolean flag = false;
+        // 最新的日期
+        String lastDate = "";
+        //根据日期分页查询用户
+        List<User> userList = leaveService.getUserByDate(date,pageNum,pageSize);
+        //存放增加或修改的数据
+        List<SynchronizationData> list = new ArrayList<>();
+        //存放删除的数据
+        List<SynchronizationData> list2 = new ArrayList<>();
         Map<String,Object> resultMap = new HashMap<>();
         int pageTotal = userList.size();
         //如果总数大于分页查询的总数，则表示还有数据
         if((total - pageTotal) > 0){
-            User us = userList.get(userList.size()-1); // 获取最后那条记录的创建日期
-            lastDate = us.getCreateTime();
-            for (int i = 0 ; i < userList.size() ; i++){
-                User user = userList.get(i);
-                if(user.getDisabled().equals("0")){
-                    //list.add(userList.get(i));
-                    SynchronizationData async = new SynchronizationData();
-                    async.setId(userList.get(i).getId());
-                    async.setUsername(userList.get(i).getUserName());
-                    async.setDeptName(userList.get(i).getDept_name());
-                    async.setImage(userList.get(i).getImage());
-                    async.setDisabled(userList.get(i).getDisabled());
-                    list.add(async);
-                }else{
-                    //list2.add(userList.get(i));
-                    SynchronizationData async = new SynchronizationData();
-                    async.setId(userList.get(i).getId());
-                    async.setUsername(userList.get(i).getUserName());
-                    async.setDeptName(userList.get(i).getDept_name());
-                    async.setImage(userList.get(i).getImage());
-                    async.setDisabled(userList.get(i).getDisabled());
-                    list2.add(async);
+            if(userList.size() > 0){
+                // 获取最后那条记录的创建日期
+                User us = userList.get(userList.size()-1);
+                lastDate = us.getCreateTime();
+                for (int i = 0 ; i < userList.size() ; i++){
+                    User user = userList.get(i);
+                    if(user.getDisabled().equals("0")){
+                        //list.add(userList.get(i));
+                        SynchronizationData async = new SynchronizationData();
+                        async.setId(userList.get(i).getId());
+                        async.setUsername(userList.get(i).getUserName());
+                        async.setDeptName(userList.get(i).getDept_name());
+                        async.setImage(userList.get(i).getImage());
+                        async.setDisabled(userList.get(i).getDisabled());
+                        list.add(async);
+                    }else{
+                        //list2.add(userList.get(i));
+                        SynchronizationData async = new SynchronizationData();
+                        async.setId(userList.get(i).getId());
+                        async.setUsername(userList.get(i).getUserName());
+                        async.setDeptName(userList.get(i).getDept_name());
+                        async.setImage(userList.get(i).getImage());
+                        async.setDisabled(userList.get(i).getDisabled());
+                        list2.add(async);
 
+                    }
                 }
+                resultMap.put("NewAndUpdate" , list);
+                resultMap.put("Delete" , list2);
+                resultMap.put("LastDate",lastDate);
+                resultMap.put("flag",flag);
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("同步数据成功");
+                resultInfo.setData(resultMap);
+                logger.info(">>>>>>>>>>>>>同步数据成功");
+                return resultInfo;
+            }else{
+                flag = true;
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("同步数据成功");
+                logger.info(">>>>>>>>>>>>>同步数据成功");
+                return resultInfo;
             }
-            resultMap.put("NewAndUpdate" , list);
-            resultMap.put("Delete" , list2);
-            resultMap.put("LastDate",lastDate);
-            resultMap.put("flag",flag);
-            resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("同步数据成功");
-            resultInfo.setData(resultMap);
-            logger.info(">>>>>>>>>>>>>同步数据成功");
-            return resultInfo;
+
         }else{
-           // flag = true;
-            User us = userList.get(userList.size()-1); // 获取最后那条记录的创建日期
+            flag = true;
+            // 获取最后那条记录的创建日期
+            User us = userList.get(userList.size()-1);
             lastDate = us.getCreateTime();
             for (int i = 0 ; i < userList.size() ; i++){
                 User user = userList.get(i);
@@ -622,10 +664,6 @@ public class LeaveController extends BaseController {
                 }else{
                     SynchronizationData async = new SynchronizationData();
                     async.setId(userList.get(i).getId());
-//                    async.setUsername(userList.get(i).getUserName());
-//                    async.setDeptName(userList.get(i).getDept_name());
-//                    async.setImage(userList.get(i).getImage());
-//                    async.setDisabled(userList.get(i).getDisabled());
                     list2.add(async);
                 }
             }
@@ -640,6 +678,37 @@ public class LeaveController extends BaseController {
             return resultInfo;
 
         }
+    }
+
+    /**
+     * 获取用户个推CID
+     * @param userid 用户ID
+     * @param CID 用户个推CID
+     * @return ResultInfo
+     */
+    @RequestMapping("getClinetID")
+    @ResponseBody
+    public ResultInfo getClinetID(String userid,String CID){
+        logger.info(">>>>>>>>>>>开始插入个推CID");
+        ResultInfo resultInfo = new ResultInfo();
+        if(StringUtil.isEmpty(userid) || StringUtil.isEmpty(CID)){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("获取用户个推CID失败");
+            logger.info(">>>>>>>>>>>>>>用户ID或CID为空");
+            return resultInfo;
+        }
+        //修改用户个推CID
+        int result = leaveService.updateUser(userid,CID);
+        if(result <= 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("获取用户个推CID失败");
+            logger.info(">>>>>>>>>>>>>>修改用户CID失败");
+            return resultInfo;
+        }
+        resultInfo.setCode(IConstants.QT_CODE_ERROR);
+        resultInfo.setMessage("获取用户个推CID成功");
+        logger.info(">>>>>>>>>>>>>>修改用户CID成功");
+        return resultInfo;
     }
 
 

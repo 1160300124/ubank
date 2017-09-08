@@ -85,7 +85,7 @@
 
     <!--根据日期查询用户-->
     <select id="getUserTotalByDate" parameterType="String" resultType="int">
-         select count(user_id) as total from tbl_users where disabled = '0'
+         select count(user_id) as total from tbl_users where 1=1
         <if test='_parameter != "" and _parameter != null'>
             and createTime > #{date}
         </if>
@@ -101,6 +101,11 @@
         <if test='date != "" and date != null'>
             and  a.createTime > #{date}
         </if>
-        order by a.createTime desc limit #{pageNum},#{pageSize}
+        order by a.createTime limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--修改用户个推CID-->
+    <select id="updateUser" parameterType="Map" resultType="int">
+        UPDATE tbl_users set CID = #{CID} where user_id = #{userid}
     </select>
 </mapper>

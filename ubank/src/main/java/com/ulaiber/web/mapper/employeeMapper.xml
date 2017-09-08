@@ -26,7 +26,7 @@
     <!--修改员工信息-->
     <update id="editEmp" parameterType="com.ulaiber.web.model.User">
         UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo}
-              ,bankNo = #{bankNo}, bankCardNo = #{bankCardNo},role_id = #{role_id}
+              ,bankNo = #{bankNo}, bankCardNo = #{bankCardNo},role_id = #{role_id},createTime = #{createTime}
           where user_id = #{id}
     </update>
 
@@ -70,10 +70,10 @@
     </select>
 
     <!-- 根据员工编号删除对应的员工-->
-    <update id="empDelete" parameterType="String">
+    <update id="empDelete" parameterType="Map">
         /*DELETE FROM tbl_users where user_id in*/
-        UPDATE tbl_users set disabled = '1' where user_id in
-        <foreach collection="array" item="number" open="(" separator="," close=")">
+        UPDATE tbl_users set disabled = '1' , createTime = #{date} where user_id in
+        <foreach collection="number" item="number" open="(" separator="," close=")">
             #{number}
         </foreach>
     </update>

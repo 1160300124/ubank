@@ -74,4 +74,14 @@
     <select id="getAllCompanybyGroupNum" resultType="com.ulaiber.web.model.Company">
         select companyNumber,name from tbl_company where group_num = #{groupNumber}
     </select>
+
+    <!--根据角色ID获取角色信息-->
+    <select id="queryRoleById" parameterType="String" resultType="Map">
+        SELECT companyNumber,companyName FROM tbl_roles where role_id = #{roleid}
+    </select>
+
+    <!--更新角色所属公司-->
+    <update id="updateRole" parameterType="Map" >
+        UPDATE tbl_roles set companyNumber = #{comNo},companyName = #{name} where role_id = #{roleid}
+    </update>
 </mapper>

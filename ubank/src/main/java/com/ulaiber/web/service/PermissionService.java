@@ -124,4 +124,7 @@ public interface PermissionService {
     
     List<Company> getCompanysByNums(String[] nums); //根据公司编号查询公司
 
+    Map<String,Object> queryRoleById(String roleid);
+
+    int updateRole(String roleid, String comNo, String name); //更新角色所属公司
 }

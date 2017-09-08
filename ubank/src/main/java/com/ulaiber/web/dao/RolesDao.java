@@ -28,4 +28,8 @@ public interface RolesDao {
     List<User> queryUserByRoleid(String[] idsArr);  //根据角色id，判断当前角色下是否有用户存在
 
     List<Company> getAllCompanybyGroupNum(Map<String, Object> map); //根据集团编号获取公司
+
+    Map<String,Object> queryRoleById(String roleid);//根据角色ID获取角色信息
+
+    int updateRole(Map<String, Object> map);  //更新角色所属公司
 }

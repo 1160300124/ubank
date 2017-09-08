@@ -5,6 +5,7 @@ import com.ulaiber.web.dao.LeaveDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.utils.PushtoSingle;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,18 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
             map.put("sort",i+1);
             list.add(map);
         }
+        //获取第一个审批人ID
+        int userid = Integer.parseInt(auditor[0]);
         int result = leaveAuditDao.saveAditor(list);
+        if(result > 0 ){
+            String cid = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+            try {
+                //推送审批信息致第一个审批人
+                PushtoSingle.singlePush(cid);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return result;
     }
 
@@ -179,6 +191,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("pageNum" , pageNum);
         map.put("pageSize" , pageSize);
         return leaveDao.getUserByDate(map);
+    }
+
+    @Override
+    public int updateUser(String userid, String CID) {
+        Map<String,Object > map = new HashMap<>();
+        map.put("userid" , userid);
+        map.put("CID" , CID);
+        return leaveDao.updateUser(map);
     }
 
 

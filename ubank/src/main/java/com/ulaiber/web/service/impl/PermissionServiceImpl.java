@@ -10,10 +10,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 权限管理接口实现类
@@ -21,6 +19,8 @@ import java.util.Map;
  */
 @Service
 public class PermissionServiceImpl extends BaseService implements PermissionService {
+
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Resource
     private PermissionDao permissionDao;
@@ -310,13 +310,20 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int editEmp(User user) {
+        String date = sdf.format(new Date());
+        user.setCreateTime(date);
         int result = employeeDao.editEmp(user);
         return result;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int empDelete(String[] number) {
-        int result = employeeDao.empDelete(number);
+        Map<String,Object> map = new HashMap<>();
+        String date = sdf.format(new Date());
+        map.put("date",date);
+        map.put("number" , number);
+        int result = employeeDao.empDelete(map);
         return result;
     }
 
@@ -497,6 +504,20 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 	public List<Company> getCompanysByNums(String[] nums) {
 		return companyDao.getCompanysByNums(nums);
 	}
+
+    @Override
+    public Map<String, Object> queryRoleById(String roleid) {
+        return rolesDao.queryRoleById(roleid);
+    }
+
+    @Override
+    public int updateRole(String roleid, String comNo, String name) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("roleid" , roleid);
+        map.put("comNo" , comNo);
+        map.put("name" , name);
+        return rolesDao.updateRole(map);
+    }
 
 
 }

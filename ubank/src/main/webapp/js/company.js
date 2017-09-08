@@ -134,7 +134,8 @@ var CompanyFun = {
     },
     //新增
     companyAdd : function () {
-        var name = $("input[name=name]").val();
+        var companyNo = $("input[name=name]").val();
+        //var comName = $("input[name=name]").text();
         var group = $("#group_select").val();
         var bankNo = $("#company_select").val();
         var legalPerson = $("input[name=legalPerson]").val();
@@ -150,10 +151,10 @@ var CompanyFun = {
             Ewin.alert("公司银行账号不能为空");
             return
         }
-        if(name == ""){
+        if(companyNo == ""){
             Ewin.alert("公司名不能为空");
             return
-        }else if(!Validate.regNumAndLetter(name)){
+        }else if(!Validate.regNumAndLetter(companyNo)){
             Ewin.alert("公司名格式不合法，请重新输入");
             return
         }
@@ -237,7 +238,7 @@ var CompanyFun = {
         account = allBankAccount.join(",");
         $("#allAccount").val(account);
         $.ajax({
-            url : 'addCom?items= ' + str + "&flag=" + flag + "&comNum=" + comNum,
+            url: 'addCom?items= ' + str + "&flag=" + flag + "&comNum=" + comNum + "&roleid=" + ROLEID ,
             dataType : 'json',
             type : 'post',
             data:  $("#company_form").serialize(),

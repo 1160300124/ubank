@@ -268,7 +268,9 @@ public class Test {
 	@org.junit.Test
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("date","");
+		map.put("date","2017-09-07 15:03:23");
+		map.put("pageNum",1);
+		map.put("pageSize",50);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
 		System.out.print("~~~~~~~~同步数据结果为："+result);
 	}

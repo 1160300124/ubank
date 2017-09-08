@@ -49,4 +49,6 @@ public interface LeaveService {
     int getUserTotalByDate(String date);  //根据日期查询用户
 
     List<User> getUserByDate(String date,int pageNum,int pageSize);  //根据日期分页查询用户
+
+    int updateUser(String userid, String CID); //修改用户个推CID
 }

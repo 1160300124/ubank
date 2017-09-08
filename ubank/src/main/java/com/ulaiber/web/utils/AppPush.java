@@ -4,9 +4,7 @@ import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
 import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.LinkTemplate;
-import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
-import org.junit.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,11 +19,11 @@ public class AppPush {
     private static String appId = "P2zOlClUiqAdQxyAqmp5d8";
     private static String appKey = "U8kOKaQJ6g7a1PbDLs55r";
     private static String masterSecret = "H7mg8I19q58MVUp1EXIeN2";
-    private static String url = "http://sdk.open.api.igexin.com/apiex.htm";
+    private static String host = "http://sdk.open.api.igexin.com/apiex.htm";
 
     public static void main(String[] args) throws IOException {
 
-        IGtPush push = new IGtPush(url, appKey, masterSecret);
+        IGtPush push = new IGtPush(host, appKey, masterSecret);
        // IGtPush push = new IGtPush(appKey, masterSecret, true);
         // 定义"点击链接打开通知模板"，并设置标题、内容、链接
         LinkTemplate template = new LinkTemplate();
@@ -58,7 +56,6 @@ public class AppPush {
         message.setAppIdList(appIds);
         message.setOffline(true);
         message.setOfflineExpireTime(1000 * 600);
-
         IPushResult ret = push.pushMessageToApp(message);
         System.out.println(ret.getResponse().toString());
     }

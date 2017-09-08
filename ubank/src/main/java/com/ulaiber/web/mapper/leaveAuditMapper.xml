@@ -57,4 +57,9 @@
     <update id="confirmAudit" parameterType="Map" >
         UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date},reason = #{reason} where recordNo = #{recordNo} and auditor = #{userId}
     </update>
+
+    <!--查询用户个推CID-->
+    <select id="queryCIDByUserid" parameterType="int" resultType="String">
+        select CID from tbl_users where user_id = #{userid}
+    </select>
 </mapper>

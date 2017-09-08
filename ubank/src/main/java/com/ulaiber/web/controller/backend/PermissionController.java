@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -72,9 +73,10 @@ public class PermissionController extends BaseController {
     public ResultInfo addGroup(Group group ,HttpServletRequest request ){
         String remark = request.getParameter("flag");
         ResultInfo resultInfo = new ResultInfo();
-        //0 新增操作 ；
+        //0 新增操作
         if(remark.equals("0")){
-            Group gro = permissionService.searchGroupByName(group.getName().trim()); //根据集团名称查询是否数据已存在
+            //根据集团名称查询是否数据已存在
+            Group gro = permissionService.searchGroupByName(group.getName().trim());
             if(StringUtil.isEmpty(gro)){
                 int flag = permissionService.addGroup(group);
                 if(flag > 0 ){
@@ -116,7 +118,8 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int pageTotal = permissionService.getTotal(sysflag,groupNumber);  //获取总数
+        //获取总数
+        int pageTotal = permissionService.getTotal(sysflag,groupNumber);
         List<Group> resultGroup = permissionService.groupQuery(search,pageSize,pageNum,sysflag,groupNumber);
         map.put("total",pageTotal);
         map.put("rows",resultGroup);
@@ -134,7 +137,8 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteGroup(@RequestParam String numbers ){
         ResultInfo resultInfo = new ResultInfo();
         String[] numberArr = numbers.split(",");
-        List<Company> comList = permissionService.queryComByGroupid(numberArr); //根据集团编号查询是否存在公司
+        //根据集团编号查询是否存在公司
+        List<Company> comList = permissionService.queryComByGroupid(numberArr);
         if(comList.size() > 0 ){
             resultInfo.setCode(300);
             resultInfo.setMessage("该集团存在公司，请先删除该集团下的公司");
@@ -168,7 +172,8 @@ public class PermissionController extends BaseController {
         }
         Map<String,Object> map = new HashMap<String,Object>();
         String[] comArr = companyNumber.split(",");
-        int deptTotal = permissionService.getDeptTotal(sysflag,comArr);   //获取部门总数
+        //获取部门总数
+        int deptTotal = permissionService.getDeptTotal(sysflag,comArr);
         List<Departments> list = permissionService.departmentQuery(search,pageSize,pageNum,sysflag,comArr);
         map.put("total",deptTotal);
         map.put("rows",list);
@@ -185,10 +190,12 @@ public class PermissionController extends BaseController {
     public ResultInfo addDept(@Param("flag") String flag, Departments dept,HttpServletRequest request){
         String deptNum = dept.getName().trim();
         ResultInfo resultInfo = new ResultInfo();
-        if(flag.equals("0")){ //新增部门
-            Departments departments = permissionService.getDeptByNum(deptNum); //根据部门名称获取对应部门
+        if(flag.equals("0")){
+            //根据部门名称获取对应部门
+            Departments departments = permissionService.getDeptByNum(deptNum);
             if(StringUtil.isEmpty(departments)){
-                int result = permissionService.addDept(dept); //新增
+                //新增
+                int result = permissionService.addDept(dept);
                 if(result > 0 ){
                     resultInfo.setMessage("新增成功");
                     resultInfo.setCode(200);
@@ -197,7 +204,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(300);
                 resultInfo.setMessage("部门已存在，请重新填写！");
             }
-        }else{ //修改部门
+        }else{
+            //修改部门
             int edit = permissionService.editDept(dept);
             if(edit > 0 ){
                 resultInfo.setMessage("修改成功");
@@ -220,7 +228,8 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteDept(@Param("numbers") String numbers){
         ResultInfo resultInfo = new ResultInfo();
         String[] number = numbers.split(",");
-        List<User> deptList = permissionService.queryUserByDeptid(number); //根据部门id查询该部门是否存在用户
+        //根据部门id查询该部门是否存在用户
+        List<User> deptList = permissionService.queryUserByDeptid(number);
         if(deptList.size() > 0){
             resultInfo.setCode(300);
             resultInfo.setMessage("该部门下存在员工，请先删除该部门下的员工");
@@ -260,12 +269,20 @@ public class PermissionController extends BaseController {
 
     /**
      * 新增公司信息
-     * @param company
+     * @param company 公司对象
+     * @param items
+     * @param roleid 角色ID
+     * @param flag 修改/新增标识
+     * @param comNum 公司编号
+     * @param request
+     * @param response
+     * @return
      */
     @RequestMapping(value = "addCom", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo addCom(Company company,@Param("items") String items,
-                             @Param("flag") String flag,@Param("comNum") String comNum){
+    public ResultInfo addCom(Company company, @Param("items") String items, @Param("roleid") String roleid,
+                             @Param("flag") String flag, @Param("comNum") String comNum,
+                             HttpServletRequest request, HttpServletResponse response){
         ResultInfo resultInfo = new ResultInfo();
         String[] rows = items.split(",");
         List<Map<String,Object>> list = new ArrayList<>();
@@ -285,15 +302,30 @@ public class PermissionController extends BaseController {
         }
         if(flag.equals("0")){ //新增
             String comName = company.getName();
-            Company co = permissionService.getComByName(comName); //根据公司名称获取公司信息
+            //根据公司名称获取公司信息
+            Company co = permissionService.getComByName(comName);
             if(StringUtil.isEmpty(co)){
-                int com = permissionService.addCom(company);  // 插入公司基本信息
+                // 插入公司基本信息
+                int com = permissionService.addCom(company);
                 String com_num = String.valueOf(company.getCompanyNumber());
                 for (int i = 0;i <list.size();i++){
                     list.get(i).put("companyNumber",com_num);
                 }
-                int acc = permissionService.addBankAccount(list); //插入银行账户信息
+                //插入银行账户信息
+                int acc = permissionService.addBankAccount(list);
                 if(acc > 0 && com > 0 ){
+                    //根据角色ID获取角色信息
+                    Map<String,Object> roleMap = permissionService.queryRoleById(roleid);
+                    String comNo = (String) roleMap.get("companyNumber");
+                    String name = (String) roleMap.get("companyName");
+                    //拼接公司编号和名称
+                    comNo = comNo + "," + com_num;
+                    name = name + "," + comName;
+                    //更新角色所属公司
+                    int ro = permissionService.updateRole(roleid,comNo,name);
+                    //获取当前session对象并更新
+                    User user = (User) request.getSession().getAttribute("BACKENDUSER");
+                    user.setCompanyNumber(comNo);
                     resultInfo.setMessage("新增成功");
                     resultInfo.setCode(200);
                 }else{
@@ -332,7 +364,11 @@ public class PermissionController extends BaseController {
 
     /**
      * 分页查询公司信息
-     * @param
+     * @param search
+     * @param pageSize
+     * @param pageNum
+     * @param groupNumber
+     * @param sysflag
      * @return
      */
     @RequestMapping(value = "comQuery", method = RequestMethod.POST)
@@ -346,7 +382,8 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int deptTotal = permissionService.getCompanyTotal(sysflag,groupNumber);   //获取公司总数
+        //获取公司总数
+        int deptTotal = permissionService.getCompanyTotal(sysflag,groupNumber);
         List<Company> list = permissionService.companyQuery(search,pageSize,pageNum,sysflag,groupNumber);
         map.put("total",deptTotal);
         map.put("rows",list);
@@ -401,7 +438,8 @@ public class PermissionController extends BaseController {
         if(flag.equals("0")){  //新增
             String userName = user.getUserName();
             String mobile = user.getMobile();
-            User emp = permissionService.getEmpByName(userName,mobile);  //根据员工姓名查询对应的信息
+            //根据员工姓名查询对应的信息
+            User emp = permissionService.getEmpByName(userName,mobile);
             if(!StringUtil.isEmpty(emp)){
                 resultInfo.setMessage("员工已存在，请重新添加");
                 resultInfo.setCode(300);
@@ -413,8 +451,10 @@ public class PermissionController extends BaseController {
             user.setCreateTime(date);
             int result = permissionService.addEmployee(user);
             if(result > 0){
-                user.setId(user.getId()); //设置用户ID
-                int result2 = permissionService.addPermission(user);  //新增用户权限层级信息
+                //设置用户ID
+                user.setId(user.getId());
+                //新增用户权限层级信息
+                int result2 = permissionService.addPermission(user);
                 if(result2 <= 0){
                     resultInfo.setMessage("新增失败");
                     resultInfo.setCode(500);
@@ -427,13 +467,15 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(500);
             }
         }else{
-            int emp = permissionService.editEmp(user); //修改员工信息
+            //修改员工信息
+            int emp = permissionService.editEmp(user);
             if(emp <= 0){
                 resultInfo.setCode(500);
                 resultInfo.setMessage("修改员工失败");
                 return resultInfo;
             }
-            int roots =  permissionService.editRoots(user); //修改权限对应关系表
+            //修改权限对应关系表
+            int roots =  permissionService.editRoots(user);
             if(roots > 0 ){
                 resultInfo.setCode(200);
                 resultInfo.setMessage("修改员工成功");
@@ -466,8 +508,10 @@ public class PermissionController extends BaseController {
         }
         Map<String,Object> map = new HashMap<String,Object>();
         String[] comArr = companyNumber.split(",");
-        int empTotal = permissionService.getEmpTotal(sysflag,comArr);   //获取部门总数
-        List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,comArr); //分页查询
+        //获取部门总数
+        int empTotal = permissionService.getEmpTotal(sysflag,comArr);
+        //分页查询
+        List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,comArr);
         map.put("total",empTotal);
         map.put("rows",list);
         return map;
@@ -486,7 +530,8 @@ public class PermissionController extends BaseController {
         String[] number = numbers.split(",");
         int result = permissionService.empDelete(number);
         if(result > 0){
-            int result2 = permissionService.deleteRoots(number); //删除权限层级表中的记录
+            //删除权限层级表中的记录
+            int result2 = permissionService.deleteRoots(number);
             resultInfo.setMessage("删除成功");
             resultInfo.setCode(200);
         } else {
@@ -618,13 +663,15 @@ public class PermissionController extends BaseController {
                         ,@Param("names") String names,@Param("flag") String flag,@Param("roleId") String roleId){
         ResultInfo resultInfo = new ResultInfo();
         if(flag.equals("0")){  //新增
-            List<Roles> list = permissionService.getRoleByName(roleName); //根据角色名，获取角色信息
+            //根据角色名，获取角色信息
+            List<Roles> list = permissionService.getRoleByName(roleName);
             if(list.size() >0){
                 resultInfo.setMessage("该角色已存在，请重新选择");
                 resultInfo.setCode(300);
                 return resultInfo;
             }
-            int role = permissionService.addRole(com_numbers,roleName,names); //新增角色信息
+            //新增角色信息
+            int role = permissionService.addRole(com_numbers,roleName,names);
             if(role > 0){
                 resultInfo.setCode(200);
                 resultInfo.setMessage("新增成功");
@@ -675,7 +722,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("新增角色权限失败");
             }
         }else{ //修改
-            int in = permissionService.deleteRoleMenuByRoleId(roleId); // 根据角色id，删除对应的菜单
+            // 根据角色id，删除对应的菜单
+            int in = permissionService.deleteRoleMenuByRoleId(roleId);
             int result2 = permissionService.settingRoleMenu(roleId,menuId);
             if(result2 > 0 ){
                 resultInfo.setCode(200);
@@ -720,9 +768,11 @@ public class PermissionController extends BaseController {
             pageNum = 0;
         }
         Map<String,Object> map = new HashMap<String,Object>();
-        int empTotal = permissionService.getRoleTotal(sysflag,companyNumber);   //获取角色总数
+        //获取角色总数
+        int empTotal = permissionService.getRoleTotal(sysflag,companyNumber);
         String[] comArr = companyNumber.split(",");
-        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum,sysflag,comArr); //分页查询
+        //分页查询
+        List<Roles> list = permissionService.roleQuery(search,pageSize,pageNum,sysflag,comArr);
         map.put("total",empTotal);
         map.put("rows",list);
         return map;
@@ -738,19 +788,22 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteRoles(@Param("ids") String ids){
         ResultInfo resultInfo = new ResultInfo();
         String[] idsArr = ids.split(",");
-        List<User> userList = permissionService.queryUserByRoleid(idsArr); //根据角色id，判断当前角色下是否有用户存在
+        //根据角色id，判断当前角色下是否有用户存在
+        List<User> userList = permissionService.queryUserByRoleid(idsArr);
         if (userList.size() > 0){
             resultInfo.setCode(300);
             resultInfo.setMessage("该角色存在用户，请先删除对应的用户");
             return resultInfo;
         }
-        int result = permissionService.deleteRoles(idsArr); //删除角色信息
+        //删除角色信息
+        int result = permissionService.deleteRoles(idsArr);
         if(result <= 0){
             resultInfo.setCode(500);
             resultInfo.setMessage("删除角色失败");
             return  resultInfo;
         }
-        int result2 = permissionService.deleteRolesMenu(idsArr);  //删除角色对应的权限菜单
+        //删除角色对应的权限菜单
+        int result2 = permissionService.deleteRolesMenu(idsArr);
         if(result2 > 0){
             resultInfo.setMessage("删除成功");
             resultInfo.setCode(200);
@@ -771,19 +824,22 @@ public class PermissionController extends BaseController {
     public ResultInfo deleteCompanys(@Param("ids") String ids){
         ResultInfo resultInfo = new ResultInfo();
         String[] idsArr = ids.split(",");
-        List<Departments> deptList = permissionService.queryDeptByCompanyNum(idsArr); //根据公司编号查询该公司是否存在部门
+        //根据公司编号查询该公司是否存在部门
+        List<Departments> deptList = permissionService.queryDeptByCompanyNum(idsArr);
         if(deptList.size() > 0){
             resultInfo.setCode(300);
             resultInfo.setMessage("该公司存在部门，请先删除该公司下的部门");
             return resultInfo;
         }
-        int result = permissionService.deleteCompanys(idsArr);  //删除公司信息
+        //删除公司信息
+        int result = permissionService.deleteCompanys(idsArr);
         if ( result <= 0 ){
             resultInfo.setCode(500);
             resultInfo.setMessage("删除公司失败");
             return resultInfo;
         }
-        int msg = permissionService.deleteCompanyByNum(idsArr); //根据公司编号删除对应的银行账户
+        //根据公司编号删除对应的银行账户
+        int msg = permissionService.deleteCompanyByNum(idsArr);
         if( msg > 0 ){
             resultInfo.setCode(200);
             resultInfo.setMessage("删除成功");

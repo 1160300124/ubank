@@ -21,7 +21,7 @@ public interface EmployeeDao {
 
     int editEmp(User User); //修改员工信息
 
-    int empDelete(String[] number);  //根据员工编号删除对应的员工
+    int empDelete(Map<String,Object> map);  //根据员工编号删除对应的员工
 
     int editRoots(User user);  //修改权限对应关系表
 
