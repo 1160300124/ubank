@@ -46,8 +46,8 @@
 	</div>
 	
 	<!-- 模态框（Modal） -->
-	<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog" style="width:60%">
+	<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y:auto;">
+		<div class="modal-dialog" style="width:60%;min-width:760px;">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -74,7 +74,7 @@
 	                     
 	                     <div class="form-group">
                         	<label class="col-sm-3 control-label" style=" color: gray;">工作时段</label>
-                           	<div class="col-sm-2" >
+                           	<div class="col-sm-3" >
 				            	<div class="input-group date time-picker" id="datetimepicker_start">
 					                <input class="form-control" id="start_time" type="text" placeholder="请选择工作开始时间" style="width:160px;"/>
 					            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -101,7 +101,7 @@
 	                    
 	                    <div class="form-group">
                         	<label class="col-sm-3 control-label" ></label>
-                           	<div class="col-sm-2" >
+                           	<div class="col-sm-3" >
 				            	<div class="input-group date time-picker" id="datetimepicker_start">
 					                <input class="form-control" id="rest_start_time" type="text" placeholder="请选择休息开始时间" style="width:160px;"/>
 					            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -169,7 +169,7 @@
 	                        </div>
 	                     </div>
 	                     
-	                     <div class="form-group">
+	                     <div class="form-group" style="margin-bottom: 0px;">
 	                        <label class="col-sm-2 control-label" for="ds_host"></label>
 	                        <div class="col-sm-8">
 		                        <div class="attendance-location">
