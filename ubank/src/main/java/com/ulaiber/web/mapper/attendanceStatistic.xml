@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.AttendanceStatisticDao">
+    <resultMap id="AttendanceStatisticMap" type="AttendanceStatistic" >
+    	<id column="sid" property="sid" jdbcType="BIGINT" />
+    	<result column="user_id" property="userId" jdbcType="BIGINT" />
+    	<result column="user_name" property="userName" jdbcType="VARCHAR" />
+    	<result column="workdays_count" property="workdaysCount" jdbcType="INTEGER" />
+    	<result column="normal_clock_on_count" property="normalClockOnCount" jdbcType="INTEGER" />
+    	<result column="later_count" property="laterCount" jdbcType="INTEGER" />
+    	<result column="no_clock_on_count" property="noClockOnCount" jdbcType="INTEGER" />
+    	<result column="normal_clock_off_count" property="normalClockOffCount" jdbcType="INTEGER" />
+    	<result column="leave_early_count" property="leaveEarlyCount" jdbcType="INTEGER" />
+    	<result column="no_clock_off_count" property="noClockOffCount" jdbcType="INTEGER" />
+    	<association column="dept_num" property="dept" javaType="com.ulaiber.web.model.Departments" resultMap="DepartmentMap"/>
+    	<association column="company_num" property="company" javaType="com.ulaiber.web.model.Company" resultMap="CompanyMap"/>
+   </resultMap>
+   
+     <resultMap id="DepartmentMap" type="com.ulaiber.web.model.Departments" >
+    	<id column="dept_number" property="dept_number" jdbcType="INTEGER" />
+    	<result column="deptName" property="deptName" jdbcType="VARCHAR" />
+    	<result column="count" property="count" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+    	<result column="company_num" property="company_num" />
+   </resultMap>
+   
+   <resultMap id="CompanyMap" type="com.ulaiber.web.model.Company" >
+    	<id column="companyNumber" property="companyNumber" jdbcType="INTEGER" />
+    	<result column="name" property="name" jdbcType="VARCHAR" />
+    	<result column="account" property="account" jdbcType="VARCHAR" />
+    	<result column="legalPerson" property="legalPerson" jdbcType="VARCHAR" />
+    	<result column="details" property="details" jdbcType="VARCHAR" />
+    	<result column="group_num" property="group_num" />
+    </resultMap>
+  
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<insert id="save" parameterType="AttendanceStatistic" useGeneratedKeys="true" keyProperty="rid">
+		insert into tbl_attendance_statistics(user_id, user_name, dept_num, company_num, workdays_count, normal_clock_on_count, later_count, no_clock_on_count,
+		normal_clock_off_count, leave_early_count, no_clock_off_count) values(#{userId}, #{userName}, #{dept.dept_number}, #{company.companyNumber},
+		#{workdaysCount}, #{normalClockOnCount}, #{laterCount}, #{noClockOnCount}, #{normalClockOffCount}, #{leaveEarlyCount}, #{noClockOffCount}) 
+	</insert>
+	
+	<update id="update" parameterType="AttendanceStatistic">
+		update tbl_attendance_statistics set workdays_count=#{workdaysCount}, normal_clock_on_count=#{normalClockOnCount}, later_count=#{laterCount},
+		no_clock_on_count=#{noClockOnCount}, normal_clock_off_count=#{normalClockOffCount}, leave_early_count=#{leaveEarlyCount},no_clock_off_count=#{noClockOffCount}
+		where sid=#{sid}
+	</update>
+	
+	<sql id="byCond">
+		where r.company_num = #{company_num} and r.clock_date &gt;= #{start_date} and r.clock_date &lt;= #{end_date}
+		<if test="dept_num != null and dept_num != 0">
+			and r.dept_num = #{dept_num}
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and r.user_name like concat('%',#{user_name},'%')
+		</if>
+	</sql>
+	
+	<select id="getStatisticsByCond" parameterType="Map" resultMap="AttendanceStatisticMap">
+		select s.*,d.dept_number,d.name deptName,c.companyNumber,c.name from tbl_attendance_statistics s left join tbl_departments d on r.dept_num=d.dept_number 
+			left join tbl_company c on d.company_num=c.companyNumber
+			<include refid="byCond" />
+		order by rid limit #{offset},#{limit}
+	</select>
+	
+	<select id="getCountBycond" parameterType="Map" resultType="Integer">
+		select count(1) from tbl_attendance_statistics r left join tbl_departments d on r.dept_num=d.dept_number left join tbl_company c on d.company_num=c.companyNumber
+		<include refid="byCond" />
+	</select>
+	
+	<select id="getStatistic">
+		select  from tbl_attendance_records where userId=#{userId} and clock_type=0 and clock_status=0;
+	</select>
+	
+</mapper>

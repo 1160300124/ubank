@@ -3,13 +3,12 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.ResultInfo;
 
 /** 
- * 考勤记业务逻辑接口
+ * 考勤记录业务逻辑接口
  *
  * @author  huangguoqing
  * @date 创建时间：2017年8月11日 上午11:07:03
@@ -23,7 +22,7 @@ public interface AttendanceService {
 	 * @param attend
 	 * @return
 	 */
-	ResultInfo save(Attendance attend);
+	ResultInfo save(Attendance attend, AttendanceRule rule);
 	
 	/**
 	 * 根据条件查询记录
@@ -36,7 +35,7 @@ public interface AttendanceService {
 	 * 刷新地理位置坐标
 	 * @return
 	 */
-	ResultInfo refreshLocation(String mobile, String longitude, String latitude, HttpServletRequest request);
+	ResultInfo refreshLocation(String mobile, String longitude, String latitude, AttendanceRule rule);
 	
 	/**
 	 * 根据条件获取记录数
@@ -57,7 +56,7 @@ public interface AttendanceService {
 	 * @param params
 	 * @return
 	 */
-	List<Attendance> getRecordsByDateAndMobile(String today, String yesterday, String clockOnStartTime,  String clockOffEndTime, String mobile);
+	List<Attendance> getRecordsByDateAndMobile(String dateBegin, String dateEnd, String mobile, AttendanceRule rule);
 	
 	/**
 	 * 根据userId获取用户的最近一次打卡记录
@@ -84,5 +83,5 @@ public interface AttendanceService {
 	 * 根据月份查询考勤记录
 	 * @param month
 	 */
-	List<Attendance> getRecordsByMonthAndMobile(String month, String mobile);
+	Map<String, Object> getRecordsByMonthAndMobile(String month, String mobile, AttendanceRule rule);
 }

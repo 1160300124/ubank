@@ -169,7 +169,7 @@ input[type='checkbox']{
 }
 .attendance-location{
     background-color: #f7f9fd;
-    padding:20px;
+    padding:5px 20px 5px 20px;
 }
 .table-location{
     width:100%;

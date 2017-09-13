@@ -13,7 +13,6 @@
 	<script src="http://webapi.amap.com/maps?v=1.3&key=3b5fffa91c70b0e9b8118efcdc02ad4c"></script>
 	<script src="http://webapi.amap.com/ui/1.0/main.js" type="text/javascript"></script>  
 	<script type="text/javascript" src="http://webapi.amap.com/demos/js/liteToolbar.js"></script>  
-	<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
 
 </head>
 <body>
@@ -31,6 +30,7 @@
      </form>
 </body>
 <script type="text/javascript">
+
 //加入高的地图  
 var map = new AMap.Map('container', {  
 	resizeEnable: true,  
@@ -87,6 +87,7 @@ AMap.plugin(["AMap.Autocomplete","AMap.PlaceSearch","AMap.Geolocation"], functio
 	     
 	     var marker = new AMap.Marker(markerOption);
          marker.setPosition(e.poi.location);
+         map.panTo(e.poi.location); 
          $("#hidden_addr").val(e.poi.location);
 	});
 	

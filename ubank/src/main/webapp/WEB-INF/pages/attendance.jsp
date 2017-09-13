@@ -29,7 +29,7 @@
 	           <label class="col-sm-1 control-label" for="type">打卡类型</label>
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="type">
-                   	  	 <option value="">请选择打卡类型</option>
+                   	  	 <option value="">全部</option>
                    	  	 <option value="0">签到</option>
                    	  	 <option value="1">签退</option>
                    	  </select>
@@ -39,7 +39,7 @@
 	            <label class="col-sm-1 control-label" for="status">状态</label>
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="status">
-                   	  	 <option value="">请选择状态</option>
+                   	  	 <option value="">全部</option>
                    	  	 <option value="0">正常</option>
                    	  	 <option value="1">迟到</option>
                    	  	 <option value="2">早退</option>

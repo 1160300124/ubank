@@ -2,9 +2,13 @@ package com.ulaiber.web.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 一组关于时间工具方法集合
@@ -202,12 +206,12 @@ public class DateTimeUtil {
 	 * @return String 日期字符串 yyyy-MM-dd格式
 	 */
 	public static String getMonthEnd(String strdate) {
-		Date date = str2Date(getMonthBegin(strdate));
+		Date date = str2Date(getMonthBegin(strdate), DATE_FORMAT_DAYTIME);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.MONTH, 1);
 		calendar.add(Calendar.DAY_OF_YEAR, -1);
-		return date2Str(calendar.getTime());
+		return date2Str(calendar.getTime(), DATE_FORMAT_DAYTIME);
 	}
 	/**
 	 * 功能描述：取得指定日期的第一秒时间
@@ -246,8 +250,8 @@ public class DateTimeUtil {
 	}
 	
 	/**
-	 * 查看指定日期是星期几 yyyy-MM-dd
-	 * @param strdate
+	 * 查看指定日期是星期几
+	 * @param strdate  yyyy-MM-dd
 	 * @return
 	 */
 	public static int getWeekday(String strdate){
@@ -257,4 +261,46 @@ public class DateTimeUtil {
         calendar.add(Calendar.DAY_OF_WEEK, -1);
         return calendar.get(Calendar.DAY_OF_WEEK);
 	}
+	
+	/**
+	 * 获取指定月份的天数
+	 * @param month
+	 * @return
+	 */
+	public static int getNumFromMonth(String month){
+		Date date = str2Date(month, DATE_FORMAT_MONTHTIME);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+	}
+	
+	/**
+	 * 获取指定月份的所有天数集合
+	 * @param month yyyy-MM
+	 * @return
+	 */
+	public static List<String> getDaysFromMonth(String month){
+		String currentMonth = date2Str(new Date(), DATE_FORMAT_MONTHTIME);
+		String currentDay = "";
+		if (StringUtils.equals(currentMonth, month)){
+			currentDay = date2Str(new Date(), DATE_FORMAT_DAYTIME);
+		}
+		List<String> days = new ArrayList<String>();
+		int num = getNumFromMonth(month);
+		for (int i = 0; i < num; i++){
+			String day = "";
+			if (i < 9){
+				day = month + "-0" + (i + 1);
+			} else {
+				day = month + "-" + (i + 1);
+			}
+			
+			if (StringUtils.equals(currentDay, day)){
+				break;
+			}
+			days.add(day);
+		}
+		return days;
+	}
+	
 }

@@ -415,7 +415,7 @@ public class SPDBUtil {
 			if (StringUtils.equals(returnCode, "AAAAAAA")){
 				String returnsign = root.element("body").elementTextTrim("signature");
 				String res2 = getSign(returnsign, false);
-				logger.debug("[getPayResult] response body: " + res2);
+				logger.info("[getPayResult] response body: " + res2);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
 					logger.error("[getPayResult] response body sign failed, result code: " + doc1.getElementsByTag("result").get(0).text());
@@ -508,7 +508,7 @@ public class SPDBUtil {
 				String returnsign = root.element("body").elementTextTrim("signature");
 				//解签
 				String res2 = getSign(returnsign, false);
-				logger.debug("[paySalaries] response body: " + res2);
+				logger.info("[paySalaries] response body: " + res2);
 				Document doc1 = Jsoup.parse(res2);
 				if (!StringUtils.equals("0", doc1.getElementsByTag("result").get(0).text())){
 					logger.error("[paySalaries] response body sign failed, result code: " + doc1.getElementsByTag("result").get(0).text());

@@ -28,11 +28,11 @@ public class MapTest {
 
         String startLonLat = getLonLat(start);
         String endLonLat = getLonLat(end);
-        endLonLat +=  "|" + getLonLat("海王银河科技大厦");
-        System.out.println(startLonLat);
-        System.out.println(endLonLat);
-        Long dis = getDistance(startLonLat,endLonLat);
-        System.out.println(dis);
+//        endLonLat +=  "|" + getLonLat("海王银河科技大厦");
+//        System.out.println(startLonLat);
+//        System.out.println(endLonLat);
+//        Long dis = getDistance(startLonLat,endLonLat);
+//        System.out.println(dis);
         
 //        Distribution startdis = new Distribution();
 //        startdis.setLongitude(Double.parseDouble(startLonLat.split(",")[0]));
@@ -45,23 +45,23 @@ public class MapTest {
 //        System.out.println(distance);
         
         
-        String apiUrl1 = "http://localhost:8080/ubank/api/v1/refreshLocation";
-        Map<String, Object> params1 = new HashMap<String, Object>();//请求参数集合
-        params1.put("mobile", "15919477086");
-        params1.put("longitude", "113.944173");
-        params1.put("latitude", "22.538667");
-        String response1 = HttpsUtil.doPost1(apiUrl1, params1);
-        System.out.println(response1);
+//        String apiUrl1 = "http://localhost:8080/ubank/api/v1/refreshLocation";
+//        Map<String, Object> params1 = new HashMap<String, Object>();//请求参数集合
+//        params1.put("mobile", "15919477086");
+//        params1.put("longitude", "113.944173");
+//        params1.put("latitude", "22.538667");
+//        String response1 = HttpsUtil.doPost1(apiUrl1, params1);
+//        System.out.println(response1);
         
-//        String apiUrl = "http://10.17.1.136:8080/ubank/api/v1/clock";
-//        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//        params.put("mobile", "15919477086");
-//        params.put("longitude", "113.944173");
-//        params.put("latitude", "22.538667");
-//        params.put("location", "深圳市优融网络科技有限公司M-10");
-//        params.put("device", "android-8.0土豪金版");
-//        String response = HttpsUtil.doPost1(apiUrl, params);
-//        System.out.println(response);
+        String apiUrl = "http://localhost:8080/ubank/api/v1/clock";
+        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+        params.put("mobile", "15919477086");
+        params.put("longitude", "113.944173");
+        params.put("latitude", "22.538667");
+        params.put("location", "深圳市优融网络科技有限公司M-10");
+        params.put("device", "android-8.0土豪金版");
+        String response = HttpsUtil.doPost1(apiUrl, params);
+        System.out.println(response);
 //        
 //        String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
 //        Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
@@ -76,6 +76,47 @@ public class MapTest {
 //        params3.put("month", "2017-08");
 //        String response3 = HttpsUtil.doGet(apiUrl3, params3);
 //        System.out.println(response3);
+        
+//		for (int i = 1; i<= 31; i++){
+//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device) values(336,'黄国清',40025,20047,'2017-08-";
+//			String sql1 = sql;
+//			String sql2 = sql;
+//			if (i < 10){
+//				sql1 += "0" + i + " 09:10','2017-08-" + "0" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql2 += "0" + i + " 20:00','2017-08-" + "0" + i + "','20:00',1,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//			} else if (i > 10 && i < 13){
+//				sql1 += i + " 10:20','2017-08-" + i + "','10:20',0,1,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql2 += i + " 20:00','2017-08-" + i + "','20:00',1,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//			} else if (i > 13 && i < 16){
+//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql2 += i + " 17:20','2017-08-" + i + "','17:20',1,2,'广东省深圳市南山区海王大厦','安卓10.0');";
+//			} else {
+//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql2 += i + " 20:00','2017-08-" + i + "','20:00',1,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//			}
+//			System.out.println(sql1);
+//			System.out.println(sql2);
+//		}
+//		for (int i = 1; i<= 31; i++){
+//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device) values(359,'焦敏',40025,20047,'2017-08-";
+//			String sql1 = sql;
+//			String sql2 = sql;
+//			if (i < 10){
+//				sql1 += "0" + i + " 09:10','2017-08-" + "0" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//				sql2 += "0" + i + " 20:10','2017-08-" + "0" + i + "','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//			} else if (i > 10 && i < 12){
+//				sql1 += i + " 10:10','2017-08-" + i + "','10:10',0,1,'广东省深圳市南山区海王大厦','iphone100000');";
+//				sql2 += i + " 20:10','2017-08-" + i + "','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//			} else if (i > 13 && i < 15){
+//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//				sql2 += i + " 17:10','2017-08-" + i + "','17:10',1,2,'广东省深圳市南山区海王大厦','iphone100000');";
+//			} else {
+//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//				sql2 += i + " 20:10','2017-08-" + i + "','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//			}
+//			System.out.println(sql1);
+//			System.out.println(sql2);
+//		}
     }
 
     private static String getLonLat(String address){

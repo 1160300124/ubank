@@ -220,17 +220,34 @@ $(function(){
 	    var result = "";
 	    $(selectedPeoples).each(function(index,item){
 	        if (item.isParent) {
-	        	var childrenNodes = item.children;
-	        	var nodes = "";
-	        	if (childrenNodes) {
-	                for (var i = 0; i < childrenNodes.length; i++) {
-	                	if (childrenNodes[i].checked){
-	                		nodes += childrenNodes[i].id + ",";
+	        	var deptChildrenNodes = item.children;
+	        	var deptNodes = "";
+	        	if (deptChildrenNodes) {
+	                for (var i = 0; i < deptChildrenNodes.length; i++) {
+	                	var nodes = "";
+	                	if (deptChildrenNodes[i].isParent){
+	                		var childrenNodes = deptChildrenNodes[i].children;
+	                		for (var j = 0; j < childrenNodes.length; j++){
+	                			if (childrenNodes[j].checked){
+	                				nodes += childrenNodes[j].id + ",";
+	                			}
+	                		}
+	                		if (nodes == "" || nodes == null){
+	                			continue;
+	                		}
+	                		deptNodes += deptChildrenNodes[i].id + "_" + nodes.substring(0, nodes.length - 1) + "-";
+	                		
 	                	}
+	                	
 	                }
 	            }
-        	result += item.id + "=" + nodes.substring(0, nodes.length - 1) + "-";
-            return;
+	        	
+	        	if (deptNodes == "" || deptNodes == null){
+	        		return;
+	        	}
+	        	
+		    	result += item.id + "=" + deptNodes.substring(0, deptNodes.length - 1) + "|";
+		        return;
 	        }
 	        count = count + 1;
 	    });

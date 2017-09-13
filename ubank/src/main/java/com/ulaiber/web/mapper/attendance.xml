@@ -13,6 +13,7 @@
     	<id column="rid" property="rid" jdbcType="BIGINT" />
     	<result column="user_id" property="userId" jdbcType="BIGINT" />
     	<result column="user_name" property="userName" jdbcType="VARCHAR" />
+    	<result column="clock_datetime" property="clockDateTime" jdbcType="VARCHAR" />
     	<result column="clock_date" property="clockDate" jdbcType="VARCHAR" />
     	<result column="clock_time" property="clockTime" jdbcType="VARCHAR" />
     	<result column="clock_type" property="clockType" jdbcType="VARCHAR" />
@@ -42,8 +43,8 @@
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="Attendance" >
-		insert into tbl_attendance_records(user_id, user_name, dept_num, company_num, clock_date, clock_time, clock_type, clock_status, clock_location, clock_device)
-		    values(#{userId}, #{userName}, #{dept.dept_number}, #{company.companyNumber}, #{clockDate}, #{clockTime}, #{clockType}, #{clockStatus}, #{clockLocation}, #{clockDevice}) 
+		insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device)
+		    values(#{userId},#{userName},#{dept.dept_number},#{company.companyNumber},#{clockDateTime},#{clockDate},#{clockTime},#{clockType},#{clockStatus},#{clockLocation},#{clockDevice}) 
 	</insert>
 	
 	<sql id="byCond">
@@ -75,32 +76,16 @@
 	</select>
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
-		select * from tbl_attendance_records where clock_date=#{clockDate} and user_id=#{userId}
+		select * from tbl_attendance_records where user_id=#{userId} and clock_datetime &gt;= #{dateBegin} and clock_datetime &lt;=#{dateEnd}
 		<if test="clockType != null and clockType != ''">
 			and r.clock_type = #{clockType}
 		</if>
-		<choose>
-			<when test="yesterday != null and yesterday != ''">
-				and clock_time &lt;= #{clockOffEndTime} or clock_date = #{yesterday} and clock_time &gt;= #{clockOnStartTime} and user_id=#{userId}
-			</when>
-			<otherwise>
-				and clock_time &gt;= #{clockOnStartTime}
-			</otherwise>
-		</choose>
 		order by rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
-		select r.* from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where r.clock_date=#{clockDate} and u.mobile=#{mobile}
-		<choose>
-			<when test="yesterday != null and yesterday != ''">
-				and r.clock_time &lt;= #{clockOffEndTime} or r.clock_date = #{yesterday} and r.clock_time &gt;= #{clockOnStartTime} and u.mobile=#{mobile}
-			</when>
-			<otherwise>
-				and r.clock_time &gt;= #{clockOnStartTime}
-			</otherwise>
-		</choose>
-		order by r.rid
+		select r.rid,r.user_id,r.user_name,r.clock_datetime,r.clock_date,r.clock_time,r.clock_type,r.clock_status,r.clock_location,r.clock_device from tbl_attendance_records r 
+		left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile} and r.clock_datetime &gt;= #{dateBegin} and r.clock_datetime &lt;=#{dateEnd} order by r.rid
 	</select>
 	
 	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
@@ -108,7 +93,7 @@
 	</select>
 	
 	<update id="updateClockOffInfo" parameterType="Attendance">
-		update tbl_attendance_records set clock_time=#{clockTime},clock_status = #{clockStatus},clock_location=#{clockLocation},clock_device=#{clockDevice}
+		update tbl_attendance_records set clock_datetime=#{clockDateTime},clock_time=#{clockTime},clock_status = #{clockStatus},clock_location=#{clockLocation},clock_device=#{clockDevice}
 		<if test="yesterday != null and yesterday != ''">
 			,clock_date = #{clockDate}
 		</if>
@@ -130,9 +115,4 @@
 	    </foreach>  
 	</delete>
 	
-	<select id="getRecordsByMonthAndMobile" parameterType="Map" resultMap="AttendanceMap">
-		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_time,r.clock_type,r.clock_status,r.clock_location,r.clock_device from tbl_attendance_records r 
-			left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile} and r.clock_date like concat('%',#{month},'%') 
-	</select>
-
 </mapper>
