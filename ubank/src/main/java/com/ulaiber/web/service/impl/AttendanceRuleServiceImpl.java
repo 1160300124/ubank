@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,27 +35,31 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean save(AttendanceRule rule, String data, String companyId) {
+	public boolean save(AttendanceRule rule, String data) {
 		boolean flag = false;
 		if (dao.save(rule) > 0){
-			String[] deptId_userIds = data.split("-");
-			for (String deptId_userId : deptId_userIds) {
-				String deptId = deptId_userId.split("=")[0];
-				String[] userIds = deptId_userId.split("=")[1].split(",");
-				List<String> idList = Arrays.asList(userIds);
-				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-				for (String id : idList){
-					Map<String ,Object> map = new HashMap<String, Object>();
-					map.put("userId", id);
-					map.put("rid", rule.getRid());
-					map.put("deptId", deptId);
-					map.put("companyId", Integer.parseInt(companyId));
-					list.add(map);
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			String[] companyId_deptId_userIds = data.split("\\|");
+			for (String companyId_deptId_userId : companyId_deptId_userIds) {
+				String companyId = companyId_deptId_userId.split("=")[0];
+				String[] deptId_userIds = companyId_deptId_userId.split("=")[1].split("-");
+				for (String deptId_userId : deptId_userIds){
+					String deptId = deptId_userId.split("_")[0];
+					String[] userIds = deptId_userId.split("_")[1].split(",");
+					List<String> idList = Arrays.asList(userIds);
+					for (String id : idList){
+						Map<String ,Object> map = new HashMap<String, Object>();
+						map.put("userId", id);
+						map.put("rid", rule.getRid());
+						map.put("deptId", deptId);
+						map.put("companyId", companyId);
+						list.add(map);
+					}
 				}
-				if (dao.batchInsertUserOfRule(list) > 0){
-					flag = true;
-				}
+
 			}
+			
+			flag = dao.batchInsertUserOfRule(list) > 0;
 		}
 
 		return flag;
@@ -65,6 +68,7 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(AttendanceRule rule, String data) {
+		boolean flag = false;
 		if (dao.update(rule)){
 			List<Long> rids = new ArrayList<Long>();
 			rids.add(rule.getRid());
@@ -92,10 +96,10 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 
 			}
 			
-			dao.batchInsertUserOfRule(list);
+			flag = dao.batchInsertUserOfRule(list) > 0;
 		}
 
-		return true;
+		return flag;
 	}
 
 	@Override

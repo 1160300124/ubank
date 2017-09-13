@@ -35,6 +35,11 @@ public class Attendance {
 	private Company company;
 	
 	/**
+	 * 打卡时间 clockDateTime
+	 */
+	private String clockDateTime;
+	
+	/**
 	 * 打卡日期yyyy-mm-dd
 	 */
 	private String clockDate;
@@ -68,7 +73,7 @@ public class Attendance {
 	 * 打卡设备号
 	 */
 	private String clockDevice;
-
+	
 	public long getRid() {
 		return rid;
 	}
@@ -107,6 +112,14 @@ public class Attendance {
 
 	public void setCompany(Company company) {
 		this.company = company;
+	}
+
+	public String getClockDateTime() {
+		return clockDateTime;
+	}
+
+	public void setClockDateTime(String clockDateTime) {
+		this.clockDateTime = clockDateTime;
 	}
 
 	public String getClockDate() {
@@ -156,7 +169,7 @@ public class Attendance {
 	public void setClockDevice(String clockDevice) {
 		this.clockDevice = clockDevice;
 	}
-
+	
 	public String getYesterday() {
 		return yesterday;
 	}
@@ -164,5 +177,5 @@ public class Attendance {
 	public void setYesterday(String yesterday) {
 		this.yesterday = yesterday;
 	}
-	
+
 }

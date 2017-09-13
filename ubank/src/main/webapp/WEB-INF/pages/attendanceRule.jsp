@@ -234,7 +234,7 @@
 					</button>
 					<h4 class="modal-title" id="myModalLabel">修改考勤规则</h4>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body" >
 					<form class="form-horizontal" role="form" id="edit_form">
 						<input class="form-control" id="rule_id" type="hidden"/>
 						<div class="form-group">

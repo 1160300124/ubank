@@ -91,6 +91,12 @@ a:active, a:hover, a:focus, a:visited {
     color: #fff;
 }
 
+.modal .modal-body {
+	max-height: 750px;
+    overflow-y: auto;
+    overflow-x: hidden;
+} 
+
 .panel-body .bootstrap-table  .table > tbody > tr > td {
  word-break:break-all;
 }

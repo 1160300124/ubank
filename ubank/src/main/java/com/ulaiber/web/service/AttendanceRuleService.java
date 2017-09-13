@@ -21,7 +21,7 @@ public interface AttendanceRuleService {
 	 * @param rule
 	 * @return
 	 */
-	boolean save(AttendanceRule rule, String data, String companyId);
+	boolean save(AttendanceRule rule, String data);
 	
 	/**
 	 * 更新规则

@@ -5,38 +5,37 @@
 
 <div class="page-content">
 	<div class="panel-body" style="padding-bottom:0px;">
-		<form class="form-horizontal" role="form" id="add22_form">
+		<form class="form-horizontal" role="form" id="statistics_form">
 			<div class="form-group">
-				<label class="col-sm-1 control-label" for="url_name">公司</label>
+				<label class="col-sm-1 control-label" for="company">公司</label>
 	            <div class="col-sm-2">
-                   	  <select class="form-control" id="url_module">
-                   	  	 <option></option>
+                   	  <select class="form-control" id="company_select">
+                   	  	 <option value="">请选择公司</option>
                    	  </select>
 	            </div>
-	            <label class="col-sm-1 control-label" for="url_name">部门</label>
+	            <label class="col-sm-1 control-label" for="dept">部门</label>
 	            <div class="col-sm-2 ">
-	                  <select class="form-control" id="url_module">
-                   	  	 <option></option>
+	                  <select class="form-control" id="dept_select">
+                   	  	 <option value="">请选择部门</option>
                    	  </select>
 	            </div>
-	            <label class="col-sm-1 control-label" for="url_name">员工</label>
+	            <label class="col-sm-1 control-label" for="user">员工</label>
 	            <div class="col-sm-2">
-	               <input class="form-control" id="url_name" type="text" placeholder="请输入..."/>
+	               <input class="form-control" id="user_name" type="text" placeholder="请输入员工名称"/>
 	            </div>
 			</div>
 			<div class="form-group">
-			
 				<label class="col-sm-1 control-label" for="url_name">开始日期</label>
 	            <div class="col-sm-2" >
-	            	<div class="input-group date" id="datetimepicker1">
-		                <input class="form-control" id="url_name" type="text" placeholder="请输入..."/>
+	            	<div class="input-group time-picker date" id="datetimepicker1">
+		                <input class="form-control" id="url_name" type="text" placeholder="请输入开始日期"/>
 		            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 	            	</div>
 	            </div>
 	            <label class="col-sm-1 control-label" for="url_name">结束日期</label>
 		            <div class="col-sm-2">
-		            <div class="input-group date" id="datetimepicker2">
-		               <input class="form-control" id="url_name" type="text" placeholder="请输入..." />
+		            <div class="input-group time-picker date" id="datetimepicker2">
+		               <input class="form-control" id="url_name" type="text" placeholder="请输入结束日期" />
 		               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 		            </div>
 	            </div>
@@ -44,6 +43,9 @@
 	            <div class="col-sm-2">
 	            	<button type="button" class="btn btn-default" id="btn_edit_confirm" >
 	            		<span class="fa icon-search" aria-hidden="true"></span>查询
+	            	</button>
+	            	<button type="button" class="btn btn-default" id="btn_export" >
+	            		<span class="fa icon-download-alt" aria-hidden="true"></span>导出
 	            	</button>
 	            </div>
 			</div>
@@ -58,12 +60,13 @@
 				<th data-field="">员工</th>
 				<th data-field="">公司</th>
 				<th data-field="">部门</th>
-				<th data-field="">正确打卡（次）</th>
-				<th data-field="">迟到（次）</th>
-				<th data-field="">未签到（次）</th>
-				<th data-field="createTime" data-width="150px">正常签退（次）</th>
-				<th data-field="updateTime" data-width="150px">早退（次）</th>
-				<th data-field="remark">未签退（次）</th>
+				<th data-field="">应出勤天数</th>
+				<th data-field="">正确打卡(次)</th>
+				<th data-field="">迟到(次)</th>
+				<th data-field="">未签到(次)</th>
+				<th data-field="createTime" data-width="150px">正常签退(次)</th>
+				<th data-field="updateTime" data-width="150px">早退(次)</th>
+				<th data-field="remark">未签退(次)</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>
@@ -74,29 +77,5 @@
 	
 	
 </div>
-<script src="<%=request.getContextPath()%>/js/url.js" type="text/javascript" ></script>
-<script type="text/javascript">
-	var basePath = '<%=request.getContextPath()%>';
-	$('#datetimepicker1').datetimepicker({  
-	    format: 'yyyy-mm-dd',  
-	    language: 'zh-CN',  
-	    pickDate: true,  
-	    pickTime: true,  
-	    autoclose: 1,
-	    todayBtn:  1,
-	    todayHighlight: 1,
-	    minView: "month"
-	  });  
-	
-	$('#datetimepicker2').datetimepicker({  
-	    format: 'yyyy-mm-dd',  
-	    language: 'zh-CN',  
-	    pickDate: true,  
-	    pickTime: true,  
-	    autoclose: 1,
-	    todayBtn:  1,
-	    todayHighlight: 1,
-	    minView: "month"
-	  }); 
-</script>
+<script src="<%=request.getContextPath()%>/js/statistics.js" type="text/javascript" ></script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

@@ -82,10 +82,9 @@ public class AttendanceRuleController extends BaseController {
 		rule.setClockOnStartTime(clockOnStartTime);
 		rule.setClockOffEndTime(clockOffEndTime);
 		
-		User user = getUserFromSession(request);
 		try {
 			
-			if (service.save(rule, data, user.getCompanyNumber())){
+			if (service.save(rule, data)){
 				logger.info("新增考勤规则成功。");
 				info.setCode(IConstants.QT_CODE_OK);
 				info.setMessage("新增考勤规则成功。");
