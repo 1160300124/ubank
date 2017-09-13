@@ -14,7 +14,7 @@ public interface LeaveService {
 
     int saveAditor(LeaveRecord leaveRecord);  //保存请假审批人
 
-    List<ApplyForVO> queryApplyRecord(String userid,int pageNum,int pageSize);   //查询个人申请记录
+    List<ApplyForVO> queryApplyRecord(String userId,int pageNum,int pageSize);   //查询个人申请记录
 
     int cancelApply(String applyId); //取消请假申请
 
@@ -50,5 +50,5 @@ public interface LeaveService {
 
     List<User> getUserByDate(String date,int pageNum,int pageSize);  //根据日期分页查询用户
 
-    int updateUser(String userid, String CID); //修改用户个推CID
+    int updateUser(String userId, String CID); //修改用户个推CID
 }

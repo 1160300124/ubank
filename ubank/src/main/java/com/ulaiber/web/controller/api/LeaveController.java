@@ -70,15 +70,15 @@ public class LeaveController extends BaseController {
 
     /**
      * 查询个人申请记录
-     * @param userid 用户id
+     * @param userId 用户id
      * @return ResultInfo
      */
     @RequestMapping("queryApplyRecord")
     @ResponseBody
-    public ResultInfo queryApplyRecord(String userid,int pageNum,int pageSize){
+    public ResultInfo queryApplyRecord(String userId,int pageNum,int pageSize){
         ResultInfo resultInfo = new ResultInfo();
         logger.info("开始查询个人申请记录");
-        if(StringUtil.isEmpty(userid)){
+        if(StringUtil.isEmpty(userId)){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("加载申请记录失败");
             logger.info("用户ID为空");
@@ -86,7 +86,7 @@ public class LeaveController extends BaseController {
         }
         pageNum = (pageNum - 1) * pageSize;
         //查询个人申请记录
-        List<ApplyForVO> list = leaveService.queryApplyRecord(userid,pageNum,pageSize);
+        List<ApplyForVO> list = leaveService.queryApplyRecord(userId,pageNum,pageSize);
         if(list.size() <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("加载申请记录失败");
@@ -106,26 +106,66 @@ public class LeaveController extends BaseController {
             logger.info("查询申请记录失败");
             return resultInfo;
         }
+        List<Map<String,Object>> dataList = new ArrayList<>();
+        Map<String,Object> resultMap = new HashMap<>();
         //将审批人放入对应的申请记录中
         for (int i = 0; i < list.size(); i++){
             List<LeaveAudit> resultList = new ArrayList<>();
             ApplyForVO ls = list.get(i);
+            resultMap.put("id" , ls.getId());
+            resultMap.put("userid" , ls.getUserid());
+          //  resultMap.put("leaveType" , ls.getLeaveType());
+            resultMap.put("startDate" , ls.getStartDate());
+            resultMap.put("endDate" , ls.getEndDate());
+            resultMap.put("leaveTime" , ls.getLeaveTime());
+            resultMap.put("auditor" , ls.getAuditor());
+            resultMap.put("reason" , ls.getReason());
+            resultMap.put("disable" , ls.getDisable());
+            resultMap.put("type" , ls.getType());
+            resultMap.put("createDate" , ls.getCreateDate());
+            resultMap.put("status" , ls.getStatus());
+          //  resultMap.put("auditorStatus" , ls.getAuditorStatus());
+          //  resultMap.put("holiday" , ls.getHoliday());
+          //  resultMap.put("mode" , ls.getMode());
+            resultMap.put("username" , ls.getUsername());
+            resultMap.put("image" , ls.getImage());
+            if(ls.getType().equals("0")){  //请假记录
+                Map<String,Object> map = new HashMap<>();
+                map.put("leaveType" , ls.getLeaveType());
+                resultMap.put("leave" , map);
+            }else if(ls.getType().equals("1")){  //加班记录
+                OvertimeVO overtimeVO = new OvertimeVO();
+                // overtimeVO.setHoliday(applyForVO.getHoliday());
+                overtimeVO.setMode(ls.getMode());
+                resultMap.put("overtime" , overtimeVO);
+            }
+//            else if(ls.getType().equals("2")){
+//                Reimbursement reimbursement = new Reimbursement();
+//            }
             for (int j = 0 ; j < list2.size(); j++){
                 LeaveAudit la = list2.get(j);
                 if(String.valueOf(ls.getId()).equals(la.getRecordNo()) ){
                     resultList.add(la);
                 }
                 if(!la.getStatus().equals("0") && !la.getStatus().equals("2")){
-                    ls.setStatus("1");
+                    //ls.setStatus("1");
+                    if(resultMap.containsKey("status")){
+                        resultMap.put("status" , "1");
+                    }
                 }else{
-                    ls.setStatus(la.getStatus());
+                    //ls.setStatus(la.getStatus());
+                    if(resultMap.containsKey("status")){
+                        resultMap.put("status" , la.getStatus());
+                    }
                 }
             }
-            ls.setAuditorStatus(resultList);
+           // ls.setAuditorStatus(resultList);
+            resultMap.put("auditorStatus" , resultList);
+            dataList.add(resultMap);
         }
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("加载申请记录成功");
-        resultInfo.setData(list);
+        resultInfo.setData(dataList);
         logger.info("加载申请记录成功");
         return resultInfo;
     }
@@ -194,15 +234,31 @@ public class LeaveController extends BaseController {
         }
         //获取个人审批记录
         List<AuditVO> list2 =leaveService.getLeaveAuditor(userId);
+        List<AuditVO> resultList = new ArrayList<>();
         //审批记录
         RemindAuditVO remindAuditVO = new RemindAuditVO();
         if(list2.size() > 0){
+            for (int i = 0 ; i < list2.size() ; i++){
+                 AuditVO au = list2.get(i);
+                String recordNo = au.getRecordNo();
+                int sort = au.getSort();
+                int sortValue = sort - 1;
+                if(sortValue != 0){
+                    List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
+                    String status = list3.get(0).getStatus();
+                    if(status.equals("1")){
+                        resultList.add(au);
+                    }
+                }else{
+                    resultList.add(au);
+                }
+            }
             //申请记录ID
-            int id = Integer.parseInt(list2.get(0).getRecordNo());
+            int id = Integer.parseInt(resultList.get(0).getRecordNo());
             //根据申请记录ID获取申请记录
             Map<String,Object> leaveRecord = leaveService.queryApplyRecordById(id);
-            remindAuditVO.setCount(list2.size());
-            remindAuditVO.setDate(list2.get(0).getAuditDate());
+            remindAuditVO.setCount(resultList.size());
+            remindAuditVO.setDate(resultList.get(0).getAuditDate());
             remindAuditVO.setType(leaveRecord.get("type"));
             remindAuditVO.setApplyName(leaveRecord.get("user_name"));
             remindAuditVO.setReason(leaveRecord.get("reason"));
@@ -239,35 +295,36 @@ public class LeaveController extends BaseController {
             return resultInfo;
         }
         //获取待审批记录数量
-        List<Map<String,Object>> list = leaveService.getPendingRecord(userId);
-        List<WorkAuditRecordVO> resultList = new ArrayList<>();
+       // List<Map<String,Object>> list = leaveService.getPendingRecord(userId);
+        List<AuditVO> list =leaveService.getLeaveAuditor(userId);
+        List<AuditVO> resultList = new ArrayList<>();
         WorkAuditRecordVO workAuditRecordVO = new WorkAuditRecordVO();
-        if(list.size() >0 ){
+        if(list.size() > 0){
+            for (int i = 0 ; i < list.size() ; i++){
+                AuditVO au = list.get(i);
+                String recordNo = au.getRecordNo();
+                int sort = au.getSort();
+                int sortValue = sort - 1;
+                if(sortValue != 0){
+                    List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
+                    String status = list3.get(0).getStatus();
+                    if(status.equals("1")){
+                        resultList.add(au);
+                    }
+                }else{
+                    resultList.add(au);
+                }
+            }
             workAuditRecordVO.setMark(IConstants.Pengding_AUDIT_MARK );
-            workAuditRecordVO.setCount(list.size());
-            workAuditRecordVO.setDate(list.get(0).get("createDate"));
-            workAuditRecordVO.setStatus(list.get(0).get("status"));
+            workAuditRecordVO.setCount(resultList.size());
+            workAuditRecordVO.setDate(resultList.get(0).getAuditDate());
+            workAuditRecordVO.setStatus(resultList.get(0).getStatus());
         }else{
             workAuditRecordVO.setMark(IConstants.Pengding_AUDIT_MARK );
             workAuditRecordVO.setCount(0);
             workAuditRecordVO.setDate("");
             workAuditRecordVO.setStatus("");
         }
-       // resultList.add(workAuditRecordVO);
-//        List<Map<String,Object>> list2 = leaveService.getAlreadyRecord(userId); //获取已审批记录数量
-//        Map<String,Object> alreadyMap = new HashMap<>();
-//        if(list2.size() > 0){
-//            alreadyMap.put("mark" , IConstants.Already_APPLY_MARK);
-//            alreadyMap.put("count" , list2.size());
-//            alreadyMap.put("date" , list2.get(0).get("createDate"));
-//            alreadyMap.put("status" , list2.get(0).get("status"));
-//        }else{
-//            alreadyMap.put("mark" , IConstants.Already_APPLY_MARK);
-//            alreadyMap.put("count" , null);
-//            alreadyMap.put("date" , "");
-//            alreadyMap.put("status" ,"");
-//        }
-//        resultList.add(alreadyMap);
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("查询工作审批记录数量成功");
         resultInfo.setData(workAuditRecordVO);
@@ -407,6 +464,10 @@ public class LeaveController extends BaseController {
             int id = Integer.parseInt(auList.get(i).getRecordNo());
             //根据申请记录ID获取待审批记录
             ApplyForVO applyForVO = leaveService.queryPeningRecord(id,userId);
+            if(StringUtil.isEmpty(applyForVO)){
+                resultMap.put("item",list);
+                return resultMap;
+            }
             Map<String ,Object> map = new HashMap<>();
             map.put("id" , applyForVO.getId());
             map.put("userid" , applyForVO.getUserid());
@@ -443,9 +504,9 @@ public class LeaveController extends BaseController {
                 recordNo = auList.get(i).getRecordNo();
                 //根据排序号和申请记录编号获取审批人
                 List<LeaveAudit> list2 = leaveService.getAuditorBySort(recordNo,sortValue);
-                status = list2.get(0).getStatus();
+                 status = list2.get(0).getStatus();
                 //如果当前审批人的上一个人没有做审批处理，则移除当前记录
-                if(!status.equals("0") && !status.equals("1")){
+                if(!status.equals("0") && !status.equals("2")){
                     list.add(map);
                     count += 1;
                     resultMap.put("count",count);
@@ -461,6 +522,8 @@ public class LeaveController extends BaseController {
                         }
                     }
 
+                }else{
+                    resultMap.put("count",count);
                 }
             }else{
                 list.add(map);
@@ -682,23 +745,23 @@ public class LeaveController extends BaseController {
 
     /**
      * 获取用户个推CID
-     * @param userid 用户ID
+     * @param userId 用户ID
      * @param CID 用户个推CID
      * @return ResultInfo
      */
     @RequestMapping("getClinetID")
     @ResponseBody
-    public ResultInfo getClinetID(String userid,String CID){
+    public ResultInfo getClinetID(String userId,String CID){
         logger.info(">>>>>>>>>>>开始插入个推CID");
         ResultInfo resultInfo = new ResultInfo();
-        if(StringUtil.isEmpty(userid) || StringUtil.isEmpty(CID)){
+        if(StringUtil.isEmpty(userId) || StringUtil.isEmpty(CID)){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("获取用户个推CID失败");
             logger.info(">>>>>>>>>>>>>>用户ID或CID为空");
             return resultInfo;
         }
         //修改用户个推CID
-        int result = leaveService.updateUser(userid,CID);
+        int result = leaveService.updateUser(userId,CID);
         if(result <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("获取用户个推CID失败");

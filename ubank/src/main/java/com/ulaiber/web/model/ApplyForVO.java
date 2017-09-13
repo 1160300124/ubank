@@ -16,7 +16,7 @@ public class ApplyForVO implements Serializable{
     private String auditor;     // 审批人
     private String reason;      // 原因
     private String disable;     // 是否作废； 0 否 ，1 是
-    private String type;        // 记录类型； 0 请假记录， 1 加班记录
+    private String type;        // 记录类型； 0 请假记录， 1 加班记录,2 报销记录
     private String createDate;  // 创建时间
     private String status;      // 审批状态
     private Object auditorStatus;//

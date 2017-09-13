@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class Test {
@@ -180,9 +182,9 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userid","336");
+		map.put("userId","359");
 		map.put("pageNum",1);
-		map.put("pageSize",20);
+		map.put("pageSize",50);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
 		System.out.print(result);
 	}
@@ -218,9 +220,9 @@ public class Test {
 	@org.junit.Test
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","1");
+		map.put("userId","359");
 		map.put("mark","0");
-		map.put("pageNum",1);
+		map.put("pageNum",0);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
 		System.out.print("~~~~~~~~工作审批结果为："+result);
@@ -253,12 +255,13 @@ public class Test {
 	@org.junit.Test
 	public void addOvertimeRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("leaveType","1");
 		map.put("userid","375");
 		map.put("startDate","2017-08-24");
 		map.put("endDate","2017-08-25");
-		map.put("leaveTime",12);
+		map.put("leaveTime",0);
 		map.put("auditor","395,366");
-		map.put("reason","抓紧上线");
+		map.put("reason","Fuck");
 		map.put("mode" , '0');
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/addOvertimeRecord",map);
 		System.out.print(result);
@@ -274,5 +277,34 @@ public class Test {
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
 		System.out.print("~~~~~~~~同步数据结果为："+result);
 	}
+
+	/**-----------------------------------------------------------------------------------------------*/
+
+	//新增报销记录
+	@org.junit.Test
+	public void insertReimbusement(){
+		List<Map<String,Object>> list = new ArrayList<>();
+		Map<String,Object> map = new HashMap<>();
+		map.put("type" , "0");
+		map.put("start" , "深圳南山区深南大道腾讯大厦");
+		map.put("end" , "湖北省武汉市洪山区关山大道");
+		map.put("amount" , 999.23);
+		map.put("remark" , "缺少报销单");
+		map.put("image" , "");
+		Map<String,Object> map2 = new HashMap<>();
+		map2.put("type" , "1");
+		map2.put("amount" , 440.9);
+		map2.put("remark" , "超支");
+		list.add(map);
+		list.add(map2);
+		Map<String,Object> resultMap = new HashMap<>();
+		String content = "报销报销报销";
+		resultMap.put("data" , list);
+		resultMap.put("auditor" , "364,366");
+		resultMap.put("content",content);
+		JSONObject json = JSONObject.fromObject(resultMap);
+		System.out.println(">>>>>>>>>>>JSON数组为："+ json);
+	}
+
 
 }

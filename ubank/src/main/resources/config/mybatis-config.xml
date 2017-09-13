@@ -47,6 +47,7 @@
 		<mapper resource="com/ulaiber/web/mapper/leaveAuditMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/ReportMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/OvertimeMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/reimbursementMapper.xml" />
 		<!--<package name="com.ulaiber.web.dao.*"/>-->
 	</mappers>
 

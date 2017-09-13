@@ -21,10 +21,10 @@
 
     <!--查询个人申请记录-->
     <select id="queryApplyRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
-       SELECT a.*,b.status FROM tbl_leave_record a
-            left join (select max(auditDate)as date,recordNo,status from tbl_leave_audit_record GROUP BY recordNo,status ) b
-            on a.id = b.recordNo left join tbl_overtime_details c on a.id = c.recordNo
-            where a.disable = '0' and a.userid = #{userid} limit #{pageNum},#{pageSize}
+        SELECT  a.id,a.userid,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.disable,a.type,a.status,b.user_name as username,b.image
+            FROM tbl_leave_record a left join tbl_overtime_details c on a.id = c.recordNo
+                left join tbl_users b on a.userid = b.user_id
+                where  a.userid = #{userid} limit #{pageNum},#{pageSize}
     </select>
 
     <!--取消请假申请-->
@@ -59,7 +59,7 @@
               a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image  from tbl_leave_record a
               left join tbl_overtime_details b on a.id = b.recordNo
               left join tbl_users c on a.userid = c.user_id
-              where a.disable = '0' and  a.auditor like concat('%',#{userId},'%') and a.id = #{id} and a.status = '0'
+              where a.disable = '0' and  a.auditor like concat('%',#{userId},'%') and a.id = #{id}
               order by a.createDate desc
     </select>
 

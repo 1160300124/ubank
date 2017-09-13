@@ -28,12 +28,15 @@
 
     <!--获取个人所有审批记录-->
     <select id="getLeaveAuditor" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
-        select id,recordNo,userid,auditor,auditDate,status from tbl_leave_audit_record WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate
+        select id,recordNo,userid,auditor,auditDate,status,sort from tbl_leave_audit_record
+            WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate
     </select>
 
     <!--根据申请记录编号获取审批人-->
     <select id="getAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit" >
-        select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and   auditor = #{userId} and status = '0' order by auditDate limit #{pageNum},#{pageSize}
+        select recordNo,auditor,sort,status from tbl_leave_audit_record
+            where disable = '0' and  auditor = #{userId} and status = '0'
+                order by auditDate limit #{pageNum},#{pageSize}
     </select>
 
     <!--根据排序号和申请记录编号获取审批-->

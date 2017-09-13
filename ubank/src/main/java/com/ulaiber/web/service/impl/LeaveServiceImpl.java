@@ -72,9 +72,9 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public List<ApplyForVO> queryApplyRecord(String userid,int pageNum,int pageSize) {
+    public List<ApplyForVO> queryApplyRecord(String userId,int pageNum,int pageSize) {
         Map<String,Object> map = new HashMap<>();
-        map.put("userid",userid);
+        map.put("userid",userId);
         map.put("pageNum",pageNum);
         map.put("pageSize",pageSize);
         List<ApplyForVO> list = leaveDao.queryApplyRecord(map);
@@ -219,9 +219,9 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public int updateUser(String userid, String CID) {
+    public int updateUser(String userId, String CID) {
         Map<String,Object > map = new HashMap<>();
-        map.put("userid" , userid);
+        map.put("userid" , userId);
         map.put("CID" , CID);
         return leaveDao.updateUser(map);
     }
