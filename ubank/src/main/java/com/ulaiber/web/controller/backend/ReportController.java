@@ -39,6 +39,12 @@ public class ReportController extends BaseController {
         return "leaveReport";
     }
 
+    //跳转请假报表查询页面
+    @RequestMapping("reimReport")
+    public String reimReport(HttpServletRequest request){
+        return "reimReport";
+    }
+
     /**
      * 申请记录查询
      * @param leaveReportVO
@@ -100,7 +106,7 @@ public class ReportController extends BaseController {
     }
 
     /**
-     * 导出excel
+     * 请假报表导出excel
      * @param request
      * @param response
      * @throws IOException

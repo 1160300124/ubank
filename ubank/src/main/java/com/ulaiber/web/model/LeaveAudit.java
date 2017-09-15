@@ -15,6 +15,8 @@ public class LeaveAudit implements Serializable{
     private String status;
     private String disable;
     private int sort;
+    private String username;
+    private String reason;
 
     public int getId() {
         return id;
@@ -78,6 +80,22 @@ public class LeaveAudit implements Serializable{
 
     public void setSort(int sort) {
         this.sort = sort;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }
 

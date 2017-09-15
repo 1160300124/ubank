@@ -8,13 +8,11 @@ import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
-import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.model.PushInfo;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 个人用户消息推送
@@ -22,11 +20,11 @@ import java.util.Map;
  */
 public class PushtoSingle {
     //采用"Java SDK 快速入门"， "第二步 获取访问凭证 "中获得的应用配置，用户可以自行替换
+    private static final Logger logger = Logger.getLogger(PushtoSingle.class);
     private static String appId = "P2zOlClUiqAdQxyAqmp5d8";
     private static String appKey = "U8kOKaQJ6g7a1PbDLs55r";
     private static String masterSecret = "H7mg8I19q58MVUp1EXIeN2";
     private static String host = "http://sdk.open.api.igexin.com/apiex.htm";
-
     //static String CID = "";
     //别名推送方式
     // static String Alias = "";
@@ -51,7 +49,7 @@ public class PushtoSingle {
         Target target = new Target();
         target.setAppId(appId);
         target.setClientId(CID);
-        //target.setAlias(Alias);
+        target.setAlias(appId);
         IPushResult ret = null;
         try {
             ret = push.pushMessageToSingle(message, target);
@@ -60,9 +58,11 @@ public class PushtoSingle {
             ret = push.pushMessageToSingle(message, target, e.getRequestId());
         }
         if (ret != null) {
+            logger.info(">>>>>>>>>>>>>消息推送成功的类型为：" + type);
             System.out.println(ret.getResponse().toString());
         } else {
-            System.out.println("服务器响应异常");
+            logger.info(">>>>>>>>>>>>>服务器响应异常,消息推送失败的类型为：" + type);
+            System.out.println(">>>>>>>>>>>>服务器响应异常,消息推送失败的类型为"+ type);
         }
     }
     public static LinkTemplate linkTemplateDemo() {
@@ -90,7 +90,7 @@ public class PushtoSingle {
     }
 
     /**
-     * 透传信息模板
+     * 透传信息模板.针对个人消息推送
      * @return
      */
     public static TransmissionTemplate transmissionTemplateDemo(int type,String content,String title) {
@@ -99,13 +99,11 @@ public class PushtoSingle {
         template.setAppkey(appKey);
         // 透传消息设置，1为强制启动应用，客户端接收到消息后就会立即启动应用；2为等待应用启动
         template.setTransmissionType(2);
-        List<Map<String,Object>> list = new ArrayList<>();
-        Map<String,Object> map = new HashMap<>();
-        map.put("type", type);
-        map.put("content",content);
-        map.put("title",title);
-        list.add(map);
-        String msg = JSONArray.fromObject(list).toString();
+        PushInfo pushInfo = new PushInfo();
+        pushInfo.setType(type);
+        pushInfo.setContent(content);
+        pushInfo.setTitle(title);
+        String msg = JSONObject.fromObject(pushInfo).toString();
         template.setTransmissionContent(msg);
         // 设置定时展示时间
         // template.setDuration("2015-01-16 11:40:00", "2015-01-16 12:24:00");

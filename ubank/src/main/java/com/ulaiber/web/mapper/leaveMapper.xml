@@ -24,7 +24,7 @@
         SELECT  a.id,a.userid,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.disable,a.type,a.status,b.user_name as username,b.image
             FROM tbl_leave_record a left join tbl_overtime_details c on a.id = c.recordNo
                 left join tbl_users b on a.userid = b.user_id
-                where  a.userid = #{userid} limit #{pageNum},#{pageSize}
+                where  a.userid = #{userid} ORDER BY a.createDate DESC limit #{pageNum},#{pageSize}
     </select>
 
     <!--取消请假申请-->
@@ -105,7 +105,7 @@
     </select>
 
     <!--修改用户个推CID-->
-    <select id="updateUser" parameterType="Map" resultType="int">
+    <update id="updateUser" parameterType="Map">
         UPDATE tbl_users set CID = #{CID} where user_id = #{userid}
-    </select>
+    </update>
 </mapper>

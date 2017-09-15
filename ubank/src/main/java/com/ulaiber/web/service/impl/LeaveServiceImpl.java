@@ -54,13 +54,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         //获取第一个审批人ID
         int userid = Integer.parseInt(auditor[0]);
         int result = leaveAuditDao.saveAditor(list);
-        if(result > 0 ){
-            String cid = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        String cid  = (String) map2.get("CID");
+        if(!cid.equals("")){
+            String name = (String) map2.get("user_name");
             int type = IConstants.PENGDING;
             //消息内容
-            String content = ">>>>>>>测试推送信息!";
-            //消息标题
-            String title = "您有个待审批未处理";
+            String title = "您有个请假申请待审批";
+            String content = name + "你好，有一条请假申请需要您审批，原因是:"+ leaveRecord.getReason();
             try {
                 //推送审批信息致第一个审批人
                 PushtoSingle.singlePush(cid,type,content,title);
@@ -176,12 +177,13 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         param.put("recordNo",recordNo);
         String resultMap = leaveAuditDao.queryUserIdByRecordNo(param);
         int userid = Integer.parseInt(resultMap);
-        String cid = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
-        String content = ">>>>>>>>>您有一条已审批的记录";
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        String cid = (String) map2.get("CID");
+        String name = (String) map2.get("user_name");
         String title = "您有一条已审批的记录";
-        if(result > 0){
+        String content = name + "你好，您有一条申请已回复，理由是：" + reason;
+        if(!cid.equals("")){
             int type = IConstants.ALREADY;
-            String CID = "";
             try {
                 PushtoSingle.singlePush(cid,type,content,title);
             } catch (Exception e) {
@@ -192,10 +194,10 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public int updateRecord(String recordNo,String status) {
+    public int updateRecord(String recordNo,String auditorStatus) {
         Map<String,Object> map = new HashMap<>();
         map.put("recordNo" , recordNo);
-        map.put("status" , status);
+        map.put("status" , auditorStatus);
         return leaveDao.updateRecord(map);
     }
 

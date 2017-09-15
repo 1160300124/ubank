@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 
-<!-- 公司页 -->
 <div class="page-content">
     <div class="panel-body" style="padding-bottom:0px;">
         <form id="LeaveFrom" class="form-horizontal"  >

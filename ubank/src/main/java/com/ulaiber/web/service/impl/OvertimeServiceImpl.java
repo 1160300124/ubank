@@ -1,11 +1,13 @@
 package com.ulaiber.web.service.impl;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.LeaveAuditDao;
 import com.ulaiber.web.dao.LeaveDao;
 import com.ulaiber.web.dao.OvertimeDao;
 import com.ulaiber.web.model.ApplyForVO;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.OvertimeService;
+import com.ulaiber.web.utils.PushtoSingle;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +51,24 @@ public class OvertimeServiceImpl extends BaseService implements OvertimeService{
             map.put("sort",i+1);
             list.add(map);
         }
+        //获取第一个审批人ID
+        int userid = Integer.parseInt(auditor[0]);
         int result3 = leaveAuditDao.saveAditor(list);
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        String cid  = (String) map2.get("CID");
+        String name = (String) map2.get("user_name");
+        int type = IConstants.PENGDING;
+        //消息内容
+        String content = name + "有一条加班申请需要您审批，原因是:" + applyForVO.getReason();
+        String title = "您有一条加班申请待审批记录";
+        if(!cid.equals("")){
+            try {
+                //推送审批信息致第一个审批人
+                PushtoSingle.singlePush(cid,type,content,title);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return result3;
     }
 

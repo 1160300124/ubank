@@ -42,7 +42,7 @@ public interface LeaveService {
 
     int confirmAudit(String userId, String recordNo, String status,String reason);  //确认审批
 
-    int updateRecord(String recordNo,String status);  //更新申请记录为最新的状态
+    int updateRecord(String recordNo,String auditorStatus);  //更新申请记录为最新的状态
 
     Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
 

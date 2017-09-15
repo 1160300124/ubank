@@ -183,8 +183,8 @@ public class Test {
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
-		map.put("pageNum",1);
-		map.put("pageSize",50);
+		map.put("pageNum",2);
+		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
 		System.out.print(result);
 	}
@@ -195,7 +195,7 @@ public class Test {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("applyId","106");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/cancelApply",map);
-		System.out.print("~~~~~~~~取消申请结果为："+result);
+		System.out.print(">>>>>>>>取消申请结果为："+result);
 	}
 
 	//查询工作提醒
@@ -204,7 +204,7 @@ public class Test {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkRemind",map);
-		System.out.print("~~~~~~~~工作提醒结果为："+result);
+		System.out.print(">>>>>>>>工作提醒结果为："+result);
 	}
 
 	//查询工作审批
@@ -213,7 +213,7 @@ public class Test {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkAudit",map);
-		System.out.print("~~~~~~~~工作审批结果为："+result);
+		System.out.print(">>>>>>>>工作审批结果为："+result);
 	}
 
 	//待审批数据查询
@@ -225,7 +225,7 @@ public class Test {
 		map.put("pageNum",0);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
-		System.out.print("~~~~~~~~工作审批结果为："+result);
+		System.out.print(">>>>>>>>待审批数据为："+result);
 	}
 
 	//确认审批
@@ -236,7 +236,7 @@ public class Test {
 		map.put("recordNo","106");
 		map.put("status","1");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);
-		System.out.print("~~~~~~~~工作审批结果为："+result);
+		System.out.print(">>>>>>>>工作审批结果为："+result);
 	}
 
 	//获取消息总数
@@ -245,7 +245,7 @@ public class Test {
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/messageTotal",map);
-		System.out.print("~~~~~~~~工作提醒结果为："+result);
+		System.out.print(">>>>>>>>工作提醒结果为："+result);
 	}
 
 
@@ -256,13 +256,13 @@ public class Test {
 	public void addOvertimeRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("leaveType","1");
-		map.put("userid","375");
+		map.put("userid","359");
 		map.put("startDate","2017-08-24");
 		map.put("endDate","2017-08-25");
-		map.put("leaveTime",0);
-		map.put("auditor","395,366");
-		map.put("reason","Fuck");
-		map.put("mode" , '0');
+		map.put("leaveTime",8.0);
+		map.put("auditor","336");
+		map.put("reason","测试测试");
+		map.put("mode" , '1');
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/addOvertimeRecord",map);
 		System.out.print(result);
 	}
@@ -275,10 +275,20 @@ public class Test {
 		map.put("pageNum",1);
 		map.put("pageSize",50);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
-		System.out.print("~~~~~~~~同步数据结果为："+result);
+		System.out.print(">>>>>>>>同步数据结果为："+result);
 	}
 
 	/**-----------------------------------------------------------------------------------------------*/
+
+	//获取clientId
+	@org.junit.Test
+	public void getClientId(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","359");
+		map.put("CID","718d4bcec1e5c431c4b0e005e53be532");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getClinetID",map);
+		System.out.print(">>>>>>>>获取clientID结果为："+result);
+	}
 
 	//新增报销记录
 	@org.junit.Test
@@ -295,6 +305,7 @@ public class Test {
 		map2.put("type" , "1");
 		map2.put("amount" , 440.9);
 		map2.put("remark" , "超支");
+		map2.put("image","");
 		list.add(map);
 		list.add(map2);
 		Map<String,Object> resultMap = new HashMap<>();

@@ -28,7 +28,7 @@ public interface LeaveAuditDao {
 
     int confirmAudit(Map<String, Object> map);  //确认审批
 
-    String queryCIDByUserid(int userid); //查询用户个推CID
+    Map<String,Object> queryCIDByUserid(int userid); //查询用户个推CID
 
     String queryUserIdByRecordNo(Map<String, Object> map); //获取当前被审批记录的用户ID
 }
