@@ -264,7 +264,7 @@ public class DateTimeUtil {
 	
 	/**
 	 * 获取指定月份的天数
-	 * @param month
+	 * @param month yyyy-MM
 	 * @return
 	 */
 	public static int getNumFromMonth(String month){
@@ -272,6 +272,23 @@ public class DateTimeUtil {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+	}
+	
+	/**
+	 * 获取指定时间段的天数
+	 * @param dateBegin  yyyy-MM-dd
+	 * @param dateEnd yyyy-MM-dd
+	 * @return
+	 */
+	public static int getNumFromdate(String dateBegin, String dateEnd){
+		Date begin = str2Date(dateBegin, DATE_FORMAT_DAYTIME);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(begin);
+		long beginTime = calendar.getTimeInMillis();
+		Date end = str2Date(dateEnd, DATE_FORMAT_DAYTIME);
+		calendar.setTime(end);
+		long endTime = calendar.getTimeInMillis();
+		return Integer.parseInt((endTime - beginTime) / (1000 * 3600 * 24) + "") + 1;
 	}
 	
 	/**
@@ -303,4 +320,65 @@ public class DateTimeUtil {
 		return days;
 	}
 	
+	/**
+	 * 获取指定时间段的所有天数集合
+	 * @param dateBegin  yyyy-MM-dd
+	 * @param dateEnd yyyy-MM-dd
+	 * @return
+	 */
+	public static List<String> getDaysFromDate(String dateBegin, String dateEnd){
+		if (dateBegin.compareTo(dateEnd) > 0){
+			return null;
+		}
+		List<String> days = new ArrayList<String>();
+		String beginMonth = dateBegin.substring(0, dateBegin.lastIndexOf("-"));
+		String beginDay = dateBegin.substring(dateBegin.lastIndexOf("-") + 1, dateBegin.length());
+		String endMonth = dateEnd.substring(0, dateEnd.lastIndexOf("-"));
+		String endDay = dateEnd.substring(dateEnd.lastIndexOf("-") + 1, dateEnd.length());
+		if (StringUtils.equals(beginMonth, endMonth)){
+			for (int i = Integer.parseInt(beginDay); i <= Integer.parseInt(endDay); i++){
+				String day = "";
+				if (i < 10){
+					day = beginMonth + "-0" + i;
+				} else {
+					day = beginMonth + "-" + i;
+				}
+				days.add(day);
+			}
+		} else {
+			int num = getNumFromMonth(beginMonth);
+			for (int i = Integer.parseInt(beginDay); i <= num; i++){
+				String day = "";
+				if (i < 10){
+					day = beginMonth + "-0" + i;
+				} else {
+					day = beginMonth + "-" + i;
+				}
+				days.add(day);
+			}
+			for (int i = 1; i <= Integer.parseInt(endDay); i++){
+				String day = "";
+				if (i < 10){
+					day = endMonth + "-0" + i;
+				} else {
+					day = endMonth + "-" + i;
+				}
+				days.add(day);
+			}
+		}
+		
+		return days;
+	}
+	
+	public static void main(String[] args) {
+		String dateBegin = "2017-08-29";
+		String dateEnd = "2017-09-09";
+		String beginMonth = dateBegin.substring(0, dateBegin.lastIndexOf("-"));
+		String beginDay = dateBegin.substring(dateBegin.lastIndexOf("-") + 1, dateBegin.length());
+		
+		System.out.println(getNumFromdate(dateBegin, dateEnd));
+		System.out.println(getDaysFromDate(dateBegin, dateEnd));
+		
+		
+	}
 }

@@ -49,4 +49,10 @@ public interface AttendanceStatisticService {
 	 */
 	int getWorkdayCountForMonth(long userId, String month);
 	
+	/**
+	 * 获取指定时间段的应工作天数  yyyy-MM-dd
+	 * @return
+	 */
+	int getWorkdayCountForDate(long userId, String dateBegin, String dateEnd);
+	
 }

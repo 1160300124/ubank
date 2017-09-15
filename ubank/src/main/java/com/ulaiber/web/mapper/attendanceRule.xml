@@ -103,4 +103,8 @@
 		select * from tbl_users_of_rules where companyId=#{companyId}
 	</select>
 	
+	<select id="getRulesByCompanyId" parameterType="Integer" resultMap="AttendanceRuleMap">
+		select r.* from tbl_attendance_rules r right join (select distinct rid,companyId from tbl_users_of_rules where companyId=#{companyId}) u on r.rid=u.rid
+	</select>
+	
 </mapper>

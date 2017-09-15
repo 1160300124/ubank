@@ -156,4 +156,10 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 		return dao.getUserIdsByComId(companyId);
 	}
 
+	@Override
+	public List<AttendanceRule> getRulesByCompanyId(int companyId) {
+		
+		return dao.getRulesByCompanyId(companyId);
+	}
+
 }

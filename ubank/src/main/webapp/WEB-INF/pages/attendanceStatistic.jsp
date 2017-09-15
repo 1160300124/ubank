@@ -28,20 +28,20 @@
 				<label class="col-sm-1 control-label" for="url_name">开始日期</label>
 	            <div class="col-sm-2" >
 	            	<div class="input-group time-picker date" id="datetimepicker1">
-		                <input class="form-control" id="url_name" type="text" placeholder="请输入开始日期"/>
+		                <input class="form-control" id="start_date" type="text" placeholder="请输入开始日期"/>
 		            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 	            	</div>
 	            </div>
 	            <label class="col-sm-1 control-label" for="url_name">结束日期</label>
 		            <div class="col-sm-2">
 		            <div class="input-group time-picker date" id="datetimepicker2">
-		               <input class="form-control" id="url_name" type="text" placeholder="请输入结束日期" />
+		               <input class="form-control" id="end_date" type="text" placeholder="请输入结束日期" />
 		               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
 		            </div>
 	            </div>
 	            <label class="col-sm-1 control-label" for="url_name"></label>
 	            <div class="col-sm-2">
-	            	<button type="button" class="btn btn-default" id="btn_edit_confirm" >
+	            	<button type="button" class="btn btn-default" id="btn_search" >
 	            		<span class="fa icon-search" aria-hidden="true"></span>查询
 	            	</button>
 	            	<button type="button" class="btn btn-default" id="btn_export" >
@@ -51,22 +51,22 @@
 			</div>
 		</form>
 		
-		<table id="tb_thirdUrls" data-toggle="table" data-url="" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
+		<table id="tb_statistics" data-toggle="table" data-url="" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
 			   data-pagination="true" data-side-pagination="server" data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>
 				<th data-checkbox="true"></th>
-				<th data-field="">员工</th>
-				<th data-field="">公司</th>
-				<th data-field="">部门</th>
-				<th data-field="">应出勤天数</th>
-				<th data-field="">正确打卡(次)</th>
-				<th data-field="">迟到(次)</th>
-				<th data-field="">未签到(次)</th>
-				<th data-field="createTime" data-width="150px">正常签退(次)</th>
-				<th data-field="updateTime" data-width="150px">早退(次)</th>
-				<th data-field="remark">未签退(次)</th>
+				<th data-field="userName">员工</th>
+				<th data-field="company.name">公司</th>
+				<th data-field="dept.deptName">部门</th>
+				<th data-field="workdaysCount">应出勤天数</th>
+				<th data-field="normalClockOnCount">正常打卡(次)</th>
+				<th data-field="laterCount">迟到(次)</th>
+				<th data-field="noClockOnCount">未签到(次)</th>
+				<th data-field="normalClockOffCount">正常签退(次)</th>
+				<th data-field="leaveEarlyCount">早退(次)</th>
+				<th data-field="noClockOffCount">未签退(次)</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.AttendanceStatistic;
 import com.ulaiber.web.service.AttendanceStatisticService;
+import com.ulaiber.web.utils.DateTimeUtil;
 
 /** 
  * 考勤统计控制器
@@ -55,6 +56,9 @@ public class AttendanceStatisticController extends BaseController {
 		params.put("user_name", statistic.getUserName());
 		params.put("start_date", startDate);
 		params.put("end_date", endDate);
+		if (DateTimeUtil.getNumFromdate(startDate, endDate) > 31){
+			return data;
+		}
 		
 		int total = service.getCountBycond(params);
 		List<AttendanceStatistic> list = service.getStatisticsByCond(params);

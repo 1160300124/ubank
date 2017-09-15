@@ -74,6 +74,11 @@ public class Attendance {
 	 */
 	private String clockDevice;
 	
+	/**
+	 * 用于统计计数用
+	 */
+	private int count;
+	
 	public long getRid() {
 		return rid;
 	}
@@ -176,6 +181,14 @@ public class Attendance {
 
 	public void setYesterday(String yesterday) {
 		this.yesterday = yesterday;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 }
