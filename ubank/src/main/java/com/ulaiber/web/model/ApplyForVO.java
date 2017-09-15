@@ -24,6 +24,7 @@ public class ApplyForVO implements Serializable{
     private String mode;         // 加班核算方式；0 调休，1 发工资
     private String username;     //用户名
     private String image;        //头像
+    private String currentAuditor; //当前记录审批人
 
     public int getId() {
         return id;
@@ -159,5 +160,13 @@ public class ApplyForVO implements Serializable{
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCurrentAuditor() {
+        return currentAuditor;
+    }
+
+    public void setCurrentAuditor(String currentAuditor) {
+        this.currentAuditor = currentAuditor;
     }
 }

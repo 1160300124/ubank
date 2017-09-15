@@ -20,38 +20,38 @@
 
     <!--查询审批人记录-->
     <select id="queryAuditor" parameterType="int" resultType="com.ulaiber.web.model.LeaveAudit">
-        SELECT a.id,a.auditor,a.recordNo,a.status,a.userid,a.disable,b.user_name as username,a.auditDate
+        SELECT a.id,a.auditor,a.recordNo,a.status,a.userid,a.reason,a.disable,b.user_name as username,a.auditDate
         from tbl_leave_audit_record  a left join tbl_users b on a.auditor = b.user_id
         where a.disable = '0' and a.recordNo in
         <foreach collection="array" item="ids" open="(" separator="," close=")">
             #{ids}
         </foreach>
-        order by a.auditDate desc
+        order by a.sort
     </select>
 
     <!--获取个人所有审批记录-->
     <select id="getLeaveAuditor" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
         select id,recordNo,userid,auditor,auditDate,status,sort from tbl_leave_audit_record
-            WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate
+        WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate
     </select>
 
     <!--根据申请记录编号获取审批人-->
     <select id="getAuditorByUserId" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit" >
         select recordNo,auditor,sort,status from tbl_leave_audit_record
-            where disable = '0' and  auditor = #{userId} and status = '0'
-                order by auditDate limit #{pageNum},#{pageSize}
+        where disable = '0' and  auditor = #{userId} and status = '0'
+        order by auditDate limit #{pageNum},#{pageSize}
     </select>
 
     <!--根据排序号和申请记录编号获取审批-->
     <select id="getAuditorBySort" parameterType="Map" resultType="com.ulaiber.web.model.LeaveAudit">
-         select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and  recordNo = #{recordNo} and sort = #{sort}
+        select recordNo,auditor,sort,status from tbl_leave_audit_record where disable = '0' and  recordNo = #{recordNo} and sort = #{sort}
     </select>
 
     <!--根据申请记录号查询审批人记录-->
     <select id="queryAuditorByRecord" parameterType="String" resultType="com.ulaiber.web.model.AuditVO">
-         select a.status,a.sort,a.auditor,a.auditDate,b.user_name as username,b.image from tbl_leave_audit_record a
-            left join tbl_users b on a.auditor = b.user_id
-            where disable = '0' and  recordNo = #{recordNo} order by a.sort
+        select a.recordNo,a.status,a.sort,a.auditor,a.auditDate,b.user_name as username,b.image from tbl_leave_audit_record a
+        left join tbl_users b on a.auditor = b.user_id
+        where disable = '0' and  recordNo = #{recordNo} order by a.sort
     </select>
 
     <!--根据申请记录编号获取已审批人-->
@@ -62,7 +62,7 @@
     <!--确认审批-->
     <update id="confirmAudit" parameterType="Map" >
         UPDATE tbl_leave_audit_record set status = #{status},auditDate = #{date},reason = #{reason}
-            where recordNo = #{recordNo} and auditor = #{userId}
+        where recordNo = #{recordNo} and auditor = #{userId}
     </update>
 
     <!--查询用户个推CID-->
@@ -73,5 +73,13 @@
     <!--获取当前被审批记录的用户ID-->
     <select id="queryUserIdByRecordNo" parameterType="Map" resultType="String">
         SELECT userid FROM tbl_leave_audit_record where  recordNo = #{recordNo} and auditor = #{userId}
+    </select>
+
+    <!--根据多个id获取CID-->
+    <select id="queryCIDByIds" parameterType="int" resultType="Map">
+        select CID,user_name,user_id from tbl_users where user_id in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
     </select>
 </mapper>

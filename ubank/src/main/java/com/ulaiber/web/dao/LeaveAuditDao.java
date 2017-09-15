@@ -31,4 +31,6 @@ public interface LeaveAuditDao {
     Map<String,Object> queryCIDByUserid(int userid); //查询用户个推CID
 
     String queryUserIdByRecordNo(Map<String, Object> map); //获取当前被审批记录的用户ID
+
+    List<Map<String,Object>> queryCIDByIds(int[] ids); //根据多个id获取CID
 }

@@ -21,29 +21,29 @@ public class Test {
 //        System.out.println(uuid.toString().replaceAll("-", ""));
 //        String s = singleSend("c5deeceadc1ee518d9220cf86ab130f1", IConstants.SMS_TEMPLATE.replace("#code#", CaptchaUtil.getCaptcha()), "15919477086");
 //        System.out.println(s);
-		
+
 //        int n = 0 ;
 //		while(n < 10000)
 //			n = (int)(Math.random()*100000);
-//		
+//
 //		System.out.println(n);
 //		System.out.println(Math.random());
 //		System.out.println(CaptchaUtil.getCaptcha());
-        
-//		
+
+//
 //        6700e28167adc46e61422ddbabea87e9
 //        String tt = MD5Util.getEncryptedPwd("123456");
 //        System.out.println(tt);
 //
 //        //MD5加密
-//        String s = new String("123456"); 
-//        System.out.println("原始：" + s); 
-//        System.out.println("-------------：" + MD5Util.validatePwd(s, MD5Util.getEncryptedPwd(s))); 
+//        String s = new String("123456");
+//        System.out.println("原始：" + s);
+//        System.out.println("-------------：" + MD5Util.validatePwd(s, MD5Util.getEncryptedPwd(s)));
 //        System.out.println("MD5加密后：" + MD5Util.getEncryptedPwd(s));
-		
+
 //		String s = "/uwallet/backend/tomanager";
 //		System.out.println(s.substring("/uwallet".length()));
-        
+
 //      -----------------------------------------------------------------
 //        String apiUrl = "http://localhost:8080/ubank/api/v1/register";
 //        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
@@ -60,26 +60,26 @@ public class Test {
 //	    params.put("remark", "hahahahahahahahahaha");
 //        String response = HttpsUtil.doPost(apiUrl, params);
 //        System.out.println(response);
-        
+
 //      String apiUrl = "http://localhost:8080/ubank/api/v1/login";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "18503036206");
 //      params.put("login_password", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
-		
+
       String apiUrl = "http://localhost:8080/ubank/api/v1/getUserInfo";
       Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
       params.put("mobile", "15919477081");
       String response = HttpsUtil.doPost(apiUrl, params);
       System.out.println(response);
-        
+
 //      String apiUrl = "http://10.17.1.136:8080/ubank/api/v1/sendCaptcha";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "15919477086");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
-		
+
 //      String apiUrl = "http://localhost:8080/ubank/api/v1/validate";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "15919477086");
@@ -88,7 +88,7 @@ public class Test {
 //      params.put("confirm_password", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
-		
+
 //      String apiUrl = "http://localhost:8080/ubank/api/v1/updateForBankCard";
 //      Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
 //      params.put("mobile", "15919477086");
@@ -97,24 +97,24 @@ public class Test {
 //      params.put("reserve_mobile", "123456");
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
-		
-		
+
+
 //		FileUtil.copy(new File("C:\\tools\\test\\haha\\body.jpg"), new File("C:\\tools\\test\\"));
 //		FileUtil.deleteAllFilesOfDir("C:\\tools\\test\\");
-		
+
 //		String filename = "fileaaaaa.aaaa.jpg";
 //		String uuid = UUIDGenerator.getUUID();
 //        String newFilename = uuid + filename.substring(filename.lastIndexOf("."), filename.length());
 //        System.out.println(uuid);
 //        System.out.println(newFilename);
-		
+
 //		String clock_on_time = "09:30";
 //		String clock_off_time = "18:30";
 //		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
 //		String date = datetime.split(" ")[0];
 //		String time = datetime.split(" ")[1];
 //		System.out.println("--------------" + date + "-------------" + time);
-        
+
 //		String time = DateTimeUtil.date2Str(new Date(), "yyyy-MM-dd HH:mm");
 //        System.out.println(time);
 //        System.out.println(DateTimeUtil.getfutureTime(time, 0, 12, 0));
@@ -123,20 +123,20 @@ public class Test {
 		String[] holidays = {"2017-08-26", "2017-08-27" ,"2017-08-28"};
 		System.out.println(Arrays.asList(holidays));
 		System.out.println(DateTimeUtil.getYear(new Date()));
-		
+
 		String daytime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
 		String clockOnStartTime = DateTimeUtil.getfutureTime(daytime + " " + "10:30", 0, -2, 0).split(" ")[1];
 		String clockOffEndTime = DateTimeUtil.getfutureTime(daytime + " " + "19:00", 0, 6, 0).split(" ")[1];
 		System.out.println(clockOnStartTime + "--------------------" + clockOffEndTime);
-		
+
 		//随机生成n位数数字
         System.out.println(RandomStringUtils.randomNumeric(5));
         //在指定字符串中生成长度为n的随机字符串
         RandomStringUtils.random(5, "abcdefghijk");
         //指定从字符或数字中生成随机字符串
-        System.out.println(RandomStringUtils.random(5, true, false));  
+        System.out.println(RandomStringUtils.random(5, true, false));
         System.out.println(RandomStringUtils.random(5, false, true));
-        
+
 		List<Long> ids = new ArrayList<Long>();
 		ids.add(1L);
 		ids.add(2L);
@@ -144,7 +144,7 @@ public class Test {
 		ids.add(4L);
 		System.out.println(ids.contains(1L));
 	}
-	
+
 	/* 单条短信发送,智能匹配短信模板
 	 *
 	 * @param apikey 成功注册后登录云片官网,进入后台可查看
@@ -182,8 +182,8 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
-		map.put("pageNum",2);
+		map.put("userId","336");
+		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
 		System.out.print(result);
@@ -202,7 +202,7 @@ public class Test {
 	@org.junit.Test
 	public void getWorkRemind(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
+		map.put("userId","384");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkRemind",map);
 		System.out.print(">>>>>>>>工作提醒结果为："+result);
 	}
@@ -211,7 +211,7 @@ public class Test {
 	@org.junit.Test
 	public void getWorkAudit(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
+		map.put("userId","384");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getWorkAudit",map);
 		System.out.print(">>>>>>>>工作审批结果为："+result);
 	}
@@ -221,8 +221,8 @@ public class Test {
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
-		map.put("mark","0");
-		map.put("pageNum",0);
+		map.put("mark","1");
+		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
 		System.out.print(">>>>>>>>待审批数据为："+result);
@@ -232,9 +232,13 @@ public class Test {
 	@org.junit.Test
 	public void confirmAudit(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","365");
-		map.put("recordNo","106");
-		map.put("status","1");
+		map.put("userId","359");
+		map.put("currentUserId", "378");
+		map.put("recordNo","228");
+		map.put("status","0");
+		map.put("currentAuditor","张三");
+		map.put("auditorStatus","1");
+		map.put("reason","同意尼玛");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);
 		System.out.print(">>>>>>>>工作审批结果为："+result);
 	}
@@ -243,7 +247,7 @@ public class Test {
 	@org.junit.Test
 	public void messageTotal(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
+		map.put("userId","384");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/messageTotal",map);
 		System.out.print(">>>>>>>>工作提醒结果为："+result);
 	}

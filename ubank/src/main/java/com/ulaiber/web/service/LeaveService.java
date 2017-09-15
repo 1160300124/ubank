@@ -40,9 +40,9 @@ public interface LeaveService {
 
     List<LeaveAudit> queryAuditorByUserId(String userId,int pageNum,int pageSize);  //根据申请记录编号获取已审批人
 
-    int confirmAudit(String userId, String recordNo, String status,String reason);  //确认审批
+    int confirmAudit(AuditData auditData);  //确认审批
 
-    int updateRecord(String recordNo,String auditorStatus);  //更新申请记录为最新的状态
+    int updateRecord(AuditData auditData);  //更新申请记录为最新的状态
 
     Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
 

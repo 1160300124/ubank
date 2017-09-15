@@ -7,6 +7,7 @@ import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.utils.PushtoSingle;
+import com.ulaiber.web.utils.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,19 +56,23 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         int userid = Integer.parseInt(auditor[0]);
         int result = leaveAuditDao.saveAditor(list);
         Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
-        String cid  = (String) map2.get("CID");
-        if(!cid.equals("")){
-            String name = (String) map2.get("user_name");
-            int type = IConstants.PENGDING;
-            //消息内容
-            String title = "您有个请假申请待审批";
-            String content = name + "你好，有一条请假申请需要您审批，原因是:"+ leaveRecord.getReason();
-            try {
-                //推送审批信息致第一个审批人
-                PushtoSingle.singlePush(cid,type,content,title);
-            } catch (Exception e) {
-                e.printStackTrace();
+        String cid  = "";
+        if(map2.get("CID") != null){
+            if(!StringUtil.isEmpty(cid)){
+                cid = (String) map2.get("CID");
+                String name = (String) map2.get("user_name");
+                int type = IConstants.PENGDING;
+                //消息内容
+                String title = "您有个请假申请待审批";
+                String content = name + "你好，有一条请假申请需要您审批，原因是:"+ leaveRecord.getReason();
+                try {
+                    //推送审批信息致第一个审批人
+                    PushtoSingle.singlePush(cid,type,content,title);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+
         }
         return result;
     }
@@ -163,41 +168,75 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public int confirmAudit(String userId, String recordNo, String status,String reason) {
+    public int confirmAudit(AuditData auditData) {
         Map<String,Object> map = new HashMap<>();
-        map.put("userId" , userId);
-        map.put("recordNo" , recordNo);
-        map.put("status" , status);
-        map.put("reason",reason);
+        map.put("userId" , auditData.getUserId());
+        map.put("recordNo" , auditData.getRecordNo());
+        map.put("status" , auditData.getAuditorStatus());
+        map.put("reason",auditData.getReason());
         map.put("date",sdf.format(new Date()));
         int result = leaveAuditDao.confirmAudit(map);
         //获取当前被审批记录的用户ID
         Map<String,Object> param = new HashMap<>();
-        param.put("userId",userId);
-        param.put("recordNo",recordNo);
+        param.put("userId",auditData.getUserId());
+        param.put("recordNo",auditData.getRecordNo());
         String resultMap = leaveAuditDao.queryUserIdByRecordNo(param);
         int userid = Integer.parseInt(resultMap);
-        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
-        String cid = (String) map2.get("CID");
-        String name = (String) map2.get("user_name");
-        String title = "您有一条已审批的记录";
-        String content = name + "你好，您有一条申请已回复，理由是：" + reason;
-        if(!cid.equals("")){
-            int type = IConstants.ALREADY;
-            try {
-                PushtoSingle.singlePush(cid,type,content,title);
-            } catch (Exception e) {
-                e.printStackTrace();
+        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+        //根据多个id获取CID
+        if(auditData.getCurrentUserId().equals("")){
+            int[] ids = new int[1];
+            ids[0] = userid;
+            list = leaveAuditDao.queryCIDByIds(ids);
+        }else{
+            int[] ids = new int[2];
+            ids[0] = userid;
+            ids[1] = Integer.parseInt(auditData.getCurrentUserId());
+            list = leaveAuditDao.queryCIDByIds(ids);
+        }
+        String title = "";
+        String content = "";
+        String cid = "";
+        String name = "";
+        Integer user_id = 0;
+        int type = 0;
+        for (int i = 0 ; i < list.size() ; i++){
+            Map<String,Object> map2 = list.get(i);
+            user_id = Integer.parseInt(map2.get("user_id").toString());
+            cid = (String) map2.get("CID");
+            name = (String) map2.get("user_name");
+            if(!cid.equals("")){
+                type = IConstants.ALREADY;
+                if(user_id == userid ){ //申请记录所属用户
+                    title = "您有一条已审批的记录";
+                    content = name + "你好，您有一条申请已回复，理由是：" + auditData.getReason();
+                    try {
+                        PushtoSingle.singlePush(cid,type,content,title);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else if(user_id == Integer.parseInt(auditData.getCurrentUserId())){  //推送给下一个审批人
+                    type = IConstants.PENGDING;
+                    title = "您有一条待审批的记录";
+                    content = name + "你好，您有一个条待审批的记录需要审批，请查看";
+                    try {
+                        PushtoSingle.singlePush(cid,type,content,title);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+
         return result;
     }
 
     @Override
-    public int updateRecord(String recordNo,String auditorStatus) {
+    public int updateRecord(AuditData auditData) {
         Map<String,Object> map = new HashMap<>();
-        map.put("recordNo" , recordNo);
-        map.put("status" , auditorStatus);
+        map.put("recordNo" , auditData.getRecordNo());
+        map.put("status" , auditData.getStatus());
+        map.put("currentAuditor" , auditData.getCurrentAuditor());
         return leaveDao.updateRecord(map);
     }
 
