@@ -74,4 +74,31 @@ public interface AttendanceDao {
 	 */
 	List<Attendance> getRecordsByMonthAndMobile(Map<String, Object> params);
 	
+	/**
+	 * 根据date查询记录
+	 * @param params
+	 * @return
+	 */
+	List<Attendance> getRecordsByDate(Map<String, Object> params);
+	
+	/**
+	 * 分组查询获取统计数据
+	 * @param params
+	 * @return
+	 */
+	List<Map<String, Object>> getStatistis(Map<String, Object> params);
+	
+	/**
+	 * 获取统计数据条数
+	 * @param params
+	 * @return
+	 */
+	int getStatistisCount(Map<String, Object> params);
+	
+	/**
+	 * 获取打卡的用户
+	 * @return
+	 */
+	List<Map<String, Object>> getUsersFromRecords(Map<String, Object> params);
+	
 }

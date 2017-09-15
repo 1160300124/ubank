@@ -361,10 +361,16 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		List<String> days = DateTimeUtil.getDaysFromMonth(month);
+		
+		//指定月份为空则获取当前月份
+		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
 		//0 正常   1异常(迟到，早退，忘打卡) 2未打卡  3休息日
-		int type = 2;
+		int type = 3;
 		for (String day : days){
 			data.put(day, type);
+			if (month.compareTo(currentMonth) > 0){
+				continue;
+			}
 			boolean isRestDay = false;
 			String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(day) + "");
 			//节假日
@@ -400,10 +406,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			int count = 0;
 			for (Attendance att : list){
 				if (att.getClockDateTime().compareTo(dayBegin) >= 0 && att.getClockDateTime().compareTo(dayEnd) <= 0){
-					if (StringUtils.equals(att.getClockType(), "0") && StringUtils.equals(att.getClockStatus(), "0")){
-						type = 1;
-					} else if (StringUtils.equals(att.getClockType(), "1") && StringUtils.equals(att.getClockStatus(), "0")){
+					if (StringUtils.equals(att.getClockType(), "0") && StringUtils.equals(att.getClockStatus(), "0")
+							|| StringUtils.equals(att.getClockType(), "1") && StringUtils.equals(att.getClockStatus(), "0")){
 						type = 0;
+					} else {
+						type =1;
 					}
 					count ++;
 				}

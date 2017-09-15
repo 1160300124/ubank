@@ -101,5 +101,12 @@ public interface AttendanceRuleDao {
 	 * @return
 	 */
 	List<UserOfRule> getUserIdsByComId(int companyId);
+	
+	/**
+	 * 根据公司id获取考勤规则
+	 * @param companyId
+	 * @return
+	 */
+	List<AttendanceRule> getRulesByCompanyId(int companyId);
 
 }

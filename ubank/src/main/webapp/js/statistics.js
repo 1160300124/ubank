@@ -53,6 +53,19 @@ $(function(){
 		});
 		
 	});
+	
+	function getDays(startDate, endDate){
+		var date1Str = startDate.split("-");//将日期字符串分隔为数组，数组元素分别为年、月、日      
+		//根据年、月、日的值创建Date对象
+		var date1Obj = new Date(date1Str[0],(date1Str[1]-1),date1Str[2]);
+		var date2Str = endDate.split("-");
+		var date2Obj = new Date(date2Str[0],(date2Str[1]-1),date2Str[2]);
+		var t1 = date1Obj.getTime();//返回从1970-1-1开始计算到Date对象中的时间之间的毫秒数
+		var t2 = date2Obj.getTime();//返回从1970-1-1开始计算到Date对象中的时间之间的毫秒数
+		var datetime = 1000 * 60 * 60 * 24; //一天时间的毫秒值 
+		var days = Math.abs((t2 - t1) / datetime);//计算出两个日期天数差 
+		return days;
+	} 
 
 	$("#btn_search").unbind().bind("click", function(){
 
@@ -64,8 +77,6 @@ $(function(){
 	    dept.dept_number = $("#dept_select").val();
 		params.dept = dept;
 		params.userName = $("#user_name").val();
-		params.clockType = $("#type").val();
-		params.clockStatus = $("#status").val();
 		params.startDate = $("#start_date").val();
 		params.endDate = $("#end_date").val();
 		
@@ -79,6 +90,14 @@ $(function(){
 		}
 		if (params.endDate == "" || params.endDate == null) {
 			Ewin.alert("请选择结束日期。");
+			return;
+		}
+		if (params.startDate > params.endDate){
+			Ewin.alert("开始日期不能大于结束日期");
+			return;
+		}
+		if (getDays(params.startDate, params.endDate) > 30){
+			Ewin.alert("开始日期与结束日期相差不能大于31天");
 			return;
 		}
 
@@ -97,8 +116,8 @@ $(function(){
 		    return paramStr.substr(1);
 		}
 
-		$("#tb_attendance_records").bootstrapTable("refresh", {
-			url : "getRecords?" + parseParams(params)
+		$("#tb_statistics").bootstrapTable("refresh", {
+			url : "getStatistics?" + parseParams(params)
 		});
 
 		$("#btn_search").attr("disabled", false);

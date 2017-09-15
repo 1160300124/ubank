@@ -101,6 +101,10 @@ public class AttendanceApiController extends BaseController {
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		
+		if (StringUtils.equals(today, date)){
+			date = "";
+		}
+		
 		String dateBegin = today + " " + rule.getClockOnStartTime();
 		String dateEnd = today + " " + rule.getClockOffEndTime();
 		

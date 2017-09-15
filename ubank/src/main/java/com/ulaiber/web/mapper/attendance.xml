@@ -76,7 +76,8 @@
 	</select>
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
-		select * from tbl_attendance_records where user_id=#{userId} and clock_datetime &gt;= #{dateBegin} and clock_datetime &lt;=#{dateEnd}
+		select user_id,user_name,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId} 
+		and clock_datetime &gt;= #{dateBegin} and clock_datetime &lt;=#{dateEnd}
 		<if test="clockType != null and clockType != ''">
 			and r.clock_type = #{clockType}
 		</if>
@@ -89,7 +90,8 @@
 	</select>
 	
 	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
-		select user_id,user_name,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId} order by clock_date desc limit 1
+		select user_id,user_name,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId}
+		order by clock_date desc limit 1
 	</select>
 	
 	<update id="updateClockOffInfo" parameterType="Attendance">
@@ -114,5 +116,48 @@
 	        #{item}   
 	    </foreach>  
 	</delete>
+	
+	<select id="getUsersFromRecords" parameterType="Map" resultType="Map">
+	    select r.user_id,r.user_name,d.dept_number,d.name deptName,c.companyNumber,c.name from (
+	    	select distinct user_id,user_name,dept_num,company_num from tbl_attendance_records
+		 	where company_num=#{company_num}
+			<if test="dept_num != null and dept_num != 0">
+				and dept_num = #{dept_num}
+			</if>
+			and clock_datetime&gt;=#{dateBegin} and clock_datetime&lt;=#{dateEnd}
+	    ) r
+	    left join tbl_departments d on r.dept_num=d.dept_number left join tbl_company c on d.company_num=c.companyNumber
+		<if test="user_name != null and user_name != ''">
+			and r.user_name like concat('%',#{user_name},'%')
+		</if>
+		limit #{offset},#{limit}
+	</select>
+	
+	<select id="getStatistisCount" parameterType="Map" resultType="Integer">
+	    select count(1) from (select distinct user_id,user_name,dept_num,company_num from tbl_attendance_records where company_num=#{company_num}
+			<if test="dept_num != null and dept_num != 0">
+				and dept_num = #{dept_num}
+			</if>
+		and clock_datetime&gt;=#{dateBegin} and clock_datetime&lt;=#{dateEnd}) r
+		<if test="user_name != null and user_name != ''">
+			and r.user_name like concat('%',#{user_name},'%')
+		</if>
+	</select>
+	
+	<select id="getStatistis" parameterType="Map" resultType="Map">
+		select user_id,user_name,clock_type,clock_status,count(1) count from tbl_attendance_records where company_num=#{company_num}
+		<if test="dept_num != null and dept_num != 0">
+			and dept_num = #{dept_num}
+		</if>
+		and clock_datetime&gt;=#{dateBegin} and clock_datetime&lt;=#{dateEnd} group by user_id,user_name,clock_type,clock_status
+	</select>
+	
+	<select id="getRecordsByDate" parameterType="Map" resultMap="AttendanceMap">
+		select * from tbl_attendance_records where clock_datetime &gt;= #{dateBegin} and clock_datetime &lt;=#{dateEnd}
+		<if test="clockType != null and clockType != ''">
+			and clock_type = #{clockType}
+		</if>
+		order by rid
+	</select>
 	
 </mapper>

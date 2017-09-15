@@ -23,6 +23,7 @@ import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.PermissionService;
+import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.ObjUtil;
 
 /** 
@@ -85,6 +86,9 @@ public class AttendanceController extends BaseController {
 		params.put("user_name", att.getUserName());
 		params.put("start_date", startDate);
 		params.put("end_date", endDate);
+		if (DateTimeUtil.getNumFromdate(startDate, endDate) > 31){
+			return data;
+		}
 		
 		int total = service.getCountBycond(params);
 		List<Attendance> list = service.getRecordsByCond(params);
