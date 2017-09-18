@@ -47,7 +47,7 @@
 	
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y:auto;">
-		<div class="modal-dialog" style="width:60%;min-width:760px;">
+		<div class="modal-dialog" style="width:60%;min-width:760px;max-width: 900px;">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
