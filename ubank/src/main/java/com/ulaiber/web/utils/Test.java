@@ -182,7 +182,7 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","336");
+		map.put("userId","387");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
@@ -232,11 +232,11 @@ public class Test {
 	@org.junit.Test
 	public void confirmAudit(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
-		map.put("currentUserId", "378");
-		map.put("recordNo","228");
+		map.put("userId","378");
+		map.put("currentUserId", "384");
+		map.put("recordNo","231");
 		map.put("status","0");
-		map.put("currentAuditor","张三");
+		map.put("currentAuditor","张三xxxx");
 		map.put("auditorStatus","1");
 		map.put("reason","同意尼玛");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);

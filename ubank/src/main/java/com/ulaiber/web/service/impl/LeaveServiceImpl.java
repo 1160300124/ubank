@@ -168,6 +168,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int confirmAudit(AuditData auditData) {
         Map<String,Object> map = new HashMap<>();
         map.put("userId" , auditData.getUserId());

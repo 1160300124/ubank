@@ -17,6 +17,7 @@ public class AuditVO implements Serializable{
     private int sort;
     private String username;
     private String image;
+    private String reason;
 
     public int getId() {
         return id;
@@ -96,5 +97,13 @@ public class AuditVO implements Serializable{
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }
