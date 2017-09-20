@@ -35,44 +35,50 @@ public class Attendance {
 	private Company company;
 	
 	/**
-	 * 打卡时间 clockDateTime
-	 */
-	private String clockDateTime;
-	
-	/**
 	 * 打卡日期yyyy-mm-dd
 	 */
 	private String clockDate;
 	
 	/**
-	 * 打卡日期前一天yyyy-mm-dd
+	 * 上班打卡时间
 	 */
-	private String yesterday;
+	private String clockOnDateTime;
+	
 	
 	/**
-	 * 打卡时间 HH:mm
+	 * 打卡状态 0：正常 1：迟到
 	 */
-	private String clockTime;
+	private String clockOnStatus;
 	
 	/**
-	 * 打卡类型 0：签到 1：签退
+	 * 上班打卡位置
 	 */
-	private String clockType;
+	private String clockOnLocation;
 	
 	/**
-	 * 打卡状态 0：正常 1：迟到 2：早退
+	 * 上班打卡设备号
 	 */
-	private String clockStatus;
+	private String clockOnDevice;
 	
 	/**
-	 * 打卡位置
+	 * 下班打卡时间
 	 */
-	private String clockLocation;
+	private String clockOffDateTime;
 	
 	/**
-	 * 打卡设备号
+	 * 打卡状态 0：正常 1：早退
 	 */
-	private String clockDevice;
+	private String clockOffStatus;
+	
+	/**
+	 * 下班打卡位置
+	 */
+	private String clockOffLocation;
+	
+	/**
+	 * 下班打卡设备号
+	 */
+	private String clockOffDevice;
 	
 	/**
 	 * 用于统计计数用
@@ -119,14 +125,6 @@ public class Attendance {
 		this.company = company;
 	}
 
-	public String getClockDateTime() {
-		return clockDateTime;
-	}
-
-	public void setClockDateTime(String clockDateTime) {
-		this.clockDateTime = clockDateTime;
-	}
-
 	public String getClockDate() {
 		return clockDate;
 	}
@@ -135,52 +133,68 @@ public class Attendance {
 		this.clockDate = clockDate;
 	}
 
-	public String getClockTime() {
-		return clockTime;
+	public String getClockOnDateTime() {
+		return clockOnDateTime;
 	}
 
-	public void setClockTime(String clockTime) {
-		this.clockTime = clockTime;
-	}
-	
-	public String getClockType() {
-		return clockType;
+	public void setClockOnDateTime(String clockOnDateTime) {
+		this.clockOnDateTime = clockOnDateTime;
 	}
 
-	public void setClockType(String clockType) {
-		this.clockType = clockType;
+	public String getClockOnStatus() {
+		return clockOnStatus;
 	}
 
-	public String getClockStatus() {
-		return clockStatus;
+	public void setClockOnStatus(String clockOnStatus) {
+		this.clockOnStatus = clockOnStatus;
 	}
 
-	public void setClockStatus(String clockStatus) {
-		this.clockStatus = clockStatus;
+	public String getClockOnLocation() {
+		return clockOnLocation;
 	}
 
-	public String getClockLocation() {
-		return clockLocation;
+	public void setClockOnLocation(String clockOnLocation) {
+		this.clockOnLocation = clockOnLocation;
 	}
 
-	public void setClockLocation(String clockLocation) {
-		this.clockLocation = clockLocation;
+	public String getClockOnDevice() {
+		return clockOnDevice;
 	}
 
-	public String getClockDevice() {
-		return clockDevice;
+	public void setClockOnDevice(String clockOnDevice) {
+		this.clockOnDevice = clockOnDevice;
 	}
 
-	public void setClockDevice(String clockDevice) {
-		this.clockDevice = clockDevice;
-	}
-	
-	public String getYesterday() {
-		return yesterday;
+	public String getClockOffDateTime() {
+		return clockOffDateTime;
 	}
 
-	public void setYesterday(String yesterday) {
-		this.yesterday = yesterday;
+	public void setClockOffDateTime(String clockOffDateTime) {
+		this.clockOffDateTime = clockOffDateTime;
+	}
+
+	public String getClockOffStatus() {
+		return clockOffStatus;
+	}
+
+	public void setClockOffStatus(String clockOffStatus) {
+		this.clockOffStatus = clockOffStatus;
+	}
+
+	public String getClockOffLocation() {
+		return clockOffLocation;
+	}
+
+	public void setClockOffLocation(String clockOffLocation) {
+		this.clockOffLocation = clockOffLocation;
+	}
+
+	public String getClockOffDevice() {
+		return clockOffDevice;
+	}
+
+	public void setClockOffDevice(String clockOffDevice) {
+		this.clockOffDevice = clockOffDevice;
 	}
 
 	public int getCount() {

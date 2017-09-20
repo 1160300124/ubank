@@ -22,7 +22,7 @@ public interface AttendanceService {
 	 * @param attend
 	 * @return
 	 */
-	ResultInfo save(Attendance attend, AttendanceRule rule);
+	ResultInfo save(Attendance attend, String device, String location, AttendanceRule rule);
 	
 	/**
 	 * 根据条件查询记录
@@ -56,7 +56,7 @@ public interface AttendanceService {
 	 * @param params
 	 * @return
 	 */
-	List<Attendance> getRecordsByDateAndMobile(String dateBegin, String dateEnd, String mobile, AttendanceRule rule);
+	List<Attendance> getRecordsByDateAndMobile(String dateBegin, String dateEnd, String mobile);
 	
 	/**
 	 * 根据userId获取用户的最近一次打卡记录

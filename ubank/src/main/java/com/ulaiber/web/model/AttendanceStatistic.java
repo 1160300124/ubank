@@ -69,6 +69,11 @@ public class AttendanceStatistic {
 	 * 未打卡次数(下班)
 	 */
 	private int noClockOffCount;
+	
+	/**
+	 * 备注
+	 */
+	private String remark;
 
 	public long getSid() {
 		return sid;
@@ -164,6 +169,14 @@ public class AttendanceStatistic {
 
 	public void setNoClockOffCount(int noClockOffCount) {
 		this.noClockOffCount = noClockOffCount;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	
 }

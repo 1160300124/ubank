@@ -61,12 +61,12 @@
 				<th data-field="company.name">公司</th>
 				<th data-field="dept.deptName">部门</th>
 				<th data-field="workdaysCount">应出勤天数</th>
-				<th data-field="normalClockOnCount">正常打卡(次)</th>
+				<th data-field="normalClockOnCount">正常上班打卡(次)</th>
 				<th data-field="laterCount">迟到(次)</th>
-				<th data-field="noClockOnCount">未签到(次)</th>
-				<th data-field="normalClockOffCount">正常签退(次)</th>
+				<th data-field="noClockOnCount">上班未打卡(次)</th>
+				<th data-field="normalClockOffCount">正常下班打卡(次)</th>
 				<th data-field="leaveEarlyCount">早退(次)</th>
-				<th data-field="noClockOffCount">未签退(次)</th>
+				<th data-field="noClockOffCount">下班未打卡(次)</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>

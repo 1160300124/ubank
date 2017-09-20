@@ -73,6 +73,12 @@ public class AttendanceApiController extends BaseController {
 		}
 
 		Map<String, Object> data = service.getRecordsByMonthAndMobile(month, mobile, rule);
+		if (null == data){
+			logger.error(month.split("-")[0] + "年没有设置法定节假日，请先设置。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage(month.split("-")[0] + "年没有设置法定节假日，请先设置。");
+			return info;
+		}
 		info.setCode(IConstants.QT_CODE_OK);
 		info.setMessage("用户 {" + mobile + "}获取考勤记录成功。");
 		info.setData(data);
@@ -119,11 +125,6 @@ public class AttendanceApiController extends BaseController {
 				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
 			}
 		} else {
-//			//if最晚打卡时间<最早打卡时间，说明最晚打卡时间为转钟后的凌晨时间，否则为当天时间
-//			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) <= 0){
-//				//转钟后的前一天日期 yyyy-MM-dd 
-//				today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-//			}
 			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
 				if (time.compareTo(rule.getClockOffEndTime()) <= 0){
 					today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
@@ -141,8 +142,7 @@ public class AttendanceApiController extends BaseController {
 		if (holiday != null){
 			List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
 			List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
-			if (holidays.contains(today) && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0
-					|| time.compareTo(rule.getClockOffEndTime()) > 0 && rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0)){
+			if (holidays.contains(today) && datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(dateEnd) <= 0){
 				isRestDay = true;
 			} else {
 				String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
@@ -161,7 +161,7 @@ public class AttendanceApiController extends BaseController {
 		
 		//date不为空, 查询指定日期的打卡信息
 		if (StringUtils.isNotEmpty(date)){
-			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile, rule);
+			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile);
 			data.put("records", records);
 			return data;
 		}
@@ -177,35 +177,29 @@ public class AttendanceApiController extends BaseController {
 		
 		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡  5不能打卡
 		int type = 0;
-		//按rid顺序查出考勤记录，<=2条记录
-		List<Attendance> records = service.getRecordsByDateAndMobile(today, today, mobile, rule);
+		//查询当天的考勤记录
+		List<Attendance> records = service.getRecordsByDateAndMobile(today, today, mobile);
 		if (null == records || records.size() == 0){
-			//如果加班到凌晨打卡，当天是没有打卡记录的，需判断当前打卡时间是否在最晚下班打卡时间之内，如在则为昨天的下班卡，否则为今天的上班卡
+			//当前时间在下班时间和最晚下半时间之间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
 				type = 1;
 			}
 		} else {
-			if (records.size() == 1){
-				if (StringUtils.equals(records.get(0).getClockType(), "0")){
-					type = 1;
-				} else if (StringUtils.equals(records.get(0).getClockType(), "1")){
-					type = 2;
-				}
-			} else if (records.size() >= 2){
+			if (StringUtils.isEmpty(records.get(0).getClockOffDateTime())){
+				type = 1;
+			}
+			//当前时间在下班时间和最晚下半时间之间
+			else if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
 				type = 2;
 			}
 		}
 		
-		//当前时间<最早上班打卡时间&&最晚下班打卡时间>最早上班打卡时间 || 当前时间<最早上班打卡时间&&最晚下班打卡时间<最早上班打卡时间&&当前时间>最晚下班打卡时间
+		//当前时间<最早上班打卡时间
 		if (datetime.compareTo(dateBegin) < 0){
-//		if (time.compareTo(rule.getClockOnStartTime()) < 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0
-//				|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOffEndTime()) > 0)){
 			type = 3;
 		}
-		//当前时间>最晚下班打卡时间&&最晚下班打卡时间>最早上班打卡时间 || 当前时间>最晚下班打卡时间&&最晚下班打卡时间<最早上班打卡时间&&当前时间<最早上班打卡时间
+		//当前时间>最晚下班打卡时间
 		if (datetime.compareTo(dateEnd) > 0){
-//		else if (time.compareTo(rule.getClockOffEndTime()) > 0 && (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) > 0) 
-//				|| rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0 && time.compareTo(rule.getClockOnStartTime()) < 0){ 
 			type = 4;
 		}
 		
@@ -259,10 +253,10 @@ public class AttendanceApiController extends BaseController {
 		dept.setDept_number(user.getDept_number());
 		att.setDept(dept);
 		
-		att.setClockDevice(device);
-		att.setClockLocation(location);
+//		att.setClockDevice(device);
+//		att.setClockLocation(location);
 		
-		info = service.save(att, rule);
+		info = service.save(att, device, location, rule);
 		if (info.getCode() == IConstants.QT_CODE_OK){
 			logger.info("用户  " + mobile + " 打卡成功。");
 			info.setMessage("用户  " + mobile + " 打卡成功。");

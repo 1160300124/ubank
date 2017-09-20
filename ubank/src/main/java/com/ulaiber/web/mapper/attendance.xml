@@ -13,13 +13,15 @@
     	<id column="rid" property="rid" jdbcType="BIGINT" />
     	<result column="user_id" property="userId" jdbcType="BIGINT" />
     	<result column="user_name" property="userName" jdbcType="VARCHAR" />
-    	<result column="clock_datetime" property="clockDateTime" jdbcType="VARCHAR" />
     	<result column="clock_date" property="clockDate" jdbcType="VARCHAR" />
-    	<result column="clock_time" property="clockTime" jdbcType="VARCHAR" />
-    	<result column="clock_type" property="clockType" jdbcType="VARCHAR" />
-    	<result column="clock_status" property="clockStatus" jdbcType="VARCHAR" />
-    	<result column="clock_location" property="clockLocation" jdbcType="VARCHAR" />
-    	<result column="clock_device" property="clockDevice" jdbcType="VARCHAR" />
+    	<result column="clock_on_datetime" property="clockOnDateTime" jdbcType="VARCHAR" />
+    	<result column="clock_on_status" property="clockOnStatus" jdbcType="VARCHAR" />
+    	<result column="clock_on_location" property="clockOnLocation" jdbcType="VARCHAR" />
+    	<result column="clock_on_device" property="clockOnDevice" jdbcType="VARCHAR" />
+    	<result column="clock_off_datetime" property="clockOffDateTime" jdbcType="VARCHAR" />
+    	<result column="clock_off_status" property="clockOffStatus" jdbcType="VARCHAR" />
+    	<result column="clock_off_location" property="clockOffLocation" jdbcType="VARCHAR" />
+    	<result column="clock_off_device" property="clockOffDevice" jdbcType="VARCHAR" />
     	<association column="dept_num" property="dept" javaType="com.ulaiber.web.model.Departments" resultMap="DepartmentMap"/>
     	<association column="company_num" property="company" javaType="com.ulaiber.web.model.Company" resultMap="CompanyMap"/>
    </resultMap>
@@ -43,8 +45,9 @@
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="Attendance" >
-		insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device)
-		    values(#{userId},#{userName},#{dept.dept_number},#{company.companyNumber},#{clockDateTime},#{clockDate},#{clockTime},#{clockType},#{clockStatus},#{clockLocation},#{clockDevice}) 
+		insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,
+		clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(#{userId},#{userName},#{dept.dept_number},#{company.companyNumber},#{clockDate},
+		#{clockOnDateTime},#{clockOnStatus},#{clockOnLocation},#{clockOnDevice},#{clockOffDateTime},#{clockOffStatus},#{clockOffLocation},#{clockOffDevice}) 
 	</insert>
 	
 	<sql id="byCond">
@@ -52,11 +55,14 @@
 		<if test="dept_num != null and dept_num != 0">
 			and r.dept_num = #{dept_num}
 		</if>
-		<if test="clock_type != null and clock_type != ''">
-			and r.clock_type = #{clock_type}
+		<if test="clock_on_status == '' and clock_on_status == ''">
+			and clock_on_status is null or clock_off_status is null
 		</if>
-		<if test="clock_status != null and clock_status != ''">
-			and r.clock_status = #{clock_status}
+		<if test="clock_on_status != null and clock_on_status != ''">
+			and r.clock_on_status = #{clock_on_status}
+		</if>
+		<if test="clock_off_status != null and clock_off_status != ''">
+			and r.clock_off_status = #{clock_off_status}
 		</if>
 		<if test="user_name != null and user_name != ''">
 			and r.user_name like concat('%',#{user_name},'%')
@@ -76,17 +82,14 @@
 	</select>
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
-		select user_id,user_name,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId} 
-		and clock_datetime &gt;= #{dateBegin} and clock_datetime &lt;=#{dateEnd}
-		<if test="clockType != null and clockType != ''">
-			and r.clock_type = #{clockType}
-		</if>
-		order by rid
+		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,
+		clock_off_device from tbl_attendance_records where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
-		select r.rid,r.user_id,r.user_name,r.clock_datetime,r.clock_date,r.clock_time,r.clock_type,r.clock_status,r.clock_location,r.clock_device from tbl_attendance_records r 
-		left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile} and r.clock_datetime &gt;= #{dateBegin} and r.clock_datetime &lt;=#{dateEnd} order by r.rid
+		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_off_datetime,r.clock_off_status,
+		r.clock_off_location from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile}
+		and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by r.rid
 	</select>
 	
 	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
@@ -95,19 +98,8 @@
 	</select>
 	
 	<update id="updateClockOffInfo" parameterType="Attendance">
-		update tbl_attendance_records set clock_datetime=#{clockDateTime},clock_time=#{clockTime},clock_status = #{clockStatus},clock_location=#{clockLocation},clock_device=#{clockDevice}
-		<if test="yesterday != null and yesterday != ''">
-			,clock_date = #{clockDate}
-		</if>
-		where user_id=#{userId} and clock_type = #{clockType}
-		<choose>
-			<when test="yesterday != null and yesterday != ''">
-				and clock_date = #{yesterday}
-			</when>
-			<otherwise>
-				and clock_date = #{clockDate}
-			</otherwise>
-		</choose>
+		update tbl_attendance_records set clock_off_datetime=#{clockOffDateTime},clock_off_status = #{clockOffStatus},clock_off_location=#{clockOffLocation},
+		clock_off_device=#{clockOffDevice} where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
 	<delete id="deleteRecordsByRids" parameterType="java.util.List">
@@ -124,11 +116,11 @@
 			<if test="dept_num != null and dept_num != 0">
 				and dept_num = #{dept_num}
 			</if>
-			and clock_datetime&gt;=#{dateBegin} and clock_datetime&lt;=#{dateEnd}
+			and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date}
 	    ) r
 	    left join tbl_departments d on r.dept_num=d.dept_number left join tbl_company c on d.company_num=c.companyNumber
 		<if test="user_name != null and user_name != ''">
-			and r.user_name like concat('%',#{user_name},'%')
+			where r.user_name like concat('%',#{user_name},'%')
 		</if>
 		limit #{offset},#{limit}
 	</select>
@@ -138,26 +130,22 @@
 			<if test="dept_num != null and dept_num != 0">
 				and dept_num = #{dept_num}
 			</if>
-		and clock_datetime&gt;=#{dateBegin} and clock_datetime&lt;=#{dateEnd}) r
+		and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date}) r
 		<if test="user_name != null and user_name != ''">
-			and r.user_name like concat('%',#{user_name},'%')
+			where r.user_name like concat('%',#{user_name},'%')
 		</if>
 	</select>
 	
 	<select id="getStatistis" parameterType="Map" resultType="Map">
-		select user_id,user_name,clock_type,clock_status,count(1) count from tbl_attendance_records where company_num=#{company_num}
+		select user_id,user_name,clock_on_status,clock_off_status,count(1) count from tbl_attendance_records where company_num=#{company_num}
 		<if test="dept_num != null and dept_num != 0">
 			and dept_num = #{dept_num}
 		</if>
-		and clock_datetime&gt;=#{dateBegin} and clock_datetime&lt;=#{dateEnd} group by user_id,user_name,clock_type,clock_status
+		and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date} group by user_id,user_name,clock_on_status,clock_off_status
 	</select>
 	
 	<select id="getRecordsByDate" parameterType="Map" resultMap="AttendanceMap">
-		select * from tbl_attendance_records where clock_datetime &gt;= #{dateBegin} and clock_datetime &lt;=#{dateEnd}
-		<if test="clockType != null and clockType != ''">
-			and clock_type = #{clockType}
-		</if>
-		order by rid
+		select * from tbl_attendance_records where clock_date &gt;= #{start_date} and clock_date &lt;=# {end_date} order by rid
 	</select>
 	
 </mapper>
