@@ -1,6 +1,7 @@
 package com.ulaiber.web.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 报销传递的参数
@@ -10,7 +11,7 @@ public class ReimbursementVO implements Serializable {
     private Object data;
     private String reason;
     private String auditor;
-    private String userid;
+    private String userId;
 
     public Object getData() {
         return data;
@@ -36,11 +37,11 @@ public class ReimbursementVO implements Serializable {
         this.auditor = auditor;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

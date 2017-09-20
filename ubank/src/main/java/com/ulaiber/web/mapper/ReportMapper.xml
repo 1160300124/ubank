@@ -16,7 +16,7 @@
             left join tbl_group c on b.groupNumber = c.groupNumber
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
-            where 1=1
+            where a.type &lt;&gt; '2'
         <if test = 'sysflag == "1"'>
             and c.groupNumber = #{groupNumber}
         </if>
@@ -29,10 +29,12 @@
             left join tbl_group c on b.groupNumber = c.groupNumber
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
-            where 1=1
+            left join tbl_users f on a.userid = f.user_id
+            where a.type &lt;&gt; '2'
+        <!--当前用户没有根节点的情况下执行的语句-->
             <if test= 'sysflag != "1"'>
                 <if test= 'groupNum != "" and groupNum != null'>
-                     c.groupNumber = #{groupNum}
+                     and c.groupNumber = #{groupNum}
                 </if>
                 <if test= 'companyNum != "" and companyNum != null'>
                     and d.companyNumber = #{companyNum}
@@ -40,8 +42,8 @@
                 <if test='dept_number != "" and dept_number != null'>
                     and e.dept_number = #{deptNum}
                 </if>
-                <if test= 'auditor != "" and auditor != null'>
-                    and a.auditor like concat('%',#{username},'%')
+                <if test= 'username != "" and username != null'>
+                    and f.user_name like concat('%',#{username},'%')
                 </if>
                 <if test='startDate != "" and startDate != null'>
                     and a.startDate &gt;= #{startDate}
@@ -57,31 +59,32 @@
                 </if>
                 order by a.createDate DESC limit #{pageNum},#{pageSize}
             </if>
+        <!--当前用户有根节点的情况下-->
             <if test= 'sysflag != "0"'>
                 <choose>
                     <when test= 'groupNumber == "" and groupNumber == null'>
-                        c.groupNumber = #{groupNumber}
+                        and c.groupNumber = #{groupNumber}
                     </when>
                     <otherwise>
-                        c.groupNumber = #{groupNum}
+                        and c.groupNumber = #{groupNum}
                     </otherwise>
                 </choose>
                 <choose>
                     <when test= 'companyNumber == "" and companyNumber == null'>
-                        c.companyNumber in
+                        and d.companyNumber in
                         <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                             #{companyNumber}
                         </foreach>
                     </when>
                     <otherwise>
-                        c.companyNumber = #{companyNum}
+                        and d.companyNumber = #{companyNum}
                     </otherwise>
                 </choose>
                 <if test='dept_number != "" and dept_number != null'>
                     and e.dept_number = #{deptNum}
                 </if>
-                <if test= 'auditor != "" and auditor != null'>
-                    and a.auditor like concat('%',#{username},'%')
+                <if test= 'username != "" and username != null'>
+                    and  like concat('%',#{username},'%')
                 </if>
                 <if test='startDate != "" and startDate != null'>
                     and a.startDate &gt;= #{startDate}
@@ -105,5 +108,112 @@
         <foreach collection="array" item="ids" open="(" separator="," close=")">
             #{ids}
         </foreach>
+    </select>
+
+    <!--获取报销记录总数-->
+    <select id="getReimCount" parameterType="Map" resultType="int">
+        select count(a.id) as count from tbl_leave_record a
+            left join tbl_roots b on a.userid = b.userid
+            left join tbl_users c on a.userid = c.user_id
+            left join tbl_company d on b.companyNumber = d.companyNumber
+            left join tbl_departments e on e.dept_number = b.dept_number
+            left join tbl_group f on b.groupNumber = f.groupNumber
+            where a.type &lt;&gt; '2'
+        <if test = 'sysflag == "1"'>
+            and f.groupNumber = #{groupNumber}
+        </if>
+    </select>
+
+    <!--报销记录查询-->
+    <select id="reimQuery" parameterType="Map" resultType="com.ulaiber.web.model.ReimReportVO">
+        select a.id,a.createDate,c.user_name as username,d.name as company,e.name as dept,a.reason,a.status from tbl_leave_record a
+            left join tbl_roots b on a.userid = b.userid
+            left join tbl_users c on a.userid = c.user_id
+            left join tbl_company d on b.companyNumber = d.companyNumber
+            left join tbl_departments e on e.dept_number = b.dept_number
+            left join tbl_group f on b.groupNumber = f.groupNumber
+            where a.type &lt;&gt; '2'
+        <!--当前用户没有根节点的情况下执行的语句-->
+        <if test= 'sysflag != "1"'>
+            <if test= 'groupNum != "" and groupNum != null'>
+                and f.groupNumber = #{groupNum}
+            </if>
+            <if test= 'companyNum != "" and companyNum != null'>
+                and d.companyNumber = #{companyNum}
+            </if>
+            <if test='dept_number != "" and dept_number != null'>
+                and e.dept_number = #{deptNum}
+            </if>
+            <if test= 'username != "" and username != null'>
+                and c.user_name like concat('%',#{username},'%')
+            </if>
+            <if test='startDate != "" and startDate != null'>
+                and a.createDate &gt;= #{startDate}
+            </if>
+            <if test='endDate != "" and endDate != null'>
+                and a.createDate $lt; #{endDate}
+            </if>
+            <if  test= 'status != "" and status != null'>
+                and a.status = #{status}
+            </if>
+            <if  test= 'result != "" and result != null'>
+                and a.status = #{result}
+            </if>
+            order by a.editDate DESC limit #{pageNum},#{pageSize}
+        </if>
+        <!--当前用户有根节点的情况下-->
+        <if test= 'sysflag != "0"'>
+            <choose>
+                <when test= 'groupNumber == "" and groupNumber == null'>
+                    and f.groupNumber = #{groupNumber}
+                </when>
+                <otherwise>
+                    and f.groupNumber = #{groupNum}
+                </otherwise>
+            </choose>
+            <choose>
+                <when test= 'companyNumber == "" and companyNumber == null'>
+                    and d.companyNumber in
+                    <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                        #{companyNumber}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and d.companyNumber = #{companyNum}
+                </otherwise>
+            </choose>
+            <if test='dept_number != "" and dept_number != null'>
+                and e.dept_number = #{deptNum}
+            </if>
+            <if test= 'username != "" and username != null'>
+                and c.user_name like concat('%',#{username},'%')
+            </if>
+            <if test='startDate != "" and startDate != null'>
+                and a.startDate &gt;= #{startDate}
+            </if>
+            <if test='endDate != "" and endDate != null'>
+                and a.endDate $lt; #{endDate}
+            </if>
+            <if  test= 'status != "" and status != null'>
+                and a.status = #{status}
+            </if>
+            <if  test= 'result != "" and result != null'>
+                and a.status = #{result}
+            </if>
+            order by a.editDate DESC limit #{pageNum},#{pageSize}
+        </if>
+    </select>
+
+    <!--根据申请记录ID，获取报销详情-->
+    <select id="getReimRecordById" parameterType="int" resultType="com.ulaiber.web.model.Reimbursement">
+        SELECT * FROM  tbl_reimbursement where recordNo in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </select>
+
+    <!--根据申请记录ID获取报销记录-->
+    <select id="getReimDetailsById" parameterType="int" resultType="com.ulaiber.web.model.Reimbursement">
+        SELECT * FROM  tbl_reimbursement where recordNo = #{id}
     </select>
 </mapper>

@@ -57,9 +57,9 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         int result = leaveAuditDao.saveAditor(list);
         Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
         String cid  = "";
-        if(map2.get("CID") != null){
+        if(!StringUtil.isEmpty(map2.get("CID"))){
+            cid = (String) map2.get("CID");
             if(!StringUtil.isEmpty(cid)){
-                cid = (String) map2.get("CID");
                 String name = (String) map2.get("user_name");
                 int type = IConstants.PENGDING;
                 //消息内容
@@ -206,9 +206,9 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
             user_id = Integer.parseInt(map2.get("user_id").toString());
             cid = (String) map2.get("CID");
             name = (String) map2.get("user_name");
-            if(!cid.equals("")){
+            if(!StringUtil.isEmpty(cid)){
                 type = IConstants.ALREADY;
-                if(user_id == userid ){ //申请记录所属用户
+                if(user_id == userid ){ //推送给申请记录所属用户
                     title = "您有一条已审批的记录";
                     content = name + "你好，您有一条申请已回复，理由是：" + auditData.getReason();
                     try {
@@ -217,14 +217,17 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
                         e.printStackTrace();
                     }
                 }else if(user_id == Integer.parseInt(auditData.getCurrentUserId())){  //推送给下一个审批人
-                    type = IConstants.PENGDING;
-                    title = "您有一条待审批的记录";
-                    content = name + "你好，您有一个条待审批的记录需要审批，请查看";
-                    try {
-                        PushtoSingle.singlePush(cid,type,content,title);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if(!auditData.getAuditorStatus().equals("2")){
+                        type = IConstants.PENGDING;
+                        title = "您有一条待审批的记录";
+                        content = name + "你好，您有一个条待审批的记录需要审批，请查看";
+                        try {
+                            PushtoSingle.singlePush(cid,type,content,title);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+
                 }
             }
         }
@@ -238,6 +241,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("recordNo" , auditData.getRecordNo());
         map.put("status" , auditData.getStatus());
         map.put("currentAuditor" , auditData.getCurrentAuditor());
+        map.put("date",sdf.format(new Date()));
         return leaveDao.updateRecord(map);
     }
 
@@ -267,6 +271,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("CID" , CID);
         return leaveDao.updateUser(map);
     }
+
 
 
 }

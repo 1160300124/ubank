@@ -41,7 +41,7 @@
     <!--查询工作提醒-->
     <select id="getLeaveRecord" parameterType="String" resultType="Map">
         select a.userid,a.reason,a.createDate,b.user_name,a.type  from tbl_leave_record a left join tbl_users b on a.userid = b.user_id
-        where a.userid = #{userId} order by a.createDate DESC
+        where a.disable = '0' and a.status = '0' and a.userid = #{userId} order by a.createDate DESC
     </select>
 
     <!--获取待审批记录数量-->
@@ -71,12 +71,12 @@
         left join tbl_overtime_details b on a.id = b.recordNo
         left join tbl_users c on a.userid = c.user_id
         where  a.auditor like concat('%',#{userId},'%') and a.id = #{id}
-        order by a.createDate desc
+        order by a.editDate desc
     </select>
 
     <!--更新申请记录为最新的状态-->
     <update id="updateRecord" parameterType="Map" >
-        UPDATE tbl_leave_record set status = #{status},currentAuditor = #{currentAuditor} where id = #{recordNo}
+        UPDATE tbl_leave_record set status = #{status},currentAuditor = #{currentAuditor},editDate = #{date} where id = #{recordNo}
     </update>
 
     <!--根据申请记录ID获取申请记录-->
@@ -98,7 +98,7 @@
         select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime  from tbl_users a
         left join tbl_roots b on a.user_id = b.userid
         left join tbl_departments c on b.dept_number = c.dept_number
-        where a.disabled = '0'
+        where 1=1
         <if test='date != "" and date != null'>
             and  a.createTime > #{date}
         </if>

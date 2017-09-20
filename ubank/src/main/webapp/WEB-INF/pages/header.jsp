@@ -97,7 +97,7 @@
                 var father = [];
                 var children = [];
                 if(data.length <= 0 ){
-                    Ewin.alert("系统菜单加载异常，请联系管理员。");
+                    Ewin.alert("系统菜单加载异常");
                     return
                 }
                 for (var i = 0; i<data.length; i++){
@@ -131,7 +131,7 @@
 
             },
             error : function () {
-                Ewin.alert("系统菜单加载异常，请联系管理员。");
+                Ewin.alert("系统菜单加载异常");
 
             }
         });

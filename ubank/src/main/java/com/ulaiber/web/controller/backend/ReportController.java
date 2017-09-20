@@ -8,6 +8,7 @@ import com.ulaiber.web.utils.ExportExcel;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -47,14 +48,15 @@ public class ReportController extends BaseController {
 
     /**
      * 申请记录查询
-     * @param leaveReportVO
-     * @param pageSize
-     * @param sysflag
-     * @param pageNum
-     * @param groupNumber
+     * @param leaveReportVO 请求参数对象
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param sysflag 角色标识
+     * @param groupNumber 集团编号
+     * @param companyNumber 公司编号
      * @return map
      */
-    @RequestMapping("leaveQuery")
+    @RequestMapping(value = "leaveQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> leaveQuery(LeaveReportVO leaveReportVO, @Param("pageSize") int pageSize,
                                          @Param("sysflag") String sysflag, @Param("pageNum") int pageNum,
@@ -65,7 +67,13 @@ public class ReportController extends BaseController {
         if (pageNum < 0){
             pageNum = 0;
         }
+        Map<String,Object> map = new HashMap<>();
         int total = reportService.getLeaveCount(sysflag,groupNumber,pageNum,pageSize); //获取申请记录总数
+        if(total <= 0){
+            map.put("total" , total);
+            map.put("rows" , "");
+            return map;
+        }
         String[] comArr = companyNumber.split(",");
         List<LeaveReturnVO> list = reportService.leaveQuery(leaveReportVO,sysflag,groupNumber,comArr,pageNum,pageSize);
         //根据申请记录ID申请记录审批结果
@@ -98,7 +106,6 @@ public class ReportController extends BaseController {
                 }
             }
         }
-        Map<String,Object> map = new HashMap<>();
         map.put("total" , total);
         map.put("rows" , list);
         return map;
@@ -110,8 +117,8 @@ public class ReportController extends BaseController {
      * @param request
      * @param response
      * @throws IOException
-     */
-    @RequestMapping("exportExcel")
+      */
+    @RequestMapping(value = "exportExcel", method = RequestMethod.POST)
     @ResponseBody
     public void Export(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String jsonStr = request.getParameter("json");  //json字符串
@@ -121,4 +128,86 @@ public class ReportController extends BaseController {
         ExportExcel exportExcel = new ExportExcel();
         exportExcel.export(jsonStr,sheader,fileName,title,response,request);
     }
+
+    /**
+     * 报销报表查询
+     * @param leaveReportVO 请求参数对象
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param sysflag 角色标识
+     * @param groupNumber 集团编号
+     * @param companyNumber 公司编号
+     * @return map
+     */
+    @RequestMapping(value = "reimReportQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object>  reimQuery(LeaveReportVO leaveReportVO, @Param("pageSize") int pageSize,
+                                         @Param("sysflag") String sysflag, @Param("pageNum") int pageNum,
+                                         @Param("groupNumber") String groupNumber,@Param("companyNumber") String companyNumber){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> resultMap = new HashMap<>();
+        //获取报销记录总数
+        int count = reportService.getReimCount(sysflag,groupNumber,pageNum,pageSize);
+        if(count <= 0){
+            resultMap.put("total", count);
+            resultMap.put("rows", "");
+            return resultMap;
+        }
+        String[] comArr = companyNumber.split(",");
+        //报销记录查询
+        List<ReimReportVO> list = reportService.reimQuery(leaveReportVO,sysflag,groupNumber,comArr,pageNum,pageSize);
+        //获取报销申请记录ID
+        int[] ids = new int[list.size()];
+        for (int i = 0 ; i < list.size() ; i++){
+            ReimReportVO re = list.get(i);
+            ids[i] = re.getId();
+        }
+        //根据申请记录ID，获取报销详情
+        List<Reimbursement> reimList = reportService.getReimRecordById(ids);
+        if(reimList.size() > 0){
+            //将报销详情放入对应的报销记录中
+            for (int i = 0 ; i < list.size() ; i++){
+                ReimReportVO record = list.get(i);
+                int total = 0; //报销项数
+                int totalAmount = 0; //报销总金额
+                for (int j = 0 ; j < reimList.size() ; j++){
+                    Reimbursement reim = reimList.get(i);
+                    //如果申请记录ID等于报销详情的记录ID，则将每条记录的报销总金额汇总出来，并获取每条记录的报销项数
+                    if(record.getId() == reim.getRecordNo()){
+                        totalAmount += reim.getAmount();
+                        total += 1;
+                    }
+                }
+                record.setTotalAmount(totalAmount);
+                record.setCount(total);
+            }
+        }
+        resultMap.put("total" , count);
+        resultMap.put("rows" , list);
+        return resultMap;
+
+    }
+
+    /**
+     * 根据申请记录ID获取报销记录
+     * @param id 申请记录ID
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "queryReimDetails", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> getReimDetails(@Param("id") int id){
+        List<Reimbursement> list = reportService.getReimDetailsById(id);
+        Map<String,Object> map = new HashMap<>();
+        map.put("totol",0);
+        map.put("rows",list);
+        return map;
+    }
+
+
+
 }

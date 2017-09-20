@@ -1,6 +1,8 @@
 package com.ulaiber.web.dao;
 
 import com.ulaiber.web.model.LeaveReturnVO;
+import com.ulaiber.web.model.ReimReportVO;
+import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.User;
 
 import java.util.List;
@@ -17,4 +19,12 @@ public interface ReportDao {
     List<LeaveReturnVO> leaveQuery(Map<String, Object> map);   //申请记录查询
 
     List<Map<String,Object>> getUserById(String[] ids);  //根据用户ID获取用户名
+
+    int getReimCount(Map<String, Object> map); //获取报销记录总数
+
+    List<ReimReportVO> reimQuery(Map<String, Object> map); //报销记录查询
+
+    List<Reimbursement> getReimRecordById(int[] ids); //根据申请记录ID，获取报销详情
+
+    List<Reimbursement> getReimDetailsById(int id);  //根据申请记录ID获取报销记录
 }

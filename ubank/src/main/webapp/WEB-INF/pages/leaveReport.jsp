@@ -62,7 +62,7 @@
                     <span class="fa icon-search" aria-hidden="true"></span>查询
                 </button>
                 <button onclick="exportExcel()" type="button" class="btn btn-default">
-                    <span class="fa icon-search" aria-hidden="true"></span>导出
+                    <span class="fa icon-cloud-download" aria-hidden="true"></span>导出
                 </button>
             </div>
         </form>
@@ -121,12 +121,12 @@
                 pageNumber : 1, // 初始化加载第一页，默认第一页
                 pageSize : 10, // 每页的记录行数
                 pageList : [10,20,30,40], // 可供选择的每页的行数
-                showRefresh : false, //刷新按钮
-                showToggle :false,   //切换试图（table/card）按钮
+                showRefresh : true, //刷新按钮
+                showToggle :true,   //切换试图（table/card）按钮
                 //showColumns : true,
                 clickToSelect : true,
                 columns : [
-                    {field : 'checkbox',checkbox :true, width: 20, align : 'center'},
+                    {field : 'checkbox',checkbox  :true, width: 20, align : 'center'},
                     {field : 'id', title : '审批编号', width: 130, align : 'left'},
                     {field : 'company', title : '公司', width: 130, align : 'left'},
                     {field : 'startDate', title : '开始时间', width: 130, align : 'left'},
@@ -136,12 +136,12 @@
                     {field : 'username', title : '提交人', width: 130, align : 'left'},
                     {field : 'auditor', title : '审批人', width: 130, align : 'left'},
                     {field : 'status', title : '当前审批状态', width: 130, align : 'left',
-                        formatter : function(value,index,row){
-                            if(row.status == "0"){
+                        formatter : function(value,row,index){
+                            if(value == "0"){
                                 return "待审批";
-                            }else if(row.status == '1'){
+                            }else if(value == '1'){
                                 return "审批通过";
-                            }else if(row.status == '2'){
+                            }else if(value == '2'){
                                 return "驳回";
                             }else{
                                 return '';
@@ -149,15 +149,15 @@
                         }
                     },
                     {field : 'result', title : '审批结果', width: 130, align : 'left',
-                        formatter : function(value,index,row){
+                        formatter : function(value,row,index){
                             if(row.status == "1"){
                                 return "审批通过";
                             }else if(row.status == "2"){
-                                return "驳回"
+                                return "审批不通过"
                             }else if(row.status == "0"){
-                                return "待审批";
+                                return "正在审批中";
                             }else{
-                                return "";
+                                return ''
                             }
                         }
                     }
@@ -282,7 +282,7 @@
     //导出excel
     function exportExcel() {
         var table = $('#leave_table').tableToJSON();
-        var fileName = 'Excel';
+        var fileName = 'LeaveAndOvertimeReportExcel';
         console.info(table);
         var json = JSON.stringify(table);
         var nodes = $("#leave_table thead tr").children().children('div .th-inner');

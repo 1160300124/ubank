@@ -12,9 +12,9 @@ public class Reimbursement implements Serializable {
     private String type;
     private String start;
     private String end;
-    private float amount;
+    private int amount;
     private String remark;
-    private Object image;
+    private Object images;
 
     public int getId() {
         return id;
@@ -56,11 +56,11 @@ public class Reimbursement implements Serializable {
         this.end = end;
     }
 
-    public float getAmount() {
+    public int getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(int amount) {
         this.amount = amount;
     }
 
@@ -72,11 +72,11 @@ public class Reimbursement implements Serializable {
         this.remark = remark;
     }
 
-    public Object getImage() {
-        return image;
+    public Object getImages() {
+        return images;
     }
 
-    public void setImage(Object image) {
-        this.image = image;
+    public void setImages(Object images) {
+        this.images = images;
     }
 }

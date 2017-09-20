@@ -2,12 +2,15 @@ package com.ulaiber.web.controller.api;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
+import com.ulaiber.web.dao.ReimbursementDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.service.ReimbursementService;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -30,12 +33,15 @@ public class LeaveController extends BaseController {
     @Resource
     private LeaveService leaveService;
 
+    @Resource
+    private ReimbursementService reimbursementService;
+
     /**
      * 申请请假
      * @param leaveRecord
      * @return ResultInfo
      */
-    @RequestMapping("applyForLeave")
+    @RequestMapping(value = "applyForLeave", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo applyForLeave( LeaveRecord leaveRecord){
         logger.info("开始保存申请请假记录");
@@ -74,7 +80,7 @@ public class LeaveController extends BaseController {
      * @param userId 用户id
      * @return ResultInfo
      */
-    @RequestMapping("queryApplyRecord")
+    @RequestMapping(value = "queryApplyRecord", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo queryApplyRecord(String userId,int pageNum,int pageSize){
         ResultInfo resultInfo = new ResultInfo();
@@ -115,7 +121,6 @@ public class LeaveController extends BaseController {
             ApplyForVO ls = list.get(i);
             resultMap.put("id" , ls.getId());
             resultMap.put("userid" , ls.getUserid());
-            //  resultMap.put("leaveType" , ls.getLeaveType());
             resultMap.put("startDate" , ls.getStartDate());
             resultMap.put("endDate" , ls.getEndDate());
             resultMap.put("leaveTime" , ls.getLeaveTime());
@@ -126,9 +131,6 @@ public class LeaveController extends BaseController {
             resultMap.put("createDate" , ls.getCreateDate());
             resultMap.put("status" , ls.getStatus());
             resultMap.put("currentAuditor",ls.getCurrentAuditor());
-            //  resultMap.put("auditorStatus" , ls.getAuditorStatus());
-            //  resultMap.put("holiday" , ls.getHoliday());
-            //  resultMap.put("mode" , ls.getMode());
             resultMap.put("username" , ls.getUsername());
             resultMap.put("image" , ls.getImage());
             if(ls.getType().equals("0")){  //请假记录
@@ -137,38 +139,21 @@ public class LeaveController extends BaseController {
                 resultMap.put("leave" , map);
             }else if(ls.getType().equals("1")){  //加班记录
                 OvertimeVO overtimeVO = new OvertimeVO();
-                // overtimeVO.setHoliday(applyForVO.getHoliday());
                 overtimeVO.setMode(ls.getMode());
                 resultMap.put("overtime" , overtimeVO);
+            }else if(ls.getType().equals("2")){   //报销记录
+                //申请记录ID
+                int recordNo = ls.getId();
+                //根据申请记录ID，获取报销记录
+                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                resultMap.put("reimbursement",reimList);
             }
-//            else if(ls.getType().equals("2")){
-//                Reimbursement reimbursement = new Reimbursement();
-//            }
-//            String name = "";
-//            Date createAuditDate = null;
-//            try {
-//                createAuditDate = sdf.parse(list2.get(0).getAuditDate());
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
+            //将申请记录对应的审批人放入记录中
             for (int j = 0 ; j < list2.size(); j++){
                 LeaveAudit la = list2.get(j);
-                //获取审批时间最大值的用户名和审批时间
                 if(String.valueOf(ls.getId()).equals(la.getRecordNo()) ){
                     resultList.add(la);
-//                    try {
-//                        Date auditDate = sdf.parse(la.getAuditDate());
-//                        if(auditDate.after(createAuditDate)){
-//                            createAuditDate = auditDate;
-//                            name = la.getUsername();
-//                        }
-//                    } catch (ParseException e) {
-//                        logger.info(e);
-//                        e.printStackTrace();
-//                    }
                 }
-                // resultMap.put("curAuditDate",sdf.format(createAuditDate));
-                // resultMap.put("curName",name);
 
             }
             resultMap.put("auditorStatus" , resultList);
@@ -186,7 +171,7 @@ public class LeaveController extends BaseController {
      * @param applyId 申请记录ID
      * @return
      */
-    @RequestMapping("cancelApply")
+    @RequestMapping(value = "cancelApply", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo cancelApply(String applyId){
         logger.info("开始取消请假申请操作");
@@ -215,7 +200,7 @@ public class LeaveController extends BaseController {
      * @param userId 用户id
      * @return ResultInfo
      */
-    @RequestMapping("getWorkRemind")
+    @RequestMapping(value = "getWorkRemind", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo workRemind(String userId){
         ResultInfo resultInfo = new ResultInfo();
@@ -238,8 +223,8 @@ public class LeaveController extends BaseController {
             remindApplyVO.setReason(list.get(0).get("reason"));
         }else{
             remindApplyVO.setCount(0);
-            remindApplyVO.setDate("");
             remindApplyVO.setType("");
+            remindApplyVO.setDate("");
             remindApplyVO.setApplyName("");
             remindApplyVO.setReason("");
         }
@@ -311,7 +296,7 @@ public class LeaveController extends BaseController {
      * @param userId 用户id
      * @return ResultInfo
      */
-    @RequestMapping("getWorkAudit")
+    @RequestMapping(value = "getWorkAudit", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo workAudit(String userId){
         logger.info("开始查询工作审批记录");
@@ -374,7 +359,7 @@ public class LeaveController extends BaseController {
      * @param mark   标识 0 待审批，1  已审批
      * @return ResultInfo
      */
-    @RequestMapping("queryAuditRecord")
+    @RequestMapping(value = "queryAuditRecord", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo queryAuditRecord(String userId,String mark,int pageNum,int pageSize){
         logger.info("开始查询待批复数据");
@@ -465,6 +450,12 @@ public class LeaveController extends BaseController {
                         // overtimeVO.setHoliday(applyForVO.getHoliday());
                         overtimeVO.setMode(applyForVO.getMode());
                         map.put("overtime" , overtimeVO);
+                    }else if(applyForVO.getType().equals("2")){   //报销记录
+                        //申请记录ID
+                        int recordNo = applyForVO.getId();
+                        //根据申请记录ID，获取报销记录
+                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                        map.put("reimbursement",reimList);
                     }
                     list.add(map);
                     String recordNo = auditorList.get(i).getRecordNo();
@@ -477,11 +468,6 @@ public class LeaveController extends BaseController {
                             if(listMap.containsKey("auditorStatus") ){
                                 listMap.put("auditorStatus" , list2);
                             }
-//                            String ID = String.valueOf(listMap.get("id"));
-//                            ////获取审批时间最大值的用户名和审批时间
-//                            Map<String,Object> resultMap = MAX(list2,ID);
-//                            listMap.put("curAuditDate", resultMap.get("curAuditDate"));
-//                            listMap.put("curName", resultMap.get("curName"));
 
                         }
                     }
@@ -502,41 +488,6 @@ public class LeaveController extends BaseController {
         return resultInfo;
     }
 
-    /**
-     * 获取审批人中的最大日期值和姓名
-     * @param list 数据
-     * @param ID 申请记录ID
-     * @return Map<String,Object>
-     */
-    public Map<String,Object> MAX (List<AuditVO> list ,String ID) {
-        Map<String,Object> map = new HashMap<>();
-        String name = "";
-        Date curDate = null;
-        try {
-            curDate =  sdf.parse(list.get(0).getAuditDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        for (int i = 0 ; i < list.size() ; i++){
-            AuditVO la = list.get(i);
-            //获取审批时间最大值的用户名和审批时间
-            if (String.valueOf(ID).equals(la.getRecordNo())) {
-                try {
-                    Date auditDate = sdf.parse(la.getAuditDate());
-                    if (auditDate.after(curDate)) {
-                        curDate = auditDate;
-                        name = la.getUsername();
-                    }
-                } catch (ParseException e) {
-                    logger.info(e);
-                    e.printStackTrace();
-                }
-            }
-            map.put("curAuditDate", sdf.format(curDate));
-            map.put("curName", name);
-        }
-        return map;
-    }
 
     /**
      * 循环获取有用的待审批记录
@@ -589,13 +540,17 @@ public class LeaveController extends BaseController {
                 // overtimeVO.setHoliday(applyForVO.getHoliday());
                 overtimeVO.setMode(applyForVO.getMode());
                 map.put("overtime" , overtimeVO);
+            }else if(applyForVO.getType().equals("2")){   //报销记录
+                //申请记录ID
+                int recordNo = applyForVO.getId();
+                //根据申请记录ID，获取报销记录
+                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                map.put("reimbursement",reimList);
             }
             int sort = auList.get(i).getSort();
             int sortValue = sort - 1;
             String recordNo = "";
             String status = "";
-//            String name = "";
-//            Date curdDate = null;
             if(sortValue != 0){
                 recordNo = auList.get(i).getRecordNo();
                 //根据排序号和申请记录编号获取审批人
@@ -605,42 +560,15 @@ public class LeaveController extends BaseController {
                     list.add(map);
                     count += 1;
                     resultMap.put("count",count);
-
                     //根据申请记录号查询记录审批人
                     List<AuditVO> list3 = leaveService.queryAuditorByRecord(recordNo);
-//                    try {
-//                        curdDate = sdf.parse(list3.get(0).getAuditDate());
-//                    } catch (ParseException e) {
-//                        e.printStackTrace();
-//                    }
                     //将当前记录的所有审批人放入记录中
                     for (int j = 0 ; j < list.size() ; j++){
                         Map<String,Object> listMap = list.get(j);
                         if(String.valueOf(listMap.get("id")).equals(auList.get(i).getRecordNo())){
                             if(listMap.containsKey("auditorStatus")){
                                 listMap.put("auditorStatus" , list3);
-                                // listMap.put("status","0");
                             }
-//                            String ID = String.valueOf(listMap.get("id"));
-//                            //获取审批时间最大值的用户名和审批时间
-//                            Map<String,Object> map2 = MAX(list3,ID);
-//                            listMap.put("curAuditDate", map2.get("curAuditDate"));
-//                            listMap.put("curName", map2.get("curName"));
-
-//                            for (int k = 0 ; k < list3.size() ; k++){
-//                                AuditVO au = list3.get(k);
-//                                try {
-//                                    Date auditDate = sdf.parse(au.getAuditDate());
-//                                    if(auditDate.after(curdDate)){
-//                                        curdDate = auditDate;
-//                                        name = au.getUsername();
-//                                    }
-//                                } catch (ParseException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                            listMap.put("curName",name);
-//                            listMap.put("curAuditDate",sdf.format(curdDate));
                         }
 
                     }
@@ -655,37 +583,12 @@ public class LeaveController extends BaseController {
                 recordNo = auList.get(i).getRecordNo();
                 //根据申请记录号查询审批人记录
                 List<AuditVO> list4 = leaveService.queryAuditorByRecord(recordNo);
-//                try {
-//                    curdDate = sdf.parse(list4.get(0).getAuditDate());
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
                 for (int j = 0 ; j < list.size() ; j++){
                     Map<String,Object> listMap = list.get(j);
                     if(String.valueOf(listMap.get("id")).equals(auList.get(i).getRecordNo())){
                         if(listMap.containsKey("auditorStatus") ){
                             listMap.put("auditorStatus" , list4);
-                            //listMap.put("status","0");
                         }
-//                        String ID = String.valueOf(listMap.get("id"));
-//                        //获取审批时间最大值的用户名和审批时间
-//                        Map<String,Object> map2 = MAX(list4,ID);
-//                        listMap.put("curAuditDate", map2.get("curAuditDate"));
-                        // listMap.put("curName", map2.get("curName"));
-//                        for (int k = 0 ; k < list4.size() ; k++){
-//                            AuditVO au = list4.get(k);
-//                            try {
-//                                Date auditDate = sdf.parse(au.getAuditDate());
-//                                if(auditDate.after(curdDate)){
-//                                    curdDate = auditDate;
-//                                    name = au.getUsername();
-//                                }
-//                            } catch (ParseException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        listMap.put("curName",name);
-//                        listMap.put("curAuditDate",sdf.format(curdDate));
                     }
                 }
             }
@@ -700,7 +603,7 @@ public class LeaveController extends BaseController {
      * @param auditData  确认审批的数据
      * @return
      */
-    @RequestMapping("confirmAudit")
+    @RequestMapping(value = "confirmAudit", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo confirmAudit(AuditData auditData){
         logger.info("开始确认审批操作");
@@ -749,7 +652,7 @@ public class LeaveController extends BaseController {
      * @param userId 用户ID
      * @return ResultInfo
      */
-    @RequestMapping("messageTotal")
+    @RequestMapping(value = "messageTotal", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo messageTotal(String userId){
         logger.info("开始获取消息总数......");
@@ -795,7 +698,7 @@ public class LeaveController extends BaseController {
      * @param date 日期
      * @return ResultInfo
      */
-    @RequestMapping("synchronizationData")
+    @RequestMapping(value = "synchronizationData", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo synchronizationData(String date,int pageNum,int pageSize){
         logger.info(">>>>>>>>>>>>>开始同步数据");
@@ -835,7 +738,6 @@ public class LeaveController extends BaseController {
                 for (int i = 0 ; i < userList.size() ; i++){
                     User user = userList.get(i);
                     if(user.getDisabled().equals("0")){
-                        //list.add(userList.get(i));
                         SynchronizationData async = new SynchronizationData();
                         async.setId(userList.get(i).getId());
                         async.setUsername(userList.get(i).getUserName());
@@ -844,7 +746,6 @@ public class LeaveController extends BaseController {
                         async.setDisabled(userList.get(i).getDisabled());
                         list.add(async);
                     }else{
-                        //list2.add(userList.get(i));
                         SynchronizationData async = new SynchronizationData();
                         async.setId(userList.get(i).getId());
                         async.setUsername(userList.get(i).getUserName());
@@ -912,7 +813,7 @@ public class LeaveController extends BaseController {
      * @param CID 用户个推CID
      * @return ResultInfo
      */
-    @RequestMapping("getClinetID")
+    @RequestMapping(value = "getClinetID", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo getClinetID(String userId,String CID){
         logger.info(">>>>>>>>>>>开始插入个推CID");

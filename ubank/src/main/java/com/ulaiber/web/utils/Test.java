@@ -7,9 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ulaiber.web.model.Reimbursement;
+import com.ulaiber.web.model.ReimbursementVO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
+
+import javax.xml.crypto.dsig.TransformException;
 
 public class Test {
 	public static final String priKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKh7bxbe5dhwuZzNkeDXrpHx7o5k+uIWrbY1+8c6Oqgq2AfajnK5v10OfQW85xNUn/4TzoRcCOCaK2LZO4QJoQmgs41x45jZNvI/f8EGcJvt2oCs3S2Da98+v6VVfDXoSfgeHlNRcDSYlZF2E31KQLtdTGva9IeECx2CpPIkbVeXAgMBAAECgYA0QlUq2uigQhbQtFLTUxMq4cgFEv1es3oeUpBOM5mOH/vyM7CLlWHuE1hkNzvVmyIlRS+BjqqSQD/E4Wy8f+AbAznky5F8q5Afe5ZKxi+n2M4ZMgh9uryVMcAHCXu1RnOrtsnGjJvp23ku4wZtWCHLNAuQfI9zj6ncq4v50RKKQQJBAN8tSbcT37Mq3Y50zVnnmGxNEgUZKJXwPw/KnO6EeR/Nfpmzy40GQU8y+GGoq5cVY5NDOqYVi6nh21mLXQij9AsCQQDBQt0zU8zurSNaoRYsjhNrHJHQjBt0WuIxtluZz44CTbNQw5/3kA1jVvt1EXOE1hF+l2QVIuLgvgIeHDwvenYlAkAeiusgtAaUVZR2r4N+/1P71lxV+Eh2pKdsuNTbS6Pr90qRLGr6BNYhSZ92dgftqE61U6kOG7q+aBuF2K3FxfJbAkA1oCES4fjmbYJ23mXxvQakXQwU6xufIKzNEIXAWzhTaU4NZgrYPc+JNhSWOl5siJ3YG5f4yXJc3DxoMHt+zSNFAkEA25eGORpWtXERhGXHZR8f3nWIHTAF+EM1O8T7YXp+y7sWs8YvtNI3ZtzjzncHWk4YdScNqkXC1UJz2hokLUR7Aw==";
@@ -167,13 +171,13 @@ public class Test {
     @org.junit.Test
 	public void apply(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userid","365");
+		map.put("userid","428");
 		map.put("leaveType","2");
 		map.put("leaveTime",24);
 		map.put("startDate","2017-08-24");
 		map.put("endDate","2017-08-25");
-		map.put("auditor","364,366");
-		map.put("reason","生病，去一医院看病");
+		map.put("auditor","430");
+		map.put("reason","生病XXXXXXXXXXXXXXXXXXX");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/applyForLeave",map);
 		System.out.print(result);
 	}
@@ -182,7 +186,7 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","387");
+		map.put("userId","359");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
@@ -232,13 +236,13 @@ public class Test {
 	@org.junit.Test
 	public void confirmAudit(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","378");
-		map.put("currentUserId", "384");
-		map.put("recordNo","231");
+		map.put("userId","424");
+		map.put("currentUserId", "423");
+		map.put("recordNo","335");
 		map.put("status","0");
-		map.put("currentAuditor","张三xxxx");
+		map.put("currentAuditor","张三三");
 		map.put("auditorStatus","1");
-		map.put("reason","同意尼玛");
+		map.put("reason","同意同意同意同意同意同意xxxxxxxxxxx");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);
 		System.out.print(">>>>>>>>工作审批结果为："+result);
 	}
@@ -264,8 +268,8 @@ public class Test {
 		map.put("startDate","2017-08-24");
 		map.put("endDate","2017-08-25");
 		map.put("leaveTime",8.0);
-		map.put("auditor","336");
-		map.put("reason","测试测试");
+		map.put("auditor","303");
+		map.put("reason","测试测试xxxxxxxx");
 		map.put("mode" , '1');
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/addOvertimeRecord",map);
 		System.out.print(result);
@@ -275,7 +279,7 @@ public class Test {
 	@org.junit.Test
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("date","2017-09-07 15:03:23");
+		map.put("date","");
 		map.put("pageNum",1);
 		map.put("pageSize",50);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
@@ -297,28 +301,34 @@ public class Test {
 	//新增报销记录
 	@org.junit.Test
 	public void insertReimbusement(){
-		List<Map<String,Object>> list = new ArrayList<>();
-		Map<String,Object> map = new HashMap<>();
-		map.put("type" , "0");
-		map.put("start" , "深圳南山区深南大道腾讯大厦");
-		map.put("end" , "湖北省武汉市洪山区关山大道");
-		map.put("amount" , 999.23);
-		map.put("remark" , "缺少报销单");
-		map.put("image" , "");
-		Map<String,Object> map2 = new HashMap<>();
-		map2.put("type" , "1");
-		map2.put("amount" , 440.9);
-		map2.put("remark" , "超支");
-		map2.put("image","");
-		list.add(map);
-		list.add(map2);
+		List<Reimbursement> list = new ArrayList<>();
+		Reimbursement r1 = new Reimbursement();
+		r1.setType("0");
+		r1.setStart("深圳南山区深南大道腾讯大厦");
+		r1.setEnd("湖北省武汉市洪山区关山大道");
+		r1.setAmount(99);
+		r1.setRemark("缺少报销单");
+		r1.setImages("http://owgz2pijp.bkt.clouddn.com/test1,http://owgz2pijp.bkt.clouddn.com/test2");
+		Reimbursement r2 = new Reimbursement();
+		r2.setType("1");
+		r2.setRemark("超支");
+		r2.setAmount(440);
+		r2.setImages("http://owgz2pijp.bkt.clouddn.com/test1,http://owgz2pijp.bkt.clouddn.com/test2");
+		list.add(r1);
+		list.add(r2);
 		Map<String,Object> resultMap = new HashMap<>();
 		String content = "报销报销报销";
+		//JSONObject.fromObject(list);
 		resultMap.put("data" , list);
 		resultMap.put("auditor" , "364,366");
-		resultMap.put("content",content);
+		resultMap.put("reason",content);
+		resultMap.put("userId","359");
 		JSONObject json = JSONObject.fromObject(resultMap);
-		System.out.println(">>>>>>>>>>>JSON数组为："+ json);
+		//JSONArray json = JSONArray.fromObject(resultMap);
+		System.out.println(">>>>>>>>>>>json："+ json.toString());
+		//String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/insertReim",json.toString());
+		//System.out.print(">>>>>>>>>>>增报销记录结果为："+ result);
+
 	}
 
 

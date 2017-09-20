@@ -224,10 +224,10 @@ public class HttpsUtil {
   
         try {  
             httpPost.setConfig(requestConfig);
-            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+            httpPost.setHeader("Content-Type", "application/json;charset=utf-8");
             StringEntity stringEntity = new StringEntity(json.toString(),"UTF-8");//解决中文乱码问题
             stringEntity.setContentEncoding("UTF-8");  
-            stringEntity.setContentType("application/json");  
+            stringEntity.setContentType("application/json");
             httpPost.setEntity(stringEntity);  
             response = httpClient.execute(httpPost);  
             HttpEntity entity = response.getEntity();  
@@ -240,8 +240,8 @@ public class HttpsUtil {
                 try {  
                     EntityUtils.consume(response.getEntity());  
                 } catch (IOException e) {  
-                    e.printStackTrace();  
-                }  
+                    e.printStackTrace();
+                }
             }  
         }  
         return httpStr;  

@@ -40,14 +40,8 @@ public class ReimbursementController extends BaseController {
      */
     @RequestMapping("insertReim")
     @ResponseBody
-    public ResultInfo insertReimbursement(@RequestBody ReimbursementVO VO,
-                             HttpServletRequest request, HttpServletResponse response){
+    public ResultInfo insertReimbursement(@RequestBody ReimbursementVO VO,HttpServletRequest request, HttpServletResponse response){
         logger.info(">>>>>>>>>>>>>>开始保存报销记录");
-//        List<Reimbursement> list = (List<Reimbursement>) VO .getData();
-//        for (int i = 0 ; i < list.size() ; i++){
-//            Reimbursement re = list.get(i);
-//            byte[] by = (byte[]) re.getImage();
-//        }
         int result = reimbursementService.insert(VO);
         ResultInfo resultInfo = new ResultInfo();
         if(result <= 0 ){
@@ -56,7 +50,7 @@ public class ReimbursementController extends BaseController {
             logger.info(">>>>>>>>>>>>>>新增报销记录失败");
             return resultInfo;
         }else{
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("新增报销记录成功");
             logger.info(">>>>>>>>>>>>>>新增报销记录成功");
             return resultInfo;
