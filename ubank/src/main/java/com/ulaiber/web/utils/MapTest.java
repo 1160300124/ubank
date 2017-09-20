@@ -78,44 +78,30 @@ public class MapTest {
 //        System.out.println(response3);
         
 //		for (int i = 1; i<= 31; i++){
-//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device) values(336,'黄国清',40025,20047,'2017-08-";
-//			String sql1 = sql;
-//			String sql2 = sql;
+//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(336,'黄国清',40025,20047,'2017-08-";
 //			if (i < 10){
-//				sql1 += "0" + i + " 09:10','2017-08-" + "0" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','安卓10.0');";
-//				sql2 += "0" + i + " 20:00','2017-08-" + "0" + i + "','20:00',1,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql += "0" + i + "','2017-08-" + "0" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + "0" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
 //			} else if (i > 10 && i < 13){
-//				sql1 += i + " 10:20','2017-08-" + i + "','10:20',0,1,'广东省深圳市南山区海王大厦','安卓10.0');";
-//				sql2 += i + " 20:00','2017-08-" + i + "','20:00',1,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql += i + "','2017-08-" + i + " 10:10',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
 //			} else if (i > 13 && i < 16){
-//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','安卓10.0');";
-//				sql2 += i + " 17:20','2017-08-" + i + "','17:20',1,2,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql += i + "','2017-08-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + i + " 17:20',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
 //			} else {
-//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','安卓10.0');";
-//				sql2 += i + " 20:00','2017-08-" + i + "','20:00',1,0,'广东省深圳市南山区海王大厦','安卓10.0');";
+//				sql += i + "','2017-08-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
 //			}
-//			System.out.println(sql1);
-//			System.out.println(sql2);
+//			System.out.println(sql);
 //		}
 //		for (int i = 1; i<= 31; i++){
-//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_datetime,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device) values(359,'焦敏',40025,20047,'2017-08-";
-//			String sql1 = sql;
-//			String sql2 = sql;
+//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(359,'焦敏',40025,20047,'2017-08-";
 //			if (i < 10){
-//				sql1 += "0" + i + " 09:10','2017-08-" + "0" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');";
-//				sql2 += "0" + i + " 20:10','2017-08-" + "0" + i + "','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');";
-//			} else if (i > 10 && i < 12){
-//				sql1 += i + " 10:10','2017-08-" + i + "','10:10',0,1,'广东省深圳市南山区海王大厦','iphone100000');";
-//				sql2 += i + " 20:10','2017-08-" + i + "','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');";
-//			} else if (i > 13 && i < 15){
-//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');";
-//				sql2 += i + " 17:10','2017-08-" + i + "','17:10',1,2,'广东省深圳市南山区海王大厦','iphone100000');";
+//				sql += "0" + i + "','2017-08-" + "0" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + "0" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else if (i > 10 && i < 13){
+//				sql += i + "','2017-08-" + i + " 10:10',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else if (i > 13 && i < 16){
+//				sql += i + "','2017-08-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + i + " 17:20',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
 //			} else {
-//				sql1 += i + " 09:10','2017-08-" + i + "','09:10',0,0,'广东省深圳市南山区海王大厦','iphone100000');";
-//				sql2 += i + " 20:10','2017-08-" + i + "','20:10',1,0,'广东省深圳市南山区海王大厦','iphone100000');";
+//				sql += i + "','2017-08-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-08-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
 //			}
-//			System.out.println(sql1);
-//			System.out.println(sql2);
+//			System.out.println(sql);
 //		}
     }
 

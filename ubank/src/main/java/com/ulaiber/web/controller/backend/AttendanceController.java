@@ -81,8 +81,8 @@ public class AttendanceController extends BaseController {
 		params.put("order", order);
 		params.put("company_num", att.getCompany().getCompanyNumber());
 		params.put("dept_num", att.getDept().getDept_number());
-		params.put("clock_type", att.getClockType());
-		params.put("clock_status", att.getClockStatus());
+		params.put("clock_on_status", att.getClockOnStatus());
+		params.put("clock_off_status", att.getClockOffStatus());
 		params.put("user_name", att.getUserName());
 		params.put("start_date", startDate);
 		params.put("end_date", endDate);
@@ -92,10 +92,6 @@ public class AttendanceController extends BaseController {
 		
 		int total = service.getCountBycond(params);
 		List<Attendance> list = service.getRecordsByCond(params);
-		for (Attendance attend : list){
-			attend.setClockType(CLOCK_TYPE.get(attend.getClockType()));
-			attend.setClockStatus(CLOCK_STATUS.get(attend.getClockStatus()));
-		}
 		data.put("total", total);
 		data.put("rows", list);
 		

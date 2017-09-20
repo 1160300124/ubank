@@ -26,26 +26,18 @@
 	               <input class="form-control" id="user_name" type="text" placeholder="请输入员工姓名"/>
 	            </div>
 	            
-	           <label class="col-sm-1 control-label" for="type">打卡类型</label>
-	            <div class="col-sm-2 ">
-	                  <select class="form-control" id="type">
-                   	  	 <option value="">全部</option>
-                   	  	 <option value="0">签到</option>
-                   	  	 <option value="1">签退</option>
-                   	  </select>
-	            </div>
-			</div>
-			<div class="form-group">
-	            <label class="col-sm-1 control-label" for="status">状态</label>
+          		<label class="col-sm-1 control-label" for="status">状态</label>
 	            <div class="col-sm-2 ">
 	                  <select class="form-control" id="status">
                    	  	 <option value="">全部</option>
                    	  	 <option value="0">正常</option>
                    	  	 <option value="1">迟到</option>
                    	  	 <option value="2">早退</option>
+                   	  	 <option value="3">未打卡</option>
                    	  </select>
 	            </div>
-			
+			</div>
+			<div class="form-group">
 				<label class="col-sm-1 control-label" for="start_date">开始日期</label>
 	            <div class="col-sm-2" >
 	            	<div class="input-group date time-picker" id="datetimepicker_start">
@@ -83,16 +75,17 @@
 			<thead>
 			<tr>
 				<th data-checkbox="true"></th>
-				<th data-field="userId">工号</th>
 				<th data-field="userName">姓名</th>
 				<th data-field="company.name">公司</th>
 				<th data-field="dept.deptName">部门</th>
-				<th data-field="clockDate">日期</th>
-				<th data-field="clockType">打卡类型</th>
-				<th data-field="clockTime">打卡时间</th>
-				<th data-field="clockStatus">状态</th>
-				<th data-field="clockLocation">打卡位置</th>
-				<th data-field="clockDevice">打卡设备号</th>
+				<th data-field="clockOnDateTime">上班时间</th>
+				<th data-field="clockOnStatus" data-formatter="clockOnStatusFormatter">上班状态</th>
+				<th data-field="clockOnLocation">上班打卡位置</th>
+				<th data-field="clockOnDevice">上班打卡设备号</th>
+				<th data-field="clockOffDateTime">下班时间</th>
+				<th data-field="clockOffStatus" data-formatter="clockOffStatusFormatter">下班状态</th>
+				<th data-field="clockOffLocation">下班打卡位置</th>
+				<th data-field="clockOffDevice">下班打卡设备号</th>
 			</tr>
 			</thead>
 

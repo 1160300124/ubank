@@ -77,8 +77,18 @@ $(function(){
 	    dept.dept_number = $("#dept_select").val();
 		params.dept = dept;
 		params.userName = $("#user_name").val();
-		params.clockType = $("#type").val();
-		params.clockStatus = $("#status").val();
+		var clockStatus = $("#status").val();
+		if (clockStatus === "0"){
+			params.clockOnStatus = "0";
+			params.clockOffStatus = "0";
+		} else if (clockStatus === "1"){
+			params.clockOnStatus = "1";
+		} else if (clockStatus === "2"){
+			params.clockOffStatus = "1";
+		} else if (clockStatus === "3"){
+			params.clockOnStatus = "";
+			params.clockOffStatus = "";
+		}
 		params.startDate = $("#start_date").val();
 		params.endDate = $("#end_date").val();
 		
@@ -189,6 +199,24 @@ $(function(){
 	});
 
 });
+
+function clockOnStatusFormatter(value, row, index) {
+	if (value == 0 || row.clockOnStatus == 0){
+		return "正常";
+	} else if (value == 1 || row.clockOnStatus == 1){
+		return "迟到";
+	}
+	return "-";
+}
+
+function clockOffStatusFormatter(value, row, index) {
+	if (value == 0 || row.clockOffStatus == 0){
+		return "正常";
+	} else if (value == 1 || row.clockOffStatus == 1){
+		return "早退";
+	}
+	return "-";
+}
 
 function operateFormatter(value, row, index) {
 	return [
