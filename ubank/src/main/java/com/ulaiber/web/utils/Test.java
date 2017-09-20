@@ -172,12 +172,12 @@ public class Test {
 	public void apply(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userid","428");
-		map.put("leaveType","2");
+		map.put("leaveType","1");
 		map.put("leaveTime",24);
 		map.put("startDate","2017-08-24");
 		map.put("endDate","2017-08-25");
-		map.put("auditor","430");
-		map.put("reason","生病XXXXXXXXXXXXXXXXXXX");
+		map.put("auditor","431");
+		map.put("reason","请假zzzXXXXXXXXXXXXXXXXXXX");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/applyForLeave",map);
 		System.out.print(result);
 	}

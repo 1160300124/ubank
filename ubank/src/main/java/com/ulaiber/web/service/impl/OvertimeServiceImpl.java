@@ -8,6 +8,7 @@ import com.ulaiber.web.model.ApplyForVO;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.OvertimeService;
 import com.ulaiber.web.utils.PushtoSingle;
+import com.ulaiber.web.utils.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +62,7 @@ public class OvertimeServiceImpl extends BaseService implements OvertimeService{
         //消息内容
         String content = name + "有一条加班申请需要您审批，原因是:" + applyForVO.getReason();
         String title = "您有一条加班申请待审批记录";
-        if(!cid.equals("")){
+        if(!StringUtil.isEmpty(cid)){
             try {
                 //推送审批信息致第一个审批人
                 PushtoSingle.singlePush(cid,type,content,title);
