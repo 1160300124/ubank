@@ -1,5 +1,9 @@
 package com.ulaiber.web.controller.backend;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +23,7 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.AttendanceStatistic;
 import com.ulaiber.web.service.AttendanceStatisticService;
 import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.ExportExcel;
 
 /** 
  * 考勤统计控制器
@@ -67,6 +73,62 @@ public class AttendanceStatisticController extends BaseController {
 		
 		logger.info("getStatistics end...");
 		return data;
+	}
+	
+	@RequestMapping(value = "exprotStatistics", method = RequestMethod.GET)
+	public void exprotStatistics(String companyNumber, String deptNumber, String userName, String startDate, String endDate, 
+			HttpServletRequest request, HttpServletResponse response){
+		logger.info("exprotStatistics start...");
+		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("company_num", companyNumber);
+		params.put("dept_num", deptNumber);
+		params.put("user_name", userName);
+		params.put("start_date", startDate);
+		params.put("end_date", endDate);
+		if (DateTimeUtil.getNumFromdate(startDate, endDate) > 31){
+			return;
+		}
+		
+		OutputStream out = null;
+		try {
+			List<List<String>> list = new ArrayList<List<String>>();
+			List<AttendanceStatistic> statistics = service.getStatisticsByCond(params);
+			for (AttendanceStatistic sta : statistics){
+				List<String> staList = new ArrayList<String>();
+				staList.add(sta.getUserName());
+				staList.add(sta.getCompany().getName());
+				staList.add(sta.getDept().getDeptName());
+				staList.add(sta.getWorkdaysCount() + "");
+				staList.add(sta.getNormalClockOnCount() + "");
+				staList.add(sta.getLaterCount() + "");
+				staList.add(sta.getNoClockOnCount() + "");
+				staList.add(sta.getNormalClockOffCount() + "");
+				staList.add(sta.getLeaveEarlyCount() + "");
+				staList.add(sta.getNoClockOffCount() + "");
+				staList.add(StringUtils.isEmpty(sta.getRemark()) ? "" : sta.getRemark());
+				list.add(staList);
+			}
+
+			ExportExcel exportExcel = new ExportExcel();
+			String title = "考勤记录";
+			String[] headers = {"姓名","公司","部门","应出勤天数","正常上班打卡(次)","迟到(次)","上班未打卡(次)","正常下班打卡(次)","早退(次)","下班未打卡(次)","备注"};
+			out = new FileOutputStream("C:/text001.xls");
+			exportExcel.exportExcel(title, headers, list, out);
+			out.close();
+			exportExcel.download("C:/text001.xls", response);
+		} catch (IOException e) {
+			logger.error("exprotStatistics exception: ", e);
+		} finally {
+			try {
+				if (null != out){
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		logger.info("exprotStatistics end...");
 	}
 	
 }

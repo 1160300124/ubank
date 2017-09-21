@@ -1,5 +1,9 @@
 package com.ulaiber.web.controller.backend;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +29,7 @@ import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.ExportExcel;
 import com.ulaiber.web.utils.ObjUtil;
 
 /** 
@@ -39,24 +45,6 @@ import com.ulaiber.web.utils.ObjUtil;
 public class AttendanceController extends BaseController {
 	
 	private static Logger logger = Logger.getLogger(AttendanceController.class);
-	
-	/**
-	 * 打卡类型 0：签到  1：签退
-	 */
-	private static Map<String, String> CLOCK_TYPE = new HashMap<String, String>(); 
-	
-	/**
-	 * 打卡状态 0：正常  1：迟到  2：早退
-	 */
-	private static Map<String, String> CLOCK_STATUS = new HashMap<String, String>(); 
-	
-	static {
-		CLOCK_TYPE.put("0", "签到");
-		CLOCK_TYPE.put("1", "签退");
-		CLOCK_STATUS.put("0", "正常 ");
-		CLOCK_STATUS.put("1", "迟到 ");
-		CLOCK_STATUS.put("2", "早退 ");
-	}
 	
 	@Autowired
 	private AttendanceService service;
@@ -131,6 +119,62 @@ public class AttendanceController extends BaseController {
 		List<Company> companys = permissionService.getCompanysByNums(companyNums);
 		logger.debug("getCompanys end...");
 		return companys;
+	}
+	
+	@RequestMapping(value = "exportRecords", method = RequestMethod.GET)
+	public void exportRecords(String companyNumber, String deptNumber, String clockOnStatus, String clockOffStatus, String userName, String startDate, String endDate,
+			HttpServletRequest request, HttpServletResponse response){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("company_num", companyNumber);
+		params.put("dept_num", deptNumber);
+		params.put("clock_on_status", clockOnStatus);
+		params.put("clock_off_status", clockOffStatus);
+		params.put("user_name", userName);
+		params.put("start_date", startDate);
+		params.put("end_date", endDate);
+		if (DateTimeUtil.getNumFromdate(startDate, endDate) > 31){
+			return;
+		}
+		
+		OutputStream out = null;
+		try {
+			List<List<String>> list = new ArrayList<List<String>>();
+			List<Attendance> records = service.getRecordsByCond(params);
+			for (Attendance attd : records){
+				List<String> recordList = new ArrayList<String>();
+				recordList.add(attd.getUserName());
+				recordList.add(attd.getCompany().getName());
+				recordList.add(attd.getDept().getDeptName());
+				recordList.add(attd.getClockDate());
+				recordList.add(StringUtils.isEmpty(attd.getClockOnDateTime()) ? "" : attd.getClockOnDateTime());
+				recordList.add(StringUtils.isEmpty(attd.getClockOnStatus()) ? "" : StringUtils.equals(attd.getClockOnStatus(), "0") ? "正常" : "迟到");
+				recordList.add(StringUtils.isEmpty(attd.getClockOnLocation()) ? "" : attd.getClockOnLocation());
+				recordList.add(StringUtils.isEmpty(attd.getClockOnDevice()) ? "" : attd.getClockOnDevice());
+				recordList.add(StringUtils.isEmpty(attd.getClockOffDateTime()) ? "" : attd.getClockOffDateTime());
+				recordList.add(StringUtils.isEmpty(attd.getClockOffStatus()) ? "" : StringUtils.equals(attd.getClockOffStatus(), "0") ? "正常" : "早退");
+				recordList.add(StringUtils.isEmpty(attd.getClockOffLocation()) ? "" : attd.getClockOffLocation());
+				recordList.add(StringUtils.isEmpty(attd.getClockOffDevice()) ? "" : attd.getClockOffDevice());
+				list.add(recordList);
+			}
+			ExportExcel exportExcel = new ExportExcel();
+			String title = "考勤记录";
+			String[] headers = {"姓名","公司","部门","打卡日期","上班时间","上班状态","上班打卡位置","上班打卡设备号","下班时间","下班状态","下班打卡位置","下班打卡设备号"};
+			out = new FileOutputStream("C:/text.xls");
+			exportExcel.exportExcel(title, headers, list, out);
+			out.close();
+			exportExcel.download("C:/text.xls", response);
+		} catch (IOException e) {
+			logger.error("exportRecords exception: ", e);
+		} finally {
+			try {
+				if (null != out){
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 }

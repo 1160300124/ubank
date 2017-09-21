@@ -73,7 +73,10 @@
 		select r.*,d.dept_number,d.name deptName,c.companyNumber,c.name from tbl_attendance_records r left join tbl_departments d on r.dept_num=d.dept_number 
 			left join tbl_company c on d.company_num=c.companyNumber
 			<include refid="byCond" />
-		order by rid limit #{offset},#{limit}
+		order by rid 
+		<if test="limit != null and limit != ''">
+			limit #{offset},#{limit}
+		</if>
 	</select>
 
 	<select id="getCountBycond" parameterType="Map" resultType="Integer">
@@ -88,7 +91,7 @@
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
 		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_off_datetime,r.clock_off_status,
-		r.clock_off_location from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile}
+		r.clock_off_location, r.clock_off_device from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile}
 		and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by r.rid
 	</select>
 	
@@ -122,7 +125,9 @@
 		<if test="user_name != null and user_name != ''">
 			where r.user_name like concat('%',#{user_name},'%')
 		</if>
-		limit #{offset},#{limit}
+		<if test="limit != null and limit != ''">
+			limit #{offset},#{limit}
+		</if>
 	</select>
 	
 	<select id="getStatistisCount" parameterType="Map" resultType="Integer">
@@ -130,18 +135,22 @@
 			<if test="dept_num != null and dept_num != 0">
 				and dept_num = #{dept_num}
 			</if>
-		and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date}) r
+			and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date}) r
 		<if test="user_name != null and user_name != ''">
 			where r.user_name like concat('%',#{user_name},'%')
 		</if>
 	</select>
 	
 	<select id="getStatistis" parameterType="Map" resultType="Map">
-		select user_id,user_name,clock_on_status,clock_off_status,count(1) count from tbl_attendance_records where company_num=#{company_num}
+		select user_id,user_name,clock_date,clock_on_status,clock_off_status from tbl_attendance_records where company_num=#{company_num}
 		<if test="dept_num != null and dept_num != 0">
 			and dept_num = #{dept_num}
 		</if>
-		and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date} group by user_id,user_name,clock_on_status,clock_off_status
+		and clock_date&gt;=#{start_date} and clock_date&lt;=#{end_date} 
+		<if test="user_name != null and user_name != ''">
+			and user_name like concat('%',#{user_name},'%')
+		</if>
+		group by user_id,user_name,clock_date,clock_on_status,clock_off_status
 	</select>
 	
 	<select id="getRecordsByDate" parameterType="Map" resultMap="AttendanceMap">

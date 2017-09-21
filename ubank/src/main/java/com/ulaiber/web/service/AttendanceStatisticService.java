@@ -44,15 +44,14 @@ public interface AttendanceStatisticService {
 	int getCountBycond(Map<String, Object> params);
 	
 	/**
-	 * 获取指定月份的应工作天数  yyyy-MM
-	 * @return
-	 */
-	int getWorkdayCountForMonth(long userId, String month);
-	
-	/**
 	 * 获取指定时间段的应工作天数  yyyy-MM-dd
 	 * @return
 	 */
-	int getWorkdayCountForDate(long userId, String dateBegin, String dateEnd);
+	List<String> getWorkdaysForDate(long userId, String dateBegin, String dateEnd);
 	
+	/**
+	 * 获取指定月份的应工作天数  yyyy-MM
+	 * @return
+	 */
+	List<String> getWorkdaysForMonth(long userId, String month);
 }
