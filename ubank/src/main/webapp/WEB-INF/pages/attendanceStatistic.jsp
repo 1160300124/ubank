@@ -67,7 +67,7 @@
 				<th data-field="normalClockOffCount">正常下班打卡(次)</th>
 				<th data-field="leaveEarlyCount">早退(次)</th>
 				<th data-field="noClockOffCount">下班未打卡(次)</th>
-				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
+				<th data-field="remark">下班未打卡(次)</th>
 			</tr>
 			</thead>
 

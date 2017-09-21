@@ -80,11 +80,6 @@ public class Attendance {
 	 */
 	private String clockOffDevice;
 	
-	/**
-	 * 用于统计计数用
-	 */
-	private int count;
-	
 	public long getRid() {
 		return rid;
 	}
@@ -195,14 +190,6 @@ public class Attendance {
 
 	public void setClockOffDevice(String clockOffDevice) {
 		this.clockOffDevice = clockOffDevice;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
 	}
 
 }

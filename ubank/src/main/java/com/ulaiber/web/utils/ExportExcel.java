@@ -1,19 +1,38 @@
 package com.ulaiber.web.utils;
 
 
-import net.sf.json.JSONException;
-import org.apache.poi.hssf.usermodel.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.swing.JOptionPane;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.hssf.usermodel.HSSFComment;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.swing.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import net.sf.json.JSONException;
 
 /**
  * 利用开源组件POI3.0.2动态导出EXCEL文档
@@ -40,7 +59,7 @@ public class ExportExcel {
             String[] headers= sheaders.substring(0,sheaders.length()-1).split(",");
             System.out.println(sheaders.substring(0,sheaders.length()-1));
             int iSize = jsonArray.length();
-            List<List> list = new ArrayList<List>();
+            List<List<String>> list = new ArrayList<List<String>>();
             for (int i = 0; i < iSize; i++) {
                 List<String> line = new ArrayList<String>();
                 JSONObject jsonObject =  jsonArray.getJSONObject(i);
@@ -95,7 +114,7 @@ public class ExportExcel {
      * @param list 需要显示的数据集合
      * @param out 与输出设备关联的流对象，可以将EXCEL文档导出到本地文件或者网络中
      */
-    private void exportExcel(String title, String[] headers,List<List> list, OutputStream out){
+    public void exportExcel(String title, String[] headers,List<List<String>> list, OutputStream out){
         // 声明一个工作薄
         HSSFWorkbook workbook = new HSSFWorkbook();
         // 生成一个表格
@@ -145,7 +164,7 @@ public class ExportExcel {
         comment.setAuthor("leno");
         // 产生表格标题行
         HSSFRow row = sheet.createRow(0);
-        for (short i = 0; i < headers.length; i++) {
+        for (int i = 0; i < headers.length; i++) {
             HSSFCell cell = row.createCell(i);
             cell.setCellStyle(style);
             HSSFRichTextString text = new HSSFRichTextString(headers[i]);
@@ -192,7 +211,7 @@ public class ExportExcel {
      * @param path 文件名
      * @param response
      */
-    private void download(String path, HttpServletResponse response){
+    public void download(String path, HttpServletResponse response){
         try {
             // path是指欲下载的文件的路径。
             File file = new File(path);
