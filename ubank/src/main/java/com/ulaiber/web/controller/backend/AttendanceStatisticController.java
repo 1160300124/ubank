@@ -79,7 +79,6 @@ public class AttendanceStatisticController extends BaseController {
 	public void exprotStatistics(String companyNumber, String deptNumber, String userName, String startDate, String endDate, 
 			HttpServletRequest request, HttpServletResponse response){
 		logger.info("exprotStatistics start...");
-		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("company_num", companyNumber);
 		params.put("dept_num", deptNumber);
@@ -113,10 +112,10 @@ public class AttendanceStatisticController extends BaseController {
 			ExportExcel exportExcel = new ExportExcel();
 			String title = "考勤记录";
 			String[] headers = {"姓名","公司","部门","应出勤天数","正常上班打卡(次)","迟到(次)","上班未打卡(次)","正常下班打卡(次)","早退(次)","下班未打卡(次)","备注"};
-			out = new FileOutputStream("C:/text001.xls");
+			out = new FileOutputStream("/var/text001.xls");
 			exportExcel.exportExcel(title, headers, list, out);
 			out.close();
-			exportExcel.download("C:/text001.xls", response);
+			exportExcel.download("/var/text001.xls", response);
 		} catch (IOException e) {
 			logger.error("exprotStatistics exception: ", e);
 		} finally {

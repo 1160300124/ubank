@@ -159,10 +159,10 @@ public class AttendanceController extends BaseController {
 			ExportExcel exportExcel = new ExportExcel();
 			String title = "考勤记录";
 			String[] headers = {"姓名","公司","部门","打卡日期","上班时间","上班状态","上班打卡位置","上班打卡设备号","下班时间","下班状态","下班打卡位置","下班打卡设备号"};
-			out = new FileOutputStream("C:/text.xls");
+			out = new FileOutputStream("/var/text.xls");
 			exportExcel.exportExcel(title, headers, list, out);
 			out.close();
-			exportExcel.download("C:/text.xls", response);
+			exportExcel.download("/var/text.xls", response);
 		} catch (IOException e) {
 			logger.error("exportRecords exception: ", e);
 		} finally {
