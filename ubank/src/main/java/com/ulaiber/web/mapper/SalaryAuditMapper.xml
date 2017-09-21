@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+
+ -->
+<mapper namespace="com.ulaiber.web.dao.SalaryAuditDao">
+
+    <resultMap id="LeaveRecordMap" type="com.ulaiber.web.model.LeaveRecord" >
+        <id property="id" column="id" jdbcType="BIGINT" />
+    </resultMap>
+
+    <!--新增申请记录-->
+    <insert id="insertRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id" >
+        INSERT INTO tbl_leave_record (userid,auditor,reason,createDate,status,disable,type)
+        VALUES (#{userid},#{auditor},#{reason},#{createDate},'0','0','3')
+    </insert>
+
+    <!--新增工资审批记录-->
+    <insert id="insertSalaryRecord" parameterType="java.util.List" >
+        INSERT INTO tbl_salary_record (recordNo,username,salary) VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+              (#{items.recordNo},#{items.username},#{items.salary})
+        </foreach>
+    </insert>
+
+    <!--根据申请记录ID，获取工资发放审批记录-->
+    <select id="querySalaryByRecordNo" parameterType="int" resultType="com.ulaiber.web.model.SalaryRecord">
+        select * FROM tbl_salary_record where recordNo = #{recordNo}
+    </select>
+</mapper>

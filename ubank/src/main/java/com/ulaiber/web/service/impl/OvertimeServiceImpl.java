@@ -38,9 +38,11 @@ public class OvertimeServiceImpl extends BaseService implements OvertimeService{
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int addOvertimeRecord(ApplyForVO applyForVO) {
-        int result = overtimeDao.addRecord(applyForVO);  //新增申请记录
+        //新增申请记录
+        int result = overtimeDao.addRecord(applyForVO);
         applyForVO.setId(applyForVO.getId());
-        int result2 = overtimeDao.addOvertimeRecord(applyForVO);  //新增加班申请记录
+        //新增加班申请记录
+        int result2 = overtimeDao.addOvertimeRecord(applyForVO);
         List<Map<String,Object>> list = new ArrayList<>();
         String[] auditor = applyForVO.getAuditor().split(",");
         for (int i = 0; i < auditor.length; i++){
@@ -55,7 +57,8 @@ public class OvertimeServiceImpl extends BaseService implements OvertimeService{
         //获取第一个审批人ID
         int userid = Integer.parseInt(auditor[0]);
         int result3 = leaveAuditDao.saveAditor(list);
-        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        //查询用户个推CID
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);
         String cid  = (String) map2.get("CID");
         String name = (String) map2.get("user_name");
         int type = IConstants.PENGDING;

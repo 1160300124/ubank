@@ -6,6 +6,7 @@ import com.ulaiber.web.dao.ReimbursementDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReimbursementService;
+import com.ulaiber.web.service.SalaryAuditService;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ public class LeaveController extends BaseController {
 
     @Resource
     private LeaveService leaveService;
+
+    @Resource
+    private SalaryAuditService salaryAuditService;
 
     @Resource
     private ReimbursementService reimbursementService;
@@ -141,13 +145,14 @@ public class LeaveController extends BaseController {
                 OvertimeVO overtimeVO = new OvertimeVO();
                 overtimeVO.setMode(ls.getMode());
                 resultMap.put("overtime" , overtimeVO);
-            }else if(ls.getType().equals("2")){   //报销记录
-                //申请记录ID
-                int recordNo = ls.getId();
-                //根据申请记录ID，获取报销记录
-                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-                resultMap.put("reimbursement",reimList);
             }
+//            else if(ls.getType().equals("2")){   //报销记录
+//                //申请记录ID
+//                int recordNo = ls.getId();
+//                //根据申请记录ID，获取报销记录
+//                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+//                resultMap.put("reimbursement",reimList);
+//            }
             //将申请记录对应的审批人放入记录中
             for (int j = 0 ; j < list2.size(); j++){
                 LeaveAudit la = list2.get(j);
@@ -450,13 +455,14 @@ public class LeaveController extends BaseController {
                         // overtimeVO.setHoliday(applyForVO.getHoliday());
                         overtimeVO.setMode(applyForVO.getMode());
                         map.put("overtime" , overtimeVO);
-                    }else if(applyForVO.getType().equals("2")){   //报销记录
-                        //申请记录ID
-                        int recordNo = applyForVO.getId();
-                        //根据申请记录ID，获取报销记录
-                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-                        map.put("reimbursement",reimList);
                     }
+//                    else if(applyForVO.getType().equals("2")){   //报销记录
+//                        //申请记录ID
+//                        int recordNo = applyForVO.getId();
+//                        //根据申请记录ID，获取报销记录
+//                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+//                        map.put("reimbursement",reimList);
+//                    }
                     list.add(map);
                     String recordNo = auditorList.get(i).getRecordNo();
 
@@ -540,13 +546,14 @@ public class LeaveController extends BaseController {
                 // overtimeVO.setHoliday(applyForVO.getHoliday());
                 overtimeVO.setMode(applyForVO.getMode());
                 map.put("overtime" , overtimeVO);
-            }else if(applyForVO.getType().equals("2")){   //报销记录
-                //申请记录ID
-                int recordNo = applyForVO.getId();
-                //根据申请记录ID，获取报销记录
-                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-                map.put("reimbursement",reimList);
             }
+//            else if(applyForVO.getType().equals("2")){   //报销记录
+//                //申请记录ID
+//                int recordNo = applyForVO.getId();
+//                //根据申请记录ID，获取报销记录
+//                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+//                map.put("reimbursement",reimList);
+//            }
             int sort = auList.get(i).getSort();
             int sortValue = sort - 1;
             String recordNo = "";
@@ -554,7 +561,7 @@ public class LeaveController extends BaseController {
             if(sortValue != 0){
                 recordNo = auList.get(i).getRecordNo();
                 //根据排序号和申请记录编号获取审批人
-                List<LeaveAudit> list2 = leaveService.getAuditorBySort(recordNo,sortValue);
+                List<LeaveAudit> list2  = leaveService.getAuditorBySort(recordNo,sortValue);
                 status = list2.get(0).getStatus();
                 if(!status.equals("0") && !status.equals("2")){
                     list.add(map);
@@ -832,5 +839,55 @@ public class LeaveController extends BaseController {
         return resultInfo;
     }
 
+
+    /**
+     * 根据类型，获取申请记录详情
+     * @param type 申请记录类型
+     * @param recordNo 申请记录ID
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getApplyDetails", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo getApplyDetails(String type,int recordNo){
+        logger.info(">>>>>>>>>>>开始查询申请记录详情");
+        ResultInfo resultInfo = new ResultInfo();
+        if(type.equals("2")){  //报销记录
+            //根据申请记录ID，获取报销记录
+            List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+            if(reimList.size() <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("暂时没有报销记录");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("获取报销记录成功");
+            resultInfo.setData(reimList);
+            return resultInfo;
+        }else if(type.equals("3")){ //工资发放审批记录
+            //根据申请记录ID，获取工资发放审批记录
+            List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
+            if(salaryList.size() <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("暂时没有工资发放记录");
+                logger.info(">>>>>>>>>>>>>暂时没有工资发放记录");
+                return resultInfo;
+            }
+            Map<String,Object> resultMap = new HashMap<>();
+            double amount = 0;  //统计金额
+            for (int i = 0 ; i < salaryList.size() ; i++){
+                SalaryRecord sr = salaryList.get(i);
+                amount += sr.getSalary();
+            }
+            resultMap.put("record",salaryList);
+            resultMap.put("total" , salaryList.size());
+            resultMap.put("totalAmount" , amount);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("获取工资发放记录成功");
+            resultInfo.setData(resultMap);
+            logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
+            return resultInfo;
+        }
+        return resultInfo;
+    }
 
 }

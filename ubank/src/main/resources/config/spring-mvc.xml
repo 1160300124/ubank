@@ -52,7 +52,8 @@
 			<!-- 不进行拦截 -->
 		 	<mvc:exclude-mapping path="/backend/tologin" />
 		 	<mvc:exclude-mapping path="/backend/login" />
-			<mvc:exclude-mapping path="/api/v1/queryAllBanks" />
+		 	<mvc:exclude-mapping path="/backend/salaryAudit" />
+			<!--<mvc:exclude-mapping path="/api/v1/queryAllBanks" />-->
 		 	<mvc:exclude-mapping path="/api/v1/validate" />
 			<mvc:exclude-mapping path="/api/v1/validateMobile" />
 		 	<mvc:exclude-mapping path="/api/v1/login" />

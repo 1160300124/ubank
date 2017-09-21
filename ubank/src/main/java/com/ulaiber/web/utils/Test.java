@@ -326,9 +326,30 @@ public class Test {
 		JSONObject json = JSONObject.fromObject(resultMap);
 		//JSONArray json = JSONArray.fromObject(resultMap);
 		System.out.println(">>>>>>>>>>>json："+ json.toString());
-		//String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/insertReim",json.toString());
-		//System.out.print(">>>>>>>>>>>增报销记录结果为："+ result);
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/insertReim",json.toString());
+		System.out.print(">>>>>>>>>>>增报销记录结果为："+ result);
 
+	}
+
+	//工资发放申请
+	@org.junit.Test
+	public void salaryAudit(){
+		Map<String,Object> map = new HashMap<>();
+		map.put("userId", "378");
+		map.put("auditor","359,336");
+		map.put("reason","工资发放");
+		map.put("salary","卜炎森:10000,焦敏:20000,杨坚:24000");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/backend/salaryAudit",map);
+		System.out.print(">>>>>>>>>>>工资发放申请结果为："+result);
+	}
+
+	@org.junit.Test
+	public void getDetails(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("type","3");
+		map.put("recordNo",468);
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getApplyDetails",map);
+		System.out.print(">>>>>>>>获取clientID结果为："+result);
 	}
 
 

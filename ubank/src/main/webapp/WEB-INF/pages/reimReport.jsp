@@ -238,7 +238,9 @@
                 striped : true, // 是否显示行间隔色
                 cache : false, // 是否使用缓存，默认为true
                 pagination : true, // 是否显示分页
-                queryParams : {id:id},// 传递参数
+                queryParams : {
+                    id : id
+                },// 传递参数
                 contentType : "application/x-www-form-urlencoded",
                 sidePagination : "server", // 分页方式：client客户端分页，server服务端分页
                 search : false, //搜索框
