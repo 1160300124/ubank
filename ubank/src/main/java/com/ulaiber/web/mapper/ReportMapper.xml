@@ -16,7 +16,7 @@
             left join tbl_group c on b.groupNumber = c.groupNumber
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
-            where a.type &lt;&gt; '2'
+            where a.type = '0' or a.type = '1'
         <if test = 'sysflag == "1"'>
             and c.groupNumber = #{groupNumber}
         </if>
@@ -30,7 +30,7 @@
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
             left join tbl_users f on a.userid = f.user_id
-            where a.type &lt;&gt; '2'
+            where a.type = '0' or a.type = '1'
         <!--当前用户没有根节点的情况下执行的语句-->
             <if test= 'sysflag != "1"'>
                 <if test= 'groupNum != "" and groupNum != null'>
@@ -118,7 +118,7 @@
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
             left join tbl_group f on b.groupNumber = f.groupNumber
-            where a.type &lt;&gt; '2'
+            where a.type = '2'
         <if test = 'sysflag == "1"'>
             and f.groupNumber = #{groupNumber}
         </if>
@@ -132,7 +132,7 @@
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
             left join tbl_group f on b.groupNumber = f.groupNumber
-            where a.type &lt;&gt; '2'
+            where a.type = '2'
         <!--当前用户没有根节点的情况下执行的语句-->
         <if test= 'sysflag != "1"'>
             <if test= 'groupNum != "" and groupNum != null'>

@@ -1,5 +1,6 @@
 package com.ulaiber.web.controller.api;
 
+import com.qiniu.util.Auth;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.dao.ReimbursementDao;
@@ -890,4 +891,32 @@ public class LeaveController extends BaseController {
         return resultInfo;
     }
 
+    /**
+     * 获取七牛云上传文件token
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getToken", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo createToken(){
+        logger.info(">>>>>>>>>>>>>>开始获取七牛云上传文件token");
+        //设置好账号的ACCESS_KEY和SECRET_KEY
+        String accessKey = "GsEHlVlmMBEt4Swq_G-A5FttePWwi1lKwodjomoB";
+        String secretKey = "y3aVnN1bDCxjWd7wuFUf-aUQ0ld-8VxjBqrJcoUg";
+        //要上传的空间
+        String bucket = "ubank-images1";
+        Auth auth = Auth.create(accessKey, secretKey);
+        String upToken = auth.uploadToken(bucket);
+        ResultInfo re = new ResultInfo();
+        if(StringUtil.isEmpty(upToken)){
+            re.setCode(IConstants.QT_CODE_ERROR);
+            re.setMessage("获取七牛云token失败");
+            logger.info(">>>>>>>>>>>>获取七牛云token失败");
+            return re;
+        }
+        re.setCode(IConstants.QT_CODE_OK);
+        re.setMessage("获取七牛云token成功");
+        re.setData(upToken);
+        logger.info(">>>>>>>>>>>>>获取七牛云token成功");
+        return re;
+    }
 }

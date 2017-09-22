@@ -1,12 +1,8 @@
 package com.ulaiber.web.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.qiniu.util.Auth;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ReimbursementVO;
 import net.sf.json.JSONArray;
@@ -352,5 +348,25 @@ public class Test {
 		System.out.print(">>>>>>>>获取clientID结果为："+result);
 	}
 
+	//生成上传凭证
+	@org.junit.Test
+	public void createToken(){
+		//设置好账号的ACCESS_KEY和SECRET_KEY
+		String accessKey = "GsEHlVlmMBEt4Swq_G-A5FttePWwi1lKwodjomoB";
+		String secretKey = "y3aVnN1bDCxjWd7wuFUf-aUQ0ld-8VxjBqrJcoUg";
+		//要上传的空间
+		String bucket = "ubank-images1";
+
+//		String key = UUID.randomUUID().toString();
+//		Auth auth = Auth.create(accessKey, secretKey);
+//		String upToken = auth.uploadToken(bucket, key);
+//		String accessKey = "access key";
+//		String secretKey = "secret key";
+//		String bucket = "bucket name";
+		Auth auth = Auth.create(accessKey, secretKey);
+		String upToken = auth.uploadToken(bucket);
+		System.out.println(upToken);
+		System.out.println(">>>>>>>>>>>生成上传凭证为:" + upToken);
+	}
 
 }
