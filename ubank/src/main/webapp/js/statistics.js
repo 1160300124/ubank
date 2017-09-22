@@ -10,6 +10,52 @@ $(function(){
 		minView: "month"
 	});  
 	
+	$("#btn_export").unbind().bind("click", function(){
+		var params = {};
+		params.companyNumber = $("#company_select").val();
+		params.deptNumber = $("#dept_select").val();
+		params.userName = $("#user_name").val();
+		params.startDate = $("#start_date").val();
+		params.endDate = $("#end_date").val();
+		
+		if (params.companyNumber == "" || params.companyNumber == null) {
+			Ewin.alert("请选择公司。");
+			return;
+		}
+		if (params.startDate == "" || params.startDate == null) {
+			Ewin.alert("请选择开始日期。");
+			return;
+		}
+		if (params.endDate == "" || params.endDate == null) {
+			Ewin.alert("请选择结束日期。");
+			return;
+		}
+		if (params.startDate > params.endDate){
+			Ewin.alert("开始日期不能大于结束日期");
+			return;
+		}
+		if (getDays(params.startDate, params.endDate) > 30){
+			Ewin.alert("开始日期与结束日期相差不能大于31天");
+			return;
+		}
+		
+		var parseParams = function(param, key) {
+		    var paramStr = "";
+		    if (param instanceof String || param instanceof Number || param instanceof Boolean) {
+		        paramStr += "&" + key + "=" + encodeURIComponent(param);
+		    } else {
+		        $.each(param, function(i) {
+		            var k = key == null ? i : key + (param instanceof Array ? "[" + i + "]" : "." + i);
+		            paramStr += '&' + parseParams(this, k);
+		        });
+		    }
+		    return paramStr.substr(1);
+		}
+		
+		window.location = "exprotStatistics?" + parseParams(params);
+		
+	});
+	
 	$("#btn_delete").unbind().bind("click", function(){
 
 		//取表格的选中行数据

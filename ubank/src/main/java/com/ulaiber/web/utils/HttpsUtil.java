@@ -109,8 +109,6 @@ public class HttpsUtil {
             HttpResponse response = httpclient.execute(httpGet);  
             int statusCode = response.getStatusLine().getStatusCode();  
   
-            System.out.println("执行状态码 : " + statusCode);  
-  
             HttpEntity entity = response.getEntity();  
             if (entity != null) {  
             	result = EntityUtils.toString(entity, "UTF-8");
@@ -143,7 +141,6 @@ public class HttpsUtil {
             }  
             httpPost.setEntity(new UrlEncodedFormEntity(pairList, Charset.forName("UTF-8")));  
             response = httpClient.execute(httpPost);  
-//            System.out.println(response.toString());  
             HttpEntity entity = response.getEntity();  
             httpStr = EntityUtils.toString(entity, "UTF-8");  
         } catch (IOException e) {  
@@ -192,8 +189,6 @@ public class HttpsUtil {
             }  
             httpPost.setEntity(new UrlEncodedFormEntity(pairList, Charset.forName("UTF-8")));  
             response = httpClient.execute(httpPost);  
-            System.out.println(response.getStatusLine().getStatusCode());
-//            System.out.println(response.toString());  
             HttpEntity entity = response.getEntity();  
             httpStr = EntityUtils.toString(entity, "UTF-8");  
         } catch (IOException e) {  
@@ -231,7 +226,6 @@ public class HttpsUtil {
             httpPost.setEntity(stringEntity);  
             response = httpClient.execute(httpPost);  
             HttpEntity entity = response.getEntity();  
-//            System.out.println(response.getStatusLine().getStatusCode());  
             httpStr = EntityUtils.toString(entity, "UTF-8");  
         } catch (IOException e) {  
             e.printStackTrace();  
@@ -271,7 +265,6 @@ public class HttpsUtil {
             httpPost.setEntity(stringEntity);  
             response = httpClient.execute(httpPost);  
             HttpEntity entity = response.getEntity();  
-//            System.out.println(response.getStatusLine().getStatusCode());  
             httpStr = EntityUtils.toString(entity, "gb2312");  
         } catch (IOException e) {  
             e.printStackTrace();  

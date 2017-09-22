@@ -111,6 +111,8 @@ public class AttendanceApiController extends BaseController {
 			date = "";
 		}
 		
+		String clockOnTime= today + " " + rule.getClockOnTime();
+		String clockOffTime = today + " " + rule.getClockOffTime();
 		String dateBegin = today + " " + rule.getClockOnStartTime();
 		String dateEnd = today + " " + rule.getClockOffEndTime();
 		
@@ -129,8 +131,12 @@ public class AttendanceApiController extends BaseController {
 				if (time.compareTo(rule.getClockOffEndTime()) <= 0){
 					today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
 					dateBegin = today + " " + rule.getClockOnStartTime();
+					clockOnTime = today + " " + rule.getClockOnTime();
 				} else {
 					dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
+					if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
+						clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 1, 0, 0);
+					}
 				}
 			}
 		}
@@ -162,11 +168,10 @@ public class AttendanceApiController extends BaseController {
 		//date不为空, 查询指定日期的打卡信息
 		if (StringUtils.isNotEmpty(date)){
 			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile);
-			data.put("records", records);
+			data.put("record", records.size() == 0 ? "" : records.get(0));
 			return data;
 		}
 		
-		String clockOffTime = today + " " + rule.getClockOffTime();
 		//是否开启弹性时间
 		if (rule.getFlexibleFlag() == 0){
 			//下班是否顺延
@@ -188,8 +193,8 @@ public class AttendanceApiController extends BaseController {
 			if (StringUtils.isEmpty(records.get(0).getClockOffDateTime())){
 				type = 1;
 			}
-			//当前时间在下班时间和最晚下半时间之间
-			else if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
+			//当前时间在上一次下班时间和最晚下半时间之间
+			else if (datetime.compareTo(records.get(0).getClockOffDateTime()) >= 0 && datetime.compareTo(dateEnd) <= 0){
 				type = 2;
 			}
 		}
@@ -199,12 +204,12 @@ public class AttendanceApiController extends BaseController {
 			type = 3;
 		}
 		//当前时间>最晚下班打卡时间
-		if (datetime.compareTo(dateEnd) > 0){
+		if (datetime.compareTo(dateEnd) > 0 || datetime.compareTo(clockOnTime) < 0){
 			type = 4;
 		}
 		
 		data.put("type", type);
-		data.put("records", records);
+		data.put("record", records.size() == 0 ? "" : records.get(0));
 		return data;
 	}
 	

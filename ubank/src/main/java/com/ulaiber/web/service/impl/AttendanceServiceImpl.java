@@ -70,7 +70,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				clockOnTime = today + " " + rule.getClockOnTime();
 			} else {
 				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
-				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 1, 0, 0);
+				if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
+					clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 1, 0, 0);
+				}
 			}
 		}
 		
@@ -106,11 +108,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		att.setClockDate(today);
 		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("userId", att.getUserId());
-		params.put("dateBegin", today);
-		params.put("dateEnd", today);
-		
 		//是否开启弹性时间
 		if (rule.getFlexibleFlag() == 0){
 			clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, rule.getFlexibleTime());
@@ -120,8 +117,13 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 		}
 		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", att.getUserId());
+		params.put("dateBegin", today);
+		params.put("dateEnd", today);
 		//查询该用户当天的打卡记录
 		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
+		
 		//新增，更新标志，默认失败
 		boolean flag = false;
 		// clockOnStatus：0正常 ，1迟到     clockOffStatus： 0正常 ，1早退
@@ -185,12 +187,19 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
 				return info;
 			}
+			if (datetime.compareTo(clockOnTime) < 0){
+				logger.error("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
+				info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
+				info.setMessage("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
+				return info;
+			}
+			String clockOffBegin = clockOnTime.compareTo(records.get(0).getClockOnDateTime()) > 0 ? clockOnTime : records.get(0).getClockOnDateTime();
 			//当前时间大于下班打卡时间或小于最晚下班打卡时间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0 ){
 				att.setClockOffStatus("0");
 			}
 			//当前时间大于上次打卡时间小于下班打卡时间----早退
-			else if (datetime.compareTo(records.get(0).getClockOnDateTime()) > 0 && datetime.compareTo(clockOffTime) <= 0){
+			else if (datetime.compareTo(clockOffBegin) > 0 && datetime.compareTo(clockOffTime) <= 0){
 				att.setClockOffStatus("1");
 			}
 			
