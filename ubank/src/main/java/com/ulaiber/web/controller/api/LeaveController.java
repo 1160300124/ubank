@@ -851,6 +851,21 @@ public class LeaveController extends BaseController {
         if(type.equals("2")){  //报销记录
             //根据申请记录ID，获取报销记录
             List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+            //拼接图片地址： 域名 + 图片名称
+            String url = "owgz2pijp.bkt.clouddn.com/";
+            for (int i = 0 ; i < reimList.size() ; i++){
+                Reimbursement re = reimList.get(i);
+                String[] img = re.getImages().split(",");
+                String images = "";
+                for (int j = 0 ; j < img.length ; j++){
+                    if(j > 0){
+                        images += "," + url + img[i];
+                    }else{
+                        images += url + img[i] ;
+                    }
+                }
+                re.setImages(images);
+            }
             if(reimList.size() <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("暂时没有报销记录");

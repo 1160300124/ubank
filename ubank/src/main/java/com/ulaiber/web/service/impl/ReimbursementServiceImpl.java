@@ -59,7 +59,7 @@ public class ReimbursementServiceImpl implements ReimbursementService{
             re.setType((String) map.get("type"));
             re.setAmount((Integer) map.get("amount"));
             re.setRemark((String) map.get("remark"));
-            re.setImages(map.get("images"));
+            re.setImages((String) map.get("images"));
             paramList.add(re);
         }
         //新增报销记录

@@ -14,7 +14,7 @@ public class Reimbursement implements Serializable {
     private String end;
     private int amount;
     private String remark;
-    private Object images;
+    private String images;
 
     public int getId() {
         return id;
@@ -72,11 +72,11 @@ public class Reimbursement implements Serializable {
         this.remark = remark;
     }
 
-    public Object getImages() {
+    public String getImages() {
         return images;
     }
 
-    public void setImages(Object images) {
+    public void setImages(String images) {
         this.images = images;
     }
 }

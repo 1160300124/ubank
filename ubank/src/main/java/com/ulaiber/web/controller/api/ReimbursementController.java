@@ -57,25 +57,5 @@ public class ReimbursementController extends BaseController {
         }
     }
 
-    /**
-     * byte数组转换图片
-     * @param data 字节流
-     * @param path 图片路径
-     */
-    public void byteToImage(byte[] data , String path){
-        if(data.length < 3 || path.equals("")){
-            return ;
-        }
-        try {
-            FileImageOutputStream fio = new FileImageOutputStream(new File(path));
-            fio.write(data,0,data.length);
-            fio.close();
-            logger.info(">>>>>>>>>>>>>>转换图片成功");
-            System.out.println("转换图片成功，图片路径在>>>>>>>>>>>" + path);
-        } catch (IOException e) {
-            logger.info(">>>>>>>>>>>>>转换图片Exception :" + e);
-            e.printStackTrace();
-        }
 
-    }
 }
