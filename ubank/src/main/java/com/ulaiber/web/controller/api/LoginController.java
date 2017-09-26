@@ -81,6 +81,8 @@ public class LoginController extends BaseController{
 			tempUser.setBank(dbuser.getBank());
 			tempUser.setCompanyId(dbuser.getCompanyId());
 			tempUser.setCom_name(dbuser.getCom_name());
+			tempUser.setDept_number(dbuser.getDept_number());
+			tempUser.setDept_name(dbuser.getDept_name());
 			retInfo.setData(tempUser);
 			retInfo.setCode(IConstants.QT_CODE_OK);
 			retInfo.setMessage("登录成功。");

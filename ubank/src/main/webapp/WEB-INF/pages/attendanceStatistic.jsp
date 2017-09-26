@@ -56,7 +56,6 @@
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>
-				<th data-checkbox="true"></th>
 				<th data-field="userName">员工</th>
 				<th data-field="company.name">公司</th>
 				<th data-field="dept.deptName">部门</th>
@@ -67,7 +66,7 @@
 				<th data-field="normalClockOffCount">正常下班打卡(次)</th>
 				<th data-field="leaveEarlyCount">早退(次)</th>
 				<th data-field="noClockOffCount">下班未打卡(次)</th>
-				<th data-field="remark">下班未打卡(次)</th>
+				<th data-field="remark">备注</th>
 			</tr>
 			</thead>
 
