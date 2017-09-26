@@ -70,7 +70,10 @@
         a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image  from tbl_leave_record a
         left join tbl_overtime_details b on a.id = b.recordNo
         left join tbl_users c on a.userid = c.user_id
-        where  a.auditor like concat('%',#{userId},'%') and a.id = #{id}
+        where  a.id in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
         order by a.editDate desc
     </select>
 

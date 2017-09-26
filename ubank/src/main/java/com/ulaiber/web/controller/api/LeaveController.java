@@ -419,10 +419,14 @@ public class LeaveController extends BaseController {
             List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId,pageNum,pageSize);
             List<Map<String,Object>> list = new ArrayList<>();
             if(auditorList.size() > 0){
+                int[] ids = new int[auditorList.size()];
                 for (int i = 0; i < auditorList.size(); i++){
-                    int id = Integer.parseInt(auditorList.get(i).getRecordNo());
+                    ids[i] = Integer.parseInt(auditorList.get(i).getRecordNo());
+                }
+                List<ApplyForVO> applyList = leaveService.queryAlreadRecord(ids);
+                for (int i = 0; i < applyList.size(); i++){
+                     ApplyForVO applyForVO = applyList.get(i);
                     //获取已审批记录
-                    ApplyForVO applyForVO = leaveService.queryAlreadRecord(id,userId);
                     if(StringUtil.isEmpty(applyForVO)){
                         resultInfo.setCode(IConstants.QT_CODE_OK);
                         resultInfo.setMessage("当前用户没有已审批记录");
@@ -445,7 +449,7 @@ public class LeaveController extends BaseController {
                     map.put("username",applyForVO.getUsername());
                     map.put("image",applyForVO.getImage());
                     map.put("currentAuditor",applyForVO.getCurrentAuditor());
-                    map.put("auditorStatus",new Object());
+                   // map.put("auditorStatus",new Object());
                     //判断当前数据属于哪种功能的数据
                     if(applyForVO.getType().equals("0")){  //请假
                         Map<String,Object> leaveMap = new HashMap<>();
@@ -464,20 +468,11 @@ public class LeaveController extends BaseController {
 //                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
 //                        map.put("reimbursement",reimList);
 //                    }
-                    list.add(map);
-                    String recordNo = auditorList.get(i).getRecordNo();
-
+                    String recordNo = String.valueOf(applyList.get(i).getId());
                     List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo);
                     //根据申请记录号查询审批人记录
-                    for (int j = 0; j < list.size(); j++){
-                        Map<String,Object> listMap = list.get(j);
-                        if(String.valueOf(listMap.get("id")).equals(auditorList.get(i).getRecordNo())){
-                            if(listMap.containsKey("auditorStatus") ){
-                                listMap.put("auditorStatus" , list2);
-                            }
-
-                        }
-                    }
+                    map.put("auditorStatus",list2);
+                    list.add(map);
                 }
             }else{
                 resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -489,6 +484,7 @@ public class LeaveController extends BaseController {
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("查询已审批数据成功");
             resultInfo.setData(list);
+            System.out.print(">>>>>>>>>>>>>>>>："+list);
             logger.info("查询已审批数据成功");
             return resultInfo;
         }

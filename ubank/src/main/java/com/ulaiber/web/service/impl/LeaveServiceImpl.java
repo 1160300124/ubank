@@ -129,11 +129,11 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public ApplyForVO queryAlreadRecord(int id,String userId) {
-        Map<String , Object> map = new HashMap<>();
-        map.put("id" , id);
-        map.put("userId" , userId);
-        return leaveDao.queryAlreadRecord(map);
+    public List<ApplyForVO> queryAlreadRecord(int[] ids) {
+//        Map<String , Object> map = new HashMap<>();
+//        map.put("id" , id);
+//        map.put("userId" , userId);
+        return leaveDao.queryAlreadRecord(ids);
     }
 
     @Override

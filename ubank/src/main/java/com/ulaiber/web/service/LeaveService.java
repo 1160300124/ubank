@@ -30,7 +30,7 @@ public interface LeaveService {
 
     ApplyForVO queryPeningRecord(int id,String userId); //获取待审批记录
 
-    ApplyForVO queryAlreadRecord(int id,String userId); //获取已审批记录
+    List<ApplyForVO> queryAlreadRecord(int[] ids); //获取已审批记录
 
     List<LeaveAudit> getAuditorByUserId(String userId,int pageNum,int pageSize); //根据申请记录编号获取审批人
 

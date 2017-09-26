@@ -51,7 +51,7 @@
 		<mapper resource="com/ulaiber/web/mapper/OvertimeMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/reimbursementMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/SalaryAuditMapper.xml" />
-		<!--<package name="com.ulaiber.web.dao.*"/>-->
+		<mapper resource="com/ulaiber/web/mapper/BanksRootMapper.xml" />
 	</mappers>
 
 </configuration>  

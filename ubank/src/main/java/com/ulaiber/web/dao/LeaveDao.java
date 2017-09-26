@@ -28,7 +28,7 @@ public interface LeaveDao {
 
     ApplyForVO queryPeningRecord(Map<String, Object> map); //获取待审批记录
 
-    ApplyForVO queryAlreadRecord(Map<String, Object> map);  //获取已审批记录
+    List<ApplyForVO> queryAlreadRecord(int[] ids);  //获取已审批记录
 
     int updateRecord(Map<String, Object> map); //更新申请记录为最新的状态
 
