@@ -403,4 +403,165 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		return data;
 	}
 
+	@Override
+	public double getHoursByDateAndMobile(String startDateTime, String endDateTime, AttendanceRule rule) {
+		//开始日期  yyyy-MM-dd
+		String startDate = startDateTime.split(" ")[0];
+		//结束日期  yyyy-MM-dd
+		String endDate = endDateTime.split(" ")[0];
+		double hour = 0;
+		List<String> days = DateTimeUtil.getDaysFromDate(startDate, endDate);
+		if (days.size() == 1){
+			//上班时间
+			String clockOnTime = startDate + " " + rule.getClockOnTime();
+			//休息开始时间
+			String restStartTime = startDate + " " + rule.getRestStartTime();
+			//休息结束时间
+			String restEndTime = startDate + " " + rule.getRestEndTime();
+			//下班时间
+			String clockOffTime = endDate + " " + rule.getClockOffTime();
+			//请假开始时间
+			startDateTime = startDateTime.compareTo(clockOnTime) < 0 ? clockOnTime : startDateTime;
+			//请假结束时间
+			endDateTime = endDateTime.compareTo(clockOffTime) > 0 ? clockOffTime : endDateTime;
+			
+			long start = DateTimeUtil.str2Date(startDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+			long end = DateTimeUtil.str2Date(endDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+			long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+			long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+			
+			if (startDateTime.compareTo(restStartTime) > 0 && startDateTime.compareTo(restEndTime) < 0){
+				start = restEnd;
+				hour = (double)(end - start) / IConstants.HOUR_MS;
+			} else if (startDateTime.compareTo(restEndTime) >= 0){
+				hour = (double)(end - start) / IConstants.HOUR_MS;
+			} else if (endDateTime.compareTo(restStartTime) > 0 && endDateTime.compareTo(restEndTime) < 0){
+				end = restStart;
+				hour = (double)(end - start) / IConstants.HOUR_MS;
+			} else if(endDateTime.compareTo(restStartTime) <= 0){
+				hour = (double)(end - start) / IConstants.HOUR_MS;
+			} else {
+				hour = (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+			}
+			
+			
+		} else if (days.size() >= 2) {
+			for (String day : days){
+				
+				boolean isRestDay = false;
+				String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(day) + "");
+				//节假日
+				if (rule.getHolidayFlag() == 0){
+					Holiday holiday = ruleDao.getHolidaysByYear(day.split("-")[0]);
+					if (holiday != null){
+						List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
+						List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
+						if (holidays.contains(day)){
+							isRestDay = true;
+						} else {
+							if (rule.getWorkday().contains(workday) || workdays.contains(day)){
+								isRestDay = false;
+							} else {
+								isRestDay = true;
+							}
+						}
+					}
+				} else {
+					if (!rule.getWorkday().contains(workday)){
+						isRestDay = true;
+					} 
+				}
+				
+				if (isRestDay){
+					continue;
+				}
+				
+				if (StringUtils.equals(day, startDate)){
+					//上班时间
+					String clockOnTime = startDate + " " + rule.getClockOnTime();
+					//休息开始时间
+					String restStartTime = startDate + " " + rule.getRestStartTime();
+					//休息结束时间
+					String restEndTime = startDate + " " + rule.getRestEndTime();
+					//下班时间
+					String clockOffTime = startDate + " " + rule.getClockOffTime();
+					//请假开始时间
+					startDateTime = startDateTime.compareTo(clockOnTime) < 0 ? clockOnTime : startDateTime;
+					//请假第一天结束时间
+					String firstEndDateTime = clockOffTime;
+					
+					long start = DateTimeUtil.str2Date(startDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					long end = DateTimeUtil.str2Date(firstEndDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					
+					if (startDateTime.compareTo(restStartTime) > 0 && startDateTime.compareTo(restEndTime) < 0){
+						start = restEnd;
+						hour = (double)(end - start) / IConstants.HOUR_MS;
+					} else if (startDateTime.compareTo(restEndTime) >= 0){
+						hour = (double)(end - start) / IConstants.HOUR_MS;
+					} else {
+						hour = (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+					}
+				} else if (StringUtils.equals(day, endDate)){
+					//上班时间
+					String clockOnTime = endDate + " " + rule.getClockOnTime();
+					//休息开始时间
+					String restStartTime = endDate + " " + rule.getRestStartTime();
+					//休息结束时间
+					String restEndTime = endDate + " " + rule.getRestEndTime();
+					//下班时间
+					String clockOffTime = endDate + " " + rule.getClockOffTime();
+					//请假开始时间
+					String lastStartDateTime = clockOnTime;
+					//请假最后一天结束时间
+					endDateTime = endDateTime.compareTo(clockOffTime) > 0 ? clockOffTime : endDateTime;
+					
+					long start = DateTimeUtil.str2Date(lastStartDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					long end = DateTimeUtil.str2Date(endDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+					
+					if (endDateTime.compareTo(restStartTime) > 0 && endDateTime.compareTo(restEndTime) < 0){
+						end = restStart;
+						hour += (double)(end - start) / IConstants.HOUR_MS;
+					} else if(endDateTime.compareTo(restStartTime) <= 0){
+						hour += (double)(end - start) / IConstants.HOUR_MS;
+					} else {
+						hour += (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+					}
+				} else {
+					
+					hour += getHour(day, rule);
+				}
+				
+				
+			}
+		}
+		
+		
+		
+		System.out.println(hour);
+		return hour;
+	}
+	
+	
+	private double getHour(String date, AttendanceRule rule){
+		//上班时间
+		String clockOnTime = date + " " + rule.getClockOnTime();
+		//休息开始时间
+		String restStartTime = date + " " + rule.getRestStartTime();
+		//休息结束时间
+		String restEndTime = date + " " + rule.getRestEndTime();
+		//下班时间
+		String clockOffTime = date + " " + rule.getClockOffTime();
+		
+		long start = DateTimeUtil.str2Date(clockOnTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+		long end = DateTimeUtil.str2Date(clockOffTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+		long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+		long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+		
+		return (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+	}
+	
 }

@@ -371,7 +371,7 @@ public class DateTimeUtil {
 	}
 	
 	public static void main(String[] args) {
-		String dateBegin = "2017-08-29";
+		String dateBegin = "2017-09-09";
 		String dateEnd = "2017-09-09";
 		String beginMonth = dateBegin.substring(0, dateBegin.lastIndexOf("-"));
 		String beginDay = dateBegin.substring(dateBegin.lastIndexOf("-") + 1, dateBegin.length());

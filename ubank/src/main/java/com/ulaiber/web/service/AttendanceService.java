@@ -53,7 +53,9 @@ public interface AttendanceService {
 	
 	/**
 	 * 根据date和手机号查询考勤记录
-	 * @param params
+	 * @param dateBegin yyyy-MM-dd
+	 * @param dateEnd   yyyy-MM-dd
+	 * @param mobile
 	 * @return
 	 */
 	List<Attendance> getRecordsByDateAndMobile(String dateBegin, String dateEnd, String mobile);
@@ -84,4 +86,13 @@ public interface AttendanceService {
 	 * @param month
 	 */
 	Map<String, Object> getRecordsByMonthAndMobile(String month, String mobile, AttendanceRule rule);
+	
+	/**
+	 * 获取一段时间内的工作小时数
+	 * @param startDateTime yyyy-MM-dd HH:mm
+	 * @param endDateTime   yyyy-MM-dd HH:mm
+	 * @param rule
+	 * @return
+	 */
+	double getHoursByDateAndMobile(String startDateTime, String endDateTime, AttendanceRule rule);
 }

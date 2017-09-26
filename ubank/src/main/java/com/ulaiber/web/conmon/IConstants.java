@@ -152,5 +152,8 @@ public class IConstants
 
 	//推送已审批的记录
 	public static final int ALREADY = 1;
+	
+	//一小时的毫秒数
+	public static final long HOUR_MS = 60 * 60 * 1000;
 
 }
