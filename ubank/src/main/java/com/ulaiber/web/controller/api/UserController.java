@@ -151,6 +151,8 @@ public class UserController extends BaseController{
 			tempUser.setCardNo(user.getCardNo());
 			tempUser.setCompanyId(user.getCompanyId());
 			tempUser.setCom_name(user.getCom_name());
+			tempUser.setDept_number(user.getDept_number());
+			tempUser.setDept_name(user.getDept_name());
 			//TODO 调二类户接口查询余额
 			double balance = 0.00;
 			tempUser.setBalance(balance);

@@ -2,6 +2,7 @@ package com.ulaiber.web.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +142,11 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			
 			noClockOnWorkdays.addAll(getDiffrent(workdays, realWorkdays));
 			noClockOffWorkdays.addAll(getDiffrent(workdays, realWorkdays));
+			
+			Collections.sort(laterWorkdays);
+			Collections.sort(leaveEarlyWorkdays);
+			Collections.sort(noClockOnWorkdays);
+			Collections.sort(noClockOffWorkdays);
 			
 			StringBuffer sb = new StringBuffer();
 			if (laterWorkdays.size() > 0){

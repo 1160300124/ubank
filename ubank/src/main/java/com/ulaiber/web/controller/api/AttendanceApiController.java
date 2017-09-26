@@ -258,9 +258,6 @@ public class AttendanceApiController extends BaseController {
 		dept.setDept_number(user.getDept_number());
 		att.setDept(dept);
 		
-//		att.setClockDevice(device);
-//		att.setClockLocation(location);
-		
 		info = service.save(att, device, location, rule);
 		if (info.getCode() == IConstants.QT_CODE_OK){
 			logger.info("用户  " + mobile + " 打卡成功。");
@@ -294,4 +291,29 @@ public class AttendanceApiController extends BaseController {
 		return info;
 	}
 	
+	@RequestMapping(value = "getHoursByDateAndMobile", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getHoursByDateAndMobile(String mobile, String startDateTime, String endDateTime, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("getHoursByDateAndMobile start...");
+		ResultInfo info = new ResultInfo();
+		if (startDateTime.compareTo(endDateTime) > 0){
+			logger.error("请假开始时间不能大于结束时间。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("请假开始时间不能大于结束时间。");
+			return info;
+		}
+		
+		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+		if (null == rule){
+			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
+			return info;
+		}
+		double hours = service.getHoursByDateAndMobile(startDateTime, endDateTime, rule);
+		info.setCode(IConstants.QT_CODE_OK);
+		info.setData(hours);
+		logger.debug("getHoursByDateAndMobile end...");
+		return info;
+	}
 }
