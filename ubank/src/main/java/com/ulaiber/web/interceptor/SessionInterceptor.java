@@ -40,10 +40,10 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				boolean isAjaxRequest = isAjaxRequest(request);  
 				if (isAjaxRequest) {  
 					response.setCharacterEncoding("UTF-8");
-					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");  
-				}  
-				response.sendRedirect(request.getContextPath() + "/backend/tologin");  
-				return false;
+				response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");
+			}
+			response.sendRedirect(request.getContextPath() + "/backend/tologin");
+			return false;
 			} else {  
 //				User user = (User)obj;
 //				if (user.getRole_id() == 1 || user.getRole_id() == 2){
@@ -52,29 +52,41 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				// 如果session中存在登录者实体，则继续  
 				
 			}  
-		} else if (uri.contains("/api/v1/")){
-//			//根据ticket和token获取用户
-			String login_ticket = request.getHeader("login_ticket");
-			String access_token = request.getHeader("access_token");
-			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
-				response.setCharacterEncoding("UTF-8");
-				response.sendError(HttpStatus.UNAUTHORIZED.value());
-				return false;
-			}
-
-			User user = userService.getUserByTicketAndToken(login_ticket, access_token);
-			if (null == user) {
-				response.setCharacterEncoding("UTF-8");
-				response.sendError(HttpStatus.UNAUTHORIZED.value());
-				return false;
-			}
-			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
-				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
+		} else if(uri.contains("/backend_bank/")){
+			// 从session中获取登录者实体
+			Object obj = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION);
+			if (!ObjUtil.notEmpty(obj)){
+				boolean isAjaxRequest = isAjaxRequest(request);
+				if (isAjaxRequest) {
 					response.setCharacterEncoding("UTF-8");
-					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
-					return false;
+					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");
 				}
+				response.sendRedirect(request.getContextPath() + "/backend_bank/toBankLogin");
+				return false;
 			}
+		}else if (uri.contains("/api/v1/")){
+//			//根据ticket和token获取用户
+//			String login_ticket = request.getHeader("login_ticket");
+//			String access_token = request.getHeader("access_token");
+//			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
+//				response.setCharacterEncoding("UTF-8");
+//				response.sendError(HttpStatus.UNAUTHORIZED.value());
+//				return false;
+//			}
+//
+//			User user = userService.getUserByTicketAndToken(login_ticket, access_token);
+//			if (null == user) {
+//				response.setCharacterEncoding("UTF-8");
+//				response.sendError(HttpStatus.UNAUTHORIZED.value());
+//				return false;
+//			}
+//			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
+//				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
+//					response.setCharacterEncoding("UTF-8");
+//					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
+//					return false;
+//				}
+//			}
 		}
 		
 		

@@ -109,4 +109,6 @@ public class PushtoSingle {
         // template.setDuration("2015-01-16 11:40:00", "2015-01-16 12:24:00");
         return template;
     }
+
+
 }

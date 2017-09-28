@@ -67,12 +67,17 @@ public class ManagerController extends BaseController{
 		return "management";
 	}
 
-	//跳转首页
+	/**
+	 * 跳转集团系统后台首页
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping("index")
 	public String index(HttpServletRequest request, HttpServletResponse response){
-
 		return "index";
 	}
+
 
 	@RequestMapping(value = "getManagement", method = RequestMethod.GET)
 	@ResponseBody

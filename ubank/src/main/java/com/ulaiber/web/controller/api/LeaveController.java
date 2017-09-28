@@ -3,7 +3,6 @@ package com.ulaiber.web.controller.api;
 import com.qiniu.util.Auth;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.dao.ReimbursementDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReimbursementService;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -146,14 +144,19 @@ public class LeaveController extends BaseController {
                 OvertimeVO overtimeVO = new OvertimeVO();
                 overtimeVO.setMode(ls.getMode());
                 resultMap.put("overtime" , overtimeVO);
+            }else if(ls.getType().equals("2")){   //报销记录
+                //申请记录ID
+                int recordNo = ls.getId();
+                //根据申请记录ID，获取报销记录
+                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                Map<String,Object> map = new HashMap<>();
+                int amount = 0;  //统计金额
+                for (int k = 0 ; k < reimList.size() ; k++){
+                    Reimbursement sr = reimList.get(k);
+                    amount += sr.getAmount();
+                }
+                resultMap.put("reimAmount",amount);
             }
-//            else if(ls.getType().equals("2")){   //报销记录
-//                //申请记录ID
-//                int recordNo = ls.getId();
-//                //根据申请记录ID，获取报销记录
-//                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-//                resultMap.put("reimbursement",reimList);
-//            }
             //将申请记录对应的审批人放入记录中
             for (int j = 0 ; j < list2.size(); j++){
                 LeaveAudit la = list2.get(j);
@@ -460,14 +463,25 @@ public class LeaveController extends BaseController {
                         // overtimeVO.setHoliday(applyForVO.getHoliday());
                         overtimeVO.setMode(applyForVO.getMode());
                         map.put("overtime" , overtimeVO);
-                    }
-//                    else if(applyForVO.getType().equals("2")){   //报销记录
+                    }else if(applyForVO.getType().equals("2")){   //报销记录
 //                        //申请记录ID
 //                        int recordNo = applyForVO.getId();
 //                        //根据申请记录ID，获取报销记录
 //                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
 //                        map.put("reimbursement",reimList);
-//                    }
+
+                        //申请记录ID
+                        int recordNo = applyForVO.getId();
+                        //根据申请记录ID，获取报销记录
+                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                        Map<String,Object> Map = new HashMap<>();
+                        int amount = 0;  //统计金额
+                        for (int k = 0 ; k < reimList.size() ; k++){
+                            Reimbursement sr = reimList.get(k);
+                            amount += sr.getAmount();
+                        }
+                        map.put("reimAmount",amount);
+                    }
                     String recordNo = String.valueOf(applyList.get(i).getId());
                     List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo);
                     //根据申请记录号查询审批人记录
@@ -543,14 +557,23 @@ public class LeaveController extends BaseController {
                 // overtimeVO.setHoliday(applyForVO.getHoliday());
                 overtimeVO.setMode(applyForVO.getMode());
                 map.put("overtime" , overtimeVO);
-            }
-//            else if(applyForVO.getType().equals("2")){   //报销记录
+            }else if(applyForVO.getType().equals("2")){   //报销记录
 //                //申请记录ID
 //                int recordNo = applyForVO.getId();
 //                //根据申请记录ID，获取报销记录
 //                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
 //                map.put("reimbursement",reimList);
-//            }
+                int recordNo = applyForVO.getId();
+                //根据申请记录ID，获取报销记录
+                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                Map<String,Object> Map = new HashMap<>();
+                int amount = 0;  //统计金额
+                for (int k = 0 ; k < reimList.size() ; k++){
+                    Reimbursement sr = reimList.get(k);
+                    amount += sr.getAmount();
+                }
+                map.put("reimAmount",amount);
+            }
             int sort = auList.get(i).getSort();
             int sortValue = sort - 1;
             String recordNo = "";
@@ -852,19 +875,22 @@ public class LeaveController extends BaseController {
             //根据申请记录ID，获取报销记录
             List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
             //拼接图片地址： 域名 + 图片名称
-            String url = "owgz2pijp.bkt.clouddn.com/";
+            String url = "http://owgz2pijp.bkt.clouddn.com/";
             for (int i = 0 ; i < reimList.size() ; i++){
                 Reimbursement re = reimList.get(i);
-                String[] img = re.getImages().split(",");
-                String images = "";
-                for (int j = 0 ; j < img.length ; j++){
-                    if(j > 0){
-                        images += "," + url + img[i];
-                    }else{
-                        images += url + img[i] ;
+                if(!StringUtil.isEmpty(re.getImages())){
+                    String[] img = re.getImages().split(",");
+                    String images = "";
+                    for (int j = 0 ; j < img.length ; j++){
+                        if(j > 0){
+                            images += "," + url + img[j];
+                        }else{
+                            images += url + img[j] ;
+                        }
                     }
+                    re.setImages(images);
                 }
-                re.setImages(images);
+
             }
             if(reimList.size() <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -872,7 +898,7 @@ public class LeaveController extends BaseController {
                 return resultInfo;
             }
             resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("获取报销记录成功");
+            resultInfo.setMessage("查询成功");
             resultInfo.setData(reimList);
             return resultInfo;
         }else if(type.equals("3")){ //工资发放审批记录
@@ -894,7 +920,7 @@ public class LeaveController extends BaseController {
             resultMap.put("total" , salaryList.size());
             resultMap.put("totalAmount" , amount);
             resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("获取工资发放记录成功");
+            resultInfo.setMessage("查询成功");
             resultInfo.setData(resultMap);
             logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
             return resultInfo;
@@ -930,4 +956,30 @@ public class LeaveController extends BaseController {
         logger.info(">>>>>>>>>>>>>获取七牛云token成功");
         return re;
     }
+
+    /**
+     * 新增补卡记录
+     * @param remedy
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "addRemedy", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo addRemedy(Remedy remedy){
+        logger.info(">>>>>>>>>>>开始新增补卡记录");
+        ResultInfo resultInfo = new ResultInfo();
+        //新增补卡记录
+        int result = leaveService.insertRemedy(remedy);
+        if(result <= 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("新增失败");
+            logger.info(">>>>>>>>>>>>新增补卡记录失败");
+            return resultInfo;
+        }
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        resultInfo.setMessage("新增成功");
+        logger.info(">>>>>>>>>>>>新增补卡记录成功");
+        return resultInfo;
+    }
+
+
 }

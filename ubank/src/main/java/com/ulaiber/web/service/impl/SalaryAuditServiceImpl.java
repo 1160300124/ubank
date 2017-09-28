@@ -8,6 +8,7 @@ import com.ulaiber.web.model.SalaryAuditVO;
 import com.ulaiber.web.model.SalaryRecord;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.SalaryAuditService;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -83,6 +84,11 @@ public class SalaryAuditServiceImpl extends BaseService implements SalaryAuditSe
         if(result3 <= 0){
             logger.info(">>>>>>>>>>>>插入工资审批记录失败");
         }
+        int userid = Integer.parseInt(auditor[0]);
+        String reason = leaveRecord.getReason(); //原因/备注
+        String mark = "0";  //申请类型
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        StringUtil.sendMessage(map2,reason,mark); //消息推送
         return result3;
     }
 

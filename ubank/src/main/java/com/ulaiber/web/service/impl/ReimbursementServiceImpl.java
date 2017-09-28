@@ -6,6 +6,7 @@ import com.ulaiber.web.model.LeaveRecord;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ReimbursementVO;
 import com.ulaiber.web.service.ReimbursementService;
+import com.ulaiber.web.utils.StringUtil;
 import net.sf.json.JSONArray;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -80,6 +81,12 @@ public class ReimbursementServiceImpl implements ReimbursementService{
             auditorList.add(auditorMap);
         }
         int result3= leaveAuditDao.saveAditor(auditorList);
+        int userid = Integer.parseInt(arr[0]);
+        String reason = leaveRecord.getReason(); //原因/备注
+        String mark = "0";  //申请类型
+        //查询用户个推CID
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);
+        StringUtil.sendMessage(map2,reason,mark);  //消息推送
         return result3;
     }
 

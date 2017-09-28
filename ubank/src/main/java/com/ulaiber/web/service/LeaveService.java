@@ -52,4 +52,6 @@ public interface LeaveService {
 
     int updateUser(String userId, String CID); //修改用户个推CID
 
+    int insertRemedy(Remedy remedy); //新增补卡记录
+
 }

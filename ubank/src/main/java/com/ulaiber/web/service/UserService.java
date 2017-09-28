@@ -2,6 +2,7 @@ package com.ulaiber.web.service;
 
 import java.util.List;
 
+import com.ulaiber.web.model.BankUsers;
 import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.Message;
 import com.ulaiber.web.model.User;
@@ -100,7 +101,7 @@ public interface UserService {
 	 * 根据用户名获取系统所有菜单
 	 * @return
 	 */
-	List<Menu> getAllMenuByUser( String userName);
+	List<Menu> getAllMenuByUser( String userName,String sysflag);
 
 	/**
 	 * 校验支付密码是否正确
@@ -122,4 +123,13 @@ public interface UserService {
 	 * @return
 	 */
 	List<User> getUsersByComNum(String comNum, String search);
+
+	/**
+	 * 银行后台用户登录
+	 * @param mobile 手机号码
+	 * @return BankUsers
+	 */
+	BankUsers bankUserLogin(String mobile);
+
+
 }

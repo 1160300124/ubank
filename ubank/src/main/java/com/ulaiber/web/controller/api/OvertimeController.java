@@ -37,7 +37,7 @@ public class OvertimeController extends BaseController {
     @RequestMapping("addOvertimeRecord")
     @ResponseBody
     public ResultInfo saveOvertimeRecord(ApplyForVO applyForVO){
-        logger.info("开始新增加班记录......");
+        logger.debug("开始新增加班记录......");
         String date = sdf.format(new Date());
         applyForVO.setCreateDate(date);
         int result = overtimeService.addOvertimeRecord(applyForVO);  //新增申请记录
@@ -45,12 +45,12 @@ public class OvertimeController extends BaseController {
         if(result <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("新增失败");
-            logger.info("新增加班记录失败");
+            logger.debug("新增加班记录失败");
             return resultInfo;
         }
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("新增成功");
-        logger.info("新增加班记录成功");
+        logger.debug("新增加班记录成功");
         return resultInfo;
     }
 }

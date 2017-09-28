@@ -53,29 +53,36 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
             list.add(map);
         }
         //获取第一个审批人ID
-        int userid = Integer.parseInt(auditor[0]);
         int result = leaveAuditDao.saveAditor(list);
+        int userid = Integer.parseInt(auditor[0]);
+        String reason = leaveRecord.getReason(); //原因/备注
+        String mark = "0";  //申请类型
         Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
-        String cid  = "";
-        if(!StringUtil.isEmpty(map2.get("CID"))){
-            cid = (String) map2.get("CID");
-            if(!StringUtil.isEmpty(cid)){
-                String name = (String) map2.get("user_name");
-                int type = IConstants.PENGDING;
-                //消息内容
-                String title = "您有个请假申请待审批";
-                String content = name + "你好，有一条请假申请需要您审批，原因是:"+ leaveRecord.getReason();
-                try {
-                    //推送审批信息致第一个审批人
-                    PushtoSingle.singlePush(cid,type,content,title);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
+        StringUtil.sendMessage(map2,reason,mark); //消息推送
+//        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+//        String cid  = "";
+//        if(!StringUtil.isEmpty(map2.get("CID"))){
+//            cid = (String) map2.get("CID");
+//            if(!StringUtil.isEmpty(cid)){
+//                String name = (String) map2.get("user_name");
+//                int type = IConstants.PENGDING;
+//                //消息内容
+//                String title = "您有个请假申请待审批";
+//                String content = name + "你好，有一条请假申请需要您审批，原因是:"+ leaveRecord.getReason();
+//                try {
+//                    //推送审批信息致第一个审批人
+//                    PushtoSingle.singlePush(cid,type,content,title);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
         return result;
     }
+
+
+
 
     @Override
     public List<ApplyForVO> queryApplyRecord(String userId,int pageNum,int pageSize) {
@@ -270,6 +277,47 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         map.put("userid" , userId);
         map.put("CID" , CID);
         return leaveDao.updateUser(map);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int insertRemedy(Remedy remedy) {
+        LeaveRecord leaveRecord = new LeaveRecord();
+        leaveRecord.setAuditor(remedy.getAuditor());
+        leaveRecord.setUserid(remedy.getUserId());
+        leaveRecord.setReason(remedy.getReason());
+        leaveRecord.setCreateDate(sdf.format(new Date()));
+        //新增申请记录
+        int result = leaveDao.insertRemedyRecord(leaveRecord);
+        if(result <= 0 ){
+            return 0;
+        }
+        //新增审批人
+        List<Map<String,Object>> list = new ArrayList<>();
+        String[] auditor = leaveRecord.getAuditor().split(",");
+        for (int i = 0; i < auditor.length; i++){
+            Map<String ,Object> map = new HashMap<>();
+            map.put("userid",leaveRecord.getUserid());
+            map.put("recordNo",String.valueOf(leaveRecord.getId()));
+            map.put("auditor",auditor[i]);
+            map.put("auditDate",sdf.format(new Date()));
+            map.put("sort",i+1);
+            list.add(map);
+        }
+        int userid = Integer.parseInt(auditor[0]);
+        String reason = leaveRecord.getReason(); //原因/备注
+        String mark = "0";  //申请类型
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        StringUtil.sendMessage(map2,reason,mark);  //消息推送
+        //新增审批人
+        int result2 = leaveAuditDao.saveAditor(list);
+        if (result2 <= 0){
+            return 0;
+        }
+        remedy.setRecordNo(leaveRecord.getId());
+        //新增补卡信息
+        int result3 = leaveDao.addRemedy(remedy);
+        return result3;
     }
 
 

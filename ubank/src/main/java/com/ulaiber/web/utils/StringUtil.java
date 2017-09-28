@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.MSGContent;
 import com.ulaiber.web.model.Message;
 
+import com.ulaiber.web.service.LeaveService;
 import sun.misc.BASE64Encoder;
 
 
@@ -366,5 +368,49 @@ public class StringUtil {
 		return false;
 	}
 
+	/**
+	 * 推送信息
+	 * @param map 用户信息
+	 * @param reason 备注
+	 * @param mark 记录类型: 0 请假记录， 1 加班记录 , 2 报销记录,3 工资发放记录,4 补卡记录
+	 */
+	public static void sendMessage(Map<String,Object> map ,String reason,String mark){
+		String cid  = "";
+		if(!StringUtil.isEmpty(map.get("CID"))){
+			cid = (String) map.get("CID");
+			if(!StringUtil.isEmpty(cid)){
+				String name = (String) map.get("user_name");
+				int type = IConstants.PENGDING;
+				String types = "";
+				switch (mark){
+					case "0":
+						types = "请假";
+						break;
+					case "1":
+						types = "加班";
+						break;
+					case "2":
+						types = "报销";
+						break;
+					case "3":
+						types = "工资发放";
+						break;
+					case "4":
+						types = "补卡";
+						break;
+				}
+				//消息内容
+				String title = "您有个"+types+"申请待审批";
+				String content = name + "你好，有一条请假申请需要您审批，原因是:"+ reason;
+				try {
+					//推送审批信息致第一个审批人
+					PushtoSingle.singlePush(cid,type,content,title);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+	}
 
 }

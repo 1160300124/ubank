@@ -41,18 +41,18 @@ public class ReimbursementController extends BaseController {
     @RequestMapping("insertReim")
     @ResponseBody
     public ResultInfo insertReimbursement(@RequestBody ReimbursementVO VO,HttpServletRequest request, HttpServletResponse response){
-        logger.info(">>>>>>>>>>>>>>开始保存报销记录");
+        logger.debug(">>>>>>>>>>>>>>开始保存报销记录");
         int result = reimbursementService.insert(VO);
         ResultInfo resultInfo = new ResultInfo();
         if(result <= 0 ){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("新增报销记录失败");
-            logger.info(">>>>>>>>>>>>>>新增报销记录失败");
+            resultInfo.setMessage("提交失败");
+            logger.debug(">>>>>>>>>>>>>>新增报销记录失败");
             return resultInfo;
         }else{
             resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("新增报销记录成功");
-            logger.info(">>>>>>>>>>>>>>新增报销记录成功");
+            resultInfo.setMessage("提交成功");
+            logger.debug(">>>>>>>>>>>>>>新增报销记录成功");
             return resultInfo;
         }
     }

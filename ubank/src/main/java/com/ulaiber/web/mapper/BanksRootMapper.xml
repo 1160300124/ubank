@@ -9,4 +9,16 @@
  -->
 <mapper namespace="com.ulaiber.web.dao.BanksRootDao">
 
+    <!--银行用户登录-->
+    <select id="bankUserLogin" parameterType="Map" resultType="com.ulaiber.web.model.BankUsers">
+        select a.* from tbl_bank_users a WHERE a.mobile = #{mobile}
+    </select>
+
+    <!--根据角色名获取银行管理页-->
+    <select id="getBankMenuByUser" parameterType="String" resultType="com.ulaiber.web.model.Menu">
+        SELECT a.id , a.NAME , a.url , a.CODE , a.father , a.icon , a.sorting
+            FROM tbl_menu a WHERE  a.CODE IN( SELECT b.menuNumber FROM tbl_bank_users c
+            LEFT JOIN tbl_roleMenu b ON c.roleid = b.role_id
+            WHERE c.disabled = '0' AND c.NAME = #{userName})
+    </select>
 </mapper>

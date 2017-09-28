@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.ulaiber.web.model.BankUsers;
 import org.apache.log4j.Logger;
 
 import com.ulaiber.web.conmon.IConstants;
@@ -38,7 +39,7 @@ public class BaseController {
 		}
 		return user;
 	}
-	
+
 	/**
 	 * 是否登录
 	 *	@param request

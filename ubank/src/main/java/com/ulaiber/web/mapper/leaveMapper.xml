@@ -112,4 +112,16 @@
     <update id="updateUser" parameterType="Map">
         UPDATE tbl_users set CID = #{CID} where user_id = #{userid}
     </update>
+
+    <!--新增申请记录-->
+    <insert id="insertRemedyRecord" parameterType="com.ulaiber.web.model.LeaveRecord"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tbl_leave_record (userid,auditor,reason,createDate,status,disable,type)
+            VALUES (#{userid},#{auditor},#{reason},#{createDate},'0','0','0')
+    </insert>
+
+    <!--新增补卡信息-->
+    <insert id="addRemedy" parameterType="com.ulaiber.web.model.Remedy" >
+        INSERT INTO tbl_remedy (recordNo,morning,afternoon,type)
+            VALUES (#{recordNo},#{morning},#{afternoon},#{type})
+    </insert>
 </mapper>

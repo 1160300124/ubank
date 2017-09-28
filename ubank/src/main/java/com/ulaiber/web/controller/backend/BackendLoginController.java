@@ -3,6 +3,7 @@ package com.ulaiber.web.controller.backend;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.model.BankUsers;
 import com.ulaiber.web.model.Menu;
 import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
@@ -39,17 +40,32 @@ public class BackendLoginController extends BaseController {
 	
 	@Autowired
 	private UserService userService;
-	
+
+	/**
+	 * 集团用户登录页
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping("tologin")
 	public String toLogin(HttpServletRequest request, HttpServletResponse response){
 		return "login";
 	}
+
+
 	
 	@RequestMapping("test")
 	public String test(HttpServletRequest request, HttpServletResponse response){
 		return "test";
 	}
-	
+
+	/**
+	 * 集团后台用户登录
+	 * @param user
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo login(User user, HttpServletRequest request, HttpServletResponse response){
@@ -84,16 +100,17 @@ public class BackendLoginController extends BaseController {
 		return retInfo;
 	}
 
+
+
 	/**
 	 * 根据用户名获取系统所有菜单
 	 * @return menu
 	 */
 	@RequestMapping(value = "getAllMenu")
 	@ResponseBody
-	public List<Menu> getAllMenu(@Param("userName") String userName){
-		List<Menu> menu = userService.getAllMenuByUser(userName);
+	public List<Menu> getAllMenu(@Param("userName") String userName,@Param("sysflag") String sysflag){
+		List<Menu> menu = userService.getAllMenuByUser(userName,sysflag);
 		return menu;
-
 	};
 
 }

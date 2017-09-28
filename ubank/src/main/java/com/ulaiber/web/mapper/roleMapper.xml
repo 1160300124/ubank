@@ -13,7 +13,7 @@
     <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
         SELECT  a.role_id,a.role_name,a.companyNumber FROM tbl_roles a
         <if test = 'sysflag == "1"'>
-            where a.companyNumber in
+            where  a.companyNumber in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                 #{companyNumber}
             </foreach>

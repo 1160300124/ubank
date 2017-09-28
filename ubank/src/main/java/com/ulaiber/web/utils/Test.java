@@ -342,10 +342,10 @@ public class Test {
 	@org.junit.Test
 	public void getDetails(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("type","3");
-		map.put("recordNo",468);
+		map.put("type","2");
+		map.put("recordNo",488);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getApplyDetails",map);
-		System.out.print(">>>>>>>>获取clientID结果为："+result);
+		System.out.print(">>>>>>>>结果为："+result);
 	}
 
 	//生成上传凭证
@@ -368,5 +368,29 @@ public class Test {
 		System.out.println(upToken);
 		System.out.println(">>>>>>>>>>>生成上传凭证为:" + upToken);
 	}
+
+	//新增补卡记录
+	@org.junit.Test
+	public void insertRemedy(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("morning","2017-09-28");
+		map.put("afternoon","");
+		map.put("userId","378");
+		map.put("auditor","359,336");
+		map.put("reason","早上忘打卡");
+		map.put("type","0");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/addRemedy",map);
+		System.out.print(">>>>>>>>结果为："+result);
+	}
+
+
+	@org.junit.Test
+	public void md5(){
+		String pwd = "601258";
+		String password = MD5Util.getEncryptedPwd(pwd);
+		System.out.print(">>>>>>password：" + password);
+	}
+
+
 
 }

@@ -97,7 +97,7 @@ public interface UserDao {
      *
      * @return
      */
-    List<Menu> getAllMenuByUser(String userName);
+    List<Menu> getAllMenuByUser(Map<String, Object> map);
 
     /**
      * 获取所有系统菜单

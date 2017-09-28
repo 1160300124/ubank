@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ulaiber.web.dao.BanksRootDao;
+import com.ulaiber.web.model.BankUsers;
 import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,6 +34,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 	
 	@Resource
 	private UserDao mapper;
+
+	@Resource
+	private BanksRootDao banksRootDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
@@ -182,8 +187,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
-	public List<Menu> getAllMenuByUser(String userName) {
-		return mapper.getAllMenuByUser(userName);
+	public List<Menu> getAllMenuByUser(String userName,String sysflag) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("userName",userName);
+		map.put("sysflag",sysflag);
+		return mapper.getAllMenuByUser(map);
 	}
 
 	@Override
@@ -212,5 +220,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 		params.put("comNum", comNum);
 		params.put("search", search);
 		return mapper.getUsersByComNum(params);
+	}
+
+	@Override
+	public BankUsers bankUserLogin(String mobile) {
+		return banksRootDao.bankUserLogin(mobile);
 	}
 }

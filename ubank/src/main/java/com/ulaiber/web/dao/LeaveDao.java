@@ -2,6 +2,7 @@ package com.ulaiber.web.dao;
 
 import com.ulaiber.web.model.ApplyForVO;
 import com.ulaiber.web.model.LeaveRecord;
+import com.ulaiber.web.model.Remedy;
 import com.ulaiber.web.model.User;
 
 import java.util.List;
@@ -39,4 +40,8 @@ public interface LeaveDao {
     List<User> getUserByDate(Map<String, Object> map);  //根据日期分页查询用户
 
     int updateUser(Map<String, Object> map); //修改用户个推CID
+
+    int insertRemedyRecord(LeaveRecord leaveRecord); //新增申请记录
+
+    int addRemedy(Remedy remedy);  //新增补卡信息
 }
