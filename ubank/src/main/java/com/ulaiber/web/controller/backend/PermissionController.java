@@ -556,7 +556,7 @@ public class PermissionController extends BaseController {
         Map<String , Object> _map = new HashMap<String,Object>();
         for (int i = 0 ; i < list.size() ; i++){
             Menu menus = list.get(i);
-            if(menus.getFather().equals("")){
+            if(StringUtil.isEmpty(menus.getFather())){
                 if(!_map.containsKey(menus.getCode())){
                     _map.put(menus.getCode(),menus);
                 }
@@ -576,10 +576,12 @@ public class PermissionController extends BaseController {
             for (int i = 0 ; i < list.size() ; i++){
                 Menu menus = list.get(i);
                 Map<String,Object> _map4 = new HashMap<String,Object>();
-                if(menus.getFather().equals(key) ){
-                    _map4.put("id" , menus.getCode());
-                    _map4.put("name" , menus.getName());
-                    list_two.add(_map4);
+                if(!StringUtil.isEmpty(menus.getFather())){
+                    if(menus.getFather().equals(key) ){
+                        _map4.put("id" , menus.getCode());
+                        _map4.put("name" , menus.getName());
+                        list_two.add(_map4);
+                    }
                 }
 
             }

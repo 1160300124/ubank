@@ -145,18 +145,18 @@ var CompanyFun = {
         var authorizationCode = $("input[name=authorizationCode]").val();
         if(group == ""){
             Ewin.alert("集团不能为空");
-            return
+            return;
         }
         if(bankNo == ""){
             Ewin.alert("公司银行账号不能为空");
-            return
+            return;
         }
         if(companyNo == ""){
             Ewin.alert("公司名不能为空");
-            return
+            return;
         }else if(!Validate.regNumAndLetter(companyNo)){
             Ewin.alert("公司名格式不合法，请重新输入");
-            return
+            return;
         }
         if(legalPerson == ""){
             Ewin.alert("法人不能为空");

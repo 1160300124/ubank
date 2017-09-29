@@ -21,4 +21,37 @@
             LEFT JOIN tbl_roleMenu b ON c.roleid = b.role_id
             WHERE c.disabled = '0' AND c.NAME = #{userName})
     </select>
+
+    <!--根据银行名称查询银行信息-->
+    <select id="queryBankByName" parameterType="String" resultType="com.ulaiber.web.model.Headquarters">
+        SELECT * FROM tbl_bank_headquarters where bankName = #{bankName}
+    </select>
+
+    <!--新增总行-->
+    <insert id="insertHeadquarters" parameterType="com.ulaiber.web.model.Headquarters">
+        INSERT INTO tbl_bank_headquarters(bankName,remark)
+            VALUES (#{bankName},#{remark})
+    </insert>
+
+    <!--获取总行数量-->
+    <select id="getHeadquartersCount" resultType="int">
+        select count(id) as count from tbl_bank_headquarters
+    </select>
+
+    <!--查询总行信息-->
+    <select id="queryHeadquarters" parameterType="Map" resultType="com.ulaiber.web.model.Headquarters">
+        SELECT * FROM tbl_bank_headquarters where 1=1
+        <if test="search != null and search != ''">
+            and bankName like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--根据银行编号修改银行信息-->
+    <update id="modifyHeadquarters" parameterType="com.ulaiber.web.model.Headquarters">
+        UPDATE tbl_bank_headquarters SET bankName = #{bankName} ,remark = #{remark} WHERE id = #{id}
+    </update>
+    
+    <!--根据总行编号查询是否存在分部-->
+    <select id=""
 </mapper>

@@ -2,14 +2,12 @@ package com.ulaiber.web.controller.backend;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.BankUsers;
-import com.ulaiber.web.model.Menu;
-import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BanksRootService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -22,7 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 银行权限Controller
@@ -62,6 +62,17 @@ public class BanksController extends BaseController {
         return "banks/bankLogin";
     }
 
+    /**
+     * 跳转总部页
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("headquarters")
+    public String toHeadquarters(HttpServletRequest request, HttpServletResponse response){
+        return "banks/headquarters";
+    }
+
 
     /**
      * 银行后台用户登录
@@ -94,7 +105,6 @@ public class BanksController extends BaseController {
         }
         //放入session
         request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, bankUser);
-//        request.getSession().setAttribute("userName", bankUser.getName());
         logger.info(bankUser.getName() + " login successed.");
 
         resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -113,7 +123,6 @@ public class BanksController extends BaseController {
         try {
             HttpSession session = request.getSession();
             session.removeAttribute(IConstants.UBANK_BACKEND_USERSESSION);
-//            session.removeAttribute("userName");
             session.invalidate();
             response.sendRedirect(request.getContextPath() + "/backend_bank/toBankLogin");
         } catch (IOException e) {
@@ -133,4 +142,106 @@ public class BanksController extends BaseController {
         return menu;
     };
 
+    /**
+     * 新增总行
+     * @param headquarters
+     * @param flag 标识。 0 表示新增操作，1 表示修改操作
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "addHeadquarters", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo addHeadquarters(Headquarters headquarters,@Param("flag") int flag,@Param("bankNo") int bankNo){
+        ResultInfo resultInfo = new ResultInfo();
+        if(flag == 0){ //新增
+            //查询当前新增银行是否已创建
+            String bankName = headquarters.getBankName();
+            Headquarters bank = banksRootService.queryBankByName(bankName);
+            if(!StringUtil.isEmpty(bank)){
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                resultInfo.setMessage("银行已存在");
+                return resultInfo;
+            }
+            //新增总行
+            int result = banksRootService.insertHeadquarters(headquarters);
+            if (result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("新增失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("新增成功");
+        }else{  //修改
+            //根据银行编号修改银行信息
+            headquarters.setId(bankNo);
+            int result = banksRootService.modifyHeadquarters(headquarters);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("修改失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("修改成功");
+        }
+        return resultInfo;
+    }
+
+
+    /**
+     * 查询总行信息
+     * @param search 搜索字段
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @return map
+     */
+    @RequestMapping(value = "queryHeadquarters", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> queryHeadquarters(@Param("search") String search,@Param("pageSize") int pageSize, @Param("pageNum") int pageNum ){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        //获取总行数量
+        int totalCount = banksRootService.getHeadquartersCount();
+        if(totalCount <= 0){
+            map.put("total",totalCount);
+            map.put("rows","");
+            return map;
+        }
+        //查询总行信息
+        List<Headquarters> list = banksRootService.queryHeadquarters(search,pageSize,pageNum);
+        map.put("total",totalCount);
+        map.put("rows",list);
+        return map;
+    }
+
+    /**
+     * 根据银行编号删除银行
+     * @param numbers 银行编号
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "removeHeadquarters", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo removeHeadquarters(@Param("numbers")String numbers){
+        ResultInfo resultInfo = new ResultInfo();
+        String[] numberArr = numbers.split(",");
+        //根据总行编号查询是否存在分部
+        List<Branch> comList = banksRootService.queryBranchByBankNo(numberArr);
+        if(comList.size() > 0 ){
+            resultInfo.setCode(300);
+            resultInfo.setMessage("该集团存在公司，请先删除该集团下的公司");
+            return resultInfo;
+        }
+        //int result = permissionService.deleteGroup(numberArr);
+        if(result > 0){
+            resultInfo.setCode(200);
+            resultInfo.setMessage("删除成功");
+        }else{
+            resultInfo.setCode(500);
+            resultInfo.setMessage("删除失败");
+        }
+        return ;
+    }
 }

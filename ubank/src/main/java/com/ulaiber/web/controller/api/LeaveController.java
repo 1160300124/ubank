@@ -150,12 +150,18 @@ public class LeaveController extends BaseController {
                 //根据申请记录ID，获取报销记录
                 List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
                 Map<String,Object> map = new HashMap<>();
-                int amount = 0;  //统计金额
+                long amount = 0;  //统计金额
                 for (int k = 0 ; k < reimList.size() ; k++){
                     Reimbursement sr = reimList.get(k);
                     amount += sr.getAmount();
                 }
                 resultMap.put("reimAmount",amount);
+            }else if(ls.getType().equals("4")){
+                Remedy remedy = new Remedy();
+                remedy.setMorning(ls.getMorning());
+                remedy.setAfternoon(ls.getAfternoon());
+                remedy.setType(ls.getRemedyType());
+                resultMap.put("remedy" , remedy);
             }
             //将申请记录对应的审批人放入记录中
             for (int j = 0 ; j < list2.size(); j++){
@@ -464,23 +470,23 @@ public class LeaveController extends BaseController {
                         overtimeVO.setMode(applyForVO.getMode());
                         map.put("overtime" , overtimeVO);
                     }else if(applyForVO.getType().equals("2")){   //报销记录
-//                        //申请记录ID
-//                        int recordNo = applyForVO.getId();
-//                        //根据申请记录ID，获取报销记录
-//                        List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-//                        map.put("reimbursement",reimList);
-
                         //申请记录ID
                         int recordNo = applyForVO.getId();
                         //根据申请记录ID，获取报销记录
                         List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
                         Map<String,Object> Map = new HashMap<>();
-                        int amount = 0;  //统计金额
+                        long amount = 0;  //统计金额
                         for (int k = 0 ; k < reimList.size() ; k++){
                             Reimbursement sr = reimList.get(k);
                             amount += sr.getAmount();
                         }
                         map.put("reimAmount",amount);
+                    }else if(applyForVO.getType().equals("4")){
+                        Remedy remedy = new Remedy();
+                        remedy.setMorning(applyForVO.getMorning());
+                        remedy.setAfternoon(applyForVO.getAfternoon());
+                        remedy.setType(applyForVO.getRemedyType());
+                        map.put("remedy" , remedy);
                     }
                     String recordNo = String.valueOf(applyList.get(i).getId());
                     List<AuditVO> list2 = leaveService.queryAuditorByRecord(recordNo);
@@ -559,20 +565,22 @@ public class LeaveController extends BaseController {
                 map.put("overtime" , overtimeVO);
             }else if(applyForVO.getType().equals("2")){   //报销记录
 //                //申请记录ID
-//                int recordNo = applyForVO.getId();
-//                //根据申请记录ID，获取报销记录
-//                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-//                map.put("reimbursement",reimList);
                 int recordNo = applyForVO.getId();
                 //根据申请记录ID，获取报销记录
                 List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
                 Map<String,Object> Map = new HashMap<>();
-                int amount = 0;  //统计金额
+                long amount = 0;  //统计金额
                 for (int k = 0 ; k < reimList.size() ; k++){
                     Reimbursement sr = reimList.get(k);
                     amount += sr.getAmount();
                 }
                 map.put("reimAmount",amount);
+            }else if(applyForVO.getType().equals("4")){
+                Remedy remedy = new Remedy();
+                remedy.setMorning(applyForVO.getMorning());
+                remedy.setAfternoon(applyForVO.getAfternoon());
+                remedy.setType(applyForVO.getRemedyType());
+                map.put("remedy" , remedy);
             }
             int sort = auList.get(i).getSort();
             int sortValue = sort - 1;

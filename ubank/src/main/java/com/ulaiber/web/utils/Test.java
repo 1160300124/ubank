@@ -182,7 +182,7 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
+		map.put("userId","433");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
@@ -301,8 +301,8 @@ public class Test {
 		Reimbursement r1 = new Reimbursement();
 		r1.setType("0");
 		r1.setStart("深圳南山区深南大道腾讯大厦");
-		r1.setEnd("湖北省武汉市洪山区关山大道");
-		r1.setAmount(99);
+		r1.setEnd("郴州");
+		r1.setAmount(999999999);
 		r1.setRemark("缺少报销单");
 		r1.setImages("http://owgz2pijp.bkt.clouddn.com/test1,http://owgz2pijp.bkt.clouddn.com/test2");
 		Reimbursement r2 = new Reimbursement();
@@ -316,7 +316,7 @@ public class Test {
 		String content = "报销报销报销";
 		//JSONObject.fromObject(list);
 		resultMap.put("data" , list);
-		resultMap.put("auditor" , "364,366");
+		resultMap.put("auditor" , "378,392");
 		resultMap.put("reason",content);
 		resultMap.put("userId","359");
 		JSONObject json = JSONObject.fromObject(resultMap);

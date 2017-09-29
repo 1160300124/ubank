@@ -25,6 +25,9 @@ public class ApplyForVO implements Serializable{
     private String username;     //用户名
     private String image;        //头像
     private String currentAuditor; //当前记录审批人
+    private String morning;     //上午打卡时间
+    private String afternoon;   //下午打卡时间
+    private String remedyType;  //补卡类型。0 上午补卡 ， 1 下午补卡 ， 2 全天补卡
 
     public int getId() {
         return id;
@@ -168,5 +171,29 @@ public class ApplyForVO implements Serializable{
 
     public void setCurrentAuditor(String currentAuditor) {
         this.currentAuditor = currentAuditor;
+    }
+
+    public String getMorning() {
+        return morning;
+    }
+
+    public void setMorning(String morning) {
+        this.morning = morning;
+    }
+
+    public String getAfternoon() {
+        return afternoon;
+    }
+
+    public void setAfternoon(String afternoon) {
+        this.afternoon = afternoon;
+    }
+
+    public String getRemedyType() {
+        return remedyType;
+    }
+
+    public void setRemedyType(String remedyType) {
+        this.remedyType = remedyType;
     }
 }

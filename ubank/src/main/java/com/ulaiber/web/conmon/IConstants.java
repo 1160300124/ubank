@@ -70,6 +70,9 @@ public class IConstants
     
     //休息日
     public final static int QT_REST_DAY = 4004;
+
+    //数据已存在
+	public static final int QT_ALREADY_EXISTS = 5000;
     
     //短信模板
 	public final static String SMS_TEMPLATE = "【优发展】您的验证码是#code#。如非本人操作，请忽略本短信";

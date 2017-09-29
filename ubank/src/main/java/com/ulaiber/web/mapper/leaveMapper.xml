@@ -22,9 +22,10 @@
     <!--查询个人申请记录-->
     <select id="queryApplyRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
         SELECT  a.id,a.userid,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,
-          a.currentAuditor,a.disable,a.type,a.status,b.user_name as username,b.image
+          a.currentAuditor,a.disable,a.type,a.status,b.user_name as username,b.image,d.morning,d.afternoon,d.type as remedyType
             FROM tbl_leave_record a left join tbl_overtime_details c on a.id = c.recordNo
                 left join tbl_users b on a.userid = b.user_id
+                left join tbl_remedy d on a.id = d.recordNo
                 where  a.userid = #{userid} ORDER BY a.createDate DESC limit #{pageNum},#{pageSize}
     </select>
 
@@ -116,7 +117,7 @@
     <!--新增申请记录-->
     <insert id="insertRemedyRecord" parameterType="com.ulaiber.web.model.LeaveRecord"  useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tbl_leave_record (userid,auditor,reason,createDate,status,disable,type)
-            VALUES (#{userid},#{auditor},#{reason},#{createDate},'0','0','0')
+            VALUES (#{userid},#{auditor},#{reason},#{createDate},'0','0','4')
     </insert>
 
     <!--新增补卡信息-->
