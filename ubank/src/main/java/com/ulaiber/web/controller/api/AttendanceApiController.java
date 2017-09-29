@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.AttendancePatchClock;
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
@@ -319,8 +320,7 @@ public class AttendanceApiController extends BaseController {
 	
 	@RequestMapping(value = "patchClock", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo patchClock(String mobile, int patchClockType, String patchClockOnTime, String patchClockOffTime, 
-			HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo patchClock(String mobile, AttendancePatchClock patchClock, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("patchClock start...");
 		ResultInfo info = new ResultInfo();
 		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
@@ -330,35 +330,60 @@ public class AttendanceApiController extends BaseController {
 			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
 			return info;
 		}
-		boolean flag = service.patchClock(mobile, patchClockType, patchClockOnTime, patchClockOffTime, rule);
-		if (flag){
-			logger.error("用户 {" + mobile + "}补卡成功。");
-			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("用户  " + mobile + " 补卡 成功。");
-		} else {
-			logger.error("用户 {" + mobile + "}补卡失败。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户  " + mobile + " 补卡 失败。");
+		//补卡审批状态 0：已通过  1：未通过  2：审批中
+		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
+			boolean flag = service.patchClock(mobile, patchClock, rule);
+			if (flag){
+				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡成功。");
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡 成功。");
+			} else {
+				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡失败。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡 失败。");
+			}
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "1")){
+			boolean flag = false;
+			//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
+			if (patchClock.getPatchClockType() == 0){
+				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "3", "3");
+			} else if (patchClock.getPatchClockType() == 1){
+				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "3", "");
+			} else if (patchClock.getPatchClockType() == 2){
+				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "", "3");
+			}
+			if (flag){
+				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
+			} else {
+				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
+			}
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
+			boolean flag = false;
+			//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
+			if (patchClock.getPatchClockType() == 0){
+				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "4", "4");
+			} else if (patchClock.getPatchClockType() == 1){
+				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "4", "");
+			} else if (patchClock.getPatchClockType() == 2){
+				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "", "4");
+			}
+			if (flag){
+				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("用户 {" + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
+			} else {
+				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
+			}
 		}
+			
 		logger.debug("patchClock end...");
 		return info;
 	}
 	
-	@RequestMapping(value = "updateClockStatus", method = RequestMethod.POST)
-	@ResponseBody
-	public ResultInfo updateClockStatus(String mobile, String clockDate, String clockOnStatus, String clockOffStatus, 
-			HttpServletRequest request, HttpServletResponse response){
-		logger.debug("updateClockStatus start...");
-		ResultInfo info = new ResultInfo();
-		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
-		if (null == rule){
-			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
-			return info;
-		}
-		service.updateClockStatus(mobile, clockDate, clockOnStatus, clockOffStatus);
-		logger.debug("updateClockStatus end...");
-		return info;
-	}
 }

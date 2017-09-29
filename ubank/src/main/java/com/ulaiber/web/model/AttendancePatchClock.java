@@ -48,17 +48,17 @@ public class AttendancePatchClock {
 	/**
 	 * 补卡审批状态 0：已通过 1：未通过 2：审批中
 	 */
-	private int patchClockStatus;
+	private String patchClockStatus;
 	
 	/**
 	 * 上班补卡时间 yyyy-MM-dd HH:mm
 	 */
-	private String patchClockOnDateTime;
+	private String patchClockOnTime;
 	
 	/**
 	 * 下班补卡时间 yyyy-MM-dd HH:mm
 	 */
-	private String patchClockOffDateTime;
+	private String patchClockOffTime;
 
 	public long getPid() {
 		return pid;
@@ -116,28 +116,28 @@ public class AttendancePatchClock {
 		this.patchClockType = patchClockType;
 	}
 
-	public int getPatchClockStatus() {
+	public String getPatchClockStatus() {
 		return patchClockStatus;
 	}
 
-	public void setPatchClockStatus(int patchClockStatus) {
+	public void setPatchClockStatus(String patchClockStatus) {
 		this.patchClockStatus = patchClockStatus;
 	}
 
-	public String getPatchClockOnDateTime() {
-		return patchClockOnDateTime;
+	public String getPatchClockOnTime() {
+		return patchClockOnTime;
 	}
 
-	public void setPatchClockOnDateTime(String patchClockOnDateTime) {
-		this.patchClockOnDateTime = patchClockOnDateTime;
+	public void setPatchClockOnTime(String patchClockOnTime) {
+		this.patchClockOnTime = patchClockOnTime;
 	}
 
-	public String getPatchClockOffDateTime() {
-		return patchClockOffDateTime;
+	public String getPatchClockOffTime() {
+		return patchClockOffTime;
 	}
 
-	public void setPatchClockOffDateTime(String patchClockOffDateTime) {
-		this.patchClockOffDateTime = patchClockOffDateTime;
+	public void setPatchClockOffTime(String patchClockOffTime) {
+		this.patchClockOffTime = patchClockOffTime;
 	}
-
+	
 }
