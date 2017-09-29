@@ -101,4 +101,17 @@ public interface AttendanceDao {
 	 */
 	List<Map<String, Object>> getUsersFromRecords(Map<String, Object> params);
 	
+	/**
+	 * 补卡
+	 * @param params
+	 * @return
+	 */
+	boolean patchClock(Map<String, Object> params);
+	
+	/**
+	 * 更改上班或下班状态
+	 * @param params
+	 */
+	boolean updateClockStatus(Map<String, Object> params);
+	
 }
