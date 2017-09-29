@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.AttendancePatchClock;
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.ResultInfo;
 
@@ -95,4 +96,21 @@ public interface AttendanceService {
 	 * @return
 	 */
 	double getHoursByDateAndMobile(String startDateTime, String endDateTime, AttendanceRule rule);
+	
+	/**
+	 * 补卡
+	 * @param params
+	 * @return
+	 */
+	boolean patchClock(String mobile, int patchClockType, String patchClocOnkDateTime, String patchClockOffDateTime, AttendanceRule rule);
+	
+	/**
+	 * 补卡时修改打卡状态
+	 * @param mobile
+	 * @param clockDate
+	 * @param clockOnStatus
+	 * @param clockOffStatus
+	 * @return
+	 */
+	boolean updateClockStatus(String mobile, String clockDate, String clockOnStatus, String clockOffStatus);
 }

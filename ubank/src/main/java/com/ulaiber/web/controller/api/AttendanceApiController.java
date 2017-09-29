@@ -316,4 +316,49 @@ public class AttendanceApiController extends BaseController {
 		logger.debug("getHoursByDateAndMobile end...");
 		return info;
 	}
+	
+	@RequestMapping(value = "patchClock", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo patchClock(String mobile, int patchClockType, String patchClockOnTime, String patchClockOffTime, 
+			HttpServletRequest request, HttpServletResponse response){
+		logger.debug("patchClock start...");
+		ResultInfo info = new ResultInfo();
+		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+		if (null == rule){
+			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
+			return info;
+		}
+		boolean flag = service.patchClock(mobile, patchClockType, patchClockOnTime, patchClockOffTime, rule);
+		if (flag){
+			logger.error("用户 {" + mobile + "}补卡成功。");
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("用户  " + mobile + " 补卡 成功。");
+		} else {
+			logger.error("用户 {" + mobile + "}补卡失败。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("用户  " + mobile + " 补卡 失败。");
+		}
+		logger.debug("patchClock end...");
+		return info;
+	}
+	
+	@RequestMapping(value = "updateClockStatus", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo updateClockStatus(String mobile, String clockDate, String clockOnStatus, String clockOffStatus, 
+			HttpServletRequest request, HttpServletResponse response){
+		logger.debug("updateClockStatus start...");
+		ResultInfo info = new ResultInfo();
+		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+		if (null == rule){
+			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
+			return info;
+		}
+		service.updateClockStatus(mobile, clockDate, clockOnStatus, clockOffStatus);
+		logger.debug("updateClockStatus end...");
+		return info;
+	}
 }

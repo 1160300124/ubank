@@ -157,16 +157,33 @@
 		select * from tbl_attendance_records where clock_date &gt;= #{start_date} and clock_date &lt;=# {end_date} order by rid
 	</select>
 	
-	<update id="patchClock" parameterType="Attendance">
+	<update id="patchClock" parameterType="Map">
 		update tbl_attendance_records set
 		<if test="patchClockType == 1">
-			clock_on_datetime=#{clockOnDateTime},clock_on_status = #{clockOnStatus},
+			clock_on_datetime=#{patchClockOnTime},clock_on_status = #{patchClockOnStatus}
 		</if>
 		<if test="patchClockType == 2">
-			clock_off_datetime=#{clockOffDateTime},clock_off_status = #{clockOffStatus},
+			clock_off_datetime=#{patchClockOffTime},clock_off_status = #{patchClockOffStatus}
 		</if>
 		where user_id=#{userId} and clock_date = #{clockDate}
+	</update>
 	
+	<update id="updateClockStatus" parameterType="Map">
+		update tbl_attendance_records set
+		<choose>
+			<when test="clockOnStatus != null and clockOnStatus !='' and clockOffStatus != null and clockOffStatus !=''">
+				clock_on_status = #{clockOnStatus},clock_off_status = #{clockOffStatus}
+			</when>
+			<otherwise>
+				<if test="clockOnStatus != null and clockOnStatus !=''">
+					clock_on_status = #{clockOnStatus}
+				</if>
+				<if test="clockOffStatus != null and clockOffStatus !=''">
+					clock_off_status = #{clockOffStatus}
+				</if>
+			</otherwise>
+		</choose>
+		where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
 </mapper>
