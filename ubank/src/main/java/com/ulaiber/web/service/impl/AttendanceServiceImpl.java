@@ -22,6 +22,7 @@ import com.ulaiber.web.dao.AttendanceDao;
 import com.ulaiber.web.dao.AttendanceRuleDao;
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.AttendancePatchClock;
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
@@ -569,28 +570,28 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public boolean patchClock(String mobile, int patchClockType, String patchClockOnTime, String patchClockOffTime, AttendanceRule rule) { 
+	public boolean patchClock(String mobile, AttendancePatchClock patchClock, AttendanceRule rule) { 
 		User user = userDao.getUserByMobile(mobile);
 		if (null == user){
 			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
 			return false;
 		}
 		
-		if (patchClockType == 0){
-			String clockOnDate = patchClockOnTime.split(" ")[0];
-			String clockOffDate = patchClockOffTime.split(" ")[0];
+		if (patchClock.getPatchClockType() == 0){
+			String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
+			String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
 			Attendance att = new Attendance();
 			att.setClockOnStatus("0");
 			att.setClockOffStatus("0");
-			if (patchClockOnTime.compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
+			if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
 				att.setClockOnStatus("1");
 			}
-			if (patchClockOffTime.compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
+			if (patchClock.getPatchClockOffTime().compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
 				att.setClockOffStatus("1");
 			}
-			att.setClockDate(clockOnDate);
-			att.setClockOnDateTime(patchClockOnTime);
-			att.setClockOffDateTime(patchClockOffTime);
+			att.setClockDate(patchClock.getPatchClockDate());
+			att.setClockOnDateTime(patchClock.getPatchClockOnTime());
+			att.setClockOffDateTime(patchClock.getPatchClockOffTime());
 			
 			att.setUserId(user.getId());
 			att.setUserName(user.getUserName());
@@ -607,22 +608,22 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", user.getId());
-		params.put("patchClockType", patchClockType);
-		if (patchClockType == 1){
-			String clockOnDate = patchClockOnTime.split(" ")[0];
+		params.put("patchClockType", patchClock.getPatchClockType());
+		if (patchClock.getPatchClockType() == 1){
+			String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
 			params.put("clockDate", clockOnDate);
-			params.put("patchClockOnTime", patchClockOnTime);
+			params.put("patchClockOnTime", patchClock.getPatchClockOnTime());
 			params.put("patchClockOnStatus", "0");
-			if (patchClockOnTime.compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
+			if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
 				params.put("patchClockOnStatus", "1");
 			}
 		}
-		if(patchClockType == 2){
-			String clockOffDate = patchClockOffTime.split(" ")[0];
+		if(patchClock.getPatchClockType() == 2){
+			String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
 			params.put("clockDate", clockOffDate);
-			params.put("patchClockOffTime", patchClockOffTime);
+			params.put("patchClockOffTime", patchClock.getPatchClockOffTime());
 			params.put("patchClockOffStatus", "0");
-			if (patchClockOffTime.compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
+			if (patchClock.getPatchClockOffTime().compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
 				params.put("patchClockOffStatus", "1");
 			}
 		}

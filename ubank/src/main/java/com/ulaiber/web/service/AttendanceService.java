@@ -102,7 +102,7 @@ public interface AttendanceService {
 	 * @param params
 	 * @return
 	 */
-	boolean patchClock(String mobile, int patchClockType, String patchClocOnkDateTime, String patchClockOffDateTime, AttendanceRule rule);
+	boolean patchClock(String mobile, AttendancePatchClock patchClock, AttendanceRule rule);
 	
 	/**
 	 * 补卡时修改打卡状态
