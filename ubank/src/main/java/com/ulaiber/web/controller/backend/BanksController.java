@@ -230,18 +230,19 @@ public class BanksController extends BaseController {
         //根据总行编号查询是否存在分部
         List<Branch> comList = banksRootService.queryBranchByBankNo(numberArr);
         if(comList.size() > 0 ){
-            resultInfo.setCode(300);
-            resultInfo.setMessage("该集团存在公司，请先删除该集团下的公司");
+            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+            resultInfo.setMessage("该总行下存在分行，请先删除分行");
             return resultInfo;
         }
-        //int result = permissionService.deleteGroup(numberArr);
+        //删除
+        int result = banksRootService.removeHeadquarters(numberArr);
         if(result > 0){
-            resultInfo.setCode(200);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("删除成功");
         }else{
-            resultInfo.setCode(500);
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("删除失败");
         }
-        return ;
+        return null;
     }
 }

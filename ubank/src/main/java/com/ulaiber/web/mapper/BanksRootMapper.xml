@@ -53,5 +53,10 @@
     </update>
     
     <!--根据总行编号查询是否存在分部-->
-    <select id=""
+    <select id="queryBranchByBankNo" parameterType="int" resultType="com.ulaiber.web.model.Branch">
+        SELECT * FROM tbl_bank_branch where headquartersNo IN
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </select>
 </mapper>

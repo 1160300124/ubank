@@ -69,4 +69,13 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
         }
         return banksRootDao.queryBranchByBankNo(number);
     }
+
+    @Override
+    public int removeHeadquarters(String[] numberArr) {
+        int[] number = new int[numberArr.length];
+        for (int i = 0 ; i < numberArr.length ; i++){
+            number[i] = Integer.parseInt(numberArr[i]);
+        }
+        return 0;
+    }
 }

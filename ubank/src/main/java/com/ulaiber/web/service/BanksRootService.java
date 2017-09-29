@@ -60,4 +60,11 @@ public interface BanksRootService {
      * @return Branch
      */
     List<Branch> queryBranchByBankNo(String[] numberArr);
+
+    /**
+     * 根据银行编号删除银行
+     * @param numberArr 总行编号
+     * @return int
+     */
+    int removeHeadquarters(String[] numberArr);
 }
