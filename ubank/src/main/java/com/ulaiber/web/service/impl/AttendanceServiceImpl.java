@@ -20,10 +20,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AttendanceDao;
 import com.ulaiber.web.dao.AttendanceRuleDao;
+import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.Attendance;
 import com.ulaiber.web.model.AttendanceRule;
+import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.utils.DateTimeUtil;
@@ -47,6 +51,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	
 	@Resource
 	private AttendanceRuleDao ruleDao;
+	
+	@Resource
+	private UserDao userDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
@@ -339,7 +346,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		Map<String, Object> data = new LinkedHashMap<String, Object>();
 		//指定月份为空则获取当前月份
 		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
-		//0 正常   1异常(迟到，早退，忘打卡) 2未打卡  3休息日
+		//0 正常   1异常(迟到，早退，忘打卡) 2未打卡  3休息日  4审批补卡已通过
 		int type = 3;
 		
 		List<String> days = DateTimeUtil.getDaysFromMonth(month);
@@ -379,8 +386,10 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				if (StringUtils.equals(att.getClockDate(), day)){
 					if (StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "0")){
 						type = 0;
+					} else if (StringUtils.equals(att.getClockOnStatus(), "2") && StringUtils.equals(att.getClockOffStatus(), "2")){
+						type = 4;
 					} else {
-						type =1;
+						type= 1;
 					}
 					count ++;
 				}
@@ -535,16 +544,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 					hour += getHour(day, rule);
 				}
 				
-				
 			}
 		}
 		
-		
-		
-		System.out.println(hour);
 		return hour;
 	}
-	
 	
 	private double getHour(String date, AttendanceRule rule){
 		//上班时间
@@ -562,6 +566,83 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 		
 		return (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+	}
+
+	@Override
+	public boolean patchClock(String mobile, int patchClockType, String patchClockOnTime, String patchClockOffTime, AttendanceRule rule) { 
+		User user = userDao.getUserByMobile(mobile);
+		if (null == user){
+			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
+			return false;
+		}
+		
+		if (patchClockType == 0){
+			String clockOnDate = patchClockOnTime.split(" ")[0];
+			String clockOffDate = patchClockOffTime.split(" ")[0];
+			Attendance att = new Attendance();
+			att.setClockOnStatus("0");
+			att.setClockOffStatus("0");
+			if (patchClockOnTime.compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
+				att.setClockOnStatus("1");
+			}
+			if (patchClockOffTime.compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
+				att.setClockOffStatus("1");
+			}
+			att.setClockDate(clockOnDate);
+			att.setClockOnDateTime(patchClockOnTime);
+			att.setClockOffDateTime(patchClockOffTime);
+			
+			att.setUserId(user.getId());
+			att.setUserName(user.getUserName());
+			
+			Company com = new Company();
+			com.setCompanyNumber(user.getCompanyId());
+			att.setCompany(com);
+			
+			Departments dept = new Departments();
+			dept.setDept_number(user.getDept_number());
+			att.setDept(dept);
+			return dao.save(att) > 0;
+		}
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", user.getId());
+		params.put("patchClockType", patchClockType);
+		if (patchClockType == 1){
+			String clockOnDate = patchClockOnTime.split(" ")[0];
+			params.put("clockDate", clockOnDate);
+			params.put("patchClockOnTime", patchClockOnTime);
+			params.put("patchClockOnStatus", "0");
+			if (patchClockOnTime.compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
+				params.put("patchClockOnStatus", "1");
+			}
+		}
+		if(patchClockType == 2){
+			String clockOffDate = patchClockOffTime.split(" ")[0];
+			params.put("clockDate", clockOffDate);
+			params.put("patchClockOffTime", patchClockOffTime);
+			params.put("patchClockOffStatus", "0");
+			if (patchClockOffTime.compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
+				params.put("patchClockOffStatus", "1");
+			}
+		}
+		
+		return dao.patchClock(params);
+	}
+
+	@Override
+	public boolean updateClockStatus(String mobile, String clockDate, String clockOnStatus, String clockOffStatus) {
+		User user = userDao.getUserByMobile(mobile);
+		if (null == user){
+			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
+			return false;
+		}
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", user.getId());
+		params.put("clockDate", clockDate);
+		params.put("clockOnStatus", clockOnStatus);
+		params.put("clockOffStatus", clockOffStatus);
+		return dao.updateClockStatus(params);
 	}
 	
 }
