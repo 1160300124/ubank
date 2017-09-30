@@ -22,6 +22,7 @@
     	<result column="clock_off_status" property="clockOffStatus" jdbcType="VARCHAR" />
     	<result column="clock_off_location" property="clockOffLocation" jdbcType="VARCHAR" />
     	<result column="clock_off_device" property="clockOffDevice" jdbcType="VARCHAR" />
+    	<result column="patchClock_status" property="patchClockStatus" jdbcType="VARCHAR" />
     	<association column="dept_num" property="dept" javaType="com.ulaiber.web.model.Departments" resultMap="DepartmentMap"/>
     	<association column="company_num" property="company" javaType="com.ulaiber.web.model.Company" resultMap="CompanyMap"/>
    </resultMap>
@@ -46,8 +47,9 @@
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="Attendance" >
 		insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,
-		clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(#{userId},#{userName},#{dept.dept_number},#{company.companyNumber},#{clockDate},
-		#{clockOnDateTime},#{clockOnStatus},#{clockOnLocation},#{clockOnDevice},#{clockOffDateTime},#{clockOffStatus},#{clockOffLocation},#{clockOffDevice}) 
+		clock_off_datetime,clock_off_status,clock_off_location,clock_off_device,patchClock_status) values(#{userId},#{userName},#{dept.dept_number},
+		#{company.companyNumber},#{clockDate},#{clockOnDateTime},#{clockOnStatus},#{clockOnLocation},#{clockOnDevice},#{clockOffDateTime},#{clockOffStatus},
+		#{clockOffLocation},#{clockOffDevice},#{patchClockStatus}) 
 	</insert>
 	
 	<sql id="byCond">
@@ -86,12 +88,12 @@
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
 		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,
-		clock_off_device from tbl_attendance_records where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by rid
+		clock_off_device,patchClock_status from tbl_attendance_records where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
 		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_off_datetime,r.clock_off_status,
-		r.clock_off_location, r.clock_off_device from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile}
+		r.clock_off_location,r.clock_off_device,r.patchClock_status from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile}
 		and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by r.rid
 	</select>
 	
@@ -160,30 +162,16 @@
 	<update id="patchClock" parameterType="Map">
 		update tbl_attendance_records set
 		<if test="patchClockType == 1">
-			clock_on_datetime=#{patchClockOnTime},clock_on_status = #{patchClockOnStatus}
+			clock_on_datetime = #{patchClockOnTime},clock_on_status = #{patchClockOnStatus},
 		</if>
 		<if test="patchClockType == 2">
-			clock_off_datetime=#{patchClockOffTime},clock_off_status = #{patchClockOffStatus}
+			clock_off_datetime = #{patchClockOffTime},clock_off_status = #{patchClockOffStatus},
 		</if>
-		where user_id=#{userId} and clock_date = #{clockDate}
+		patchClock_status = #{patchClockStatus} where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
-	<update id="updateClockStatus" parameterType="Map">
-		update tbl_attendance_records set
-		<choose>
-			<when test="clockOnStatus != null and clockOnStatus !='' and clockOffStatus != null and clockOffStatus !=''">
-				clock_on_status = #{clockOnStatus},clock_off_status = #{clockOffStatus}
-			</when>
-			<otherwise>
-				<if test="clockOnStatus != null and clockOnStatus !=''">
-					clock_on_status = #{clockOnStatus}
-				</if>
-				<if test="clockOffStatus != null and clockOffStatus !=''">
-					clock_off_status = #{clockOffStatus}
-				</if>
-			</otherwise>
-		</choose>
-		where user_id=#{userId} and clock_date = #{clockDate}
+	<update id="updatePatchClockStatus" parameterType="Map">
+		update tbl_attendance_records set patchClock_status = #{patchClockStatus} where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
 </mapper>

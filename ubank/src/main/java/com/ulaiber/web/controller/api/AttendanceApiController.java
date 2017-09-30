@@ -169,7 +169,7 @@ public class AttendanceApiController extends BaseController {
 		//date不为空, 查询指定日期的打卡信息
 		if (StringUtils.isNotEmpty(date)){
 			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile);
-			data.put("record", records.size() == 0 ? "" : records.get(0));
+			data.put("record", records.size() == 0 ? null : records.get(0));
 			return data;
 		}
 		
@@ -210,7 +210,7 @@ public class AttendanceApiController extends BaseController {
 		}
 		
 		data.put("type", type);
-		data.put("record", records.size() == 0 ? "" : records.get(0));
+		data.put("record", records.size() == 0 ? null : records.get(0));
 		return data;
 	}
 	
@@ -343,15 +343,7 @@ public class AttendanceApiController extends BaseController {
 				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡 失败。");
 			}
 		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "1")){
-			boolean flag = false;
-			//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
-			if (patchClock.getPatchClockType() == 0){
-				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "3", "3");
-			} else if (patchClock.getPatchClockType() == 1){
-				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "3", "");
-			} else if (patchClock.getPatchClockType() == 2){
-				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "", "3");
-			}
+			boolean	flag = service.updatePatchClockStatus(mobile, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
 			if (flag){
 				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
 				info.setCode(IConstants.QT_CODE_OK);
@@ -362,15 +354,7 @@ public class AttendanceApiController extends BaseController {
 				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
 			}
 		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
-			boolean flag = false;
-			//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
-			if (patchClock.getPatchClockType() == 0){
-				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "4", "4");
-			} else if (patchClock.getPatchClockType() == 1){
-				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "4", "");
-			} else if (patchClock.getPatchClockType() == 2){
-				flag = service.updateClockStatus(mobile, patchClock.getPatchClockDate(), "", "4");
-			}
+			boolean flag = service.updatePatchClockStatus(mobile, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
 			if (flag){
 				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
 				info.setCode(IConstants.QT_CODE_OK);
