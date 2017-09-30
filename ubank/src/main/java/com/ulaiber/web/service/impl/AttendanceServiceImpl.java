@@ -387,7 +387,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				if (StringUtils.equals(att.getClockDate(), day)){
 					if (StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "0")){
 						type = 0;
-					} else if (StringUtils.equals(att.getClockOnStatus(), "2") && StringUtils.equals(att.getClockOffStatus(), "2")){
+					} else if (StringUtils.equals(att.getPatchClockStatus(), "0")){
 						type = 4;
 					} else {
 						type= 1;
@@ -577,10 +577,12 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			return false;
 		}
 		
+		//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
 		if (patchClock.getPatchClockType() == 0){
 			String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
 			String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
 			Attendance att = new Attendance();
+			att.setPatchClockStatus(patchClock.getPatchClockStatus());
 			att.setClockOnStatus("0");
 			att.setClockOffStatus("0");
 			if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
@@ -609,6 +611,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", user.getId());
 		params.put("patchClockType", patchClock.getPatchClockType());
+		params.put("patchClockStatus", patchClock.getPatchClockStatus());
 		if (patchClock.getPatchClockType() == 1){
 			String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
 			params.put("clockDate", clockOnDate);
@@ -632,7 +635,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public boolean updateClockStatus(String mobile, String clockDate, String clockOnStatus, String clockOffStatus) {
+	public boolean updatePatchClockStatus(String mobile, String clockDate, String patchClockStatus) {
 		User user = userDao.getUserByMobile(mobile);
 		if (null == user){
 			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
@@ -641,9 +644,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", user.getId());
 		params.put("clockDate", clockDate);
-		params.put("clockOnStatus", clockOnStatus);
-		params.put("clockOffStatus", clockOffStatus);
-		return dao.updateClockStatus(params);
+		params.put("patchClockStatus", patchClockStatus);
+		return dao.updatePatchClockStatus(params);
 	}
 	
 }

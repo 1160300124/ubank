@@ -112,6 +112,6 @@ public interface AttendanceDao {
 	 * 更改上班或下班状态
 	 * @param params
 	 */
-	boolean updateClockStatus(Map<String, Object> params);
+	boolean updatePatchClockStatus(Map<String, Object> params);
 	
 }

@@ -108,9 +108,8 @@ public interface AttendanceService {
 	 * 补卡时修改打卡状态
 	 * @param mobile
 	 * @param clockDate
-	 * @param clockOnStatus
-	 * @param clockOffStatus
+	 * @param patchClockStatus
 	 * @return
 	 */
-	boolean updateClockStatus(String mobile, String clockDate, String clockOnStatus, String clockOffStatus);
+	boolean updatePatchClockStatus(String mobile, String clockDate, String patchClockStatus);
 }

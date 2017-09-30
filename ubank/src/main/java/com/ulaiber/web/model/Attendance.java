@@ -80,6 +80,11 @@ public class Attendance {
 	 */
 	private String clockOffDevice;
 	
+	/**
+	 * 补卡审批状态 0：已通过  1：未通过  2：审批中
+	 */
+	private String patchClockStatus;
+	
 	public long getRid() {
 		return rid;
 	}
@@ -190,6 +195,14 @@ public class Attendance {
 
 	public void setClockOffDevice(String clockOffDevice) {
 		this.clockOffDevice = clockOffDevice;
+	}
+
+	public String getPatchClockStatus() {
+		return patchClockStatus;
+	}
+
+	public void setPatchClockStatus(String patchClockStatus) {
+		this.patchClockStatus = patchClockStatus;
 	}
 
 }
