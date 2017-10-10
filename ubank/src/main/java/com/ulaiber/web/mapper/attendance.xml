@@ -58,7 +58,7 @@
 			and r.dept_num = #{dept_num}
 		</if>
 		<if test="clock_on_status == '' and clock_on_status == ''">
-			and clock_on_status is null or clock_off_status is null
+			and (clock_on_status is null or clock_off_status is null)
 		</if>
 		<if test="clock_on_status != null and clock_on_status != ''">
 			and r.clock_on_status = #{clock_on_status}
@@ -161,6 +161,9 @@
 	
 	<update id="patchClock" parameterType="Map">
 		update tbl_attendance_records set
+		<if test="patchClockType == 0">
+			clock_on_datetime = #{patchClockOnTime},clock_on_status = #{patchClockOnStatus},clock_off_datetime = #{patchClockOffTime},clock_off_status = #{patchClockOffStatus},
+		</if>
 		<if test="patchClockType == 1">
 			clock_on_datetime = #{patchClockOnTime},clock_on_status = #{patchClockOnStatus},
 		</if>
