@@ -51,7 +51,7 @@
 			</div>
 		</form>
 		
-		<table id="tb_statistics" data-toggle="table" data-url="" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
+		<table id="tb_statistics" data-toggle="table" data-url="" data-method="get" data-striped="true" data-sort-order="desc"
 			   data-pagination="true" data-side-pagination="server" data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
