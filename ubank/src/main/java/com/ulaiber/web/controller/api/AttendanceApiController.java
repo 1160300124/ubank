@@ -104,7 +104,7 @@ public class AttendanceApiController extends BaseController {
 		}
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
-//		String datetime = "2017-09-13 00:20";
+//		String datetime = "2017-10-09 02:20";
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		
@@ -122,17 +122,13 @@ public class AttendanceApiController extends BaseController {
 		
 		if (StringUtils.isNotEmpty(date)){
 			today = date;
-			dateBegin = today + " " + rule.getClockOnStartTime();
-			dateEnd = today + " " + rule.getClockOffEndTime();
-			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
-				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
-			}
 		} else {
 			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
 				if (time.compareTo(rule.getClockOffEndTime()) <= 0){
 					today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-					dateBegin = today + " " + rule.getClockOnStartTime();
-					clockOnTime = today + " " + rule.getClockOnTime();
+					dateBegin = DateTimeUtil.getfutureTime(dateBegin, -1, 0, 0);
+					clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, -1, 0, 0);
+					clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, -1, 0, 0);
 				} else {
 					dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
 					if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
@@ -144,21 +140,27 @@ public class AttendanceApiController extends BaseController {
 		
 		data.put("clockDate", today);
 		boolean isRestDay = false;
+		String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
 		//节假日
-		Holiday holiday = ruleService.getHolidaysByYear(today.split("-")[0]);
-		if (holiday != null){
-			List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
-			List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
-			if (holidays.contains(today) && datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(dateEnd) <= 0){
-				isRestDay = true;
-			} else {
-				String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
-				if (rule.getWorkday().contains(workday) || workdays.contains(today)){
-					isRestDay = false;
-				} else {
+		if (rule.getHolidayFlag() == 0){
+			Holiday holiday = ruleService.getHolidaysByYear(today.split("-")[0]);
+			if (holiday != null){
+				List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
+				List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
+				if (holidays.contains(today)){
 					isRestDay = true;
+				} else {
+					if (rule.getWorkday().contains(workday) || workdays.contains(today)){
+						isRestDay = false;
+					} else {
+						isRestDay = true;
+					}
 				}
 			}
+		} else {
+			if (!rule.getWorkday().contains(workday)){
+				isRestDay = true;
+			} 
 		}
 		
 		if (isRestDay){
@@ -205,7 +207,7 @@ public class AttendanceApiController extends BaseController {
 			type = 3;
 		}
 		//当前时间>最晚下班打卡时间
-		if (datetime.compareTo(dateEnd) > 0 || datetime.compareTo(clockOnTime) < 0){
+		else if (datetime.compareTo(dateEnd) > 0 || datetime.compareTo(clockOnTime) < 0){
 			type = 4;
 		}
 		
@@ -311,62 +313,28 @@ public class AttendanceApiController extends BaseController {
 			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
 			return info;
 		}
+		//开始日期  yyyy-MM-dd
+		String startDate = startDateTime.split(" ")[0];
+		//结束日期  yyyy-MM-dd
+		String endDate = endDateTime.split(" ")[0];
+		List<String> days = DateTimeUtil.getDaysFromDate(startDate, endDate);
+		if (days.size() == 1){
+			//上班时间
+			String clockOnTime = startDate + " " + rule.getClockOnTime();
+			//下班时间
+			String clockOffTime = endDate + " " + rule.getClockOffTime();
+			if (startDateTime.compareTo(clockOnTime) < 0 && endDateTime.compareTo(clockOnTime) < 0
+					|| startDateTime.compareTo(clockOffTime) > 0 && endDateTime.compareTo(clockOffTime) > 0){
+				logger.error("请假的时间范围不在工作时间内。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("请假的时间范围不在工作时间内。");
+				return info;
+			}
+		}
 		double hours = service.getHoursByDateAndMobile(startDateTime, endDateTime, rule);
 		info.setCode(IConstants.QT_CODE_OK);
 		info.setData(hours);
 		logger.debug("getHoursByDateAndMobile end...");
-		return info;
-	}
-	
-	@RequestMapping(value = "patchClock", method = RequestMethod.POST)
-	@ResponseBody
-	public ResultInfo patchClock(String mobile, AttendancePatchClock patchClock, HttpServletRequest request, HttpServletResponse response){
-		logger.debug("patchClock start...");
-		ResultInfo info = new ResultInfo();
-		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
-		if (null == rule){
-			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
-			return info;
-		}
-		//补卡审批状态 0：已通过  1：未通过  2：审批中
-		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
-			boolean flag = service.patchClock(mobile, patchClock, rule);
-			if (flag){
-				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡成功。");
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡 成功。");
-			} else {
-				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡失败。");
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡 失败。");
-			}
-		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "1")){
-			boolean	flag = service.updatePatchClockStatus(mobile, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
-			if (flag){
-				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
-			} else {
-				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
-			}
-		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
-			boolean flag = service.updatePatchClockStatus(mobile, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
-			if (flag){
-				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("用户 {" + mobile + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
-			} else {
-				logger.error("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("用户 " + mobile + " " + patchClock.getPatchClockDate() + "更新补卡状态失败。");
-			}
-		}
-			
-		logger.debug("patchClock end...");
 		return info;
 	}
 	

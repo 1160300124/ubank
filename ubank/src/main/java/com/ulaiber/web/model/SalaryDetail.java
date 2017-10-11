@@ -28,9 +28,26 @@ public class SalaryDetail {
 	private String cardNo;
 	
 	/**
-	 * 工资金额
+	 * 税前工资
 	 */
-	private double salaries;
+	private double pre_tax_salaries;
+	
+	/**
+	 * 奖金
+	 */
+	private double bonuses;
+	
+	/**
+	 * 补贴
+	 */
+	private double subsidies;
+	
+	/**
+	 * 考勤扣款
+	 */
+	private double att_cut_payment;
+	
+	private double _cut_payment;
 	
 	/**
 	 * 工资发放时间
@@ -82,13 +99,6 @@ public class SalaryDetail {
 		this.cardNo = cardNo;
 	}
 
-	public double getSalaries() {
-		return salaries;
-	}
-
-	public void setSalaries(double salaries) {
-		this.salaries = salaries;
-	}
 
 	public String getSalaryDate() {
 		return salaryDate;

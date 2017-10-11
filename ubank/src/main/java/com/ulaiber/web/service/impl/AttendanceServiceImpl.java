@@ -1,5 +1,6 @@
 package com.ulaiber.web.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,19 +64,19 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
 //		String datetime = "2017-09-20 01:10";
-		String date = datetime.split(" ")[0];
+		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		
-		String clockOnTime= date + " " + rule.getClockOnTime();
-		String clockOffTime = date + " " + rule.getClockOffTime();
-		String dateBegin = date + " " + rule.getClockOnStartTime();
-		String dateEnd = date + " " + rule.getClockOffEndTime();
-		String today = date;
+		String clockOnTime= today + " " + rule.getClockOnTime();
+		String clockOffTime = today + " " + rule.getClockOffTime();
+		String dateBegin = today + " " + rule.getClockOnStartTime();
+		String dateEnd = today + " " + rule.getClockOffEndTime();
 		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
 			if (time.compareTo(rule.getClockOffEndTime()) <= 0){
 				today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-				dateBegin = today + " " + rule.getClockOnStartTime();
-				clockOnTime = today + " " + rule.getClockOnTime();
+				dateBegin = DateTimeUtil.getfutureTime(dateBegin, -1, 0, 0);
+				clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, -1, 0, 0);
+				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, -1, 0, 0);
 			} else {
 				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
 				if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
@@ -92,7 +93,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			if (holiday != null){
 				List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
 				List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
-				if (holidays.contains(today) && datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(dateEnd) <= 0){
+				if (holidays.contains(today)){
 					isRestDay = true;
 				} else {
 					if (rule.getWorkday().contains(workday) || workdays.contains(today)){
@@ -208,7 +209,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 			//当前时间大于上次打卡时间小于下班打卡时间----早退
 			else if (datetime.compareTo(clockOffBegin) > 0 && datetime.compareTo(clockOffTime) <= 0){
-				att.setClockOffStatus("1");
+				att.setClockOffStatus("2");
 			}
 			
 			flag = dao.updateClockOffInfo(att);
@@ -424,10 +425,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		if (days.size() == 1){
 			//上班时间
 			String clockOnTime = startDate + " " + rule.getClockOnTime();
-			//休息开始时间
-			String restStartTime = startDate + " " + rule.getRestStartTime();
-			//休息结束时间
-			String restEndTime = startDate + " " + rule.getRestEndTime();
 			//下班时间
 			String clockOffTime = endDate + " " + rule.getClockOffTime();
 			//请假开始时间
@@ -437,23 +434,31 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			
 			long start = DateTimeUtil.str2Date(startDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 			long end = DateTimeUtil.str2Date(endDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-			long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-			long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 			
-			if (startDateTime.compareTo(restStartTime) > 0 && startDateTime.compareTo(restEndTime) < 0){
-				start = restEnd;
-				hour = (double)(end - start) / IConstants.HOUR_MS;
-			} else if (startDateTime.compareTo(restEndTime) >= 0){
-				hour = (double)(end - start) / IConstants.HOUR_MS;
-			} else if (endDateTime.compareTo(restStartTime) > 0 && endDateTime.compareTo(restEndTime) < 0){
-				end = restStart;
-				hour = (double)(end - start) / IConstants.HOUR_MS;
-			} else if(endDateTime.compareTo(restStartTime) <= 0){
-				hour = (double)(end - start) / IConstants.HOUR_MS;
+			//是否设置休息时间段
+			if (rule.getRestFlag() == 0){
+				//休息开始时间
+				String restStartTime = startDate + " " + rule.getRestStartTime();
+				//休息结束时间
+				String restEndTime = startDate + " " + rule.getRestEndTime();
+				long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+				long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+				if (startDateTime.compareTo(restStartTime) > 0 && startDateTime.compareTo(restEndTime) < 0){
+					start = restEnd;
+					hour = (double)(end - start) / IConstants.HOUR_MS;
+				} else if (startDateTime.compareTo(restEndTime) >= 0){
+					hour = (double)(end - start) / IConstants.HOUR_MS;
+				} else if (endDateTime.compareTo(restStartTime) > 0 && endDateTime.compareTo(restEndTime) < 0){
+					end = restStart;
+					hour = (double)(end - start) / IConstants.HOUR_MS;
+				} else if(endDateTime.compareTo(restStartTime) <= 0){
+					hour = (double)(end - start) / IConstants.HOUR_MS;
+				} else {
+					hour = (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+				}
 			} else {
-				hour = (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+				hour = (double)(end - start) / IConstants.HOUR_MS;
 			}
-			
 			
 		} else if (days.size() >= 2) {
 			for (String day : days){
@@ -489,12 +494,12 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				if (StringUtils.equals(day, startDate)){
 					//上班时间
 					String clockOnTime = startDate + " " + rule.getClockOnTime();
-					//休息开始时间
-					String restStartTime = startDate + " " + rule.getRestStartTime();
-					//休息结束时间
-					String restEndTime = startDate + " " + rule.getRestEndTime();
 					//下班时间
 					String clockOffTime = startDate + " " + rule.getClockOffTime();
+					//如果请假开始时间大于下班时间
+					if (startDateTime.compareTo(clockOffTime) >= 0){
+						continue;
+					}
 					//请假开始时间
 					startDateTime = startDateTime.compareTo(clockOnTime) < 0 ? clockOnTime : startDateTime;
 					//请假第一天结束时间
@@ -502,24 +507,34 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 					
 					long start = DateTimeUtil.str2Date(startDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 					long end = DateTimeUtil.str2Date(firstEndDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-					long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-					long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 					
-					if (startDateTime.compareTo(restStartTime) > 0 && startDateTime.compareTo(restEndTime) < 0){
-						start = restEnd;
-						hour = (double)(end - start) / IConstants.HOUR_MS;
-					} else if (startDateTime.compareTo(restEndTime) >= 0){
-						hour = (double)(end - start) / IConstants.HOUR_MS;
+					//是否设置休息时间段
+					if (rule.getRestFlag() == 0){
+						//休息开始时间
+						String restStartTime = startDate + " " + rule.getRestStartTime();
+						//休息结束时间
+						String restEndTime = startDate + " " + rule.getRestEndTime();
+						long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+						long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+						if (startDateTime.compareTo(restStartTime) > 0 && startDateTime.compareTo(restEndTime) < 0){
+							start = restEnd;
+							hour = (double)(end - start) / IConstants.HOUR_MS;
+						} else if (startDateTime.compareTo(restEndTime) >= 0){
+							hour = (double)(end - start) / IConstants.HOUR_MS;
+						} else {
+							hour = (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+						}
 					} else {
-						hour = (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+						hour = (double)(end - start) / IConstants.HOUR_MS;
 					}
+					
 				} else if (StringUtils.equals(day, endDate)){
 					//上班时间
 					String clockOnTime = endDate + " " + rule.getClockOnTime();
-					//休息开始时间
-					String restStartTime = endDate + " " + rule.getRestStartTime();
-					//休息结束时间
-					String restEndTime = endDate + " " + rule.getRestEndTime();
+					//如果请假结束时间小于上班时间
+					if (endDateTime.compareTo(clockOnTime) <= 0){
+						continue;
+					}
 					//下班时间
 					String clockOffTime = endDate + " " + rule.getClockOffTime();
 					//请假开始时间
@@ -529,17 +544,27 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 					
 					long start = DateTimeUtil.str2Date(lastStartDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 					long end = DateTimeUtil.str2Date(endDateTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-					long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-					long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 					
-					if (endDateTime.compareTo(restStartTime) > 0 && endDateTime.compareTo(restEndTime) < 0){
-						end = restStart;
-						hour += (double)(end - start) / IConstants.HOUR_MS;
-					} else if(endDateTime.compareTo(restStartTime) <= 0){
-						hour += (double)(end - start) / IConstants.HOUR_MS;
+					//是否设置休息时间段
+					if (rule.getRestFlag() == 0){
+						//休息开始时间
+						String restStartTime = endDate + " " + rule.getRestStartTime();
+						//休息结束时间
+						String restEndTime = endDate + " " + rule.getRestEndTime();
+						long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+						long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+						if (endDateTime.compareTo(restStartTime) > 0 && endDateTime.compareTo(restEndTime) < 0){
+							end = restStart;
+							hour += (double)(end - start) / IConstants.HOUR_MS;
+						} else if(endDateTime.compareTo(restStartTime) <= 0){
+							hour += (double)(end - start) / IConstants.HOUR_MS;
+						} else {
+							hour += (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+						}
 					} else {
-						hour += (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+						hour += (double)(end - start) / IConstants.HOUR_MS;
 					}
+					
 				} else {
 					
 					hour += getHour(day, rule);
@@ -548,85 +573,112 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 		}
 		
-		return hour;
+		//保留一位小数，四舍五入
+		return new BigDecimal(hour).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
 	
 	private double getHour(String date, AttendanceRule rule){
 		//上班时间
 		String clockOnTime = date + " " + rule.getClockOnTime();
-		//休息开始时间
-		String restStartTime = date + " " + rule.getRestStartTime();
-		//休息结束时间
-		String restEndTime = date + " " + rule.getRestEndTime();
 		//下班时间
 		String clockOffTime = date + " " + rule.getClockOffTime();
 		
 		long start = DateTimeUtil.str2Date(clockOnTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 		long end = DateTimeUtil.str2Date(clockOffTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-		long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
-		long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
 		
-		return (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+		//是否设置休息时间段
+		if (rule.getRestFlag() == 0){
+			//休息开始时间
+			String restStartTime = date + " " + rule.getRestStartTime();
+			//休息结束时间
+			String restEndTime = date + " " + rule.getRestEndTime();
+			long restStart = DateTimeUtil.str2Date(restStartTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+			long restEnd = DateTimeUtil.str2Date(restEndTime, DateTimeUtil.DATE_FORMAT_MINUTETIME).getTime();
+			return (double)(end - start - (restEnd - restStart)) / IConstants.HOUR_MS;
+			
+		} else {
+			return (double)(end - start) / IConstants.HOUR_MS;
+		}
+		
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean patchClock(String mobile, AttendancePatchClock patchClock, AttendanceRule rule) { 
-		User user = userDao.getUserByMobile(mobile);
+	public boolean patchClock(AttendancePatchClock patchClock, AttendanceRule rule) { 
+		User user = userDao.getUserById(patchClock.getUserId());
 		if (null == user){
-			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
+			logger.error("用户  " + patchClock.getUserId() + " 不存在。");
 			return false;
 		}
 		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("userId", user.getId());
-		params.put("clockDate", patchClock.getPatchClockDate());
-		params.put("patchClockType", patchClock.getPatchClockType());
-		params.put("patchClockStatus", patchClock.getPatchClockStatus());
-		//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
-		if (patchClock.getPatchClockType() == 0){
-			String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
-			String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
-			params.put("patchClockOnTime", patchClock.getPatchClockOnTime());
-			params.put("patchClockOffTime", patchClock.getPatchClockOffTime());
-			params.put("patchClockOnStatus", "0");
-			params.put("patchClockOffStatus", "0");
-			if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
-				params.put("patchClockOnStatus", "1");
+		boolean flag = false;
+		//补卡审批状态 0：已通过  1：未通过  2：审批中
+		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("userId", user.getId());
+			params.put("clockDate", patchClock.getPatchClockDate());
+			params.put("patchClockType", patchClock.getPatchClockType());
+			params.put("patchClockStatus", patchClock.getPatchClockStatus());
+			//补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
+			if (patchClock.getPatchClockType() == 0){
+				String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
+				String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
+				params.put("patchClockOnTime", patchClock.getPatchClockOnTime());
+				params.put("patchClockOffTime", patchClock.getPatchClockOffTime());
+				params.put("patchClockOnStatus", "0");
+				params.put("patchClockOffStatus", "0");
+				if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
+					params.put("patchClockOnStatus", "1");
+				}
+				if (patchClock.getPatchClockOffTime().compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
+					params.put("patchClockOffStatus", "2");
+				}
 			}
-			if (patchClock.getPatchClockOffTime().compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
-				params.put("patchClockOffStatus", "1");
+			if (patchClock.getPatchClockType() == 1){
+				String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
+				params.put("patchClockOnTime", patchClock.getPatchClockOnTime());
+				params.put("patchClockOnStatus", "0");
+				if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
+					params.put("patchClockOnStatus", "1");
+				}
 			}
-		}
-		if (patchClock.getPatchClockType() == 1){
-			String clockOnDate = patchClock.getPatchClockOnTime().split(" ")[0];
-			params.put("patchClockOnTime", patchClock.getPatchClockOnTime());
-			params.put("patchClockOnStatus", "0");
-			if (patchClock.getPatchClockOnTime().compareTo(clockOnDate + " " + rule.getClockOnTime()) > 0){
-				params.put("patchClockOnStatus", "1");
+			if(patchClock.getPatchClockType() == 2){
+				String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
+				params.put("patchClockOffTime", patchClock.getPatchClockOffTime());
+				params.put("patchClockOffStatus", "0");
+				if (patchClock.getPatchClockOffTime().compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
+					params.put("patchClockOffStatus", "2");
+				}
 			}
-		}
-		if(patchClock.getPatchClockType() == 2){
-			String clockOffDate = patchClock.getPatchClockOffTime().split(" ")[0];
-			params.put("patchClockOffTime", patchClock.getPatchClockOffTime());
-			params.put("patchClockOffStatus", "0");
-			if (patchClock.getPatchClockOffTime().compareTo(clockOffDate + " " + rule.getClockOffTime()) < 0){
-				params.put("patchClockOffStatus", "1");
+			
+			flag =  dao.patchClock(params);
+			if (flag){
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡成功。");
+			} else {
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡失败。");
+			}
+			
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "1")){
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			if (flag){
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
+			} else {
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为未通过失败。");
+			}
+			
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			if (flag){
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
+			} else {
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为审批中失败。");
 			}
 		}
 		
-		return dao.patchClock(params);
+		return flag;
 	}
 
-	@Override
-	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean updatePatchClockStatus(String mobile, String clockDate, String patchClockStatus) {
-		User user = userDao.getUserByMobile(mobile);
-		if (null == user){
-			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
-			return false;
-		}
-		
+	private boolean updatePatchClockStatus(User user, String clockDate, String patchClockStatus) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", user.getId());
 		params.put("dateBegin", clockDate);

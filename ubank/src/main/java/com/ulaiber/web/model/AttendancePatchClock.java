@@ -26,16 +26,6 @@ public class AttendancePatchClock {
 	private String userName;
 	
 	/**
-	 * 部门
-	 */
-	private Departments dept;
-	
-	/**
-	 * 公司
-	 */
-	private Company company;
-	
-	/**
 	 * 补卡日期  yyyy-MM-dd
 	 */
 	private String patchClockDate;
@@ -82,22 +72,6 @@ public class AttendancePatchClock {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-
-	public Departments getDept() {
-		return dept;
-	}
-
-	public void setDept(Departments dept) {
-		this.dept = dept;
-	}
-
-	public Company getCompany() {
-		return company;
-	}
-
-	public void setCompany(Company company) {
-		this.company = company;
 	}
 
 	public String getPatchClockDate() {

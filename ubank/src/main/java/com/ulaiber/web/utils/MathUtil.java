@@ -14,7 +14,7 @@ public class MathUtil {
 	private static final int DEF_DIV_SCALE = 10;
 
 	//Decimal输出时的默认精度，与数据库对应
-	private static final int DEF_DECIMAL_SCALEE = 3;
+	private static final int DEF_DECIMAL_SCALEE = 2;
 
 	/**
 	 * 提供精确的加法运算。
@@ -292,15 +292,15 @@ public class MathUtil {
 	}
 
 	/**
-	 * 使用系统内置的精度位数-3位来格式化一个BigDecimal数字<br/>
-	 * 如：123.45666 , 四舍五入为123.457
+	 * 使用系统内置的精度位数-2位来格式化一个BigDecimal数字<br/>
+	 * 如：123.456 , 四舍五入为123.46
 	 * @param number 原BigDecimal数字
 	 * @param flag 是否需要四舍五入，需要1 不需要0
 	 * @return
 	 */
-	public static BigDecimal formatBigDecimal(BigDecimal number,int flag){
+	public static BigDecimal formatBigDecimal(BigDecimal number, int flag){
 		if (flag==1)
-			return number.setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_UP);
+			return number.setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_HALF_UP);
 		else
 			return number.setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_DOWN);
 	}
