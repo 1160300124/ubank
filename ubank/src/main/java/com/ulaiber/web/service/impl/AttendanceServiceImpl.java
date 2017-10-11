@@ -604,16 +604,29 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean patchClock(AttendancePatchClock patchClock, AttendanceRule rule) { 
+	public boolean patchClock(AttendancePatchClock patchClock) { 
 		User user = userDao.getUserById(patchClock.getUserId());
 		if (null == user){
 			logger.error("用户  " + patchClock.getUserId() + " 不存在。");
 			return false;
 		}
+		AttendanceRule rule = ruleDao.getRuleByUserId(patchClock.getUserId());
+		if (null == rule){
+			logger.error("用户 {" + patchClock.getUserId() + "}没有设置考勤规则，请先设置。");
+			return false;
+		}
 		
 		boolean flag = false;
-		//补卡审批状态 0：已通过  1：未通过  2：审批中
+		//补卡审批状态 0：审批中  1：已通过  2：未通过
 		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			if (flag){
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
+			} else {
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为审批中失败。");
+			}
+			
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "1")){
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("userId", user.getId());
 			params.put("clockDate", patchClock.getPatchClockDate());
@@ -658,20 +671,12 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡失败。");
 			}
 			
-		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "1")){
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
 			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
 			if (flag){
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
 			} else {
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为未通过失败。");
-			}
-			
-		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
-			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
-			if (flag){
-				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
-			} else {
-				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为审批中失败。");
 			}
 		}
 		
