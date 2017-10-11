@@ -373,12 +373,13 @@ public class Test {
 	@org.junit.Test
 	public void insertRemedy(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("morning","2017-09-28");
+		map.put("morning","2017-10-10 10:58");
 		map.put("afternoon","");
-		map.put("userId","378");
-		map.put("auditor","359,336");
-		map.put("reason","早上忘打卡");
-		map.put("type","0");
+		map.put("userId","359");
+		map.put("auditor","378");
+		map.put("reason","xxxx");
+		map.put("type","1");
+		map.put("remedyDate","2017-10-10 17:30");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/addRemedy",map);
 		System.out.print(">>>>>>>>结果为："+result);
 	}

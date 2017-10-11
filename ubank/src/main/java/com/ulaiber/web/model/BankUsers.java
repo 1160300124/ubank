@@ -17,7 +17,7 @@ public class BankUsers implements Serializable{
     private String password;    //密码
     private int roleid;         //角色ID
     private String remark;      //备注
-    private String type;        //部门标识：0 总部，1 分部，2 支部
+    private int type;        //部门标识：0 总部，1 分部，2 支部
 
     public int getId() {
         return id;
@@ -99,11 +99,11 @@ public class BankUsers implements Serializable{
         this.remark = remark;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 }

@@ -13,7 +13,8 @@ public class AuditData implements Serializable {
     private String auditorStatus;   //当前审批人审批的状态
     private String currentAuditor;  //当前申请记录的审批人
     private String recordNo;        //申请记录
-    private String currentUserId;      //申请记录的当前审批人ID
+    private String currentUserId;   //申请记录的当前审批人ID
+    private String type;            //记录类型； 0 请假记录， 1 加班记录 , 2 报销记录,3 工资发放记录,4 补卡记录
 
     public String getUserId() {
         return userId;
@@ -69,5 +70,13 @@ public class AuditData implements Serializable {
 
     public void setCurrentUserId(String currentUserId) {
         this.currentUserId = currentUserId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

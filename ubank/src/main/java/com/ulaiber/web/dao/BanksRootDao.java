@@ -77,7 +77,7 @@ public interface BanksRootDao {
      * 获取所有总部
      * @return Headquarters
      */
-    List<Headquarters> getAllHeadquarters();
+    List<Headquarters> getAllHeadquarters(int bankNo);
 
     /**
      * 获取分行数量
@@ -124,14 +124,49 @@ public interface BanksRootDao {
     /**
      * 根据分行编号查询是否存在支行
      * @param map
-     * @return
+     * @return int
      */
     List<BranchsChildren> queryBranchChildrenByBranchId(Map<String,Object> map);
 
     /**
      * 删除分行
      * @param number 分行ID
-     * @return
+     * @return int
      */
     int removeBranchs(int[] number);
+
+    /**
+     * 查询分支数量
+     * @param map
+     * @return int
+     */
+    int getBranchChilCount(Map<String, Object> map);
+
+    /**
+     * 查询支行
+     * @param map
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> queryBranchsChild(Map<String, Object> map);
+
+    /**
+     * 获取所有分部
+     * @param bankNo 银行编号
+     * @return ResultInfo
+     */
+    List<Branch> getAllBranchs(int bankNo);
+
+    /**
+     * 根据支行名称查询支行是否已存在
+     * @param childName 支行名称
+     * @return BranchsChildren
+     */
+    BranchsChildren queryBranchChildByName(String childName);
+
+    /**
+     * 新增支行
+     * @param bc 支行信息
+     * @return int
+     */
+    int insertBranchsChild(BranchsChildren bc);
 }

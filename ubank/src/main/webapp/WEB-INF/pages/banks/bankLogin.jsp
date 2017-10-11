@@ -21,7 +21,7 @@
 <body>
 <div class="login-header clearfix">
     <i class="login-logo fl"></i>
-    <span class="fl">优发展银行后台登录xxxxx</span>
+    <span class="fl">优发展银行后台登录</span>
 </div>
 <div class="login-wrap">
     <div class="login-wrap-logo"></div>

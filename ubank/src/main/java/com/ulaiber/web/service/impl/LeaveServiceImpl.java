@@ -320,6 +320,10 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return result3;
     }
 
+    @Override
+    public Remedy getRemedyRecordByUserId(int recordNo) {
+        return leaveDao.getRemedyRecordByUserId(recordNo);
+    }
 
 
 }

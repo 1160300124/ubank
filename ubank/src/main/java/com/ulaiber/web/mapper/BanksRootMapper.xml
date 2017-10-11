@@ -69,8 +69,11 @@
     </delete>
 
     <!--获取所有总部-->
-    <select id="getAllHeadquarters" resultType="com.ulaiber.web.model.Headquarters">
-        SELECT * FROM  tbl_bank_headquarters
+    <select id="getAllHeadquarters" parameterType="int" resultType="com.ulaiber.web.model.Headquarters">
+        SELECT * FROM  tbl_bank_headquarters where 1=1
+        <if test=" _parameter != '' and _parameter != null">
+            and id = #{bankNo}
+        </if>
     </select>
 
     <!--获取分行数量-->
@@ -126,19 +129,11 @@
 
     <!--根据分行编号查询是否存在支行-->
     <select id="queryBranchChildrenByBranchId" parameterType="Map" resultType="com.ulaiber.web.model.BranchsChildren">
-        SELECT id,name FROM  tbl_branch_children
-        <if test="type == 0">
-            where headquartersNo in
-            <foreach collection="number" item="number" open="(" separator="," close=")">
-                  #{number}
-            </foreach>
-        </if>
-        <if test="type == 1">
-            where branchNo in
-            <foreach collection="number" item="number" open="(" separator="," close=")">
-                #{number}
-            </foreach>
-        </if>
+        SELECT id,name FROM  tbl_branch_children where type = #{type} and bankNo in
+        <foreach collection="number" item="number" open="(" separator="," close=")">
+              #{number}
+        </foreach>
+
     </select>
 
     <!--删除分行-->
@@ -148,4 +143,41 @@
             #{number}
         </foreach>
     </delete>
+
+    <!--查询分支数量-->
+    <select id="getBranchChilCount" parameterType="Map" resultType="int">
+        SELECT COUNT(id) as count from tbl_branch_children where  type = #{type}
+           and  bankNo = #{bankNo}
+    </select>
+
+    <!--查询支行-->
+    <select id="queryBranchsChild" parameterType="Map" resultType="com.ulaiber.web.model.BranchsChildren">
+        SELECT a.id,a.name,a.bankNo,a.remark,a.bankName,a.type  from tbl_branch_children a where 1=1
+        <if test=" bankNo != '' and bankNo != null ">
+            and a.bankNo = #{bankNo} and a.type = #{type}
+        </if>
+        <if test="search != null and search != ''">
+            and a.name like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--获取所有分部-->
+    <select id="getAllBranchs" parameterType="int" resultType="com.ulaiber.web.model.Branch">
+        SELECT * FROM tbl_bank_branch WHERE 1=1
+        <if test=" _parameter != '' and _parameter != null">
+            and headquartersNo = #{bankNo}
+        </if>
+    </select>
+
+    <!--根据支行名称查询支行是否已存在-->
+    <select id="queryBranchChildByName" parameterType="String" resultType="com.ulaiber.web.model.BranchsChildren">
+        SELECT id FROM tbl_branch_children where name = #{childName}
+    </select>
+
+    <!--新增支行-->
+    <insert id="insertBranchsChild" parameterType="com.ulaiber.web.model.BranchsChildren">
+        INSERT INTO tbl_branch_children(name,bankNo,bankName,remark,type)
+            VALUES (#{name},#{bankNo},#{bankName},#{remark},#{type})
+    </insert>
 </mapper>

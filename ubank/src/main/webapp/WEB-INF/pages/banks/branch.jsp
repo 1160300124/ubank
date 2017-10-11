@@ -129,7 +129,9 @@
                 url : 'getAllHeadquarters',
                 dataType : 'json',
                 type : 'post',
-                data : {},
+                data : {
+                    bankNo : BANKNO
+                },
                 success : function (result) {
                     var data = result.data;
                     if(data.length <= 0){

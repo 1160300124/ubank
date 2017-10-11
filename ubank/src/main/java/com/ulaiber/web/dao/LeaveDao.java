@@ -44,4 +44,6 @@ public interface LeaveDao {
     int insertRemedyRecord(LeaveRecord leaveRecord); //新增申请记录
 
     int addRemedy(Remedy remedy);  //新增补卡信息
+
+    Remedy getRemedyRecordByUserId(int recordNo); //根据记录Id查询补卡信息
 }

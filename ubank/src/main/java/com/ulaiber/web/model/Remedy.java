@@ -14,6 +14,7 @@ public class Remedy implements Serializable {
     private String userId;      //用户ID
     private String auditor;     //审批人
     private String reason;      //备注
+    private String remedyDate;  //补卡时间
 
     public int getRecordNo() {
         return recordNo;
@@ -69,5 +70,13 @@ public class Remedy implements Serializable {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getRemedyDate() {
+        return remedyDate;
+    }
+
+    public void setRemedyDate(String remedyDate) {
+        this.remedyDate = remedyDate;
     }
 }

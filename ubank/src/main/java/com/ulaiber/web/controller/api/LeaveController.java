@@ -649,31 +649,31 @@ public class LeaveController extends BaseController {
     @RequestMapping(value = "confirmAudit", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo confirmAudit(AuditData auditData){
-        logger.info("开始确认审批操作");
+        logger.info(">>>>>>>>>>>>>开始确认审批操作");
         ResultInfo resultInfo = new ResultInfo();
         if(StringUtil.isEmpty(auditData.getUserId())){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("用户ID为空");
-            logger.info("用户ID为空");
+            logger.error(">>>>>>>>>>>>>用户ID为空");
             return resultInfo;
         }
         if(StringUtil.isEmpty(auditData.getRecordNo())){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("申请记录ID为空");
-            logger.info("申请记录ID为空");
+            logger.info(">>>>>>>>>>>>>申请记录ID为空");
             return resultInfo;
         }
         if(StringUtil.isEmpty(auditData.getStatus())){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("审批状态为空");
-            logger.info("审批状态为空");
+            logger.info(">>>>>>>>>>>>>审批状态为空");
             return resultInfo;
         }
         int result = leaveService.confirmAudit(auditData);
         if(result <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("审批失败");
-            logger.info("审批失败");
+            logger.info(">>>>>>>>>>>>>审批失败");
             return resultInfo;
         }
         //更新申请记录为最新的状态
@@ -681,12 +681,30 @@ public class LeaveController extends BaseController {
         if(result2 <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("审批失败");
-            logger.info("审批失败");
+            logger.error(">>>>>>>>>>>>>审批失败");
             return resultInfo;
+        }
+        //当前为补卡审批才执行以下代码
+        if(auditData.getType().equals("4")){
+            //如果status不为0，则更新补卡状态
+            if(!auditData.getStatus().equals("0")){
+                //根据记录Id查询补卡信息
+                int recordNo = Integer.parseInt(auditData.getRecordNo());
+                Remedy re = leaveService.getRemedyRecordByUserId(recordNo);
+                AttendancePatchClock apc =  new AttendancePatchClock();
+                long userId = Long.valueOf(re.getUserId());
+                apc.setUserId(userId);
+                apc.setPatchClockDate(re.getRemedyDate());
+                apc.setPatchClockType(Integer.parseInt(re.getType()));
+                apc.setPatchClockOnTime(re.getMorning());
+                apc.setPatchClockOffTime(re.getAfternoon());
+                apc.setPatchClockStatus(auditData.getStatus());
+                attendanceService.patchClock(apc);
+            }
         }
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("审批成功");
-        logger.info("审批成功");
+        logger.info(">>>>>>>>>>>>>审批成功");
         return resultInfo;
     }
 
@@ -991,7 +1009,17 @@ public class LeaveController extends BaseController {
             logger.info(">>>>>>>>>>>>新增补卡记录失败");
             return resultInfo;
         }
-        //
+        //补卡
+        AttendancePatchClock apc =  new AttendancePatchClock();
+        long userId = Long.valueOf(remedy.getUserId());
+        apc.setUserId(userId);
+        apc.setPatchClockDate(remedy.getRemedyDate());
+        apc.setPatchClockType(Integer.parseInt(remedy.getType()));
+        apc.setPatchClockOnTime(remedy.getMorning());
+        apc.setPatchClockOffTime(remedy.getAfternoon());
+        apc.setPatchClockStatus("0");
+        boolean flag = attendanceService.patchClock(apc);
+        System.out.print(">>>>>>>>>>补卡结果：" + flag);
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("新增成功");
         logger.info(">>>>>>>>>>>>新增补卡记录成功");

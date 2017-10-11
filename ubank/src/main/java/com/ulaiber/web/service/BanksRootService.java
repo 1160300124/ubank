@@ -73,7 +73,7 @@ public interface BanksRootService {
      * 获取所有总部
      * @return Headquarters
      */
-    List<Headquarters> getAllHeadquarters();
+    List<Headquarters> getAllHeadquarters(int bankNo);
 
     /**
      * 获取分行数量
@@ -136,4 +136,36 @@ public interface BanksRootService {
      * @return int
      */
     int getBranchChilCount(String type, int bankNo);
+
+    /**
+     * 查询支行
+     * @param search 搜索关键字
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @param bankNo  角色所属部门
+     * @return map
+     */
+    List<BranchsChildren> queryBranchsChild(String search, int pageSize, int pageNum, String type, int bankNo);
+
+    /**
+     * 获取所有分部
+     * @param bankNo 银行编号
+     * @return ResultInfo
+     */
+    List<Branch> getAllBranchs(int bankNo);
+
+    /**
+     * 根据支行名称查询支行是否已存在
+     * @param childName 支行名称
+     * @return BranchsChildren
+     */
+    BranchsChildren queryBranchChildByName(String childName);
+
+    /**
+     * 新增支行
+     * @param bc 支行信息
+     * @return int
+     */
+    int insertBranchsChild(BranchsChildren bc);
 }

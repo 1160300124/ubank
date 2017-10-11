@@ -9,9 +9,11 @@ import java.io.Serializable;
 public class BranchsChildren implements Serializable {
     private int id;
     private String name;
-    private int headquartersNo;
-    private int branchNo;
+    private int bankNo;
     private String remark;
+    private int type;
+    private int count;
+    private String bankName;
 
     public int getId() {
         return id;
@@ -29,20 +31,20 @@ public class BranchsChildren implements Serializable {
         this.name = name;
     }
 
-    public int getHeadquartersNo() {
-        return headquartersNo;
+    public int getBankNo() {
+        return bankNo;
     }
 
-    public void setHeadquartersNo(int headquartersNo) {
-        this.headquartersNo = headquartersNo;
+    public void setBankNo(int bankNo) {
+        this.bankNo = bankNo;
     }
 
-    public int getBranchNo() {
-        return branchNo;
+    public int getType() {
+        return type;
     }
 
-    public void setBranchNo(int branchNo) {
-        this.branchNo = branchNo;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getRemark() {
@@ -51,5 +53,21 @@ public class BranchsChildren implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 }

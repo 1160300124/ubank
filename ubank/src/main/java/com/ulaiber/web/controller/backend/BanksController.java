@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,8 +283,8 @@ public class BanksController extends BaseController {
      */
     @RequestMapping(value = "getAllHeadquarters", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo getAllHeadquarters(){
-        List<Headquarters> list = banksRootService.getAllHeadquarters();
+    public ResultInfo getAllHeadquarters(int bankNo){
+        List<Headquarters> list = banksRootService.getAllHeadquarters(bankNo);
         ResultInfo resultInfo = new ResultInfo();
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setData(list);
@@ -417,7 +419,69 @@ public class BanksController extends BaseController {
         Map<String,Object> map = new HashMap<String,Object>();
         //获取分行数量
         int totalCount = banksRootService.getBranchChilCount(type,bankNo);
-        return null;
+        if(totalCount <= 0){
+            map.put("total",totalCount);
+            map.put("rows","");
+            return map;
+        }
+        List<BranchsChildren> list = banksRootService.queryBranchsChild(search,pageSize,pageNum,type,bankNo);
+        map.put("total",totalCount);
+        map.put("rows",list);
+        return map;
+    }
+
+    /**
+     * 获取所有分部
+     * @param bankNo 银行编号
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getAllBranchs", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo queryAllBranchs(int bankNo){
+        List<Branch> list = banksRootService.getAllBranchs(bankNo);
+        ResultInfo resultInfo = new ResultInfo();
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        resultInfo.setData(list);
+        return resultInfo;
+    }
+
+    /**
+     * 新增支行
+     * @param bc 支行信息
+     * @param flag 标识。0 新增，1 修改
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "saveBranchsChil", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo saveBranchsChild(BranchsChildren bc,@Param("flag") int flag){
+        ResultInfo resultInfo = new ResultInfo();
+        if(flag == 0){ //新增
+            String childName = bc.getName();
+            String bankname = "";
+            try {
+                URLDecoder.decode(bc.getBankName(),"UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            bc.setBankName(bankname);
+            //根据支行名称查询支行是否已存在
+            BranchsChildren bran = banksRootService.queryBranchChildByName(childName);
+            if(!StringUtil.isEmpty(bran)){
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                resultInfo.setMessage("该支行已存在");
+                return resultInfo;
+            }
+            //新增
+            int result = banksRootService.insertBranchsChild(bc);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("新增失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("新增成功");
+        }
+        return resultInfo;
     }
 
 }

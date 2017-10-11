@@ -4,7 +4,7 @@
 <div class="page-content">
     <%--工具栏--%>
     <div id="branchs_chil_Toolbar" class="btn-group">
-        <button  onclick="" type="button" class="btn btn-default">
+        <button  onclick="branchs_chil_fun.openNew()" type="button" class="btn btn-default">
             <span class="fa icon-plus" aria-hidden="true"></span>新增
         </button>
         <button onclick="" type="button" class="btn btn-default">
@@ -35,25 +35,25 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属总部</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control"  name="" > </select>
+                                    <select class="combobox form-control " id="chil_headquarters"  name="" > </select>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">所属分部</label>
                                 <div class="col-md-9">
-                                    <select class="combobox form-control"  name="" > </select>
+                                    <select class="combobox form-control " id="chil_branchs" name="" > </select>
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">支部名称</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" name="name"  >
+                                    <input type="text" class="form-control"  name="name"  >
                                 </div>
                             </div>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">备注</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control" name="remark"  rows="3"></textarea>
+                                    <textarea class="form-control" name="remark" id=""  rows="3"></textarea>
                                 </div>
                             </div>
                         </form>
@@ -62,7 +62,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" onclick="" class="btn btn-primary">保存</button>
+                    <button type="button" onclick="branchs_chil_fun.chil_add()" class="btn btn-primary">保存</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -73,8 +73,11 @@
 <script type="text/javascript">
 
     $(function(){
-
+        branchs_chil_fun.dataLoad();
+        branchs_chil_fun.getAllHead();
+        branchs_chil_fun.getAllBranchs();
     });
+
     var flag = 0;  //标识。 0 表示新增操作，1 表示修改操作
     var id = 0; //银行ID
 
@@ -119,6 +122,120 @@
             };
             return paramData;
         },
+        //打开新增dialog
+        openNew : function () {
+            $(".modal-title").html("新增");
+            $("#branchs_chil_modal").modal("show");
+        },
+        getAllHead : function () {
+            //获取所有总部
+            $.ajax({
+                url : 'getAllHeadquarters',
+                dataType : 'json',
+                type : 'post',
+                data : {
+                    bankNo : BANKNO
+                },
+                success : function (result) {
+                    var data = result.data;
+                    if(data.length <= 0){
+                        return;
+                    }
+                    var option = "<option value=''>请选择</option>";
+                    for (var i = 0; i < data.length; i++){
+                        option += "<option value='"+data[i].id+"'>"+data[i].bankName+"</option>";
+                    }
+                    $("#chil_headquarters").html(option);
+                },
+                error : function(){
+                    Ewin.alert("获取总部失败");
+                }
+            });
+        },
+        //获取所有分部
+        getAllBranchs : function () {
+            $.ajax({
+                url : 'getAllBranchs',
+                dataType : 'json',
+                type : 'post',
+                data : {
+                    bankNo : BANKNO
+                },
+                success : function (result) {
+                    var data = result.data;
+                    if(data.length <= 0){
+                        return;
+                    }
+                    var option = "<option value=''>请选择</option>";
+                    for (var i = 0; i < data.length; i++){
+                        option += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
+                    }
+                    $("#chil_branchs").html(option);
+                },
+                error : function(){
+                    Ewin.alert("获取总部失败");
+                }
+            });
+        },
+        //新增
+        chil_add  : function(){
+            var head = $("#chil_headquarters").val();
+            var branchs = $("#chil_branchs").val();
+            var name = $("input[name = name]").val();
+            var headTxt = $("#chil_headquarters").find("option:selected").text();
+            var branchsTxt = $("#chil_branchs").find("option:selected").text();
+            if(head == "" && branchs == ""){
+                Ewin.alert("部门不能为空");
+                return;
+            }
+            if(head != "" && branchs != ""){
+                Ewin.alert("只能选择一个部门");
+                return;
+            }
+            if($.trim(name) == ""){
+                Ewin.alert("支部名称不能为空");
+                return;
+            }
+            if(!Validate.regWord(name)){
+                Ewin.alert("名称必须是中文");
+                return;
+            }
+            var type = null;   //银行类型
+            var bankName = "";  //银行名
+            var bankNo = null;  //银行编号
+            //判断当前选中的银行是总部还是分部
+            if(head != ""){
+                type = 0;
+                bankName = headTxt;
+                bankNo = head;
+            }else if(branchs != ""){
+                type = 1;
+                bankName = branchsTxt;
+                bankNo = branchs;
+            }
+            $.ajax({
+                url : 'saveBranchsChil?flag=' + flag + "&bankName=" + bankName + "&type=" + type + "&bankNo=" + bankNo,
+                dataType : 'json',
+                type : 'post',
+                data : $("#branchs_chil_form").serialize(),
+                success : function (data) {
+                    if(data.code != 5000){
+                        Ewin.alert(data.message);
+                        $("#branchs_chil_modal").modal("hide");
+                        $('#branchs_chil_table').bootstrapTable('refresh');
+                    }else{
+                        $("#branchs_chil_form")[0].reset();
+                        $("#branchs_chil_modal").modal("hide");
+                        Ewin.alert(data.message);
+                        $('#branchs_chil_table').bootstrapTable('refresh');
+                    }
+                },
+                error : function () {
+                    Ewin.alert("新增失败");
+                }
+            })
+
+        }
     }
 </script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

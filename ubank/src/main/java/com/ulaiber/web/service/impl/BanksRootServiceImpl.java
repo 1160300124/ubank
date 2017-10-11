@@ -83,8 +83,8 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
     }
 
     @Override
-    public List<Headquarters> getAllHeadquarters() {
-        return banksRootDao.getAllHeadquarters();
+    public List<Headquarters> getAllHeadquarters(int bankNo) {
+        return banksRootDao.getAllHeadquarters(bankNo);
     }
 
     @Override
@@ -165,7 +165,55 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
 
     @Override
     public int getBranchChilCount(String type, int bankNo) {
-        return 0;
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",type);
+        map.put("bankNo",bankNo);
+        return banksRootDao.getBranchChilCount(map);
+    }
+
+    @Override
+    public List<BranchsChildren> queryBranchsChild(String search, int pageSize, int pageNum, String type, int bankNo) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("search",search);
+        map.put("pageSize",pageSize);
+        map.put("pageNum",pageNum);
+        map.put("type",type);
+        map.put("bankNo",bankNo);
+        List<BranchsChildren> list = banksRootDao.queryBranchsChild(map);
+        int[] ids = new int[list.size()];
+        for (int i = 0 ; i < list.size() ; i++){
+            BranchsChildren bc = list.get(i);
+            ids[i] = bc.getId();
+        }
+        //获取各个支行业务员的总数
+        List<Map<Object , Object>> list2 = banksRootDao.getBranchSalemenCount(ids);
+        for (int i = 0 ; i < list2.size() ; i++){
+            Map<Object,Object> map2 = list2.get(i);
+            for (int j = 0 ; j < list.size() ; j++){
+                long id = (long) map2.get("bankNo");
+                if(id == list.get(j).getId()){
+                    Number num = (Number) map2.get("count");
+                    list.get(j).setCount(num.intValue());
+                }
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<Branch> getAllBranchs(int bankNo) {
+        return banksRootDao.getAllBranchs(bankNo);
+    }
+
+    @Override
+    public BranchsChildren queryBranchChildByName(String childName) {
+        return banksRootDao.queryBranchChildByName(childName);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int insertBranchsChild(BranchsChildren bc) {
+        return banksRootDao.insertBranchsChild(bc);
     }
 
 
