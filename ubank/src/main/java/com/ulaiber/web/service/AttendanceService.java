@@ -102,6 +102,6 @@ public interface AttendanceService {
 	 * @param params
 	 * @return
 	 */
-	boolean patchClock(AttendancePatchClock patchClock, AttendanceRule rule);
+	boolean patchClock(AttendancePatchClock patchClock);
 	
 }

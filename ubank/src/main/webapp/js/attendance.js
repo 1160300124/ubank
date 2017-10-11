@@ -22,7 +22,7 @@ $(function(){
 		} else if (clockStatus === "1"){
 			params.clockOnStatus = "1";
 		} else if (clockStatus === "2"){
-			params.clockOffStatus = "1";
+			params.clockOffStatus = "2";
 		} else if (clockStatus === "3"){
 			params.clockOnStatus = "";
 			params.clockOffStatus = "";
@@ -142,7 +142,7 @@ $(function(){
 		} else if (clockStatus === "1"){
 			params.clockOnStatus = "1";
 		} else if (clockStatus === "2"){
-			params.clockOffStatus = "1";
+			params.clockOffStatus = "2";
 		} else if (clockStatus === "3"){
 			params.clockOnStatus = "";
 			params.clockOffStatus = "";
@@ -270,7 +270,7 @@ function clockOnStatusFormatter(value, row, index) {
 function clockOffStatusFormatter(value, row, index) {
 	if (value == 0 || row.clockOffStatus == 0){
 		return "正常";
-	} else if (value == 1 || row.clockOffStatus == 1){
+	} else if (value == 2 || row.clockOffStatus == 2){
 		return "早退";
 	}
 	return "-";
