@@ -10,10 +10,10 @@
         <button onclick="headquartersFun.modify()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="headquartersFun.remove()" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="headquartersFun.refresh()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>
@@ -66,6 +66,8 @@
     });
 
     var flag = 0;  //标识。 0 表示新增操作，1 表示修改操作
+    var bankNo = 0;
+
     // all function
     var headquartersFun = {
         //modal关闭监听事件
@@ -122,7 +124,7 @@
         save : function () {
             var bankName = $("input[name=bankName]").val();
             var reason = $(".area").val();
-            if(bankName == ""){
+            if($.trim(bankName) == ""){
                 Ewin.alert("名称不能为空");
                 return;
             }
@@ -130,9 +132,8 @@
                 Ewin.alert("名称必须是中文");
                 return;
             }
-            var row = $('#headquarters_table').bootstrapTable('getSelections');
             $.ajax({
-                url : 'addHeadquarters?flag=' + flag + "&bankNo= " + row[0].id,
+                url : 'addHeadquarters?flag=' + flag + "&bankNo= " + bankNo,
                 dataType : 'json',
                 type : 'post',
                 data : $("#headquarters_form").serialize(),
@@ -165,6 +166,7 @@
                 Ewin.alert("请选中需要修改的数据");
                 return;
             }
+            bankNo = row[0].id;
             $("input[name=bankName]").val(row[0].bankName);
             $(".area").val(row[0].remark);
             $("#headquarters_modal").modal("show");
@@ -178,7 +180,7 @@
                 Ewin.alert("请选中需要删除的数据");
                 return;
             }
-            Confirm.show('提示', '确定删除该银行吗？', {
+            Confirm.show('提示', '确定删除该总行吗？', {
                 'Delete': {
                     'primary': true,
                     'callback': function() {
@@ -216,6 +218,10 @@
                     }
                 }
             });
+        },
+        //刷新
+        refresh : function () {
+            $('#leave_table').bootstrapTable('refresh');
         }
     }
 </script>

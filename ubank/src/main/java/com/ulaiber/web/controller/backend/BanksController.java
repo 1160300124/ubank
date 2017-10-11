@@ -73,6 +73,28 @@ public class BanksController extends BaseController {
         return "banks/headquarters";
     }
 
+    /**
+     * 跳转分行页
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("branch")
+    public String toBranch(HttpServletRequest request, HttpServletResponse response){
+        return "banks/branch";
+    }
+
+    /**
+     * 跳转支行页
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("branch_children")
+    public String toBranch_child(HttpServletRequest request, HttpServletResponse response){
+        return "banks/branch_children";
+    }
+
 
     /**
      * 银行后台用户登录
@@ -218,7 +240,7 @@ public class BanksController extends BaseController {
     }
 
     /**
-     * 根据银行编号删除银行
+     * 删除总行
      * @param numbers 银行编号
      * @return ResultInfo
      */
@@ -229,9 +251,16 @@ public class BanksController extends BaseController {
         String[] numberArr = numbers.split(",");
         //根据总行编号查询是否存在分部
         List<Branch> comList = banksRootService.queryBranchByBankNo(numberArr);
+        int type = 0; //0 总行 ， 1 分行
+        List<BranchsChildren> list2 = banksRootService.queryBranchChildrenByBranchId(numberArr,type);
         if(comList.size() > 0 ){
             resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
             resultInfo.setMessage("该总行下存在分行，请先删除分行");
+            return resultInfo;
+        }
+        if(list2.size() > 0){
+            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+            resultInfo.setMessage("该总行下存在支行，请先删除支行");
             return resultInfo;
         }
         //删除
@@ -243,6 +272,152 @@ public class BanksController extends BaseController {
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("删除失败");
         }
+        return resultInfo;
+    }
+
+    /**
+     * 获取所有总部
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getAllHeadquarters", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo getAllHeadquarters(){
+        List<Headquarters> list = banksRootService.getAllHeadquarters();
+        ResultInfo resultInfo = new ResultInfo();
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        resultInfo.setData(list);
+        return resultInfo;
+    }
+
+    /**
+     * 分部查询
+     * @param search 搜索内容
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type  标识。所属部门是总行？分行？支行？
+     * @param bankNo 角色所属部门
+     * @return map
+     */
+    @RequestMapping(value = "queryBranchs", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> queryBranchs(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
+                                          @Param("type") String type,@Param("bankNo") int bankNo ){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        //获取分行数量
+        int totalCount = banksRootService.getbranchCount(type,bankNo);
+        if(totalCount <= 0){
+            map.put("total",totalCount);
+            map.put("rows","");
+            return map;
+        }
+        List<Branch> list = banksRootService.queryBranchs(search,pageSize,pageNum,type,bankNo);
+        map.put("total",totalCount);
+        map.put("rows",list);
+        return map;
+    }
+
+    /**
+     * 新增分行
+     * @param branch 分行信息
+     * @param flag 标识。0 新增，1 修改
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "saveBranchs", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo saveBranchs(Branch branch,@Param("flag") int flag,@Param("id") int id){
+        ResultInfo resultInfo = new ResultInfo();
+        if(flag == 0){  //新增
+            //根据名称查询分行是否已存在
+            String branchName = branch.getName();
+            Branch br = banksRootService.queryBranchByName(branchName);
+            if(!StringUtil.isEmpty(br)){
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                resultInfo.setMessage("该分行已存在");
+                return resultInfo;
+            }
+            //新增
+            int result = banksRootService.insertBranchs(branch);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("新增失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("新增成功");
+        }else{
+            //根据分行编号修改分行信息
+            branch.setId(id);
+            int result = banksRootService.modifyBranchs(branch);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("修改失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("修改成功");
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 删除分行
+     * @param numbers 分行Id
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "removeBranchs", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo removeBranchs(@Param("numbers")String numbers){
+        ResultInfo resultInfo = new ResultInfo();
+        String[] numberArr = numbers.split(",");
+        //根据分行编号查询是否存在支行
+        int type = 1; //0 总行 ， 1 分行
+        List<BranchsChildren> comList = banksRootService.queryBranchChildrenByBranchId(numberArr,type);
+        if(comList.size() > 0 ){
+            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+            resultInfo.setMessage("该分行下存在支行，请先删除支行");
+            return resultInfo;
+        }
+        //删除
+        int result = banksRootService.removeBranch(numberArr);
+        if(result > 0){
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("删除成功");
+        }else{
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("删除失败");
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 查询支行
+     * @param search 搜索关键字
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @param bankNo  角色所属部门
+     * @return map
+     */
+    @RequestMapping(value = "queryBranchsChil", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> queryBranchsChildren(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
+                                                   @Param("type") String type,@Param("bankNo") int bankNo ){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        //获取分行数量
+        int totalCount = banksRootService.getBranchChilCount(type,bankNo);
         return null;
     }
+
 }

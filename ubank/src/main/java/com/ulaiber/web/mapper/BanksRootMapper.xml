@@ -59,4 +59,93 @@
             #{number}
         </foreach>
     </select>
+
+    <!--根据银行编号删除银行-->
+    <delete id="removeHeadquarters" parameterType="int">
+        DELETE FROM tbl_bank_headquarters WHERE id IN
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </delete>
+
+    <!--获取所有总部-->
+    <select id="getAllHeadquarters" resultType="com.ulaiber.web.model.Headquarters">
+        SELECT * FROM  tbl_bank_headquarters
+    </select>
+
+    <!--获取分行数量-->
+    <select id="getbranchCount" parameterType="Map" resultType="int">
+        SELECT count(id) AS count FROM tbl_bank_branch
+        <if test="bankNo != null and bankNo != ''">
+            <if test="type == '0'">
+                where headquartersNo = #{bankNo}
+            </if>
+        </if>
+    </select>
+
+    <!--分部查询-->
+    <select id="queryBranchs" parameterType="Map" resultType="com.ulaiber.web.model.Branch">
+        select a.id,a.name,a.headquartersNo,a.remark,b.bankName as headquarters from tbl_bank_branch a
+          left join tbl_bank_headquarters b on a.headquartersNo = b.id where 1=1
+        <if test="bankNo != null and bankNo != ''">
+            <if test="type == '0'">
+                and a.headquartersNo = #{bankNo}
+            </if>
+        </if>
+        <if test="search != null and search != ''">
+            and a.name like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--根据名称查询分行是否已存在-->
+    <select id="queryBranchByName" parameterType="String" resultType="com.ulaiber.web.model.Branch">
+        SELECT * FROM tbl_bank_branch WHERE name = #{branchName}
+    </select>
+
+    <!--新增分行-->
+    <insert id="insertBranchs" parameterType="com.ulaiber.web.model.Branch" >
+        INSERT INTO tbl_bank_branch(name,headquartersNo,remark)
+            VALUES (#{name},#{headquartersNo},#{remark})
+    </insert>
+
+    <!-- 获取各个分行业务员的总数-->
+    <select id="getBranchSalemenCount" parameterType="int" resultType="Map">
+        SELECT bankNo,count(id) as count from tbl_bank_users where bankNo in
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+             #{ids}
+        </foreach>
+        GROUP BY bankNo
+    </select>
+
+    <!-- 根据分行编号修改分行信息-->
+    <update id="modifyBranchs" parameterType="com.ulaiber.web.model.Branch" >
+        UPDATE tbl_bank_branch set name = #{name} ,headquartersNo = #{headquartersNo},remark = #{remark}
+              WHERE id = #{id}
+    </update>
+
+    <!--根据分行编号查询是否存在支行-->
+    <select id="queryBranchChildrenByBranchId" parameterType="Map" resultType="com.ulaiber.web.model.BranchsChildren">
+        SELECT id,name FROM  tbl_branch_children
+        <if test="type == 0">
+            where headquartersNo in
+            <foreach collection="number" item="number" open="(" separator="," close=")">
+                  #{number}
+            </foreach>
+        </if>
+        <if test="type == 1">
+            where branchNo in
+            <foreach collection="number" item="number" open="(" separator="," close=")">
+                #{number}
+            </foreach>
+        </if>
+    </select>
+
+    <!--删除分行-->
+    <delete id="removeBranchs" parameterType="int" >
+        DELETE FROM tbl_bank_branch where id in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </delete>
 </mapper>

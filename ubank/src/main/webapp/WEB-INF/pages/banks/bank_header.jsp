@@ -75,6 +75,8 @@
 
 
 <script type="text/javascript">
+    var BANKNO = "${BACKENDUSER.bankNo }"; //当前角色所属部门
+    var TYPE = "${BACKENDUSER.type }";  //标识。所属部门是总行？分行？支行？
     $(function () {
         //获取系统菜单
         $.ajax({

@@ -7,16 +7,18 @@ import java.io.Serializable;
  * Created by daiqingwen on 2017/9/29.
  */
 public class Branch implements Serializable{
-    private int id;
+    private long id;
     private String name;
     private int headquartersNo;
     private String remark;
+    private String headquarters;
+    private int count;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -42,5 +44,21 @@ public class Branch implements Serializable{
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getHeadquarters() {
+        return headquarters;
+    }
+
+    public void setHeadquarters(String headquarters) {
+        this.headquarters = headquarters;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

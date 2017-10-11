@@ -32,6 +32,7 @@ public class AttendancePatchClock {
 	
 	/**
 	 * 补卡类型 0：全天补卡 1：上班补卡 2：下班补卡
+	 *
 	 */
 	private int patchClockType;
 	

@@ -4,6 +4,7 @@ import com.qiniu.util.Auth;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
+import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReimbursementService;
 import com.ulaiber.web.service.SalaryAuditService;
@@ -39,6 +40,9 @@ public class LeaveController extends BaseController {
     @Resource
     private ReimbursementService reimbursementService;
 
+    @Resource
+    private AttendanceService attendanceService;
+
     /**
      * 申请请假
      * @param leaveRecord
@@ -47,34 +51,38 @@ public class LeaveController extends BaseController {
     @RequestMapping(value = "applyForLeave", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo applyForLeave( LeaveRecord leaveRecord){
-        logger.info("开始保存申请请假记录");
-        String date = sdf.format(new Date());
-        leaveRecord.setCreateDate(date);
-        //保存申请记录
-        int result = leaveService.saveLeaveRecord(leaveRecord);
+        logger.info(">>>>>>>>>>>开始保存申请请假记录");
         ResultInfo resultInfo = new ResultInfo();
-        if(StringUtil.isEmpty(leaveRecord.getUserid())){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("申请失败");
-            logger.info("申请请假失败");
-            return resultInfo;
+        try {
+            String date = sdf.format(new Date());
+            leaveRecord.setCreateDate(date);
+            //保存申请记录
+            int result = leaveService.saveLeaveRecord(leaveRecord);
+            if(StringUtil.isEmpty(leaveRecord.getUserid())){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("申请失败");
+                logger.info(">>>>>>>>>>>申请请假失败");
+                return resultInfo;
+            }
+            if (result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("申请失败");
+                logger.info(">>>>>>>>>>>申请失败");
+                return resultInfo;
+            }
+            int result2 = leaveService.saveAditor(leaveRecord);
+            if(result2 <=0 ){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("申请失败");
+                logger.info(">>>>>>>>>>>保存审批人失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("申请成功");
+            logger.info(">>>>>>>>>>>申请请假成功");
+        }catch (Exception e){
+            logger.error(">>>>>>>>申请异常信息：" + e);
         }
-        if (result <= 0){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("申请失败");
-            logger.info("申请失败");
-            return resultInfo;
-        }
-        int result2 = leaveService.saveAditor(leaveRecord);
-        if(result2 <=0 ){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("申请失败");
-            logger.info("保存审批人失败");
-            return resultInfo;
-        }
-        resultInfo.setCode(IConstants.QT_CODE_OK);
-        resultInfo.setMessage("申请成功");
-        logger.info("申请请假成功");
         return resultInfo;
     }
 
@@ -87,7 +95,7 @@ public class LeaveController extends BaseController {
     @ResponseBody
     public ResultInfo queryApplyRecord(String userId,int pageNum,int pageSize){
         ResultInfo resultInfo = new ResultInfo();
-        logger.info("开始查询个人申请记录");
+        logger.info(">>>>>>>>>>>开始查询个人申请记录");
         if(StringUtil.isEmpty(userId)){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
             resultInfo.setMessage("加载申请记录失败");
@@ -983,6 +991,7 @@ public class LeaveController extends BaseController {
             logger.info(">>>>>>>>>>>>新增补卡记录失败");
             return resultInfo;
         }
+        //
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("新增成功");
         logger.info(">>>>>>>>>>>>新增补卡记录成功");
