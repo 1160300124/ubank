@@ -90,7 +90,14 @@ public interface UserDao {
      * @param uesrName
      * @return User
      */
-    User getUserByName(String uesrName);
+    User getUserByName(String userName);
+    
+    /**
+     * 根据用户ID获取用户信息
+     * @param userId
+     * @return
+     */
+    User getUserById(long userId);
 
     /**
      * 根据用户名获取系统所有菜单

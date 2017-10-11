@@ -198,8 +198,8 @@ public class ManagerController extends BaseController{
 			Payee payee = new Payee();
 			payee.setPayeeAcctNo(map.get(sd.getCardNo()));
 			payee.setPayeeName(sd.getUserName());
-			payee.setAmount(sd.getSalaries());
-			amount += sd.getSalaries();
+//			payee.setAmount(sd.getSalaries());
+//			amount += sd.getSalaries();
 			payee.setNote(sd.getRemark());
 			payees.add(payee);
 		}

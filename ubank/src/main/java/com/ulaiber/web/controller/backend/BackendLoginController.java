@@ -72,30 +72,37 @@ public class BackendLoginController extends BaseController {
 		logger.debug("backend login start...");
 		ResultInfo retInfo = new ResultInfo();
 		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getLogin_password())){
-			retInfo.setCode(IConstants.QT_CODE_ERROR);
 			retInfo.setMessage("mobile or password is empty.");
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			logger.error("用户名或密码不能为空。");
 			return retInfo;
 		}
-		User dbuser = userService.findByMobile(user.getMobile());
-		if (!ObjUtil.notEmpty(dbuser)){
-			retInfo.setCode(IConstants.QT_MOBILE_NOT_EXISTS);
-			retInfo.setMessage("user not exists.");
-			return retInfo;
+		try {
+			User dbuser = userService.findByMobile(user.getMobile());
+			if (!ObjUtil.notEmpty(dbuser)){
+				logger.error("用户名不存在。");
+				retInfo.setCode(IConstants.QT_MOBILE_NOT_EXISTS);
+				retInfo.setMessage("user not exists.");
+				return retInfo;
+			}
+			
+			if (!MD5Util.validatePwd(user.getLogin_password(), dbuser.getLogin_password())){
+				logger.error("用户名或密码错误。");
+				retInfo.setCode(IConstants.QT_NAME_OR_PWD_OEEOR);
+				retInfo.setMessage("mobile or password error.");
+				return retInfo;
+			}
+			
+			//放入session
+			request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, dbuser);
+			request.getSession().setAttribute("userName", dbuser.getUserName());
+			logger.info(dbuser.getUserName() + " login successed.");
+			
+			retInfo.setCode(IConstants.QT_CODE_OK);
+			retInfo.setMessage(dbuser.getUserName() + "登录成功。");
+		} catch (Exception e) {
+			logger.error("login exception: " , e);
 		}
-		
-		if (!MD5Util.validatePwd(user.getLogin_password(), dbuser.getLogin_password())){
-			retInfo.setCode(IConstants.QT_NAME_OR_PWD_OEEOR);
-			retInfo.setMessage("mobile or password error.");
-			return retInfo;
-		}
-		
-		//放入session
-		request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, dbuser);
-		request.getSession().setAttribute("userName", dbuser.getUserName());
-		logger.info(dbuser.getUserName() + " login successed.");
-		
-		retInfo.setCode(IConstants.QT_CODE_OK);
-		retInfo.setMessage("login successed.");
 		logger.debug("backedn login end...");
 		return retInfo;
 	}
