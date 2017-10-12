@@ -135,7 +135,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		//新增，更新标志，默认失败
 		boolean flag = false;
-		// clockOnStatus：0正常 ，1迟到     clockOffStatus： 0正常 ，1早退
+		// clockOnStatus：0正常 ，1迟到     clockOffStatus： 0正常 ，2早退
 		if (records == null || records.size() == 0){
 			//当前时间<最早上班打卡时间
 			if (datetime.compareTo(dateBegin) < 0){
@@ -178,7 +178,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			
 		} else {
 			//当前时间等于上次打卡时间
-			if (StringUtils.equals(datetime, records.get(0).getClockOffDateTime())){
+			if (StringUtils.equals(datetime, records.get(0).getClockOnDateTime())
+					|| StringUtils.equals(datetime, records.get(0).getClockOffDateTime())){
 				logger.error("歇一会嘛，不要太频繁打卡。");
 				info.setCode(IConstants.QT_CANNOT_CLOCK_FREQUENTLY);
 				info.setMessage("歇一会嘛，不要太频繁打卡。");
@@ -210,7 +211,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				att.setClockOffStatus("0");
 			}
 			//当前时间大于上次打卡时间小于下班打卡时间----早退
-			else if (datetime.compareTo(clockOffBegin) > 0 && datetime.compareTo(clockOffTime) <= 0){
+			else if (datetime.compareTo(clockOffBegin) > 0 && datetime.compareTo(clockOffTime) < 0){
 				att.setClockOffStatus("2");
 			}
 			
@@ -390,6 +391,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				if (StringUtils.equals(att.getClockDate(), day)){
 					if (StringUtils.equals(att.getPatchClockStatus(), "1")){
 						type = 4;
+					} else if (StringUtils.equals(att.getPatchClockStatus(), "2")){
+						type = 2;
 					} else if (StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "0")){
 						type = 0;
 					} else {
@@ -619,7 +622,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		}
 		
 		boolean flag = false;
-		//补卡审批状态 0：审批中  1：已通过  2：未通过
+		//补卡审批状态 0：审批中  1：已通过  2：未通过  3:已取消
 		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
 			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
 			if (flag){
@@ -679,6 +682,13 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
 			} else {
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为未通过失败。");
+			}
+		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "3")){
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			if (flag){
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为已取消。");
+			} else {
+				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为已取消失败。");
 			}
 		}
 		
