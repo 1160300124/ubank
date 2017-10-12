@@ -64,24 +64,32 @@ public class AttendanceApiController extends BaseController {
 			info.setMessage("手机号或月份不能为空。");
 			return info;
 		}
-		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
-		if (null == rule){
-			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+		
+		try {
+			AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+			if (null == rule){
+				logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+				return info;
+			}
+
+			Map<String, Object> data = service.getRecordsByMonthAndMobile(month, mobile, rule);
+			if (null == data){
+				logger.error(month.split("-")[0] + "年没有设置法定节假日，请先设置。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage(month.split("-")[0] + "年没有设置法定节假日，请先设置。");
+				return info;
+			}
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("用户 {" + mobile + "}获取考勤记录成功。");
+			info.setData(data);
+		} catch (Exception e) {
+			logger.error("getRecordsForMonth exception: ", e);
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
-			return info;
+			info.setMessage("系统内部错误。");
 		}
 
-		Map<String, Object> data = service.getRecordsByMonthAndMobile(month, mobile, rule);
-		if (null == data){
-			logger.error(month.split("-")[0] + "年没有设置法定节假日，请先设置。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage(month.split("-")[0] + "年没有设置法定节假日，请先设置。");
-			return info;
-		}
-		info.setCode(IConstants.QT_CODE_OK);
-		info.setMessage("用户 {" + mobile + "}获取考勤记录成功。");
-		info.setData(data);
 		return info;
 	}
 	
@@ -227,44 +235,52 @@ public class AttendanceApiController extends BaseController {
 			return info;
 		}
 		
-		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
-		if (null == rule){
-			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+		try {
+			AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+			if (null == rule){
+				logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
+				return info;
+			}
+			
+			//检查打卡的位置是否在设置范围内
+			ResultInfo result = service.refreshLocation(mobile, longitude, latitude, rule);
+			if (result.getCode() == IConstants.QT_CODE_ERROR){
+				logger.error("不在设置的打卡范围之内，请刷新位置。");
+				return result;
+			}
+			User user = userService.findByMobile(mobile);
+			if (null == user){
+				logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户  " + mobile + " 不存在，可能此手机号还没注册。");
+				return info;
+			}
+			Attendance att = new Attendance();
+			att.setUserId(user.getId());
+			att.setUserName(user.getUserName());
+			
+			Company com = new Company();
+			com.setCompanyNumber(user.getCompanyId());
+			att.setCompany(com);
+			
+			Departments dept = new Departments();
+			dept.setDept_number(user.getDept_number());
+			att.setDept(dept);
+			
+			info = service.save(att, device, location, rule);
+			if (info.getCode() == IConstants.QT_CODE_OK){
+				logger.info("用户  " + mobile + " 打卡成功。");
+				info.setMessage("用户  " + mobile + " 打卡成功。");
+			}
+			
+		} catch (Exception e) {
+			logger.error("clock exception: ", e);
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
-			return info;
+			info.setMessage("系统内部错误。");
 		}
-		
-		//检查打卡的位置是否在设置范围内
-		ResultInfo result = service.refreshLocation(mobile, longitude, latitude, rule);
-		if (result.getCode() == IConstants.QT_CODE_ERROR){
-			logger.error("不在设置的打卡范围之内，请刷新位置。");
-			return result;
-		}
-		User user = userService.findByMobile(mobile);
-		if (null == user){
-			logger.error("用户  " + mobile + " 不存在，可能此手机号还没注册。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户  " + mobile + " 不存在，可能此手机号还没注册。");
-			return info;
-		}
-		Attendance att = new Attendance();
-		att.setUserId(user.getId());
-		att.setUserName(user.getUserName());
-		
-		Company com = new Company();
-		com.setCompanyNumber(user.getCompanyId());
-		att.setCompany(com);
-		
-		Departments dept = new Departments();
-		dept.setDept_number(user.getDept_number());
-		att.setDept(dept);
-		
-		info = service.save(att, device, location, rule);
-		if (info.getCode() == IConstants.QT_CODE_OK){
-			logger.info("用户  " + mobile + " 打卡成功。");
-			info.setMessage("用户  " + mobile + " 打卡成功。");
-		} 
+ 
 		
 		return info;
 	}
@@ -280,15 +296,22 @@ public class AttendanceApiController extends BaseController {
 			return info;
 		}
 		
-		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
-		if (null == rule){
-			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+		try {
+			AttendanceRule rule = ruleService.getRuleByMobile(mobile);
+			if (null == rule){
+				logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
+				return info;
+			}
+			
+			info = service.refreshLocation(mobile, longitude, latitude, rule);
+		} catch (Exception e) {
+			logger.error("refreshLocation exception: ", e);
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("用户  " + mobile + " 没有设置考勤规则，请先设置。");
-			return info;
+			info.setMessage("系统内部错误。");
 		}
-		
-		info = service.refreshLocation(mobile, longitude, latitude, rule);
+
 		logger.debug("refreshLocation end...");
 		return info;
 	}
