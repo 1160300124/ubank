@@ -202,8 +202,10 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				info.setMessage("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
 				return info;
 			}
-			String clockOffBegin = clockOnTime.compareTo(records.get(0).getClockOnDateTime()) > 0 ? clockOnTime : records.get(0).getClockOnDateTime();
-			//当前时间大于下班打卡时间或小于最晚下班打卡时间
+			
+			String clockOffBegin = null == records.get(0).getClockOnDateTime() ? clockOnTime 
+					: clockOnTime.compareTo(records.get(0).getClockOnDateTime()) > 0 ? clockOnTime : records.get(0).getClockOnDateTime();
+			//当前时间大于下班打卡时间&&小于最晚下班打卡时间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0 ){
 				att.setClockOffStatus("0");
 			}
@@ -386,7 +388,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			int count = 0;
 			for (Attendance att : list){
 				if (StringUtils.equals(att.getClockDate(), day)){
-					if (StringUtils.equals(att.getPatchClockStatus(), "0")){
+					if (StringUtils.equals(att.getPatchClockStatus(), "1")){
 						type = 4;
 					} else if (StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "0")){
 						type = 0;
@@ -694,7 +696,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			params.put("patchClockStatus", patchClockStatus);
 			return dao.updatePatchClockStatus(params);
 		} else {
-			if (StringUtils.equals(patchClockStatus, "2")){
+			if (StringUtils.equals(patchClockStatus, "0")){
 				Attendance att = new Attendance();
 				att.setClockDate(clockDate);
 				att.setPatchClockStatus(patchClockStatus);
