@@ -182,7 +182,7 @@ public class Test {
 	@org.junit.Test
 	public void queryApplyRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","433");
+		map.put("userId","359");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryApplyRecord",map);
@@ -232,12 +232,13 @@ public class Test {
 	@org.junit.Test
 	public void confirmAudit(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","424");
-		map.put("currentUserId", "423");
-		map.put("recordNo","335");
-		map.put("status","0");
+		map.put("userId","359");
+		map.put("currentUserId", "");
+		map.put("recordNo","608");
+		map.put("status","1");
 		map.put("currentAuditor","张三三");
 		map.put("auditorStatus","1");
+		map.put("type","4");
 		map.put("reason","同意同意同意同意同意同意xxxxxxxxxxx");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/confirmAudit",map);
 		System.out.print(">>>>>>>>工作审批结果为："+result);
@@ -387,9 +388,11 @@ public class Test {
 
 	@org.junit.Test
 	public void md5(){
-		String pwd = "601258";
-		String password = MD5Util.getEncryptedPwd(pwd);
-		System.out.print(">>>>>>password：" + password);
+//		String pwd = "601258";
+//		String password = MD5Util.getEncryptedPwd(pwd);
+		String userId = "359";
+		long ll = Long.valueOf(userId);
+		System.out.print(">>>>>>userID：" + ll);
 	}
 
 

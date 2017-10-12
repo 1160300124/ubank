@@ -169,4 +169,40 @@ public interface BanksRootDao {
      * @return int
      */
     int insertBranchsChild(BranchsChildren bc);
+
+
+    /**
+     * 修改支行
+     * @param bc 支行信息
+     * @return int
+     */
+    int modifyBranchsChild(BranchsChildren bc);
+
+    /**
+     * 根据支行编号查询是否存在业务员
+     * @param number 支行ID
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> querySalemanByBranchChildId(int[] number);
+
+    /**
+     * 删除支行
+     * @param number 支行ID
+     * @return int
+     */
+    int removeBranchChild(int[] number);
+
+    /**
+     * 获取银行用户数量
+     * @param map
+     * @return int
+     */
+    int getBankUsersCount(Map<String, Object> map);
+
+    /**
+     * 获取银行用户
+     * @param map
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> queryBankUsers(Map<String, Object> map);
 }

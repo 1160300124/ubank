@@ -11,6 +11,7 @@ import com.ulaiber.web.utils.StringUtil;
 import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -95,6 +96,17 @@ public class BanksController extends BaseController {
     @RequestMapping("branch_children")
     public String toBranch_child(HttpServletRequest request, HttpServletResponse response){
         return "banks/branch_children";
+    }
+
+    /**
+     * 跳转银行用户页
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("bankUser")
+    public String tobankUsers(HttpServletRequest request, HttpServletResponse response){
+        return "banks/bankUsers";
     }
 
 
@@ -453,17 +465,17 @@ public class BanksController extends BaseController {
      */
     @RequestMapping(value = "saveBranchsChil", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo saveBranchsChild(BranchsChildren bc,@Param("flag") int flag){
+    public ResultInfo saveBranchsChild(HttpServletRequest request,BranchsChildren bc, @Param("flag") int flag){
         ResultInfo resultInfo = new ResultInfo();
+        String bankName = request.getParameter("bankName");
+        try {
+            bankName = new String(bankName.getBytes("ISO-8859-1"),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        bc.setBankName(bankName);
         if(flag == 0){ //新增
             String childName = bc.getName();
-            String bankname = "";
-            try {
-                URLDecoder.decode(bc.getBankName(),"UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            bc.setBankName(bankname);
             //根据支行名称查询支行是否已存在
             BranchsChildren bran = banksRootService.queryBranchChildByName(childName);
             if(!StringUtil.isEmpty(bran)){
@@ -480,8 +492,80 @@ public class BanksController extends BaseController {
             }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("新增成功");
+        }else{ //修改
+            int result = banksRootService.modifyBranchsChild(bc);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("修改失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("修改成功");
+
         }
         return resultInfo;
+    }
+
+    /**
+     * 删除支行
+     * @param numbers 支行ID
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "removeBranchsChild", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo removeBranchsChild(@Param("numbers") String numbers){
+        ResultInfo resultInfo = new ResultInfo();
+        String[] numberArr = numbers.split(",");
+        //根据支行编号查询是否存在业务员
+        List<BranchsChildren> comList = banksRootService.querySalemanByBranchChildId(numberArr);
+        if(comList.size() > 0 ){
+            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+            resultInfo.setMessage("该支行下存在业务员，请先删除业务员");
+            return resultInfo;
+        }
+        //删除
+        int result = banksRootService.removeBranchChild(numberArr);
+        if(result > 0){
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("删除成功");
+        }else{
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("删除失败");
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 查询银行用户
+     * @param search 搜索关键字
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @param bankNo  角色所属部门
+     * @return map
+     */
+    @RequestMapping(value = "queryBankUsers", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> queryBankUsers(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
+                                             @Param("type") String type,@Param("bankNo") int bankNo){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        //获取银行用户数量
+        int totalCount = banksRootService.getBankUsersCount(type,bankNo);
+        if(totalCount <= 0){
+            map.put("total",totalCount);
+            map.put("rows","");
+            return map;
+        }
+        List<BranchsChildren> list = banksRootService.queryBankUsers(search,pageSize,pageNum,type,bankNo);
+        map.put("total",totalCount);
+        map.put("rows",list);
+        return map;
     }
 
 }

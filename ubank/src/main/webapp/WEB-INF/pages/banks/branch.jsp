@@ -101,7 +101,7 @@
                     {field : 'id', title : '编号', width: 100, align : 'left'},
                     {field : 'name', title : '分行名称', width: 130, align : 'left'},
                     {field : 'count', title : '业务员数量', width: 130, align : 'left'},
-                    {field : 'headquarters', title : '所属总部', width: 130, align : 'left'},
+                    {field : 'headquarters', title : '所属银行', width: 130, align : 'left'},
                     {field : 'headquartersNo', title : '总部ID', width: 130, align : 'left',visible : false}
                 ]
             });

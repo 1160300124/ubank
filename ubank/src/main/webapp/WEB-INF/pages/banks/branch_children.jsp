@@ -7,13 +7,13 @@
         <button  onclick="branchs_chil_fun.openNew()" type="button" class="btn btn-default">
             <span class="fa icon-plus" aria-hidden="true"></span>新增
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="branchs_chil_fun.chil_modify()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>修改
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="branchs_chil_fun.chil_remove()" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="branchs_chil_fun.reload()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>
@@ -53,7 +53,7 @@
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">备注</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control" name="remark" id=""  rows="3"></textarea>
+                                    <textarea class="form-control" name="remark" id="chil_remark"  rows="3"></textarea>
                                 </div>
                             </div>
                         </form>
@@ -62,7 +62,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" onclick="branchs_chil_fun.chil_add()" class="btn btn-primary">保存</button>
+                    <button type="button" onclick="" class="btn btn-primary">保存</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -79,7 +79,7 @@
     });
 
     var flag = 0;  //标识。 0 表示新增操作，1 表示修改操作
-    var id = 0; //银行ID
+    var id = 0; //支行ID
 
     var branchs_chil_fun = {
         dataLoad : function () {
@@ -107,7 +107,8 @@
                     {field : 'id', title : '编号', width: 100, align : 'left'},
                     {field : 'name', title : '支行名称', width: 130, align : 'left'},
                     {field : 'count', title : '业务员数量', width: 130, align : 'left'},
-                    {field : 'bankName', title : '上级部门', width: 130, align : 'left'}
+                    {field : 'bankName', title : '上级银行', width: 130, align : 'left'},
+                    {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false}
                 ]
             });
         },
@@ -127,8 +128,8 @@
             $(".modal-title").html("新增");
             $("#branchs_chil_modal").modal("show");
         },
+        //获取所有总部
         getAllHead : function () {
-            //获取所有总部
             $.ajax({
                 url : 'getAllHeadquarters',
                 dataType : 'json',
@@ -177,6 +178,10 @@
                 }
             });
         },
+        //刷新
+        reload : function () {
+            $('#branch_table').bootstrapTable('refresh');
+        },
         //新增
         chil_add  : function(){
             var head = $("#chil_headquarters").val();
@@ -214,13 +219,14 @@
                 bankNo = branchs;
             }
             $.ajax({
-                url : 'saveBranchsChil?flag=' + flag + "&bankName=" + bankName + "&type=" + type + "&bankNo=" + bankNo,
+                url : 'saveBranchsChil?flag=' + flag + "&bankName=" + bankName + "&type=" + type + "&bankNo=" + bankNo + "&id=" + id,
                 dataType : 'json',
                 type : 'post',
                 data : $("#branchs_chil_form").serialize(),
                 success : function (data) {
                     if(data.code != 5000){
                         Ewin.alert(data.message);
+                        $("#branchs_chil_form")[0].reset();
                         $("#branchs_chil_modal").modal("hide");
                         $('#branchs_chil_table').bootstrapTable('refresh');
                     }else{
@@ -235,6 +241,74 @@
                 }
             })
 
+        },
+        //修改
+        chil_modify : function(){
+            flag = 1;
+            $(".modal-title").html("修改");
+            var row = $('#branchs_chil_table').bootstrapTable('getSelections');
+            if(row.length > 1){
+                Ewin.alert("不能多选，请重新选择");
+                return;
+            }else if(row.length <= 0){
+                Ewin.alert("请选中需要修改的数据");
+                return;
+            }
+            id = row[0].id;
+            $("#chil_headquarters").find("option[value="+row[0].bankNo+"]").prop("selected","selected");
+            $("#chil_branchs").find("option[value="+row[0].bankNo+"]").prop("selected","selected");
+            $("input[name=name]").val(row[0].name);
+            $("#chil_remark").val(row[0].remark);
+            $("#branchs_chil_modal").modal("show");
+
+        },
+        //删除
+        chil_remove : function(){
+            var e = window.event;
+            e.preventDefault();
+            var row = $('#branchs_chil_table').bootstrapTable('getSelections');
+            if(row.length <= 0){
+                Ewin.alert("请选中需要删除的数据");
+                return;
+            }
+            Confirm.show('提示', '确定删除该支行吗？', {
+                'Delete': {
+                    'primary': true,
+                    'callback': function() {
+                        var numbers = ""; //存放多个支银编号
+                        for (var i = 0 ; i < row.length ;i++){
+                            if(i > 0 ){
+                                numbers += "," + row[i].id;
+                            }else{
+                                numbers += row[i].id;
+                            }
+                        }
+                        $.ajax({
+                            url : 'removeBranchsChild',
+                            dataType : 'json',
+                            type : 'post',
+                            data:  {
+                                "numbers" : numbers
+                            },
+                            success : function (data) {
+                                if(data.code != 5000){
+                                    Confirm.hide();
+                                    Ewin.alert(data.message);
+                                    $('#branchs_chil_table').bootstrapTable('refresh');
+                                }else{
+                                    Confirm.hide();
+                                    Ewin.alert(data.message);
+                                }
+
+                            },
+                            error : function () {
+                                Ewin.alert("删除失败");
+                            }
+                        })
+
+                    }
+                }
+            });
         }
     }
 </script>

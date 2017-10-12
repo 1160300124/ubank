@@ -28,6 +28,7 @@ public class ApplyForVO implements Serializable{
     private String morning;     //上午打卡时间
     private String afternoon;   //下午打卡时间
     private String remedyType;  //补卡类型。0 上午补卡 ， 1 下午补卡 ， 2 全天补卡
+    private String remedyDate;  //补卡时间
 
     public int getId() {
         return id;
@@ -195,5 +196,13 @@ public class ApplyForVO implements Serializable{
 
     public void setRemedyType(String remedyType) {
         this.remedyType = remedyType;
+    }
+
+    public String getRemedyDate() {
+        return remedyDate;
+    }
+
+    public void setRemedyDate(String remedyDate) {
+        this.remedyDate = remedyDate;
     }
 }

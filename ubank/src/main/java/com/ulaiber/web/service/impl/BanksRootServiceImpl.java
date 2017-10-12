@@ -216,5 +216,49 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
         return banksRootDao.insertBranchsChild(bc);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int modifyBranchsChild(BranchsChildren bc) {
+        return banksRootDao.modifyBranchsChild(bc);
+    }
+
+    @Override
+    public List<BranchsChildren> querySalemanByBranchChildId(String[] numberArr) {
+        int[] number = new int[numberArr.length];
+        for (int i = 0 ; i < numberArr.length ; i++){
+            number[i] = Integer.parseInt(numberArr[i]);
+        }
+        return banksRootDao.querySalemanByBranchChildId(number);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int removeBranchChild(String[] numberArr) {
+        int[] number = new int[numberArr.length];
+        for (int i = 0 ; i < numberArr.length ; i++){
+            number[i] = Integer.parseInt(numberArr[i]);
+        }
+        return banksRootDao.removeBranchChild(number);
+    }
+
+    @Override
+    public int getBankUsersCount(String type, int bankNo) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",type);
+        map.put("bankNo",bankNo);
+        return banksRootDao.getBankUsersCount(map);
+    }
+
+    @Override
+    public List<BranchsChildren> queryBankUsers(String search, int pageSize, int pageNum, String type, int bankNo) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("search",search);
+        map.put("pageSize",pageSize);
+        map.put("pageNum",pageNum);
+        map.put("type",type);
+        map.put("bankNo",bankNo);
+        return banksRootDao.queryBankUsers(map);
+    }
+
 
 }

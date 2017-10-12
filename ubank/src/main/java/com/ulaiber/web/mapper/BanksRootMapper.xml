@@ -129,7 +129,7 @@
 
     <!--根据分行编号查询是否存在支行-->
     <select id="queryBranchChildrenByBranchId" parameterType="Map" resultType="com.ulaiber.web.model.BranchsChildren">
-        SELECT id,name FROM  tbl_branch_children where type = #{type} and bankNo in
+        SELECT id,name FROM  tbl_branch_children where bankNo in
         <foreach collection="number" item="number" open="(" separator="," close=")">
               #{number}
         </foreach>
@@ -146,15 +146,33 @@
 
     <!--查询分支数量-->
     <select id="getBranchChilCount" parameterType="Map" resultType="int">
-        SELECT COUNT(id) as count from tbl_branch_children where  type = #{type}
-           and  bankNo = #{bankNo}
+        SELECT count(a.id) as count from tbl_branch_children a
+        left join tbl_bank_branch b on a.bankNo = b.id
+        left join tbl_bank_headquarters c on a.bankNo = c.id where 1=1
+        <if test="bankNo != null and bankNo != ''">
+            <if test="type == 0">
+                and c.id = #{bankNo}
+            </if>
+            <if test="type == 1">
+                and b.id = #{bankNo}
+            </if>
+        </if>
+
+
     </select>
 
     <!--查询支行-->
     <select id="queryBranchsChild" parameterType="Map" resultType="com.ulaiber.web.model.BranchsChildren">
-        SELECT a.id,a.name,a.bankNo,a.remark,a.bankName,a.type  from tbl_branch_children a where 1=1
+        SELECT a.id,a.name,a.bankNo,a.remark,a.bankName,a.type from tbl_branch_children a
+        left join tbl_bank_branch b on a.bankNo = b.id
+        left join tbl_bank_headquarters c on a.bankNo = c.id where 1=1
         <if test=" bankNo != '' and bankNo != null ">
-            and a.bankNo = #{bankNo} and a.type = #{type}
+            <if test="type == 0">
+                and c.id = #{bankNo}
+            </if>
+            <if test="type == 1">
+                and b.id = #{bankNo}
+            </if>
         </if>
         <if test="search != null and search != ''">
             and a.name like concat('%',#{search},'%')
@@ -180,4 +198,69 @@
         INSERT INTO tbl_branch_children(name,bankNo,bankName,remark,type)
             VALUES (#{name},#{bankNo},#{bankName},#{remark},#{type})
     </insert>
+
+    <!--修改支行-->
+    <update id="modifyBranchsChild" parameterType="com.ulaiber.web.model.BranchsChildren" >
+        UPDATE tbl_branch_children SET name = #{name},bankNo = #{bankNo} , bankName = #{bankName},remark = #{remark},type = #{type}
+            where id = #{id}
+    </update>
+
+    <!--根据支行编号查询是否存在业务员-->
+    <select id="querySalemanByBranchChildId" parameterType="int" resultType="com.ulaiber.web.model.BankUsers">
+        SELECT id FROM tbl_bank_users where bankNo in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </select>
+
+    <!--删除支行-->
+    <delete id="removeBranchChild" parameterType="int">
+        DELETE FROM  tbl_branch_children where id in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </delete>
+
+    <!--获取银行用户数量-->
+    <select id="getBankUsersCount" parameterType="Map" resultType="int">
+        select count(a.id) as count from tbl_bank_users a
+            left join tbl_bank_branch c on a.bankNo = c.id
+            left join tbl_bank_headquarters d on a.bankNo = d.id
+            left join tbl_branch_children e on a.bankNo = e.id
+        <if test=" bankNo != '' and bankNo != null ">
+            <if test="type == 0">
+                and d.id = #{bankNo}
+            </if>
+            <if test="type == 1">
+                and c.id = #{bankNo}
+            </if>
+            <if test="type == 2">
+                and e.id = #{bankNo}
+            </if>
+        </if>
+    </select>
+
+    <!--获取银行用户-->
+    <select id="queryBankUsers" parameterType="Map" resultType="com.ulaiber.web.model.BankUsers">
+        select a.*,b.role_name as roleName from tbl_bank_users a
+            left join tbl_bank_roles b on a.roleid = b.id
+            left join tbl_bank_branch c on a.bankNo = c.id
+            left join tbl_bank_headquarters d on a.bankNo = d.id
+            left join tbl_branch_children e on a.bankNo = e.id
+        <if test=" bankNo != '' and bankNo != null ">
+            <if test="type == 0">
+                and d.id = #{bankNo}
+            </if>
+            <if test="type == 1">
+                and c.id = #{bankNo}
+            </if>
+            <if test="type == 2">
+                and e.id = #{bankNo}
+            </if>
+        </if>
+        <if test="search != null and search != ''">
+            and a.name like concat('%',#{search},'%')
+        </if>
+        limit #{pageNum},#{pageSize}
+    </select>
 </mapper>

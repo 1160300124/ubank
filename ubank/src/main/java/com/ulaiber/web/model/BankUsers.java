@@ -17,7 +17,8 @@ public class BankUsers implements Serializable{
     private String password;    //密码
     private int roleid;         //角色ID
     private String remark;      //备注
-    private int type;        //部门标识：0 总部，1 分部，2 支部
+    private int type;           //部门标识：0 总部，1 分部，2 支部
+    private String roleName;    //角色名
 
     public int getId() {
         return id;
@@ -105,5 +106,13 @@ public class BankUsers implements Serializable{
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

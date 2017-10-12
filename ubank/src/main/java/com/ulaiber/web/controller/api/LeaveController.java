@@ -164,11 +164,12 @@ public class LeaveController extends BaseController {
                     amount += sr.getAmount();
                 }
                 resultMap.put("reimAmount",amount);
-            }else if(ls.getType().equals("4")){
+            }else if(ls.getType().equals("4")){ //补卡记录
                 Remedy remedy = new Remedy();
                 remedy.setMorning(ls.getMorning());
                 remedy.setAfternoon(ls.getAfternoon());
                 remedy.setType(ls.getRemedyType());
+                remedy.setRemedyDate(ls.getRemedyDate());
                 resultMap.put("remedy" , remedy);
             }
             //将申请记录对应的审批人放入记录中
@@ -489,11 +490,12 @@ public class LeaveController extends BaseController {
                             amount += sr.getAmount();
                         }
                         map.put("reimAmount",amount);
-                    }else if(applyForVO.getType().equals("4")){
+                    }else if(applyForVO.getType().equals("4")){ //补卡记录
                         Remedy remedy = new Remedy();
                         remedy.setMorning(applyForVO.getMorning());
                         remedy.setAfternoon(applyForVO.getAfternoon());
                         remedy.setType(applyForVO.getRemedyType());
+                        remedy.setRemedyDate(applyForVO.getRemedyDate());
                         map.put("remedy" , remedy);
                     }
                     String recordNo = String.valueOf(applyList.get(i).getId());
@@ -583,11 +585,12 @@ public class LeaveController extends BaseController {
                     amount += sr.getAmount();
                 }
                 map.put("reimAmount",amount);
-            }else if(applyForVO.getType().equals("4")){
+            }else if(applyForVO.getType().equals("4")){ //补卡记录
                 Remedy remedy = new Remedy();
                 remedy.setMorning(applyForVO.getMorning());
                 remedy.setAfternoon(applyForVO.getAfternoon());
                 remedy.setType(applyForVO.getRemedyType());
+                remedy.setRemedyDate(applyForVO.getRemedyDate());
                 map.put("remedy" , remedy);
             }
             int sort = auList.get(i).getSort();
@@ -1025,6 +1028,8 @@ public class LeaveController extends BaseController {
         logger.info(">>>>>>>>>>>>新增补卡记录成功");
         return resultInfo;
     }
+
+
 
 
 }

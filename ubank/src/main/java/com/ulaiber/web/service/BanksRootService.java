@@ -168,4 +168,44 @@ public interface BanksRootService {
      * @return int
      */
     int insertBranchsChild(BranchsChildren bc);
+
+    /**
+     * 修改支行
+     * @param bc 支行信息
+     * @return int
+     */
+    int modifyBranchsChild(BranchsChildren bc);
+
+    /**
+     * 根据支行编号查询是否存在业务员
+     * @param numberArr 支行ID
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> querySalemanByBranchChildId(String[] numberArr);
+
+    /**
+     * 删除支行
+     * @param numberArr 支行ID
+     * @return int
+     */
+    int removeBranchChild(String[] numberArr);
+
+    /**
+     * 获取银行用户数量
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @param bankNo 银行编号
+     * @return int
+     */
+    int getBankUsersCount(String type, int bankNo);
+
+    /**
+     * 查询银行用户
+     * @param search 搜索关键字
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @param bankNo  角色所属部门
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> queryBankUsers(String search, int pageSize, int pageNum, String type, int bankNo);
 }
