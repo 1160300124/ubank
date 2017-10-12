@@ -37,7 +37,7 @@ public class AttendancePatchClock {
 	private int patchClockType;
 	
 	/**
-	 * 补卡审批状态 0：已通过 1：未通过 2：审批中
+	 * 补卡审批状态 0：审批中  1：已通过  2：未通过
 	 */
 	private String patchClockStatus;
 	
