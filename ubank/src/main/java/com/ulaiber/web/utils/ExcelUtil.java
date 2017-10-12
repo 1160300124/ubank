@@ -200,12 +200,12 @@ public class ExcelUtil {
                         }
                         
                         SalaryDetail detail = new SalaryDetail();
-                        detail.setEid(getXValue(xssfRow.getCell(0)));
+//                        detail.setEid(getXValue(xssfRow.getCell(0)));
                         detail.setUserName(getXValue(xssfRow.getCell(1)));
                         detail.setCardNo(getXValue(xssfRow.getCell(0)));
 //                        detail.setSalaries(Double.valueOf(getXValue(xssfRow.getCell(0))));
                         detail.setRemark(getXValue(xssfRow.getCell(0)));
-                        detail.setSalaryDate(DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_SHORTDAY));
+//                        detail.setSalaryDate(DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_SHORTDAY));
                         details.add(detail);                                          
                     }  
                 }  
@@ -281,12 +281,12 @@ public class ExcelUtil {
                     	
                         //读取列，从第一列开始  
                         SalaryDetail detail = new SalaryDetail();
-                        detail.setEid(getHValue(hssfRow.getCell(0)));
+//                        detail.setEid(getHValue(hssfRow.getCell(0)));
                         detail.setUserName(getHValue(hssfRow.getCell(1)));
                         detail.setCardNo(getHValue(hssfRow.getCell(2)));
 //                        detail.setSalaries(Double.valueOf(getHValue(hssfRow.getCell(3))));
                         detail.setRemark(getHValue(hssfRow.getCell(4)));
-                        detail.setSalaryDate(DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_SHORTDAY));
+//                        detail.setSalaryDate(DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_SHORTDAY));
                         details.add(detail);
                     }                     
                 }  
