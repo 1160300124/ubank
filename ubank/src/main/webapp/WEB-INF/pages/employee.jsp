@@ -90,6 +90,24 @@
                                     <input type="text" name="mobile" class="base-form-input base-request" value="" >
                                 </div>
                             </div>
+                            <div class="form-group col-md-12">
+                                <label class="col-md-3" for="exampleInputName2">入职时间</label>
+                                <div class="col-md-9">
+                                    <div class="input-group date" id="">
+                                        <input class="form-control" id="entryDate" type="text" name="entryDate" />
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="col-md-3" for="exampleInputName2">离职时间</label>
+                                <div class="col-md-9">
+                                    <div class="input-group date" id="">
+                                        <input class="form-control" id="leaveDate" type="text" name="leaveDate" />
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                    </div>
+                                </div>
+                            </div>
 
                         </form>
                     </div>

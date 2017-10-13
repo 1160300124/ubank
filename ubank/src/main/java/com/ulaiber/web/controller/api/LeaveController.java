@@ -191,13 +191,13 @@ public class LeaveController extends BaseController {
     }
 
     /**
-     * 取消请假申请
+     * 取消申请
      * @param applyId 申请记录ID
      * @return
      */
     @RequestMapping(value = "cancelApply", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo cancelApply(String applyId){
+    public ResultInfo cancelApply(String applyId,String type){
         logger.info("开始取消请假申请操作");
         ResultInfo resultInfo = new ResultInfo();
         if(StringUtil.isEmpty(applyId)){
@@ -212,6 +212,20 @@ public class LeaveController extends BaseController {
             resultInfo.setMessage("取消请假申请失败");
             logger.info("取消请假申请失败");
             return resultInfo;
+        }
+        if(type.equals("4")){
+            //根据记录Id查询补卡信息
+            int recordNo = Integer.parseInt(applyId);
+            Remedy re = leaveService.getRemedyRecordByUserId(recordNo);
+            AttendancePatchClock apc =  new AttendancePatchClock();
+            long userId = Long.valueOf(re.getUserId());
+            apc.setUserId(userId);
+            apc.setPatchClockDate(re.getRemedyDate());
+            apc.setPatchClockType(Integer.parseInt(re.getType()));
+            apc.setPatchClockOnTime(re.getMorning());
+            apc.setPatchClockOffTime(re.getAfternoon());
+            apc.setPatchClockStatus("3");
+            attendanceService.patchClock(apc);
         }
         resultInfo.setCode(IConstants.QT_CODE_OK);
         resultInfo.setMessage("取消请假申请成功");

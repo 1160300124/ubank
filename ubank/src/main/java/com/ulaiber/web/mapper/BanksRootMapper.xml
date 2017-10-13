@@ -11,7 +11,7 @@
 
     <!--银行用户登录-->
     <select id="bankUserLogin" parameterType="Map" resultType="com.ulaiber.web.model.BankUsers">
-        select a.* from tbl_bank_users a WHERE a.mobile = #{mobile}
+        select a.* from tbl_bank_users a WHERE disabled = 0 and a.mobile = #{mobile}
     </select>
 
     <!--根据角色名获取银行管理页-->
@@ -19,7 +19,7 @@
         SELECT a.id , a.NAME , a.url , a.CODE , a.father , a.icon , a.sorting
             FROM tbl_menu a WHERE  a.CODE IN( SELECT b.menuNumber FROM tbl_bank_users c
             LEFT JOIN tbl_roleMenu b ON c.roleid = b.role_id
-            WHERE c.disabled = '0' AND c.NAME = #{userName})
+            WHERE c.disabled = 0 AND c.NAME = #{userName})
     </select>
 
     <!--根据银行名称查询银行信息-->
@@ -114,7 +114,7 @@
 
     <!-- 获取各个分行业务员的总数-->
     <select id="getBranchSalemenCount" parameterType="int" resultType="Map">
-        SELECT bankNo,count(id) as count from tbl_bank_users where bankNo in
+        SELECT bankNo,count(id) as count from tbl_bank_users where disabled = 0 and bankNo in
         <foreach collection="array" item="ids" open="(" separator="," close=")">
              #{ids}
         </foreach>
@@ -207,7 +207,7 @@
 
     <!--根据支行编号查询是否存在业务员-->
     <select id="querySalemanByBranchChildId" parameterType="int" resultType="com.ulaiber.web.model.BankUsers">
-        SELECT id FROM tbl_bank_users where bankNo in
+        SELECT id FROM tbl_bank_users where disabled = 0 and bankNo in
         <foreach collection="array" item="number" open="(" separator="," close=")">
             #{number}
         </foreach>
@@ -226,7 +226,7 @@
         select count(a.id) as count from tbl_bank_users a
             left join tbl_bank_branch c on a.bankNo = c.id
             left join tbl_bank_headquarters d on a.bankNo = d.id
-            left join tbl_branch_children e on a.bankNo = e.id
+            left join tbl_branch_children e on a.bankNo = e.id where a.disabled = 0
         <if test=" bankNo != '' and bankNo != null ">
             <if test="type == 0">
                 and d.id = #{bankNo}
@@ -246,7 +246,7 @@
             left join tbl_bank_roles b on a.roleid = b.id
             left join tbl_bank_branch c on a.bankNo = c.id
             left join tbl_bank_headquarters d on a.bankNo = d.id
-            left join tbl_branch_children e on a.bankNo = e.id
+            left join tbl_branch_children e on a.bankNo = e.id where a.disabled = 0
         <if test=" bankNo != '' and bankNo != null ">
             <if test="type == 0">
                 and d.id = #{bankNo}
@@ -259,8 +259,88 @@
             </if>
         </if>
         <if test="search != null and search != ''">
-            and a.name like concat('%',#{search},'%')
+            and a.name like concat('%',#{name},'%')
         </if>
+        <if test="search != null and search != ''">
+            and a.mobile = #{mobile}
+        </if>
+
         limit #{pageNum},#{pageSize}
+    </select>
+    
+    <!--根据银行编号获取总行-->
+    <select id="getHeadquarters" parameterType="int" resultType="com.ulaiber.web.model.Headquarters">
+        SELECT * from tbl_bank_headquarters where 1=1
+        <if test="_parameter != '' and _parameter != null">
+             and id = #{bankNo}
+        </if>
+    </select>
+
+    <!--根据总行编号获取支行-->
+    <select id="getBranchsChild" parameterType="int" resultType="com.ulaiber.web.model.BranchsChildren" >
+        SELECT * from tbl_branch_children where 1=1
+        <if test="_parameter != '' and _parameter != null">
+             and bankNo = #{bankNo}
+        </if>
+    </select>
+
+    <!--根据分行编号获取分行-->
+    <select id="getBranchs" parameterType="int" resultType="com.ulaiber.web.model.Branch">
+        SELECT * FROM tbl_bank_branch WHERE 1=1
+        <if test=" _parameter != '' and _parameter != null">
+            and id = #{bankNo}
+        </if>
+    </select>
+
+    <!--根据银行编号获取支行-->
+    <select id="getBranchChildByID" parameterType="int" resultType="com.ulaiber.web.model.BranchsChildren">
+        SELECT * from tbl_branch_children where 1=1
+        <if test="_parameter != '' and _parameter != null">
+            and id = #{bankNo}
+        </if>
+    </select>
+
+    <!--根据银行类型获取角色-->
+    <select id="getRoleByType" parameterType="Map" resultType="com.ulaiber.web.model.BankRoles">
+        SELECT id,role_name as roleName,type FROM tbl_bank_roles WHERE  1=1
+        <if test="type == 0">
+            and type = 0 or type = 3
+        </if>
+        <if test="type == 1">
+            and type = 1 or type = 3
+        </if>
+        <if test="type == 2">
+            and type = 2 or type = 3
+        </if>
+    </select>
+
+    <!--根据名称查询当前用户是否已存在-->
+    <select id="getUserByName" parameterType="String" resultType="com.ulaiber.web.model.BankUsers">
+        SELECT id FROM tbl_bank_users where disabled = 0 and name = #{name}
+    </select>
+
+    <!--新增银行用户-->
+    <insert id="insertBankUser" parameterType="com.ulaiber.web.model.BankUsers">
+        INSERT INTO tbl_bank_users(name,number,bankNo,bankName,officePhone,mobile,password,roleid,remark,disabled,type)
+          VALUES (#{name},#{number},#{bankNo},#{bankName},#{officePhone},#{mobile},#{password},#{roleid},#{remark},'0',#{type})
+    </insert>
+
+    <!--修改银行用户-->
+    <update id="modifyBankUser" parameterType="com.ulaiber.web.model.BankUsers">
+        UPDATE tbl_bank_users SET name = #{name},number = #{number}, bankNo = #{bankNo},bankName = #{bankName},officePhone = #{officePhone},
+             mobile = #{mobile},password = #{password},roleid = #{roleid},remark = #{remark} where id = #{id}
+    </update>
+
+    <!--删除银行员工-->
+    <delete id="removeBankUser" parameterType="int">
+        UPDATE tbl_bank_users set disabled = 1 where id in
+        <foreach collection="array" item="number" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </delete>
+
+    <!--根据移动电话查询当前电话是否已存在-->
+    <select id="getUserByMobile" parameterType="String" resultType="com.ulaiber.web.model.BankUsers">
+        SELECT id FROM tbl_bank_users where disabled = 0 and mobile = #{mobile}
     </select>
 </mapper>

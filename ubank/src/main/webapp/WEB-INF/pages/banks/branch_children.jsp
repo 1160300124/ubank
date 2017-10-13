@@ -76,12 +76,21 @@
         branchs_chil_fun.dataLoad();
         branchs_chil_fun.getAllHead();
         branchs_chil_fun.getAllBranchs();
+        branchs_chil_fun.listening();
     });
 
     var flag = 0;  //标识。 0 表示新增操作，1 表示修改操作
     var id = 0; //支行ID
 
     var branchs_chil_fun = {
+        //弹出框关闭监听事件
+        listening : function () {
+            $("#branchs_chil_modal").on('hide.bs.modal',function () {
+                $('#branchs_chil_table').bootstrapTable('uncheckAll');
+                $("#branchs_chil_form")[0].reset();
+            });
+        },
+        //查询
         dataLoad : function () {
             $("#branchs_chil_table").bootstrapTable({
                 url : 'queryBranchsChil',

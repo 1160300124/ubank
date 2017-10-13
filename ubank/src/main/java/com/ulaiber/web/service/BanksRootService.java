@@ -1,9 +1,6 @@
 package com.ulaiber.web.service;
 
-import com.ulaiber.web.model.Branch;
-import com.ulaiber.web.model.BranchsChildren;
-import com.ulaiber.web.model.Headquarters;
-import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.*;
 
 import java.util.List;
 
@@ -207,5 +204,76 @@ public interface BanksRootService {
      * @param bankNo  角色所属部门
      * @return BranchsChildren
      */
-    List<BranchsChildren> queryBankUsers(String search, int pageSize, int pageNum, String type, int bankNo);
+    List<BranchsChildren> queryBankUsers(String search, int pageSize, int pageNum, String type, int bankNo,String name,String mobile);
+
+    /**
+     * 根据银行编号获取总行
+     * @param bankNo 银行编号
+     * @return Headquarters
+     */
+    List<Headquarters> getHeadquarters(int bankNo);
+
+    /**
+     * 根据总行编号获取支行
+     * @param bankNo 银行编号
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> getBranchChild(int bankNo);
+
+    /**
+     * 根据分行编号获取分行
+     * @param bankNo 银行编号
+     * @return Branch
+     */
+    List<Branch> getBranchs(int bankNo);
+
+    /**
+     * 根据银行编号获取支行
+     * @param bankNo 银行编号
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> getBranchChildByID(int bankNo);
+
+    /**
+     * 根据银行类型获取角色
+     * @param id 银行编号
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @return ResultInfo
+     */
+    List<BankRoles> getRoleByType(int id, String type);
+
+    /**
+     * 根据名称查询当前用户是否已存在
+     * @param name 名称
+     * @return BankUsers
+     */
+    BankUsers getUserByName(String name);
+
+    /**
+     * 新增银行用户
+     * @param bankUsers 银行用户信息
+     * @return ResultInfo
+     */
+    int insertBankUser(BankUsers bankUsers);
+
+    /**
+     * 修改银行用户
+     * @param bankUsers 银行用户信息
+     * @return int
+     */
+    int modifyBankUser(BankUsers bankUsers);
+
+    /**
+     * 删除银行员工
+     * @param numberArr 员工ID
+     * @return ResultInfo
+     */
+    int removeBankUser(String[] numberArr);
+
+    /**
+     * 根据移动电话查询当前电话是否已存在
+     * @param mobile 移动电话
+     * @return BankUsers
+     */
+    BankUsers getUserByMobile(String mobile);
 }

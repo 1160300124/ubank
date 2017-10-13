@@ -205,4 +205,74 @@ public interface BanksRootDao {
      * @return BranchsChildren
      */
     List<BranchsChildren> queryBankUsers(Map<String, Object> map);
+
+    /**
+     * 根据银行编号获取总行
+     * @param bankNo 银行编号
+     * @return Headquarters
+     */
+    List<Headquarters> getHeadquarters(int bankNo);
+
+    /**
+     * 根据总行编号获取支行
+     * @param bankNo 银行编号
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> getBranchsChild(int bankNo);
+
+    /**
+     * 根据分行编号获取分行
+     * @param bankNo 银行编号
+     * @return Branch
+     */
+    List<Branch> getBranchs(int bankNo);
+
+    /**
+     * 根据银行编号获取支行
+     * @param bankNo 银行编号
+     * @return BranchsChildren
+     */
+    List<BranchsChildren> getBranchChildByID(int bankNo);
+
+    /**
+     * 根据银行类型获取角色
+     * @param map
+     * @return BankRoles
+     */
+    List<BankRoles> getRoleByType(Map<String, Object> map);
+
+    /**
+     * 根据名称查询当前用户是否已存在
+     * @param name 名称
+     * @return BankUsers
+     */
+    BankUsers getUserByName(String name);
+
+    /**
+     * 新增银行用户
+     * @param bankUsers 银行用户信息
+     * @return ResultInfo
+     */
+    int insertBankUser(BankUsers bankUsers);
+
+    /**
+     * 修改银行用户
+     * @param bankUsers 银行用户信息
+     * @return int
+     */
+    int modifyBankUser(BankUsers bankUsers);
+
+    /**
+     * 删除银行员工
+     * @param number 员工ID
+     * @return ResultInfo
+     */
+    int removeBankUser(int[] number);
+
+    /**
+     * 根据移动电话查询当前电话是否已存在
+     * @param mobile 移动电话
+     * @return BankUsers
+     */
+    BankUsers getUserByMobile(String mobile);
 }

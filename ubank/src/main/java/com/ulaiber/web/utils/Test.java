@@ -194,6 +194,7 @@ public class Test {
 	public void cancelapply(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("applyId","106");
+		map.put("type",4);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/cancelApply",map);
 		System.out.print(">>>>>>>>取消申请结果为："+result);
 	}
@@ -221,7 +222,7 @@ public class Test {
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
-		map.put("mark","1");
+		map.put("mark","0");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
@@ -390,9 +391,10 @@ public class Test {
 	public void md5(){
 //		String pwd = "601258";
 //		String password = MD5Util.getEncryptedPwd(pwd);
-		String userId = "359";
-		long ll = Long.valueOf(userId);
-		System.out.print(">>>>>>userID：" + ll);
+//		String userId = "359";
+//		long ll = Long.valueOf(userId);
+
+		System.out.print(">>>>>>userID：" + UUID.randomUUID());
 	}
 
 

@@ -15,6 +15,7 @@ public class Group implements Serializable {
     private String contactsTelephone;
     private String details;
     private String remark;
+    private long saleman;
 
     //get set
 
@@ -80,5 +81,13 @@ public class Group implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public long getSaleman() {
+        return saleman;
+    }
+
+    public void setSaleman(long saleman) {
+        this.saleman = saleman;
     }
 }

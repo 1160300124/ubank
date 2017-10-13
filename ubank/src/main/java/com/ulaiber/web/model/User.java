@@ -109,6 +109,12 @@ public class User implements Serializable {
 	//是否作废
 	private String disabled;
 
+	//入职时间
+	private String entryDate;
+
+	//离职时间
+	private String leaveDate;
+
 	public long getId() {
 		return id;
 	}
@@ -387,5 +393,21 @@ public class User implements Serializable {
 
 	public void setDisabled(String disabled) {
 		this.disabled = disabled;
+	}
+
+	public String getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(String entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	public String getLeaveDate() {
+		return leaveDate;
+	}
+
+	public void setLeaveDate(String leaveDate) {
+		this.leaveDate = leaveDate;
 	}
 }

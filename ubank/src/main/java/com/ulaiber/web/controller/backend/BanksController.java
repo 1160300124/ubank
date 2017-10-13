@@ -9,6 +9,7 @@ import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +109,17 @@ public class BanksController extends BaseController {
     @RequestMapping("bankUser")
     public String tobankUsers(HttpServletRequest request, HttpServletResponse response){
         return "banks/bankUsers";
+    }
+
+    /**
+     * 跳转银行用户页
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("expand")
+    public String toExpand(HttpServletRequest request, HttpServletResponse response){
+        return "banks/expand";
     }
 
 
@@ -547,7 +560,7 @@ public class BanksController extends BaseController {
     @RequestMapping(value = "queryBankUsers", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> queryBankUsers(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
-                                             @Param("type") String type,@Param("bankNo") int bankNo){
+                                             @Param("type") String type,@Param("bankNo") int bankNo,@Param("name") String name,@Param("mobile") String mobile){
         if(pageSize <= 0){
             pageSize = 10;
         }
@@ -562,10 +575,268 @@ public class BanksController extends BaseController {
             map.put("rows","");
             return map;
         }
-        List<BranchsChildren> list = banksRootService.queryBankUsers(search,pageSize,pageNum,type,bankNo);
+        List<BranchsChildren> list = banksRootService.queryBankUsers(search,pageSize,pageNum,type,bankNo,name,mobile);
         map.put("total",totalCount);
         map.put("rows",list);
         return map;
+    }
+
+    /**
+     * 获取银行树节点
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @param bankNo 银行编号
+     * @return Map
+     */
+    @RequestMapping(value = "bankTrees", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String,Object>> bankTree(@Param("type") String type,@Param("bankNo") int bankNo ){
+        List<Headquarters> h_list = new ArrayList<>();
+        List<Branch> b_list = new ArrayList<>();
+        List<BranchsChildren> c_list = new ArrayList<>();
+        List<Map<String,Object>> headList = new ArrayList<>();
+        List<Map<String,Object>> branList = new ArrayList<>();
+        List<Map<String,Object>> resultList = new ArrayList<>();
+        if(type.equals("0") ){ //总行管理员
+            //根据银行编号获取总行
+            h_list = banksRootService.getHeadquarters(bankNo);
+            //根据总行编号获取分行
+            b_list = banksRootService.getAllBranchs(bankNo);
+            //根据银行编号获取支行
+            c_list = banksRootService.getBranchChild(bankNo);
+            //循环取出总行
+            for (int i = 0;i < h_list.size(); i++){
+                Map<String,Object> h_map = new HashMap<>();
+                Headquarters head =  h_list.get(i);
+                h_map.put("id",head.getId());
+                h_map.put("name",head.getBankName());
+                h_map.put("type","0");
+                h_map.put("children",headList);
+                h_map.put("isParent", true);
+                h_map.put("open", true);
+                resultList.add(h_map);
+            }
+            //循环取出分行
+            if(b_list.size() > 0){
+                for (int j = 0 ; j < b_list.size(); j++){
+                    Map<String,Object> b_map = new HashMap<>();
+                    Branch bra = b_list.get(j);
+                    for (int i = 0;i < h_list.size(); i++){
+                        Headquarters head =  h_list.get(i);
+                        if(bra.getHeadquartersNo() == head.getId()){
+                            b_map.put("id",bra.getId());
+                            b_map.put("name",bra.getName());
+                            b_map.put("type","1");
+                            b_map.put("children",branList);
+                            b_map.put("open",true);
+                            headList.add(b_map);
+                        }
+                    }
+
+                }
+            }
+            //循环取出支行
+            if(c_list.size() > 0){
+                //两种情况：一，支行属于总行；二，支行属于分行
+                //如果当前支行属于分行
+                for (int j = 0 ; j < c_list.size(); j++){
+                    Map<String,Object> c_map = new HashMap<>();
+                    BranchsChildren chil = c_list.get(j);
+                    for (int t = 0 ; t < b_list.size(); t++){
+                        Branch bra = b_list.get(t);
+                        if(chil.getBankNo() == bra.getId()){
+                            c_map.put("id",chil.getId());
+                            c_map.put("name",chil.getName());
+                            c_map.put("type","2");
+                            branList.add(c_map);
+                        }
+                    }
+
+                }
+                //如果当前支行属于总行
+                for (int k = 0 ; k < c_list.size(); k++){
+                    Map<String,Object> cc_map = new HashMap<>();
+                    BranchsChildren child = c_list.get(k);
+                    for (int i = 0;i < h_list.size(); i++){
+                        Headquarters head =  h_list.get(i);
+                        if(child.getBankNo() == head.getId()){
+                            cc_map.put("id",child.getId());
+                            cc_map.put("name",child.getName());
+                            cc_map.put("type","2");
+                            headList.add(cc_map);
+                        }
+                    }
+
+                }
+            }
+
+        }else if(type.equals("1")){ //分行管理员
+            //根据分行编号获取分行
+            b_list = banksRootService.getBranchs(bankNo);
+            //根据银行编号获取支行
+            c_list = banksRootService.getBranchChild(bankNo);
+            //循环取出分行
+            for (int j = 0 ; j < b_list.size(); j++){
+                Map<String,Object> b_map = new HashMap<>();
+                Branch bra = b_list.get(j);
+                b_map.put("id",bra.getId());
+                b_map.put("name",bra.getName());
+                b_map.put("type","1");
+                b_map.put("children",branList);
+                b_map.put("isParent", true);
+                b_map.put("open",true);
+                headList.add(b_map);
+            }
+
+            //循环取出支行
+            if(c_list.size() > 0){
+                //如果当前支行属于分行
+                for (int j = 0 ; j < c_list.size(); j++){
+                    Map<String,Object> c_map = new HashMap<>();
+                    BranchsChildren chil = c_list.get(j);
+                    for (int t = 0 ; t < b_list.size(); t++){
+                        Branch bra = b_list.get(t);
+                        if(chil.getBankNo() == bra.getId()){
+                            c_map.put("id",chil.getId());
+                            c_map.put("name",chil.getName());
+                            c_map.put("type","2");
+                            branList.add(c_map);
+                        }
+                    }
+
+                }
+            }
+
+        }else if(type.equals("2")){ //支行管理员
+            //根据银行编号获取支行
+            c_list = banksRootService.getBranchChildByID(bankNo);
+            for (int j = 0 ; j < c_list.size(); j++){
+                Map<String,Object> c_map = new HashMap<>();
+                BranchsChildren chil = c_list.get(j);
+                c_map.put("id",chil.getId());
+                c_map.put("name",chil.getName());
+                c_map.put("type","2");
+                c_map.put("isParent", true);
+                c_map.put("open",true);
+                branList.add(c_map);
+            }
+        }
+
+        return resultList;
+    }
+
+
+    /**
+     * 根据银行类型获取角色
+     * @param id 银行编号
+     * @param type 标识。所属部门是总行？分行？支行？
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getRoleByType", method = RequestMethod.POST)
+    @ResponseBody
+    public List<BankRoles> getBankRoles(@Param("id") int id , @Param("type") String type){
+        List<BankRoles> list = banksRootService.getRoleByType(id,type);
+        return list;
+    }
+
+    /**
+     * 新增银行用户
+     * @param bankUsers 银行用户信息
+     * @param flag 标识。0 新增，1 修改
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "saveBankUser", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo saveBankUser(BankUsers bankUsers,@Param("flag") int flag){
+        ResultInfo resultInfo = new ResultInfo();
+        String bankName = bankUsers.getBankName();
+        try {
+            bankName = new String(bankName.getBytes("ISO-8859-1"),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        bankUsers.setBankName(bankName);
+        if(flag == 0){
+            String name = bankUsers.getName();
+            //根据名称查询当前用户是否已存在
+            BankUsers user = banksRootService.getUserByName(name);
+            if(!StringUtil.isEmpty(user)){
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                resultInfo.setMessage("该员工已存在");
+                return resultInfo;
+            }
+            //根据移动电话查询当前电话是否已存在
+            BankUsers us = banksRootService.getUserByMobile(bankUsers.getMobile());
+            if(!StringUtil.isEmpty(us)){
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                resultInfo.setMessage("该移动电话已存在");
+                return resultInfo;
+            }
+            //生成6位数的密码
+            String password = MD5Util.getEncryptedPwd(bankUsers.getPassword());
+            bankUsers.setPassword(password);
+            int result = banksRootService.insertBankUser(bankUsers);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("新增失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("新增成功");
+        }else{
+            int result = banksRootService.modifyBankUser(bankUsers);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("修改失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("修改成功");
+        }
+
+        return resultInfo;
+
+    }
+
+    /**
+     * 删除银行员工
+     * @param numbers 员工ID
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "removeBankUser", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo removeBankUser(@Param("numbers") String numbers){
+        ResultInfo resultInfo = new ResultInfo();
+        String[] numberArr = numbers.split(",");
+        //根据业务员ID，查询是否存在业务（创建过集团）
+//        List<Group> list = banksRootService.queryGroupBySalemanId(numberArr);
+//        if(list.size() > 0){
+//            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+//            resultInfo.setMessage("该业务员存在业务");
+//            return resultInfo;
+//        }
+        int result = banksRootService.removeBankUser(numberArr);
+        if(result > 0){
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("删除成功");
+        }else{
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("删除失败");
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 保存业务
+     * @param business 业务信息
+     * @param flag 标识。0 新增，1 修改
+     * @param password 管理人登录初始化密码
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "removeBankUser", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo saveBusiness(Business business,@Param("flag") int flag,@Param("password") String password){
+
+        return null;
     }
 
 }

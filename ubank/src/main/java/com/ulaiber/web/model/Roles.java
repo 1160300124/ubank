@@ -10,6 +10,7 @@ public class Roles {
     private String companyNumber;
     private String companyName;
     private String groupNumber;
+    private int type;
 
     //get set
     public int getRole_id() {
@@ -50,5 +51,13 @@ public class Roles {
 
     public void setGroupNumber(String groupNumber) {
         this.groupNumber = groupNumber;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

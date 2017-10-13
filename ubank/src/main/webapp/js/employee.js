@@ -1,5 +1,27 @@
 //arr function
 $(function () {
+    $('#entryDate').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        pickDate: true,
+        pickTime: true,
+        autoclose: 1,
+        todayBtn:  1,
+        todayHighlight: 1,
+        minView: "month"
+    });
+
+    $('#leaveDate').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        pickDate: true,
+        pickTime: true,
+        autoclose: 1,
+        todayBtn:  1,
+        todayHighlight: 1,
+        minView: "month"
+    });
+
     EmployeeFun.emp_getAllGroup();
    // EmployeeFun.emp_getCompany();
     //EmployeeFun.emp_getDept();
@@ -50,6 +72,8 @@ var EmployeeFun = {
                 {field : 'role_id', title : '角色id', width: 60, align : 'left',visible : false},
                 {field : 'dept_name', title : '部门名称', width: 60, align : 'left',visible : false},
                 {field : 'com_name', title : '公司名称', width: 60, align : 'left',visible : false},
+                {field : 'entryDate', title : '入职时间', width: 60, align : 'left',visible : false},
+                {field : 'leaveDate', title : '离职时间', width: 60, align : 'left',visible : false},
                 {field : 'bankNo', title : '银行编号', width: 130, align : 'left',visible : false}
 
             ]
@@ -226,14 +250,14 @@ var EmployeeFun = {
         var bank = $("#emp_select_bank").val();
         var role = $("#emp_select_role").val();
         var group = $("#emp_select_group").val();
-        // if(com == ""){
-        //     Ewin.alert("公司不能为空");
-        //     return;
-        // }
-        // if(dept == ""){
-        //     Ewin.alert("部门不能为空");
-        //     return;
-        // }
+        if(com == ""){
+            Ewin.alert("公司不能为空");
+            return;
+        }
+        if(dept == ""){
+            Ewin.alert("部门不能为空");
+            return;
+        }
         if(bank == ""){
             Ewin.alert("银行不能为空");
             return;
@@ -318,11 +342,11 @@ var EmployeeFun = {
         $("input[name=cardNo]").val(row[0].cardNo);
         $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
         $("#emp_select").find("option[value="+row[0].companyNumber+"]").prop("selected","selected");
-        // $("#emp_select_dept").html("<option value='" + row[0].dept_number + "'>"+row[0].dept_name+"</option>");
-        //  $("#emp_select").html("<option value='" + row[0].companyNumber + "'>"+(row[0].com_name != undefined ? row[0].com_name : '')+"</option>");
         $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
         $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").prop("selected","selected");
         $("#emp_select_role").find("option[value="+row[0].role_id+"]").prop("selected","selected");
+        $('#entryDate').datetimepicker('setStartDate', row[0].entryDate);
+        $('#leaveDate').datetimepicker('setEndDate', row[0].leaveDate);
         $("#employee_modal").modal("show");
 
     },

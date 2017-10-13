@@ -41,8 +41,8 @@
    </resultMap>
   
 	<insert id="save" parameterType="User"  useGeneratedKeys="true" keyProperty="id">
-		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime,disabled)
-		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime},'0')
+		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime,entryDate,disabled)
+		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime},#{createTime},'0')
 	</insert>
 	
 	<update id="update" parameterType="User">

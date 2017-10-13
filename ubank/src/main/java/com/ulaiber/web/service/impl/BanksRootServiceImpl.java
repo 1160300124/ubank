@@ -1,10 +1,7 @@
 package com.ulaiber.web.service.impl;
 
 import com.ulaiber.web.dao.BanksRootDao;
-import com.ulaiber.web.model.Branch;
-import com.ulaiber.web.model.BranchsChildren;
-import com.ulaiber.web.model.Headquarters;
-import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BanksRootService;
 import com.ulaiber.web.service.BaseService;
 import org.apache.commons.collections.map.HashedMap;
@@ -250,14 +247,76 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
     }
 
     @Override
-    public List<BranchsChildren> queryBankUsers(String search, int pageSize, int pageNum, String type, int bankNo) {
+    public List<BranchsChildren> queryBankUsers(String search, int pageSize, int pageNum, String type, int bankNo,String name,String mobile) {
         Map<String,Object> map = new HashMap<>();
         map.put("search",search);
         map.put("pageSize",pageSize);
         map.put("pageNum",pageNum);
         map.put("type",type);
         map.put("bankNo",bankNo);
+        map.put("name",name);
+        map.put("mobile",mobile);
         return banksRootDao.queryBankUsers(map);
+    }
+
+    @Override
+    public List<Headquarters> getHeadquarters(int bankNo) {
+        return banksRootDao.getHeadquarters(bankNo);
+    }
+
+    @Override
+    public List<BranchsChildren> getBranchChild(int bankNo) {
+        return banksRootDao.getBranchsChild(bankNo);
+    }
+
+    @Override
+    public List<Branch> getBranchs(int bankNo) {
+        return banksRootDao.getBranchs(bankNo);
+    }
+
+    @Override
+    public List<BranchsChildren> getBranchChildByID(int bankNo) {
+        return banksRootDao.getBranchChildByID(bankNo);
+    }
+
+    @Override
+    public List<BankRoles> getRoleByType(int id, String type) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("type",type );
+        return banksRootDao.getRoleByType(map);
+    }
+
+    @Override
+    public BankUsers getUserByName(String name) {
+        return banksRootDao.getUserByName(name);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int insertBankUser(BankUsers bankUsers) {
+        return banksRootDao.insertBankUser(bankUsers);
+
+    }
+
+    @Override
+    public int modifyBankUser(BankUsers bankUsers) {
+        return banksRootDao.modifyBankUser(bankUsers);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int removeBankUser(String[] numberArr) {
+        int[] number = new int[numberArr.length];
+        for (int i = 0 ; i < numberArr.length ; i++){
+            number[i] = Integer.parseInt(numberArr[i]);
+        }
+        return banksRootDao.removeBankUser(number);
+    }
+
+    @Override
+    public BankUsers getUserByMobile(String mobile) {
+        return banksRootDao.getUserByMobile(mobile);
     }
 
 
