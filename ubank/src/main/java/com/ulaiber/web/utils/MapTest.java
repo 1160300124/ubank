@@ -79,12 +79,12 @@ public class MapTest {
         
 //      String apiUrl2 = "http://localhost:8080/ubank/api/v1/patchClock";
 //      Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
-//      params2.put("mobile", "15919477086");
-//      params2.put("patchClockDate", "2017-09-13");
-//      params2.put("patchClockType", 1);
-//      params2.put("patchClockStatus", "0");
-//      params2.put("patchClockOnTime", "2017-09-13 09:00");
-//      params2.put("patchClockOffTime", "2017-09-13 19:10");
+//      params2.put("userId", 336);
+//      params2.put("patchClockDate", "2017-09-29");
+//      params2.put("patchClockType", 0);
+//      params2.put("patchClockStatus", "1");
+//      params2.put("patchClockOnTime", "2017-09-29 09:00");
+//      params2.put("patchClockOffTime", "2017-09-29 19:10");
 //      String response2 = HttpsUtil.doPost(apiUrl2, params2);
 //      System.out.println(response2);
         
