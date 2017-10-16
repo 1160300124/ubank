@@ -197,9 +197,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
 				return info;
 			}
-			if (datetime.compareTo(clockOnTime) < 0){
+			if (datetime.compareTo(today + " " + rule.getClockOnTime()) < 0){
 				logger.error("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
-				info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
+				info.setCode(IConstants.QT_CANNOT_CLOCK_OFF_BEFORE_CLOCK_ON);
 				info.setMessage("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
 				return info;
 			}
