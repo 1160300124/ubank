@@ -104,7 +104,11 @@ public class PermissionController extends BaseController {
 
     /**
      * 分页查询集团
-     * @param
+     * @param search
+     * @param pageSize
+     * @param pageNum
+     * @param sysflag
+     * @param groupNumber
      * @return
      */
     @RequestMapping(value = "groupQuery", method = RequestMethod.POST)
@@ -441,9 +445,16 @@ public class PermissionController extends BaseController {
             //根据员工姓名查询对应的信息
             User emp = permissionService.getEmpByName(userName,mobile);
             if(!StringUtil.isEmpty(emp)){
-                resultInfo.setMessage("员工已存在，请重新添加");
-                resultInfo.setCode(300);
-                return resultInfo;
+                if(emp.getMobile().equals(user.getMobile())){
+                    resultInfo.setMessage("电话号码已存在，请重新输入");
+                    resultInfo.setCode(300);
+                    return resultInfo;
+                }else if (emp.getUserName().equals(user.getUserName())){
+                    resultInfo.setMessage("已存在，请重新输入");
+                    resultInfo.setCode(300);
+                    return resultInfo;
+                }
+
             }
             String password = MD5Util.getEncryptedPwd(pwd);
             user.setLogin_password(password);
@@ -666,12 +677,12 @@ public class PermissionController extends BaseController {
         ResultInfo resultInfo = new ResultInfo();
         if(flag.equals("0")){  //新增
             //根据角色名，获取角色信息
-            List<Roles> list = permissionService.getRoleByName(roleName);
-            if(list.size() >0){
-                resultInfo.setMessage("该角色已存在，请重新选择");
-                resultInfo.setCode(300);
-                return resultInfo;
-            }
+//            List<Roles> list = permissionService.getRoleByName(roleName);
+//            if(list.size() >0){
+//                resultInfo.setMessage("该角色已存在，请重新选择");
+//                resultInfo.setCode(300);
+//                return resultInfo;
+//            }
             //新增角色信息
             int role = permissionService.addRole(com_numbers,roleName,names);
             if(role > 0){

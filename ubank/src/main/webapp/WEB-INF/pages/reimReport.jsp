@@ -115,6 +115,15 @@
 
     });
 
+    var groupNum = $("#reim_group").val();
+    var companyNum = $("#reim_company").val();
+    var deptNum = $("#reim_dept").val();
+    var username = $("input[name=username]").val();
+    var startDate = $("input[name=startDate]").val();
+    var endDate = $("input[name=endDate]").val();
+    var reim_status = $("#reim_status").val();
+    var reim_result = $("#reim_result").val();
+
     var ReimFun = {
         //加载请假申请数据
         loadReimData : function () {
@@ -192,14 +201,7 @@
         },
         //查询参数
         queryParams : function (params) {
-            var groupNum = $("#reim_group").val();
-            var companyNum = $("#reim_company").val();
-            var deptNum = $("#reim_dept").val();
-            var username = $("input[name=username]").val();
-            var startDate = $("input[name=startDate]").val();
-            var endDate = $("input[name=endDate]").val();
-            var reim_status = $("#reim_status").val();
-            var reim_result = $("#reim_result").val();
+
             var paramData = {
                 pageSize : params.limit,
                 pageNum : params.offset,
@@ -282,7 +284,12 @@
         });
         header = header.substr(1,(header.length-1));
         //调用post函数
-        post('exportExcel',{fileName : fileName,header : header,json : json});
+//        post('exportExcel',{fileName : fileName,header : header,json : json,sysflag : SYSFLAG,groupNum : groupNum,groupNumber : GROUPNUMBER,
+//            companyNumber : COMPANYNUMBER, companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate,endDate : endDate,
+//            status : leave_status,result : leave_result});
+        post('reimExportExcel',{fileName : fileName,header : header,json : json,sysflag : SYSFLAG,groupNum : groupNum,groupNumber : GROUPNUMBER,
+            companyNumber : COMPANYNUMBER,companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate,endDate : endDate,
+            status : reim_status,result : reim_result});
     }
 
     function post(url, params) {

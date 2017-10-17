@@ -94,4 +94,38 @@ public class ReportServiceImpl extends BaseService implements ReportService {
     public List<Reimbursement> getReimDetailsById(int id) {
         return reportDao.getReimDetailsById(id);
     }
+
+    @Override
+    public List<LeaveReturnVO> reportQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber, String[] comArr) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("sysflag" , sysflag);
+        map.put("groupNumber" , groupNumber);
+        map.put("companyNumber" , comArr);
+        map.put("companyNum" , leaveReportVO.getCompanyNum());
+        map.put("deptNum" , leaveReportVO.getDeptNum());
+        map.put("startDate" , leaveReportVO.getStartDate());
+        map.put("endDate" , leaveReportVO.getEndDate());
+        map.put("groupNum" , leaveReportVO.getGroupNum());
+        map.put("result" , leaveReportVO.getResult());
+        map.put("username" , leaveReportVO.getUsername());
+        map.put("status" , leaveReportVO.getStatus());
+        return reportDao.reportQuery(map);
+    }
+
+    @Override
+    public List<ReimReportVO> reimReportQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber, String[] comArr) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("sysflag" , sysflag);
+        map.put("groupNumber" , groupNumber);
+        map.put("companyNumber" , comArr);
+        map.put("companyNum" , leaveReportVO.getCompanyNum());
+        map.put("deptNum" , leaveReportVO.getDeptNum());
+        map.put("startDate" , leaveReportVO.getStartDate());
+        map.put("endDate" , leaveReportVO.getEndDate());
+        map.put("groupNum" , leaveReportVO.getGroupNum());
+        map.put("result" , leaveReportVO.getResult());
+        map.put("username" , leaveReportVO.getUsername());
+        map.put("status" , leaveReportVO.getStatus());
+        return reportDao.reimReportQuery(map);
+    }
 }

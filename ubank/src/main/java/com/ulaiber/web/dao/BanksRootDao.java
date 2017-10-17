@@ -275,4 +275,68 @@ public interface BanksRootDao {
      * @return BankUsers
      */
     BankUsers getUserByMobile(String mobile);
+
+
+    /**
+     * 新增集团
+     * @param group 集团信息
+     * @return int
+     */
+    int insertGroup(Group group);
+
+    /**
+     * 新增公司
+     * @param company 公司信息
+     * @return int
+     */
+    int insertCompany(Company company);
+
+    /**
+     * 新增角色信息
+     * @param roles 角色信息
+     * @return int
+     */
+    int insertRole(Roles roles);
+
+    /**
+     * 新增用户
+     * @param user 用户信息
+     * @return int
+     */
+    int insertEmployee(User user);
+
+    /**
+     * 新增业务信息
+     * @param business 业务信息
+     * @return int
+     */
+    int insertBusiness(Business business);
+
+    /**
+     * 新增权限层级关系
+     * @param user 用户信息
+     * @return int
+     */
+    int insertPermission(User user);
+
+    /**
+     * 新增角色权限菜单
+     * @param list 菜单ID
+     * @return int
+     */
+    int insertRoleMenu(List<Map<String, Object>> list);
+
+    /**
+     * 获取业务数量
+     * @param map
+     * @return int
+     */
+    int getBusinessCount(Map<String, Object> map);
+
+    /**
+     * 业务查询
+     * @param map
+     * @return Business
+     */
+    List<Business> queryBusiness(Map<String, Object> map);
 }

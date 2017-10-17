@@ -61,6 +61,8 @@ public interface PermissionDao {
     List<Departments> queryAllDept(Map<String, Object> map); //根据当前角色所属公司编号，查询对应的部门
 
     List<Departments> getDeptEmpCount();  //获取各个部门员工人数
+
+    int insertRole(Roles roles); //新增角色信息
 }
 
 

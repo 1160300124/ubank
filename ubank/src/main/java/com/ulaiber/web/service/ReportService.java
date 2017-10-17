@@ -26,4 +26,24 @@ public interface ReportService {
     List<Reimbursement> getReimRecordById(int[] ids); //根据申请记录ID，获取报销详情
 
     List<Reimbursement> getReimDetailsById(int id);   //根据申请记录ID获取报销记录
+
+    /**
+     * 导出报表查询
+     * @param leaveReportVO 查询参数
+     * @param sysflag 用户标识
+     * @param groupNumber 集团编号
+     * @param comArr 公司编号
+     * @return LeaveReturnVO
+     */
+    List<LeaveReturnVO> reportQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber, String[] comArr);
+
+    /**
+     * 报销记录查询
+     * @param leaveReportVO 查询参数
+     * @param sysflag 用户标识
+     * @param groupNumber 集团编号
+     * @param comArr 公司编号
+     * @return
+     */
+    List<ReimReportVO> reimReportQuery(LeaveReportVO leaveReportVO, String sysflag, String groupNumber, String[] comArr);
 }

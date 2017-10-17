@@ -95,6 +95,7 @@
     //初始化数据
     $(function () {
         GroupFun.groupQuery();
+        GroupFun.listening();
     });
     var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
@@ -106,6 +107,13 @@
             $(".modal-title").html("新增");
             $("#group_add_modal").modal("show");
 
+        },
+        //弹出框关闭监听事件
+        listening : function () {
+            $("#group_add_modal").on('hide.bs.modal',function () {
+                $('#group_table').bootstrapTable('uncheckAll');
+                $("#group_form")[0].reset();
+            });
         },
         //新增操作
         groupSave : function () {

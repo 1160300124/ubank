@@ -4,15 +4,14 @@ import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BanksRootService;
+import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,11 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 银行权限Controller
@@ -39,11 +35,15 @@ public class BanksController extends BaseController {
 
     public static final Logger logger = Logger.getLogger(BanksController.class);
 
+
     @Resource
     private UserService userService;
 
     @Resource
     private BanksRootService banksRootService;
+
+    @Resource
+    private PermissionService permissionService;
 
     /**
      * 跳转银行后台系统首页
@@ -780,7 +780,7 @@ public class BanksController extends BaseController {
                 resultInfo.setMessage("新增失败");
                 return resultInfo;
             }
-            resultInfo.setCode(IConstants.QT_CODE_OK);
+             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("新增成功");
         }else{
             int result = banksRootService.modifyBankUser(bankUsers);
@@ -826,17 +826,83 @@ public class BanksController extends BaseController {
     }
 
     /**
-     * 保存业务
+     * 新增业务信息
      * @param business 业务信息
      * @param flag 标识。0 新增，1 修改
      * @param password 管理人登录初始化密码
      * @return ResultInfo
      */
-    @RequestMapping(value = "removeBankUser", method = RequestMethod.POST)
+    @RequestMapping(value = "saveBusiness", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo saveBusiness(Business business,@Param("flag") int flag,@Param("password") String password){
+        ResultInfo resultInfo = new ResultInfo();
+        //查询集团是否已创建
+        Group gro = permissionService.searchGroupByName(business.getGroupName().trim());
+        if(!StringUtil.isEmpty(gro)){
+            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+            resultInfo.setMessage("该集团已存在");
+            return resultInfo;
+        }
+        //查询公司是否已创建
+        Company co = permissionService.getComByName(business.getCompanyName().trim());
+        if(!StringUtil.isEmpty(co)){
+            resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+            resultInfo.setMessage("该公司已存在");
+            return resultInfo;
+        }
+        User emp = permissionService.getEmpByName(business.getUserName().trim(),business.getMobile());
+        if(!StringUtil.isEmpty(emp)){
+            if(emp.getMobile().equals(business.getMobile())){
+                resultInfo.setMessage("电话号码已存在，请重新输入");
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                return resultInfo;
+            }else if (emp.getUserName().trim().equals(business.getUserName().trim())){
+                resultInfo.setMessage("用户已存在，请重新输入");
+                resultInfo.setCode(IConstants.QT_ALREADY_EXISTS);
+                return resultInfo;
+            }
+        }
+        //新增业务信息
+        ResultInfo result = banksRootService.insertBusinessInfo(business,password);
+        return result;
+    }
 
-        return null;
+    /**
+     * 业务查询
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type  标识。所属部门是总行？分行？支行？
+     * @param bankNo 银行编号
+     * @param roleType 角色类型。0 总部管理员，1 分部管理员，2 支部管理员，3业务员
+     * @param heaquarters 总行
+     * @param branch 分行
+     * @param child 支行
+     * @param name 业务员名称
+     * @param groupName 集团名称
+     * @return Map
+     */
+    @RequestMapping(value = "queryBusiness", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> queryBusiness(int pageSize, int pageNum, String type, int bankNo,int roleType
+            ,String heaquarters,String branch,String child,String name,String groupName,int number){
+        if(pageSize <= 0){
+            pageSize = 10;
+        }
+        if (pageNum < 0){
+            pageNum = 0;
+        }
+        Map<String,Object> map = new HashMap<String,Object>();
+        //获取业务数量
+        int totalCount = banksRootService.getBusinessCount(type,roleType,bankNo,number);
+        if(totalCount <= 0){
+            map.put("total",totalCount);
+            map.put("rows","");
+            return map;
+        }
+        List<Business> list = banksRootService.queryBusiness(pageSize,pageNum,type,bankNo,roleType,heaquarters,branch,child,name,groupName,number);
+        map.put("total",totalCount);
+        map.put("rows",list);
+        return map;
     }
 
 }

@@ -27,4 +27,18 @@ public interface ReportDao {
     List<Reimbursement> getReimRecordById(int[] ids); //根据申请记录ID，获取报销详情
 
     List<Reimbursement> getReimDetailsById(int id);  //根据申请记录ID获取报销记录
+
+    /**
+     * 导出请假报表查询
+     * @param map
+     * @return LeaveReturnVO
+     */
+    List<LeaveReturnVO> reportQuery(Map<String, Object> map);
+
+    /**
+     * 导出报销报表查询
+     * @param map
+     * @return ReimReportVO
+     */
+    List<ReimReportVO> reimReportQuery(Map<String, Object> map);
 }

@@ -62,7 +62,7 @@
                     <span class="fa icon-search" aria-hidden="true"></span>查询
                 </button>
                 <button onclick="exportExcel()" type="button" class="btn btn-default">
-                    <span class="fa icon-cloud-download" aria-hidden="true"></span>导出
+                    <span class="fa icon-cloud-download" aria-hidden="true"></span>导出全部
                 </button>
             </div>
         </form>
@@ -102,6 +102,15 @@
         LeaveFun.loadLeaveData();
 
     });
+
+    var groupNum = $("#leave_group").val();
+    var companyNum = $("#leave_company").val();
+    var deptNum = $("#leave_dept").val();
+    var username = $("input[name=username]").val();
+    var startDate = $("input[name=startDate]").val();
+    var endDate = $("input[name=endDate]").val();
+    var leave_status = $("#leave_status").val();
+    var leave_result = $("#leave_result").val();
 
     var LeaveFun = {
         //加载请假申请数据
@@ -170,14 +179,6 @@
         },
         //查询参数
         queryParams : function (params) {
-            var groupNum = $("#leave_group").val();
-            var companyNum = $("#leave_company").val();
-            var deptNum = $("#leave_dept").val();
-            var username = $("input[name=username]").val();
-            var startDate = $("input[name=startDate]").val();
-            var endDate = $("input[name=endDate]").val();
-            var leave_status = $("#leave_status").val();
-            var leave_result = $("#leave_result").val();
             var paramData = {
                 pageSize : params.limit,
                 pageNum : params.offset,
@@ -283,8 +284,8 @@
     function exportExcel() {
         var table = $('#leave_table').tableToJSON();
         var fileName = 'LeaveAndOvertimeReportExcel';
-        console.info(table);
-        var json = JSON.stringify(table);
+       // var json = JSON.stringify(table);
+        var json = "";
         var nodes = $("#leave_table thead tr").children().children('div .th-inner');
         var header = "";
         $.each(nodes,function (i,items) {
@@ -292,7 +293,10 @@
         });
         header = header.substr(1,(header.length-1));
         //调用post函数
-        post('exportExcel',{fileName : fileName,header : header,json : json});
+
+        post('exportExcel',{fileName : fileName,header : header,json : json,sysflag : SYSFLAG,groupNum : groupNum,groupNumber : GROUPNUMBER,
+            companyNumber : COMPANYNUMBER, companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate,endDate : endDate,
+            status : leave_status,result : leave_result});
     }
 
     function post(url, params) {

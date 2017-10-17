@@ -102,6 +102,86 @@
             </if>
     </select>
 
+    <!--导出报表查询-->
+    <select id="reportQuery" parameterType="Map" resultType="com.ulaiber.web.model.LeaveReturnVO">
+        select a.id,a.startDate,a.endDate,a.leaveTime,a.reason,a.auditor,a.status,d.name as company from tbl_leave_record a
+        left join tbl_roots b on a.userid = b.userid
+        left join tbl_group c on b.groupNumber = c.groupNumber
+        left join tbl_company d on b.companyNumber = d.companyNumber
+        left join tbl_departments e on e.dept_number = b.dept_number
+        left join tbl_users f on a.userid = f.user_id
+        where a.type = '0' or a.type = '1'
+        <!--当前用户没有根节点的情况下执行的语句-->
+        <if test= 'sysflag != "1"'>
+            <if test= 'groupNum != "" and groupNum != null'>
+                and c.groupNumber = #{groupNum}
+            </if>
+            <if test= 'companyNum != "" and companyNum != null'>
+                and d.companyNumber = #{companyNum}
+            </if>
+            <if test='dept_number != "" and dept_number != null'>
+                and e.dept_number = #{deptNum}
+            </if>
+            <if test= 'username != "" and username != null'>
+                and f.user_name like concat('%',#{username},'%')
+            </if>
+            <if test='startDate != "" and startDate != null'>
+                and a.startDate &gt;= #{startDate}
+            </if>
+            <if test='endDate != "" and endDate != null'>
+                and a.endDate $lt; #{endDate}
+            </if>
+            <if  test= 'status != "" and status != null'>
+                and a.status = #{status}
+            </if>
+            <if  test= 'result != "" and result != null'>
+                and a.status = #{result}
+            </if>
+            order by a.createDate DESC
+        </if>
+        <!--当前用户有根节点的情况下-->
+        <if test= 'sysflag != "0"'>
+            <choose>
+                <when test= 'groupNumber == "" and groupNumber == null'>
+                    and c.groupNumber = #{groupNumber}
+                </when>
+                <otherwise>
+                    and c.groupNumber = #{groupNum}
+                </otherwise>
+            </choose>
+            <choose>
+                <when test= 'companyNumber == "" and companyNumber == null'>
+                    and d.companyNumber in
+                    <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                        #{companyNumber}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and d.companyNumber = #{companyNum}
+                </otherwise>
+            </choose>
+            <if test='dept_number != "" and dept_number != null'>
+                and e.dept_number = #{deptNum}
+            </if>
+            <if test= 'username != "" and username != null'>
+                and  like concat('%',#{username},'%')
+            </if>
+            <if test='startDate != "" and startDate != null'>
+                and a.startDate &gt;= #{startDate}
+            </if>
+            <if test='endDate != "" and endDate != null'>
+                and a.endDate $lt; #{endDate}
+            </if>
+            <if  test= 'status != "" and status != null'>
+                and a.status = #{status}
+            </if>
+            <if  test= 'result != "" and result != null'>
+                and a.status = #{result}
+            </if>
+            order by a.createDate DESC
+        </if>
+    </select>
+
     <!--根据用户ID获取用户名-->
     <select id="getUserById" parameterType="String" resultType="Map">
           SELECT user_id,user_name FROM tbl_users where disabled = '0' and user_id in
@@ -216,4 +296,86 @@
     <select id="getReimDetailsById" parameterType="int" resultType="com.ulaiber.web.model.Reimbursement">
         SELECT * FROM  tbl_reimbursement where recordNo = #{id}
     </select>
+
+    <!--导出报销报表查询-->
+    <select id="reimReportQuery" parameterType="Map" resultType="com.ulaiber.web.model.ReimReportVO">
+        select a.id,a.createDate,c.user_name as username,d.name as company,e.name as dept,a.reason,a.status from tbl_leave_record a
+        left join tbl_roots b on a.userid = b.userid
+        left join tbl_users c on a.userid = c.user_id
+        left join tbl_company d on b.companyNumber = d.companyNumber
+        left join tbl_departments e on e.dept_number = b.dept_number
+        left join tbl_group f on b.groupNumber = f.groupNumber
+        where a.type = '2'
+        <!--当前用户没有根节点的情况下执行的语句-->
+        <if test= 'sysflag != "1"'>
+            <if test= 'groupNum != "" and groupNum != null'>
+                and f.groupNumber = #{groupNum}
+            </if>
+            <if test= 'companyNum != "" and companyNum != null'>
+                and d.companyNumber = #{companyNum}
+            </if>
+            <if test='dept_number != "" and dept_number != null'>
+                and e.dept_number = #{deptNum}
+            </if>
+            <if test= 'username != "" and username != null'>
+                and c.user_name like concat('%',#{username},'%')
+            </if>
+            <if test='startDate != "" and startDate != null'>
+                and a.createDate &gt;= #{startDate}
+            </if>
+            <if test='endDate != "" and endDate != null'>
+                and a.createDate $lt; #{endDate}
+            </if>
+            <if  test= 'status != "" and status != null'>
+                and a.status = #{status}
+            </if>
+            <if  test= 'result != "" and result != null'>
+                and a.status = #{result}
+            </if>
+            order by a.editDate DESC
+        </if>
+        <!--当前用户有根节点的情况下-->
+        <if test= 'sysflag != "0"'>
+            <choose>
+                <when test= 'groupNumber == "" and groupNumber == null'>
+                    and f.groupNumber = #{groupNumber}
+                </when>
+                <otherwise>
+                    and f.groupNumber = #{groupNum}
+                </otherwise>
+            </choose>
+            <choose>
+                <when test= 'companyNumber == "" and companyNumber == null'>
+                    and d.companyNumber in
+                    <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                        #{companyNumber}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and d.companyNumber = #{companyNum}
+                </otherwise>
+            </choose>
+            <if test='dept_number != "" and dept_number != null'>
+                and e.dept_number = #{deptNum}
+            </if>
+            <if test= 'username != "" and username != null'>
+                and c.user_name like concat('%',#{username},'%')
+            </if>
+            <if test='startDate != "" and startDate != null'>
+                and a.startDate &gt;= #{startDate}
+            </if>
+            <if test='endDate != "" and endDate != null'>
+                and a.endDate $lt; #{endDate}
+            </if>
+            <if  test= 'status != "" and status != null'>
+                and a.status = #{status}
+            </if>
+            <if  test= 'result != "" and result != null'>
+                and a.status = #{result}
+            </if>
+            order by a.editDate DESC
+        </if>
+    </select>
+
+
 </mapper>

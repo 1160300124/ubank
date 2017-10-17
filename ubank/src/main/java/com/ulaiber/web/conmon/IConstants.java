@@ -159,4 +159,8 @@ public class IConstants
 	//一小时的毫秒数
 	public static final long HOUR_MS = 60 * 60 * 1000;
 
+	//集团角色权限菜单ID
+	public static final String menuId = "101,101001,102,102001,102002,102003,103,103001,103002," +
+			"103003,102004,102005,103004,104,104001,104002,104003,104004,104005";
+
 }

@@ -19,6 +19,9 @@ var CompanyFun = {
         $("#company_modal").modal("show");
 
     },
+    reload : function () {
+        $('#company_table').bootstrapTable('refresh');
+    },
     //弹出框关闭监听事件
     com_listening : function () {
         $("#company_modal").on('hide.bs.modal',function () {
@@ -109,9 +112,11 @@ var CompanyFun = {
                 {field : 'groupName', title : '集团名称', width: 130, align : 'left'},
                 {field : 'account', title : '银行账户', width: 130, align : 'left',
                     formatter : function (value,row,index) {
-                        var arr = [];
-                        arr.push(value.split(","));
-                        return ""+arr[0].length+"";
+                        if(value != null && value != ""){
+                            var arr = [];
+                            arr.push(value.split(","));
+                            return ""+arr[0].length+"";
+                        }
                     }
                 },
                 {field : 'details', title : '详情', width: 130, align : 'left'},

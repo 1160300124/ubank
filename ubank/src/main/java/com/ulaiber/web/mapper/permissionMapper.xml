@@ -9,8 +9,9 @@
  -->
 <mapper namespace="com.ulaiber.web.dao.PermissionDao">
 
+
     <!--新增集团-->
-    <insert id="addGroup" parameterType="int" >
+    <insert id="addGroup" parameterType="int" useGeneratedKeys="true" keyProperty="groupNumber">
           insert into tbl_group(name,registeredCapital,legalPerson,contacts,contactsTelephone,details,remark)
               VALUES (#{name},#{registeredCapital},#{legalPerson},#{contacts},#{contactsTelephone},#{details},#{remark})
     </insert>
@@ -138,9 +139,12 @@
     <!--获取所有公司信息-->
     <select id="companyQuery" parameterType="Map" resultType="com.ulaiber.web.model.Company" >
         select a.name,a.account,a.companyNumber,a.details,a.group_num,a.legalPerson,b.name as groupName
-        from tbl_company a left join tbl_group b on a.group_num = b.groupNumber
+        from tbl_company a left join tbl_group b on a.group_num = b.groupNumber where 1=1
         <if test = 'sysflag == "1"'>
-            where a.group_num = #{groupNumber}
+            and a.group_num = #{groupNumber}
+        </if>
+        <if test="search != null and search != ''">
+            and a.name like concat('%',#{search},'%')
         </if>
         limit #{pageNum},#{pageSize}
     </select>
@@ -198,4 +202,10 @@
     <select id="getDeptEmpCount" resultType="com.ulaiber.web.model.Departments">
         select count(dept_number) as count,dept_number  from tbl_roots group by dept_number;
     </select>
+
+    <!--新增角色信息-->
+    <insert id="insertRole" parameterType="com.ulaiber.web.model.Roles" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tbl_roles(role_name,companyNumber,companyName,type)
+            VALUES (#{role_name},#{companyNumber},#{companyName},1)
+    </insert>
 </mapper>

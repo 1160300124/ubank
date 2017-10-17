@@ -127,4 +127,6 @@ public interface PermissionService {
     Map<String,Object> queryRoleById(String roleid);
 
     int updateRole(String roleid, String comNo, String name); //更新角色所属公司
+
+    int insertRole(Roles roles);  //新增角色信息
 }

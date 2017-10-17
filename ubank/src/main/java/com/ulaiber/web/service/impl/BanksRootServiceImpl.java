@@ -1,18 +1,20 @@
 package com.ulaiber.web.service.impl;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.BanksRootDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BanksRootService;
 import com.ulaiber.web.service.BaseService;
+import com.ulaiber.web.utils.MD5Util;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 银行权限接口实现类
@@ -20,6 +22,8 @@ import java.util.Map;
  */
 @Service
 public class BanksRootServiceImpl extends BaseService implements BanksRootService{
+
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Resource
     private BanksRootDao banksRootDao;
@@ -317,6 +321,127 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
     @Override
     public BankUsers getUserByMobile(String mobile) {
         return banksRootDao.getUserByMobile(mobile);
+    }
+
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public ResultInfo insertBusinessInfo(Business business, String password) {
+        ResultInfo resultInfo = new ResultInfo();
+        Group group = new Group();
+        group.setName(business.getGroupName().trim());
+        //新增集团
+        int result = banksRootDao.insertGroup(group);
+        if(result == 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("新增集团失败");
+            return resultInfo;
+        }
+        Company company = new Company();
+        company.setName(business.getCompanyName().trim());
+        company.setGroup_num(group.getGroupNumber());
+        //新增公司
+        int result2 = banksRootDao.insertCompany(company);
+        if(result2 == 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("新增公司失败");
+            return resultInfo;
+        }
+        Roles roles = new Roles();
+        roles.setCompanyNumber(String.valueOf(company.getCompanyNumber()));
+        roles.setRole_name("管理员");
+        roles.setCompanyName(business.getCompanyName().trim());
+        //新增角色信息
+        int result3 = banksRootDao.insertRole(roles);
+        if (result3 == 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("新增角色失败");
+            return resultInfo;
+        }
+
+        String date = sdf.format(new Date());
+        User user = new User();
+        String pwd= MD5Util.getEncryptedPwd(password);
+        user.setLogin_password(pwd);
+        user.setCreateTime(date);
+        user.setGroupNumber(String.valueOf(group.getGroupNumber()));
+        user.setCompanyNumber(String.valueOf(company.getCompanyNumber()));
+        user.setRole_id(roles.getRole_id());
+        user.setUserName(business.getUserName());
+        user.setMobile(business.getMobile());
+        //新增用户
+        int reuslt4 =  banksRootDao.insertEmployee(user);
+        if (reuslt4 == 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("新增用户失败");
+            return resultInfo;
+        }
+        business.setGroupNo(group.getGroupNumber());
+        business.setCompanyNo(company.getCompanyNumber());
+        business.setUserid(user.getId());
+        //新增业务信息
+        int result5 = banksRootDao.insertBusiness(business);
+        if(result5 == 0){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("新增业务失败");
+            return resultInfo;
+        }
+        //新增权限层级关系
+        int result6 = banksRootDao.insertPermission(user);
+        if(result6 <= 0){
+            resultInfo.setMessage("新增权限层级关系失败");
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            return resultInfo;
+        }
+        //新增角色权限菜单
+        String roleId = String.valueOf(roles.getRole_id());
+        List<Map<String,Object>> list = new ArrayList<>();
+        String[] arr = IConstants.menuId.split(",");
+        for (int i = 0 ; i <arr.length ; i++){
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+            paramMap.put("menuId" , arr[i]);
+            paramMap.put("roleId",roleId);
+            list.add(paramMap);
+        }
+        int result7 = banksRootDao.insertRoleMenu(list);
+        if(result7 ==0){
+            resultInfo.setMessage("新增角色权限菜单失败");
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            return resultInfo;
+        }
+        resultInfo.setMessage("新增业务成功");
+        resultInfo.setCode(IConstants.QT_CODE_OK);
+        return resultInfo;
+
+    }
+
+    @Override
+    public int getBusinessCount(String type, int roleType, int bankNo,int number) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",type);
+        map.put("roleType",roleType);
+        map.put("bankNo",bankNo);
+        map.put("number",number);
+        return banksRootDao.getBusinessCount(map);
+    }
+
+    @Override
+    public List<Business> queryBusiness(int pageSize, int pageNum, String type, int bankNo, int roleType,
+                                        String heaquarters, String branch, String child, String name, String groupName, int number) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("pageSize", pageSize);
+        map.put("pageNum", pageNum);
+        map.put("type", type);
+        map.put("bankNo", bankNo);
+        map.put("roleType", roleType);
+        map.put("heaquarters", heaquarters);
+        map.put("branch", branch);
+        map.put("child", child);
+        map.put("name", name);
+        map.put("groupName", groupName);
+        map.put("number", number);
+        return banksRootDao.queryBusiness(map);
     }
 
 

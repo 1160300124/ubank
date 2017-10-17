@@ -14,7 +14,7 @@
         <button onclick="CompanyFun.deleteCompany(window.event)" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="CompanyFun.companyQuery()" type="button" class="btn btn-default">
+        <button onclick="CompanyFun.reload()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>

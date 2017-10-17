@@ -100,10 +100,10 @@
 		where disabled = '0' and u.user_id = #{userId}
 	</select>
 
-	<!--获取系统所有菜单-->
+	<!--获取集团系统所有菜单-->
 	 <select id="getAllMenuByUser" resultType="com.ulaiber.web.model.Menu" parameterType="Map">
 		 select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
-		where 1=1
+		where type = 0
 		 <!--如果当前角色为运维人员，则显示所有菜单-->
 		<if test="sysflag != 0">
 			and a.code in( select b.menuNumber from tbl_users a  left join tbl_roleMenu b on a.role_id = b.role_id
@@ -112,10 +112,10 @@
 
 	 </select>
 
-	<!--获取系统所有菜单-->
+	<!--获取集团系统所有菜单-->
 	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" parameterType="Map">
 		select distinct a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
-			left join tbl_roleMenu b on a.code = b.menuNumber where 1=1
+			left join tbl_roleMenu b on a.code = b.menuNumber where  type = 0
 		<if test='sysflag == "1"'>
 			and b.role_id = #{roleid}
 		</if>

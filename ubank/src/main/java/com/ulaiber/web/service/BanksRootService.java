@@ -276,4 +276,38 @@ public interface BanksRootService {
      * @return BankUsers
      */
     BankUsers getUserByMobile(String mobile);
+
+    /**
+     * 新增业务信息
+     * @param business 业务信息
+     * @param password 集团管理员临时密码
+     * @return ResultInfo
+     */
+    ResultInfo insertBusinessInfo(Business business, String password);
+
+    /**
+     * 获取业务数量
+     * @param type  标识。所属部门是总行？分行？支行？
+     * @param bankNo 银行编号
+     * @param roleType 角色类型。0 总部管理员，1 分部管理员，2 支部管理员，3业务员
+     * @return int
+     */
+    int getBusinessCount(String type, int roleType, int bankNo,int number);
+
+    /**
+     * 业务查询
+     * @param pageSize 页大小
+     * @param pageNum 页码
+     * @param type  标识。所属部门是总行？分行？支行？
+     * @param bankNo 银行编号
+     * @param roleType 角色类型。0 总部管理员，1 分部管理员，2 支部管理员，3业务员
+     * @param heaquarters 总行
+     * @param branch 分行
+     * @param child 支行
+     * @param name 业务员名称
+     * @param groupName 集团名称
+     * @return Map
+     */
+    List<Business> queryBusiness(int pageSize, int pageNum, String type, int bankNo, int roleType,
+                                 String heaquarters, String branch, String child, String name, String groupName, int number);
 }

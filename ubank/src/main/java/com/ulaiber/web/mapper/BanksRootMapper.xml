@@ -11,7 +11,9 @@
 
     <!--银行用户登录-->
     <select id="bankUserLogin" parameterType="Map" resultType="com.ulaiber.web.model.BankUsers">
-        select a.* from tbl_bank_users a WHERE disabled = 0 and a.mobile = #{mobile}
+        select a.*,b.type as roleType from tbl_bank_users a
+          left join tbl_bank_roles b on a.roleid = b.id
+          WHERE a.disabled = 0 and a.mobile = #{mobile}
     </select>
 
     <!--根据角色名获取银行管理页-->
@@ -19,7 +21,7 @@
         SELECT a.id , a.NAME , a.url , a.CODE , a.father , a.icon , a.sorting
             FROM tbl_menu a WHERE  a.CODE IN( SELECT b.menuNumber FROM tbl_bank_users c
             LEFT JOIN tbl_roleMenu b ON c.roleid = b.role_id
-            WHERE c.disabled = 0 AND c.NAME = #{userName})
+            WHERE c.disabled = 0 and type = 1 AND c.NAME = #{userName})
     </select>
 
     <!--根据银行名称查询银行信息-->
@@ -51,7 +53,7 @@
     <update id="modifyHeadquarters" parameterType="com.ulaiber.web.model.Headquarters">
         UPDATE tbl_bank_headquarters SET bankName = #{bankName} ,remark = #{remark} WHERE id = #{id}
     </update>
-    
+
     <!--根据总行编号查询是否存在分部-->
     <select id="queryBranchByBankNo" parameterType="int" resultType="com.ulaiber.web.model.Branch">
         SELECT * FROM tbl_bank_branch where headquartersNo IN
@@ -246,7 +248,7 @@
             left join tbl_bank_roles b on a.roleid = b.id
             left join tbl_bank_branch c on a.bankNo = c.id
             left join tbl_bank_headquarters d on a.bankNo = d.id
-            left join tbl_branch_children e on a.bankNo = e.id where a.disabled = 0
+            left join tbl_branch_children e on a.bankNo = e.id where a.disabled = 0 and a.type is not null
         <if test=" bankNo != '' and bankNo != null ">
             <if test="type == 0">
                 and d.id = #{bankNo}
@@ -258,6 +260,7 @@
                 and e.id = #{bankNo}
             </if>
         </if>
+
         <if test="search != null and search != ''">
             and a.name like concat('%',#{name},'%')
         </if>
@@ -267,7 +270,7 @@
 
         limit #{pageNum},#{pageSize}
     </select>
-    
+
     <!--根据银行编号获取总行-->
     <select id="getHeadquarters" parameterType="int" resultType="com.ulaiber.web.model.Headquarters">
         SELECT * from tbl_bank_headquarters where 1=1
@@ -342,5 +345,93 @@
     <!--根据移动电话查询当前电话是否已存在-->
     <select id="getUserByMobile" parameterType="String" resultType="com.ulaiber.web.model.BankUsers">
         SELECT id FROM tbl_bank_users where disabled = 0 and mobile = #{mobile}
+    </select>
+
+    <!--新增集团-->
+    <insert id="insertGroup" parameterType="int" useGeneratedKeys="true" keyProperty="groupNumber">
+        insert into tbl_group(name,registeredCapital,legalPerson,contacts,contactsTelephone,details,remark)
+            VALUES (#{name},#{registeredCapital},#{legalPerson},#{contacts},#{contactsTelephone},#{details},#{remark})
+    </insert>
+
+    <!--新增公司基本信息-->
+    <insert id="insertCompany" parameterType="com.ulaiber.web.model.Company" useGeneratedKeys="true" keyProperty="companyNumber">
+        INSERT into tbl_company(name,legalPerson,account,group_num,details)
+              VALUES (#{name},#{legalPerson},#{account},#{group_num},#{details})
+    </insert>
+
+    <!--新增角色信息-->
+    <insert id="insertRole" parameterType="com.ulaiber.web.model.Roles" useGeneratedKeys="true" keyProperty="role_id">
+        INSERT INTO tbl_roles(role_name,companyNumber,companyName,type)
+        VALUES (#{role_name},#{companyNumber},#{companyName},1)
+    </insert>
+
+    <!--新增员工信息-->
+    <insert id="insertEmployee" parameterType="com.ulaiber.web.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id ,createTime,entryDate,leaveDate,disabled)
+        VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id},#{createTime},#{entryDate},#{leaveDate},'0')
+    </insert>
+
+    <!--创建业务信息-->
+    <insert id="insertBusiness" parameterType="com.ulaiber.web.model.Business">
+        INSERT INTO tbl_business (number,groupNo,companyNo,userid,remark,bankNo,type)
+        VALUES (#{number},#{groupNo},#{companyNo},#{userid},#{remark},#{bankNo},#{type})
+    </insert>
+
+    <!--新增用户权限层级信息-->
+    <insert id="insertPermission" parameterType="com.ulaiber.web.model.User">
+        INSERT INTO tbl_roots(userid,groupNumber,companyNumber,dept_number,sysflag)
+        VALUES (#{id},#{groupNumber},#{companyNumber},#{dept_number},'1')
+    </insert>
+
+    <!--设置角色权限-->
+    <insert id="insertRoleMenu" parameterType="java.util.List">
+        INSERT INTO tbl_roleMenu(role_id,menuNumber) VALUES
+        <foreach collection="list" item="items" index= "index" separator =",">
+            (#{items.roleId},#{items.menuId})
+        </foreach>
+    </insert>
+
+    <!-- 获取业务数量-->
+    <select id="getBusinessCount" parameterType="Map" resultType="int">
+        SELECT count(a.id) as count FROM tbl_business a where 1=1
+          <if test=" bankNo != '' and bankNo != null ">
+              and bankNo = #{bankNo}
+              <if test="roleType == 3 ">
+                  and number = #{number}
+              </if>
+          </if>
+    </select>
+    
+    <!--业务查询-->
+    <select id="queryBusiness" parameterType="Map" resultType="com.ulaiber.web.model.Business">
+        SELECT a.*,b.name,b.bankName,f.name as groupName,g.user_name as userName,g.mobile FROM tbl_business a
+            left join tbl_bank_users b on a.number = b.number
+            left join tbl_bank_headquarters c on a.bankno = c.id
+            left join tbl_bank_branch d on a.bankNo = d.id
+            left join tbl_branch_children e on a.bankNo = e.id
+            left join tbl_group f on a.groupNo = f.groupNumber
+            left join tbl_users g on a.userid = g.user_id  where 1=1
+        <if test=" bankNo != '' and bankNo != null ">
+            <if test="heaquarters != '' and heaquarters != null">
+               and c.bankName LIKE concat('%',#{heaquarters},'%')
+            </if>
+            <if test="branch != '' and branch != null">
+                and d.name LIKE concat('%',#{branch},'%')
+            </if>
+            <if test="child != '' and child != null">
+                and e.name LIKE concat('%',#{child},'%')
+            </if>
+            <if test="groupName != '' and groupName != null">
+                and f.name LIKE concat('%',#{groupName},'%')
+            </if>
+            <if test="name != '' and name != null">
+                and b.name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="roleType == 3">
+                and b.number = #{number}
+            </if>
+        </if>
+        limit #{pageNum},#{pageSize}
+
     </select>
 </mapper>

@@ -177,25 +177,25 @@ public class ExportExcel {
             for(int j=0;j<line.size();j++){
                 HSSFCell cell = row.createCell(j);
                 cell.setCellStyle(style2);
-                String value = line.get(j);
-                try {
-                    // 判断值的类型后进行强制类型转换
-                    String textValue = null;
-                    // 其它数据类型都当作字符串简单处理
-                    textValue = value.toString();
-                    // 如果不是图片数据，就利用正则表达式判断textValue是否全部由数字组成
-                    if (textValue != null) {
-                        HSSFRichTextString richString = new HSSFRichTextString(textValue);
-                        HSSFFont font3 = workbook.createFont();
-                        font3.setColor(HSSFColor.BLUE.index);
-                        richString.applyFont(font3);
-                        cell.setCellValue(richString);
+                    String value = line.get(j);
+                    try {
+                        // 判断值的类型后进行强制类型转换
+                        String textValue = null;
+                        // 其它数据类型都当作字符串简单处理
+                        textValue = value.toString();
+                        // 如果不是图片数据，就利用正则表达式判断textValue是否全部由数字组成
+                        if (textValue != null) {
+                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
+                            HSSFFont font3 = workbook.createFont();
+                            font3.setColor(HSSFColor.BLUE.index);
+                            richString.applyFont(font3);
+                            cell.setCellValue(richString);
+                        }
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    } finally {
+                        // 清理资源
                     }
-                } catch (SecurityException e) {
-                    e.printStackTrace();
-                } finally {
-                    // 清理资源
-                }
             }
 
         }
