@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.AttendancePatchClock;
 import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
@@ -186,7 +187,7 @@ public class AttendanceApiController extends BaseController {
 		if (rule.getFlexibleFlag() == 0){
 			//下班是否顺延
 			if (rule.getPostponeFlag() == 0){
-				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 0, 0, rule.getFlexibleTime()).split(" ")[1];
+				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 0, 0, rule.getFlexibleTime());
 			}
 		}
 		
@@ -214,7 +215,7 @@ public class AttendanceApiController extends BaseController {
 			type = 3;
 		}
 		//当前时间>最晚下班打卡时间
-		else if (datetime.compareTo(dateEnd) > 0 || datetime.compareTo(clockOnTime) < 0){
+		else if (datetime.compareTo(dateEnd) > 0){
 			type = 4;
 		}
 		

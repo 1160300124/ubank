@@ -68,6 +68,9 @@ public class IConstants
     //不要频繁打卡
     public final static int QT_CANNOT_CLOCK_FREQUENTLY = 4003;
     
+    //在上班之前不能打下班卡
+    public final static int QT_CANNOT_CLOCK_OFF_BEFORE_CLOCK_ON = 4004;
+    
     //休息日
     public final static int QT_REST_DAY = 4004;
 
