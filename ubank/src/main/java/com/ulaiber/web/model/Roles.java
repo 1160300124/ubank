@@ -10,6 +10,7 @@ public class Roles {
     private String companyNumber;
     private String companyName;
     private String groupNumber;
+    private String groupName;
     private int type;
 
     //get set
@@ -51,6 +52,14 @@ public class Roles {
 
     public void setGroupNumber(String groupNumber) {
         this.groupNumber = groupNumber;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public int getType() {

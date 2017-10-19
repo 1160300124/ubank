@@ -32,7 +32,7 @@
 
     <!-- 角色新增（Modal） -->
     <div id="role_modal" class="modal fade">
-        <div class="modal-dialog" style="width: 400px;">
+        <div class="modal-dialog" style="width: 400px;height: 600px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

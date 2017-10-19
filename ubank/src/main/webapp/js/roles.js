@@ -102,9 +102,11 @@ var RoleFun = {
             singleSelect : true,
             columns : [
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                {field : 'role_id', title : '角色编号', width: 130, align : 'left'},
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
-                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left'}
+                {field : 'groupName', title : '所属集团', width: 130, align : 'left'},
+                {field : 'companyName', title : '所属公司', width: 130, align : 'left'},
+                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                {field : 'role_id', title : '角色编号', width: 130, align : 'left',visible : false}
 
             ],
             onCheck : function (row) {
@@ -170,8 +172,8 @@ var RoleFun = {
                 {field : 'role_id', title : '角色编号', width: 80, align : 'left'},
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
                 {field : 'companyName', title : '所属公司', width: 150, align : 'left'},
-                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false}
-                //{field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
+                {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
 
             ],
             onClickRow : function (row, $element) {
@@ -204,8 +206,11 @@ var RoleFun = {
         if(roleName == ""){
             Ewin.alert("角色名不能为空");
             return
-        }else if(!Validate.regNumAndLetter(roleName)){
-            Ewin.alert("角色名格式不合法，请重新输入");
+        }else if(!Validate.regWord(roleName)){
+            Ewin.alert("角色名必须为中文");
+            return
+        }else if(roleName.length > 40){
+            Ewin.alert("角色名长度不能超过40个字符");
             return
         }
         if(com_numbers == ""){
@@ -249,48 +254,49 @@ var RoleFun = {
         var treeObj = $.fn.zTree.getZTreeObj("role_tree");
         var nodes = treeObj.getCheckedNodes(true);
         var row = $('#role_table2').bootstrapTable('getSelections');
-        if(nodes.length <= 0){
-            Ewin.alert("请权限对应的菜单");
-            return;
-        }
+        // if(nodes.length <= 0){
+        //     Ewin.alert("请选择权限对应的菜单");
+        //     return;
+        // }
         if(row.length <= 0){
             Ewin.alert("请选择角色");
             return;
         }
         var ids = "";
-        for (var i = 0; i < nodes.length ; i++){
-            if(i > 0){
-                ids += "," + nodes[i].id;
-            }else{
-                ids += nodes[i].id ;
+        if(nodes.length > 0){
+            for (var i = 0; i < nodes.length ; i++){
+                if(i > 0){
+                    ids += "," + nodes[i].id;
+                }else{
+                    ids += nodes[i].id ;
+                }
             }
         }
+
         $.ajax({
-            url : 'settingRoleMenu?flag' + flag,
+            url : 'settingRoleMenu',
             type : 'post',
             dataType : 'json',
             data :{
                 "menuId" : ids ,
-                "roleId" : row[0].role_id,
-                "flag" : flag
+                "roleId" : row[0].role_id
             },
             success :function (data) {
                 if(data.code == 300){
                     Ewin.alert(data.message);
                 }else if(data.code == 500){
-                    Ewin.alert("操作异常");
+                    Ewin.alert("设置权限失败");
                 }else{
                     Ewin.alert(data.message);
                     treeObj.checkAllNodes(false);
                     $('#role_table2').bootstrapTable('refresh');
                     $("#role_modal").modal("hide");
-                    flag = 0;
 
                 }
 
             },
             error :function () {
-                Ewin.alert("添加权限失败");
+                Ewin.alert("设置权限失败");
             }
         });
     },
@@ -309,9 +315,7 @@ var RoleFun = {
         //this.role_queryAllCom();
         roleId = row[0].role_id;
         $("input[name=role_name]").val(row[0].role_name);
-        if(GROUPNUMBER != ""){
-            $("#role_group").find("option[value="+GROUPNUMBER+"]").prop("selected","selected");
-        }
+
         var num = row[0].companyNumber;
         var arr = [];
         if(num.indexOf(",") > 0){
@@ -319,8 +323,11 @@ var RoleFun = {
         }else{
             arr = num;
         }
-        $("#combotree").bootstrapCombotree("setValue",num);
         $("#role_modal").modal("show");
+        $("#combotree").bootstrapCombotree("setValue",num);
+        debugger
+        $("#role_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
+
 
     },
     //点击修改按钮，查询所有公司
@@ -431,6 +438,7 @@ var RoleFun = {
     permissionSet : function () {
         this.rol_roleTable();
         $("#permission_modal").modal("show");
+        $(".modal-title").html("权限设置");
     }
 };
 

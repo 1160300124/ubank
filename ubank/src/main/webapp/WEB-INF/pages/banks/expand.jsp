@@ -4,18 +4,19 @@
 <div class="page-content">
     <%--工具栏--%>
     <div id="expand_Toolbar" class="btn-group">
-        <button  onclick="expand.openNew()" type="button" class="btn btn-default">
-            <span class="fa icon-plus" aria-hidden="true"></span>拓展企业
-        </button>
-        <button onclick="" type="button" class="btn btn-default">
-            <span class="fa icon-edit" aria-hidden="true"></span>修改
-        </button>
-        <button onclick="" type="button" class="btn btn-default">
-            <span class="fa icon-remove" aria-hidden="true"></span>删除
-        </button>
         <button onclick="expand.reload()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
+        <button  onclick="expand.openNew()" type="button" class="btn btn-default">
+            <span class="fa icon-plus" aria-hidden="true"></span>拓展企业
+        </button>
+        <%--<button onclick="" type="button" class="btn btn-default">--%>
+            <%--<span class="fa icon-edit" aria-hidden="true"></span>修改--%>
+        <%--</button>--%>
+        <%--<button onclick="" type="button" class="btn btn-default">--%>
+            <%--<span class="fa icon-remove" aria-hidden="true"></span>删除--%>
+        <%--</button>--%>
+
 
         <label class="col-md-1 headquarters" for="start_date">总行</label>
         <div class="col-sm-2 headquarters" >

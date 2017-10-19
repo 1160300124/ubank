@@ -280,8 +280,11 @@ var EmployeeFun = {
         if(userName == ""){
             Ewin.alert("姓名不能为空");
             return;
-        }else if(!Validate.regNumAndLetter(userName)){
-            Ewin.alert("性名格式不合法，请重新输入");
+        }else if(!Validate.regWord(userName)){
+            Ewin.alert("姓名必须为中文");
+            return;
+        }else if(userName.length > 20){
+            Ewin.alert("姓名不能超过20个字符");
             return;
         }
         if(cardNo == ""){
@@ -295,7 +298,10 @@ var EmployeeFun = {
             Ewin.alert("银行账号不能为空");
             return;
         }else if(!Validate.regNumber(bankCardNo)){
-            Ewin.alert("银行账号格式不合法，请重新输入");
+            Ewin.alert("银行账号必须为数字");
+            return;
+        }else if(bankCardNo.length < 18 && bankCardNo.length > 21 ){
+            Ewin.alert("银行账号长度在18-21位");
             return;
         }
         $.ajax({

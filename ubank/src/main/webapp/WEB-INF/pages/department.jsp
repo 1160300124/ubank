@@ -191,19 +191,26 @@
         departmentAdd : function () {
             var name = $("input[name=name]").val();
             var com = $("#dept_select").val();
+            var area = $("#dept_area").val();
             if(name == ""){
                 Ewin.alert("部门名称不能为空");
                 return ;
-            }else if(!Validate.regNumAndLetter(name)){
-                Ewin.alert("部门名称格式不合法，请重新输入");
-                return;
-            }else if(name.length >= 10){
-                Ewin.alert("部门名称不能超过10个字符");
+            }
+//            else if(!Validate.regNumAndLetter(name)){
+//                Ewin.alert("部门名称格式不合法，请重新输入");
+//                return;
+//            }
+            else if(name.length > 40){
+                Ewin.alert("部门名称不能超过40个字符");
                 return;
             }
             if(com == ""){
                 Ewin.alert("公司不能为空");
                 return ;
+            }
+            if(area.length > 200){
+                Ewin.alert("备注长度不能超过200个字符");
+                return;
             }
             $.ajax({
                 url : 'addDept?flag=' + flag ,

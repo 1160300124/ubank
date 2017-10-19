@@ -309,6 +309,8 @@ public class PermissionController extends BaseController {
             //根据公司名称获取公司信息
             Company co = permissionService.getComByName(comName);
             if(StringUtil.isEmpty(co)){
+                //生成4位邀请码
+                company.setCode(StringUtil.getStringRandom(4));
                 // 插入公司基本信息
                 int com = permissionService.addCom(company);
                 String com_num = String.valueOf(company.getCompanyNumber());
@@ -716,9 +718,9 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "settingRoleMenu", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo settingRoleMenu(@Param("menuId") String menuId,@Param("roleId") String roleId,@Param("flag") String flag){
+    public ResultInfo settingRoleMenu(@Param("menuId") String menuId,@Param("roleId") String roleId){
         ResultInfo resultInfo = new ResultInfo();
-        if (flag.equals("0")){//新增
+      //  if (flag.equals("0")){//新增
             // 根据角色id查询该角色是否被创建
 //            List<RoleMenu> list = permissionService.getRoleMenuByRoleid(roleId);
 //            if(list.size() > 0 ){
@@ -726,26 +728,33 @@ public class PermissionController extends BaseController {
 //                resultInfo.setMessage("该角色已存在，请重新创建");
 //                return resultInfo;
 //            }
-            int result = permissionService.settingRoleMenu(roleId,menuId);
-            if(result > 0){
-                resultInfo.setCode(200);
-                resultInfo.setMessage("新增角色权限成功");
-            }else{
-                resultInfo.setCode(500);
-                resultInfo.setMessage("新增角色权限失败");
-            }
-        }else{ //修改
-            // 根据角色id，删除对应的菜单
-            int in = permissionService.deleteRoleMenuByRoleId(roleId);
-            int result2 = permissionService.settingRoleMenu(roleId,menuId);
-            if(result2 > 0 ){
-                resultInfo.setCode(200);
-                resultInfo.setMessage("修改角色权限成功");
-            }else{
-                resultInfo.setCode(500);
-                resultInfo.setMessage("修改角色权限失败");
-            }
-        }
+            int result1 = permissionService.setRoleMenuByRoleId(roleId,menuId);
+            resultInfo.setCode(200);
+            resultInfo.setMessage("设置角色权限成功");
+//            int result = permissionService.settingRoleMenu(roleId,menuId);
+//            if(result > 0){
+//                resultInfo.setCode(200);
+//                resultInfo.setMessage("新增角色权限成功");
+//            }else{
+//                resultInfo.setCode(500);
+//                resultInfo.setMessage("新增角色权限失败");
+//            }
+//        }else{ //修改
+//            // 根据角色id，删除对应的菜单
+//            int in = permissionService.deleteRoleMenuByRoleId(roleId);
+//            if(StringUtil.isEmpty(roleId)){
+//                resultInfo.setCode(200);
+//                resultInfo.setMessage("修改角色权限成功");
+//            }
+//            int result2 = permissionService.settingRoleMenu(roleId,menuId);
+//            if(result2 > 0 ){
+//                resultInfo.setCode(200);
+//                resultInfo.setMessage("修改角色权限成功");
+//            }else{
+//                resultInfo.setCode(500);
+//                resultInfo.setMessage("修改角色权限失败");
+//            }
+//        }
         return resultInfo;
 
     }

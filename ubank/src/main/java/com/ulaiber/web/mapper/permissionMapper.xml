@@ -119,8 +119,8 @@
 
     <!--新增公司基本信息-->
     <insert id="addCom" parameterType="com.ulaiber.web.model.Company" useGeneratedKeys="true" keyProperty="companyNumber">
-        INSERT into tbl_company(name,legalPerson,account,group_num,details)
-        VALUES (#{name},#{legalPerson},#{account},#{group_num},#{details})
+        INSERT into tbl_company(name,legalPerson,account,group_num,details,code)
+        VALUES (#{name},#{legalPerson},#{account},#{group_num},#{details},#{code})
     </insert>
 
     <!--获取所有银行信息-->
@@ -138,7 +138,7 @@
 
     <!--获取所有公司信息-->
     <select id="companyQuery" parameterType="Map" resultType="com.ulaiber.web.model.Company" >
-        select a.name,a.account,a.companyNumber,a.details,a.group_num,a.legalPerson,b.name as groupName
+        select a.name,a.account,a.companyNumber,a.details,a.group_num,a.legalPerson,b.name as groupName,a.code
         from tbl_company a left join tbl_group b on a.group_num = b.groupNumber where 1=1
         <if test = 'sysflag == "1"'>
             and a.group_num = #{groupNumber}

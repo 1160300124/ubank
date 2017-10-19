@@ -29,6 +29,6 @@
 
     <!--根据申请记录ID，获取工资发放审批记录-->
     <select id="querySalaryByRecordNo" parameterType="int" resultType="com.ulaiber.web.model.SalaryRecord">
-        select * FROM tbl_salary_record where recordNo = #{recordNo}
+        select username,salary FROM tbl_salary_record where recordNo = #{recordNo}
     </select>
 </mapper>

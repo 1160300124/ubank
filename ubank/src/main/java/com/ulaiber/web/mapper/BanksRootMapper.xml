@@ -21,7 +21,7 @@
         SELECT a.id , a.NAME , a.url , a.CODE , a.father , a.icon , a.sorting
             FROM tbl_menu a WHERE  a.CODE IN( SELECT b.menuNumber FROM tbl_bank_users c
             LEFT JOIN tbl_roleMenu b ON c.roleid = b.role_id
-            WHERE c.disabled = 0 and type = 1 AND c.NAME = #{userName})
+            WHERE c.disabled = 0 and a.type = 1 AND c.NAME = #{userName})
     </select>
 
     <!--根据银行名称查询银行信息-->
@@ -355,8 +355,8 @@
 
     <!--新增公司基本信息-->
     <insert id="insertCompany" parameterType="com.ulaiber.web.model.Company" useGeneratedKeys="true" keyProperty="companyNumber">
-        INSERT into tbl_company(name,legalPerson,account,group_num,details)
-              VALUES (#{name},#{legalPerson},#{account},#{group_num},#{details})
+        INSERT into tbl_company(name,legalPerson,account,group_num,details,code)
+              VALUES (#{name},#{legalPerson},#{account},#{group_num},#{details},#{code})
     </insert>
 
     <!--新增角色信息-->

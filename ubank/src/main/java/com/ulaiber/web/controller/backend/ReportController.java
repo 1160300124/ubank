@@ -37,7 +37,7 @@ public class ReportController extends BaseController {
 
     public static final Logger logger = Logger.getLogger(ReportController.class);
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Resource
     private ReportService reportService;
@@ -120,17 +120,17 @@ public class ReportController extends BaseController {
             }
             //文件路径
             String filePath = docsPath + FILE_SEPARATOR + fileName;
-            logger.info(">>>>>>>导出路径为：" + filePath);
-            out = new FileOutputStream(filePath);
+            logger.info(">>>>>>>导出路径为：/var/"+fileName+"");
+            out = new FileOutputStream("/var/"+fileName+"");
             String[] headers= sheader.substring(0,sheader.length()-1).split(",");
             logger.info(sheader.substring(0,sheader.length()-1));
             exportExcel.exportExcel(title, headers, resultList, out);
             out.close();
-            JOptionPane.showMessageDialog(null, "导出成功!");
+            //JOptionPane.showMessageDialog(null, "导出成功!");
             System.out.println(">>>>>>>>>>>>>excel导出成功！");
-            exportExcel.download(filePath, response);
+            exportExcel.download("/var/"+ fileName +"", response);
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error(">>>>>>>>导出异常：" , e);
         }finally {
             try {
                 if (null != out){
@@ -404,18 +404,18 @@ public class ReportController extends BaseController {
                 file.mkdirs();
             }
             //文件路径
-            String filePath = docsPath + FILE_SEPARATOR + fileName;
-            logger.info(">>>>>>>导出路径为：" + filePath);
-            out = new FileOutputStream(filePath);
+          //  String filePath = docsPath + FILE_SEPARATOR + fileName;
+            logger.info(">>>>>>>导出路径为：/var/" + fileName);
+            out = new FileOutputStream("/var/"+fileName+"");
             String[] headers= sheader.substring(0,sheader.length()-1).split(",");
             logger.info(sheader.substring(0,sheader.length()-1));
             exportExcel.exportExcel(title, headers, result, out);
             out.close();
             JOptionPane.showMessageDialog(null, "导出成功!");
             System.out.println(">>>>>>>>>>>>>excel导出成功！");
-            exportExcel.download(filePath, response);
+            exportExcel.download("/var/"+fileName+"", response);
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error(">>>>>>>导出异常：" , e);
         }finally {
             try {
                 if (null != out){

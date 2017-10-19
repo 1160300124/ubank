@@ -42,7 +42,7 @@
         </foreach>
     </delete>
 
-    <!---->
+    <!--删除角色对应的菜单-->
     <delete id="deleteRoleMenuByRoleId" parameterType="String" >
          DELETE FROM tbl_roleMenu WHERE role_id = #{roleId}
     </delete>

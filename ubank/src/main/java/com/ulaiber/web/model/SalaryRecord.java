@@ -11,6 +11,7 @@ public class SalaryRecord implements Serializable {
     private int recordNo;
     private String username;
     private double salary;
+    private double totalAmount;
 
     public int getId() {
         return id;
@@ -42,5 +43,13 @@ public class SalaryRecord implements Serializable {
 
     public void setSalary(double salary) {
         this.salary = salary;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }

@@ -341,6 +341,8 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
         Company company = new Company();
         company.setName(business.getCompanyName().trim());
         company.setGroup_num(group.getGroupNumber());
+        //生成4位邀请码
+        company.setCode(StringUtil.getStringRandom(4));
         //新增公司
         int result2 = banksRootDao.insertCompany(company);
         if(result2 == 0){

@@ -230,23 +230,29 @@
         },
 		//身份证验证
         isCardID : function (str) {
-            var iSum = 0;
-            var info = "";
-            var sBirthday = "";
-            if (!/^\d{17}(\d|x)$/i.test(str))
-                return "你输入的身份证长度或格式错误";
-            str = str.replace(/x$/i, "a");
-            if (aCity[parseInt(str.substr(0, 2))] == null)
-                return "你的身份证地区非法";
-            sBirthday = str.substr(6, 4) + "-" + Number(str.substr(10, 2)) + "-" + Number(str.substr(12, 2));
-            var d = new Date(sBirthday.replace(/-/g, "/"));
-            if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()))
-                return "身份证上的出生日期非法";
-            for (var i = 17; i >= 0; i--)
-                iSum += (Math.pow(2, i) % 11) * parseInt(str.charAt(17 - i), 11);
-            if (iSum % 11 != 1)
-                return "你输入的身份证号非法";
-            return true;
+            // var iSum = 0;
+            // var info = "";
+            // var sBirthday = "";
+            // if (!/^\d{17}(\d|x)$/i.test(str))
+            //     return "你输入的身份证长度或格式错误";
+            // str = str.replace(/x$/i, "a");
+            // if (aCity[parseInt(str.substr(0, 2))] == null)
+            //     return "你的身份证地区非法";
+            // sBirthday = str.substr(6, 4) + "-" + Number(str.substr(10, 2)) + "-" + Number(str.substr(12, 2));
+            // var d = new Date(sBirthday.replace(/-/g, "/"));
+            // if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()))
+            //     return "身份证上的出生日期非法";
+            // for (var i = 17; i >= 0; i--)
+            //     iSum += (Math.pow(2, i) % 11) * parseInt(str.charAt(17 - i), 11);
+            // if (iSum % 11 != 1)
+            //     return "你输入的身份证号非法";
+            // return true;
+            var reg = /^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/;
+            if(str.match(reg) ==null){
+                return false;
+            }else{
+                return true;
+            }
         },
 		//中文验证
 		regWord : function (str) {
@@ -256,6 +262,17 @@
             }else{
                 return true;
             }
+        },
+		//判断字符串是否为数字
+        isNumeric : function (str) {
+            for (var i = str.length; --i >= 0;i--) {
+                var chr = str.charAt(i);
+                if (chr < 48 || chr > 57){
+                    return false;
+                }
+            }
+            return true;
+
         }
 	}
 

@@ -397,6 +397,10 @@ public class Test {
 		System.out.print(">>>>>>userID：" + UUID.randomUUID());
 	}
 
-
+	//生成字母和数字的随机数
+	@org.junit.Test
+	public void random(){
+		System.out.println(">>>>>>>>>>随机数为：" + StringUtil.getStringRandom(8));
+	}
 
 }

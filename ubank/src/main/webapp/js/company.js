@@ -122,6 +122,7 @@ var CompanyFun = {
                 {field : 'details', title : '详情', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'legalPerson', title : '公司法人', width: 130, align : 'left',visible : false},
+                {field : 'code', title : '邀请码', width: 130, align : 'left',visible : false},
                 {field : 'group_num', title : '集团编号', width: 130, align : 'left',visible : false}
             ]
         });
@@ -148,6 +149,7 @@ var CompanyFun = {
         var customer = $("input[name=customer]").val();
         var certificateNumber = $("input[name=certificateNumber]").val();
         var authorizationCode = $("input[name=authorizationCode]").val();
+        var com_area = $("#com_area").val();
         if(group == ""){
             Ewin.alert("集团不能为空");
             return;
@@ -159,8 +161,11 @@ var CompanyFun = {
         if(companyNo == ""){
             Ewin.alert("公司名不能为空");
             return;
-        }else if(!Validate.regNumAndLetter(companyNo)){
+        }else if(!Validate.isNumeric(companyNo)){
             Ewin.alert("公司名格式不合法，请重新输入");
+            return;
+        }else if(companyNo.length > 40){
+            Ewin.alert("公司长度不能超过40个中文、不能包含数字");
             return;
         }
         if(legalPerson == ""){
@@ -169,6 +174,9 @@ var CompanyFun = {
         }else if(!Validate.regNumAndLetter(legalPerson)){
             Ewin.alert("法人格式不合法，请重新输入");
             return;
+        }else if(legalPerson.length >= 20){
+            Ewin.alert("法人长度不能超过20个字符");
+            return;
         }
         if(accounts == ""){
             Ewin.alert("公司账号不能为空");
@@ -176,8 +184,8 @@ var CompanyFun = {
         }else if(!Validate.regNumber(accounts)){
             Ewin.alert("公司账号格式不合法，请重新输入");
             return;
-        }else if(accounts.length > 25){
-            Ewin.alert("字符超出范围");
+        }else if(accounts.length > 20){
+            Ewin.alert("公司账号长度不能超过20个字符");
             return;
         }
         if(customer == ""){
@@ -186,8 +194,8 @@ var CompanyFun = {
         }else if(!Validate.regNumAndLetter(customer)){
             Ewin.alert("公司客户号格式不合法，请重新输入");
             return;
-        }else if(customer.length > 25){
-            Ewin.alert("字符超出范围");
+        }else if(customer.length > 20){
+            Ewin.alert("公司账号长度不能超过20个字符");
             return;
         }
         if(certificateNumber == ""){
@@ -196,8 +204,8 @@ var CompanyFun = {
         }else if(!Validate.NumberAndLetter(certificateNumber)){
             Ewin.alert("证书编号格式不合法，请重新输入");
             return;
-        }else if(certificateNumber.length > 25){
-            Ewin.alert("字符超出范围");
+        }else if(certificateNumber.length > 200){
+            Ewin.alert("证书编号长度不能超过200个字符");
             return;
         }
         if(authorizationCode == ""){
@@ -206,8 +214,12 @@ var CompanyFun = {
         }else if(!Validate.NumberAndLetter(authorizationCode)){
             Ewin.alert("银行数字证书授权码格式不合法，请重新输入");
             return;
-        }else if(authorizationCode.length > 25){
-            Ewin.alert("字符超出范围");
+        }else if(authorizationCode.length > 200){
+            Ewin.alert("银行数字证书授权码长度不能超过200个字符");
+            return;
+        }
+        if(com_area.length > 200){
+            Ewin.alert("详情长度不能超过200个字符");
             return;
         }
 

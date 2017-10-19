@@ -11,9 +11,13 @@
 
     <!-- 获取所有角色信息-->
     <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
-        SELECT  a.role_id,a.role_name,a.companyNumber FROM tbl_roles a
+        SELECT DISTINCT a.role_id,a.role_name,a.companyNumber,a.companyName,d.name as groupName FROM tbl_roles a
+            left join tbl_users b on a.role_id = b.role_id
+            left join (select userid,groupNumber from tbl_roots group by userid,groupNumber) c on b.user_id = c.userid
+            left join tbl_group d on c.groupNumber = d.groupNumber
+            where a.role_id &lt;&gt; 0
         <if test = 'sysflag == "1"'>
-            where  a.companyNumber in
+            and  a.companyNumber in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                 #{companyNumber}
             </foreach>
@@ -32,9 +36,10 @@
 
     <!--分页查询角色信息-->
     <select id="roleQuery" parameterType="Map" resultType="com.ulaiber.web.model.Roles">
-        SELECT DISTINCT a.role_id,a.role_name,a.companyNumber,a.companyName FROM tbl_roles a
+        SELECT DISTINCT a.role_id,a.role_name,a.companyNumber,a.companyName,c.groupNumber FROM tbl_roles a
         left join tbl_users b on a.role_id = b.role_id
-        left join (select userid,groupNumber from tbl_roots group by userid,groupNumber) c on b.user_id = c.userid where 1=1
+        left join (select userid,groupNumber from tbl_roots group by userid,groupNumber) c on b.user_id = c.userid
+        where a.role_id &lt;&gt; 0
         <if test="search != null and search != ''">
             and  a.role_name like concat('%',#{search},'%')
         </if>

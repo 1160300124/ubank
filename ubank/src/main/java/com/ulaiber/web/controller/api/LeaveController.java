@@ -164,6 +164,18 @@ public class LeaveController extends BaseController {
                     amount += sr.getAmount();
                 }
                 resultMap.put("reimAmount",amount);
+            }else if(ls.getType().equals("3")){ //工资发放申请记录
+                SalaryRecord salaryRecord = new SalaryRecord();
+                //申请记录ID
+                int recordNo = ls.getId();
+                //根据申请记录ID，获取工资发放记录
+                List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
+                double amount = 0;  //统计金额
+                for (int j = 0 ; j < salaryList.size() ; j++){
+                    SalaryRecord sr = salaryList.get(j);
+                    amount += sr.getSalary();
+                }
+                resultMap.put("salaryAmount",amount);
             }else if(ls.getType().equals("4")){ //补卡记录
                 Remedy remedy = new Remedy();
                 remedy.setMorning(ls.getMorning());
@@ -504,6 +516,18 @@ public class LeaveController extends BaseController {
                             amount += sr.getAmount();
                         }
                         map.put("reimAmount",amount);
+                    }else if(applyForVO.getType().equals("3")){ //工资发放申请记录
+                        SalaryRecord salaryRecord = new SalaryRecord();
+                        //申请记录ID
+                        int recordNo = applyForVO.getId();
+                        //根据申请记录ID，获取工资发放记录
+                        List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
+                        double amount = 0;  //统计金额
+                        for (int j = 0 ; j < salaryList.size() ; j++){
+                            SalaryRecord sr = salaryList.get(j);
+                            amount += sr.getSalary();
+                        }
+                        map.put("salaryAmount",amount);
                     }else if(applyForVO.getType().equals("4")){ //补卡记录
                         Remedy remedy = new Remedy();
                         remedy.setMorning(applyForVO.getMorning());
@@ -599,6 +623,18 @@ public class LeaveController extends BaseController {
                     amount += sr.getAmount();
                 }
                 map.put("reimAmount",amount);
+            }else if(applyForVO.getType().equals("3")){ //工资发放申请记录
+                SalaryRecord salaryRecord = new SalaryRecord();
+                //申请记录ID
+                int recordNo = applyForVO.getId();
+                //根据申请记录ID，获取工资发放记录
+                List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
+                double amount = 0;  //统计金额
+                for (int j = 0 ; j < salaryList.size() ; j++){
+                    SalaryRecord sr = salaryList.get(j);
+                    amount += sr.getSalary();
+                }
+                map.put("salaryAmount",amount);
             }else if(applyForVO.getType().equals("4")){ //补卡记录
                 Remedy remedy = new Remedy();
                 remedy.setMorning(applyForVO.getMorning());
@@ -961,18 +997,18 @@ public class LeaveController extends BaseController {
                 logger.info(">>>>>>>>>>>>>暂时没有工资发放记录");
                 return resultInfo;
             }
-            Map<String,Object> resultMap = new HashMap<>();
-            double amount = 0;  //统计金额
-            for (int i = 0 ; i < salaryList.size() ; i++){
-                SalaryRecord sr = salaryList.get(i);
-                amount += sr.getSalary();
-            }
-            resultMap.put("record",salaryList);
-            resultMap.put("total" , salaryList.size());
-            resultMap.put("totalAmount" , amount);
+//            Map<String,Object> resultMap = new HashMap<>();
+//            double amount = 0;  //统计金额
+//            for (int i = 0 ; i < salaryList.size() ; i++){
+//                SalaryRecord sr = salaryList.get(i);
+//                amount += sr.getSalary();
+//             }
+//            resultMap.put("record",salaryList);
+//            resultMap.put("total" , salaryList.size());
+//            resultMap.put("totalAmount" , amount);
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("查询成功");
-            resultInfo.setData(resultMap);
+            resultInfo.setData(salaryList);
             logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
             return resultInfo;
         }

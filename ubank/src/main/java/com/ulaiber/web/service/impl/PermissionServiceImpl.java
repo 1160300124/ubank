@@ -4,6 +4,7 @@ import com.ulaiber.web.dao.*;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -478,8 +479,21 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int deleteRoleMenuByRoleId(String roleId) {
-        return roleMenuDao.deleteRoleMenuByRoleId(roleId);
+    public int setRoleMenuByRoleId(String roleId, String menuId) {
+        int result = roleMenuDao.deleteRoleMenuByRoleId(roleId);
+        int result2 = 0;
+        if(!StringUtil.isEmpty(menuId)){
+            List<Map<String,Object>> list = new ArrayList<>();
+            String[] arr = menuId.split(",");
+            for (int i = 0 ; i <arr.length ; i++){
+                Map<String,Object> map = new HashMap<String,Object>();
+                map.put("menuId" , arr[i]);
+                map.put("roleId",roleId);
+                list.add(map);
+            }
+            result2 = roleMenuDao.settingRoleMenu(list);
+        }
+        return result2;
     }
 
     @Override

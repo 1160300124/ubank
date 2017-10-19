@@ -122,18 +122,26 @@
             var registeredCapital = $("input[name=registeredCapital]").val();
             var contacts = $("input[name=contacts]").val();
             var phone = $("input[name=contactsTelephone]").val();
+            var remark = $("#group_remark").val();
+
             if(name == ""){
                 Ewin.alert("集团名称不能为空");
                 return;
-            }else if(!Validate.regNumAndLetter(name)){
-                Ewin.alert("集团名称格式不合法，请重新输入");
+            }else if(!Validate.isNumeric(name)){
+                Ewin.alert("集团长度不能超过40个中文、不能包含数字");
+                return;
+            }else if(name.length >= 40){
+                Ewin.alert("集团长度不能超过40个中文、不能包含数字");
                 return;
             }
             if(legalPerson == ""){
                 Ewin.alert("法人不能为空");
                 return;
-            }else if(!Validate.regNumAndLetter(legalPerson)){
+            }else if(!Validate.regWord(legalPerson)){
                 Ewin.alert("法人格式不合法，请重新输入");
+                return;
+            }else if(legalPerson.length >= 20){
+                Ewin.alert("法人长度不能超过20个字符");
                 return;
             }
             if(registeredCapital == ""){
@@ -146,8 +154,11 @@
             if(contacts == "" ){
                 Ewin.alert("负责联系人不能为空");
                 return;
-            }else if(!Validate.regNumAndLetter(contacts)){
+            }else if(!Validate.regWord(contacts)){
                 Ewin.alert("负责联系人格式不合法，请重新输入");
+                return;
+            }else if(legalPerson.length >= 20){
+                Ewin.alert("负责联系人长度不能超过20个字符");
                 return;
             }
             if(phone == ""){
@@ -155,6 +166,10 @@
                 return;
             }else if(!Validate.regPhone(phone)){
                 Ewin.alert("电话号码格式不合法，请重新输入");
+                return;
+            }
+            if(remark.length > 200){
+                Ewin.alert("备注长度不能超过200个字符");
                 return;
             }
             $.ajax({
