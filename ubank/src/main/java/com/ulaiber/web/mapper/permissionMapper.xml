@@ -208,4 +208,15 @@
         INSERT INTO tbl_roles(role_name,companyNumber,companyName,type)
             VALUES (#{role_name},#{companyNumber},#{companyName},1)
     </insert>
+
+    <!-- 根据邀请码获取公司和集团编号-->
+    <select id="getComAndGroupByCode" parameterType="String" resultType="com.ulaiber.web.model.Company">
+        SELECT  companyNumber,group_num  from tbl_company where code = #{code}
+    </select>
+
+    <!--给注册用户分配公司和集团-->
+    <insert id="insertRoots" parameterType="Map" >
+        INSERT INTO tbl_roots (userid,groupNumber,companyNumber,dept_number,sysflag)
+          VALUES (#{userid},#{group_num},#{companyNumber},'',1)
+    </insert>
 </mapper>

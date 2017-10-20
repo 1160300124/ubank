@@ -674,7 +674,7 @@ public class PermissionController extends BaseController {
     //新增角色信息
     @RequestMapping(value = "addRole", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo addRole(@Param("com_numbers") String com_numbers,@Param("roleName") String roleName
+    public ResultInfo addRole(@Param("com_numbers") String com_numbers,@Param("roleName") String roleName,@Param("groupNumber") String groupNumber
                         ,@Param("names") String names,@Param("flag") String flag,@Param("roleId") String roleId){
         ResultInfo resultInfo = new ResultInfo();
         if(flag.equals("0")){  //新增
@@ -686,7 +686,7 @@ public class PermissionController extends BaseController {
 //                return resultInfo;
 //            }
             //新增角色信息
-            int role = permissionService.addRole(com_numbers,roleName,names);
+            int role = permissionService.addRole(com_numbers,roleName,names,groupNumber);
             if(role > 0){
                 resultInfo.setCode(200);
                 resultInfo.setMessage("新增成功");
@@ -695,7 +695,7 @@ public class PermissionController extends BaseController {
                 resultInfo.setMessage("新增失败");
             }
         }else{  // 修改
-            int result = permissionService.modifyRole(com_numbers,roleName,roleId,names);
+            int result = permissionService.modifyRole(com_numbers,roleName,roleId,names,groupNumber);
             if(result > 0){
                 resultInfo.setCode(200);
                 resultInfo.setMessage("修改成功");

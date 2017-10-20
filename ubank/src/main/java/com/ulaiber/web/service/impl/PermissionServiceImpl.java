@@ -346,11 +346,12 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int addRole(String com_numbers, String roleName,String names) {
+    public int addRole(String com_numbers, String roleName,String names,String groupNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
         map.put("roleName" , roleName);
         map.put("names" , names);
+        map.put("groupNumber" , groupNumber);
         int result = rolesDao.addRole(map);
         return result;
     }
@@ -408,12 +409,13 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int modifyRole(String com_numbers, String roleName,String roleId,String names) {
+    public int modifyRole(String com_numbers, String roleName,String roleId,String names,String groupNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("com_numbers" , com_numbers);
         map.put("roleName" , roleName);
         map.put("roleId" , roleId);
         map.put("names" , names);
+        map.put("groupNumber" , groupNumber);
         int result = rolesDao.modifyRole(map);
         return result;
     }
@@ -538,6 +540,22 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int insertRole(Roles roles) {
         return permissionDao.insertRole(roles);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int saveRoots(String code,int userid) {
+        Company company =  permissionDao.getComAndGroupByCode(code);
+        if(StringUtil.isEmpty(company)){
+            return 0;
+        }
+        Map<String,Object> map = new HashMap<>();
+        map.put("userid" ,userid);
+        map.put("companyNumber" ,company.getCompanyNumber());
+        map.put("group_num" ,company.getGroup_num());
+        //给注册用户分配公司和集团
+        int result = permissionDao.insertRoots(map);
+        return result;
     }
 
 

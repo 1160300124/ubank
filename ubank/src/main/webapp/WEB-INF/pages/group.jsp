@@ -123,6 +123,7 @@
             var contacts = $("input[name=contacts]").val();
             var phone = $("input[name=contactsTelephone]").val();
             var remark = $("#group_remark").val();
+            var details = $("#group_details").val();
 
             if(name == ""){
                 Ewin.alert("集团名称不能为空");
@@ -170,6 +171,10 @@
             }
             if(remark.length > 200){
                 Ewin.alert("备注长度不能超过200个字符");
+                return;
+            }
+            if(details.length > 200){
+                Ewin.alert("详情长度不能超过200个字符");
                 return;
             }
             $.ajax({

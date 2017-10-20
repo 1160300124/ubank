@@ -3,11 +3,12 @@
  */
 package com.ulaiber.web.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import com.ulaiber.web.conmon.IConstants;
@@ -437,5 +438,6 @@ public class StringUtil {
 		}
 		return val;
 	}
+
 
 }

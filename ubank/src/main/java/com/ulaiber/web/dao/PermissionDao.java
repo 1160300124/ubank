@@ -63,6 +63,20 @@ public interface PermissionDao {
     List<Departments> getDeptEmpCount();  //获取各个部门员工人数
 
     int insertRole(Roles roles); //新增角色信息
+
+    /**
+     * 根据邀请码获取公司和集团编号
+     * @param code 邀请码
+     * @return Company
+     */
+    Company getComAndGroupByCode(String code);
+
+    /**
+     * 给注册用户分配公司和集团
+     * @param map
+     * @return int
+     */
+    int insertRoots(Map<String, Object> map);
 }
 
 

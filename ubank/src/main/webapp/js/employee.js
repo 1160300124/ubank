@@ -9,7 +9,11 @@ $(function () {
         todayBtn:  1,
         todayHighlight: 1,
         minView: "month"
+    }).on('hide', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
     });
+
 
     $('#leaveDate').datetimepicker({
         format: 'yyyy-mm-dd',
@@ -20,6 +24,9 @@ $(function () {
         todayBtn:  1,
         todayHighlight: 1,
         minView: "month"
+    }).on('hide', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
     });
 
     EmployeeFun.emp_getAllGroup();
@@ -300,7 +307,7 @@ var EmployeeFun = {
         }else if(!Validate.regNumber(bankCardNo)){
             Ewin.alert("银行账号必须为数字");
             return;
-        }else if(bankCardNo.length < 18 && bankCardNo.length > 21 ){
+        }else if(bankCardNo.length <= 18 || bankCardNo.length > 21 ){
             Ewin.alert("银行账号长度在18-21位");
             return;
         }

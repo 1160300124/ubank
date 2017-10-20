@@ -1,5 +1,6 @@
 package com.ulaiber.web.controller.api;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,13 +8,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.model.Company;
 import com.ulaiber.web.service.PermissionService;
+import com.ulaiber.web.utils.SFTPUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
@@ -25,6 +29,7 @@ import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.CaptchaUtil;
 import com.ulaiber.web.utils.ObjUtil;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 
@@ -57,11 +62,12 @@ public class UserController extends BaseController{
 	 * 注册激活钱包
 	 * @param request
 	 * @param response
+	 * @param code 邀请码
 	 * @return
 	 */
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo register(User user, Bank bank, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo register(@RequestParam("file") MultipartFile[] file, User user, Bank bank,String code, HttpServletRequest request, HttpServletResponse response){
 		logger.debug("register statrt...");
 		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
 		if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
@@ -82,25 +88,57 @@ public class UserController extends BaseController{
 			logger.error("register failed: mobile is already exists.");
 			return retInfo;
 		}
-		
 		//TODO调银行开户接口
-		boolean isSuccessed = true;
-		if (isSuccessed){
-			user.setBank(bank);
-			if (userService.save(user)){
-				user.setId(user.getId());
-				int result = permissionService.addPermission(user);  //新增用户权限层级信息
-				retInfo.setCode(IConstants.QT_CODE_OK);
-				retInfo.setMessage("注册成功。");
-				logger.info(user.getMobile() + " register successed.");
+		user.setBank(bank);
+		if (userService.save(user)){
+			user.setId(user.getId());
+			int result = permissionService.addPermission(user);  //新增用户权限层级信息
+			if(result == 0){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("注册失败");
+				logger.error("注册失败");
+				return retInfo;
 			}
+			//给注册用户分配公司和集团
+			int userid = (int) user.getId();
+			int result2 = permissionService.saveRoots(code,userid);
+			if(result2 == 0){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("注册失败");
+				logger.error("注册失败");
+				return retInfo;
+			}
+			//上传图片到sftp服务器上
+			logger.info(">>>>>>>>开始上传文件到sftp服务器");
+			if (file != null && file.length > 0) {
+				boolean flag = false;
+				// 循环获取file数组中得文件
+				try {
+					for (int i = 0; i < file.length; i++) {
+						MultipartFile files = file[i];
+						flag = sysUploadImg(files);
+					}
+					if(flag){
+						retInfo.setCode(IConstants.QT_CODE_OK);
+						retInfo.setMessage("上传成功");
+					}else{
+						retInfo.setCode(IConstants.QT_CODE_ERROR);
+						retInfo.setMessage("上传失败");
+					}
+				}catch(Exception e){
+					logger.error(">>>>>>上传文件异常为：" , e );
+				}
+
+			}else{
+//				retInfo.setCode(IConstants.QT_CODE_ERROR);
+//				retInfo.setMessage("file is null");
+				logger.error("file is null");
+			}
+
+			retInfo.setCode(IConstants.QT_CODE_OK);
+			retInfo.setMessage("注册成功");
+			logger.info(user.getMobile() + " register successed.");
 		}
-		else{
-			retInfo.setCode(IConstants.QT_OPEN_ACCOUT_ERROR);
-			retInfo.setMessage("银行开户失败。");
-			logger.info("open an account in bank failed.");
-		}
-		
 		logger.debug("register end...");
 		return retInfo;
 	}
@@ -121,7 +159,6 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 获取用户信息
-	 * @param id
 	 * @param request
 	 * @param response
 	 * @return
@@ -377,7 +414,6 @@ public class UserController extends BaseController{
 
 	/**
 	 * 删除用户
-	 * @param id
 	 * @param request
 	 * @param response
 	 */
@@ -394,7 +430,6 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 删除用户
-	 * @param id
 	 * @param request
 	 * @param response
 	 */
@@ -424,7 +459,6 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 删除用户
-	 * @param id
 	 * @param request
 	 * @param response
 	 */
@@ -451,5 +485,61 @@ public class UserController extends BaseController{
 		logger.debug("validateMobile end...");
 		return info;
 	}
+
+	/**
+	 * 测试上传文件到sftp服务器
+	 * @param file
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "fileUpload", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file, HttpServletRequest request, HttpServletResponse response){
+		logger.info(">>>>>>>>开始上传文件到sftp服务器");
+		ResultInfo resultInfo = new ResultInfo();
+		if (file != null && file.length > 0) {
+			boolean flag = false;
+			// 循环获取file数组中得文件
+			try {
+				for (int i = 0; i < file.length; i++) {
+					MultipartFile files = file[i];
+					flag = sysUploadImg(files);
+				}
+				if(flag){
+					resultInfo.setCode(IConstants.QT_CODE_OK);
+					resultInfo.setMessage("上传成功");
+				}else{
+					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setMessage("上传失败");
+				}
+			}catch(Exception e){
+				logger.error(">>>>>>上传文件异常为：" , e );
+			}
+
+		}
+		resultInfo.setCode(IConstants.QT_CODE_ERROR);
+		resultInfo.setMessage("file is null");
+		logger.error("file is null");
+		return resultInfo;
+	}
+
+	public boolean sysUploadImg(MultipartFile file){
+		boolean flag = false;
+		try {
+			String fileName =  file.getOriginalFilename(); // 获取上传文件的原名
+			SFTPUtil sftpUtil = new SFTPUtil();
+			sftpUtil.login(file,fileName);
+			flag = true;
+		}catch(Exception e){
+			logger.error(">>>>>>上传文件异常为：" , e );
+		}
+		return flag;
+	}
+
+
+
+
 	
 }
+

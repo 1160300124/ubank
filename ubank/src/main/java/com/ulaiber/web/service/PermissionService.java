@@ -75,7 +75,7 @@ public interface PermissionService {
 
     List<Roles> getRoleByName(String roleName);  //根据角色名，获取角色信息
 
-    int addRole(String com_numbers, String roleName,String names); //新增角色信息
+    int addRole(String com_numbers, String roleName,String names,String groupNumber); //新增角色信息
 
     int settingRoleMenu(String roleId, String menuId); //设置角色权限
 
@@ -85,7 +85,7 @@ public interface PermissionService {
 
     List<Roles> roleQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr);  //分页查询角色信息
 
-    int modifyRole(String com_numbers, String roleName , String roleId,String names);  //修改角色信息
+    int modifyRole(String com_numbers, String roleName , String roleId,String names,String groupNumber);  //修改角色信息
 
     int deleteRoles(String[] idsArr); //删除角色信息
 
@@ -129,4 +129,12 @@ public interface PermissionService {
     int updateRole(String roleid, String comNo, String name); //更新角色所属公司
 
     int insertRole(Roles roles);  //新增角色信息
+
+    /**
+     * 根据邀请码获取公司和集团编号
+     * @param code 邀请码
+     * @param userid 用户ID
+     * @return int
+     */
+    int saveRoots(String code,int userid);
 }

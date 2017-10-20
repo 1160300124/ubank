@@ -168,12 +168,18 @@ var RoleFun = {
             //showColumns : true,
             clickToSelect : true,
             columns : [
+                // {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
+                // {field : 'role_id', title : '角色编号', width: 80, align : 'left'},
+                // {field : 'role_name', title : '角色名', width: 130, align : 'left'},
+                // {field : 'companyName', title : '所属公司', width: 150, align : 'left'},
+                // {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                // {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
                 {field : 'checkbox',checkbox :true, width: 10, align : 'center'},
-                {field : 'role_id', title : '角色编号', width: 80, align : 'left'},
                 {field : 'role_name', title : '角色名', width: 130, align : 'left'},
-                {field : 'companyName', title : '所属公司', width: 150, align : 'left'},
+                {field : 'groupName', title : '所属集团', width: 130, align : 'left'},
+                {field : 'companyName', title : '所属公司', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
-                {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false}
+                {field : 'role_id', title : '角色编号', width: 130, align : 'left',visible : false}
 
             ],
             onClickRow : function (row, $element) {
@@ -224,7 +230,8 @@ var RoleFun = {
             data:  {
                 "com_numbers" : numbers,
                 "roleName" : roleName,
-                "names" : names
+                "names" : names,
+                "groupNumber" : $("#role_group").val()
             },
             success : function (data) {
                 if(data.code == 300){
