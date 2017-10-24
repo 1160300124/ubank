@@ -1,6 +1,7 @@
 package com.ulaiber.web.utils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -278,8 +279,51 @@ public class HttpsUtil {
             }  
         }  
         return httpStr;  
-    } 
-  
+    }
+
+
+    /**
+     * 发送post请求，参数为String
+     * @param apiUrl
+     * @param str
+     * @return
+     */
+    public static String doPost(String apiUrl, String str) throws URISyntaxException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        String httpStr = null;
+//        URL newUrl = null;
+//        try {
+//            newUrl = new URL(apiUrl);
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+//        URI uri = new URI(newUrl.getProtocol(), newUrl.getHost(), newUrl.getPath(), newUrl.getQuery(), null);
+        HttpPost httpPost = new HttpPost(apiUrl);
+        httpPost.setHeader("Content-Type", "text/plain; charset=utf-8");
+        //httpPost.setHeader("Content-Length", str.length() + "");
+        CloseableHttpResponse response = null;
+        try {
+            httpPost.setConfig(requestConfig);
+            StringEntity stringEntity = new StringEntity(str,"GBK");//解决中文乱码问题
+            stringEntity.setContentEncoding("GBK");
+            httpPost.setEntity(stringEntity);
+            response = httpClient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+            httpStr = EntityUtils.toString(entity, "GBK");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (response != null) {
+                try {
+                    EntityUtils.consume(response.getEntity());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return httpStr;
+    }
+
     /** 
      * 发送 SSL POST 请求（HTTPS），K-V形式 
      * @param apiUrl API接口URL 

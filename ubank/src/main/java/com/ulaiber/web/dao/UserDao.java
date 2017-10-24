@@ -3,7 +3,9 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.User;
 
 /**
@@ -116,8 +118,22 @@ public interface UserDao {
     /**
      * 获取一个公司的各个部门下的所有用户
      *
-     * @param comNum
+     * @param params
      * @return
      */
     List<User> getUsersByComNum(Map<String, Object> params);
+
+    /**
+     * 新增二类账户信息
+     * @param sa
+     * @return int
+     */
+    int insertSecondAccount(SecondAcount sa);
+
+    /**
+     * 根据公司编号查询绑定的银行
+     * @param companyNumber 公司编号
+     * @return Bank
+     */
+    Bank queryBankByCompay(int companyNumber);
 }

@@ -1,6 +1,7 @@
 package com.ulaiber.web.controller.api;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,8 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import com.ulaiber.web.secondAccount.ShangHaiAccount;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.SFTPUtil;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,30 +76,30 @@ public class UserController extends BaseController{
 		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
 		if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
 			logger.error("register failed: user or bank is empty.");
-			retInfo.setMessage("用户或银行信息不能为空。");
+			retInfo.setMessage("register failed: user or bank is empty");
 			return retInfo;
 		}
-		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(bank.getBankNo())){
+		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(user.getBankCardNo())){
 			logger.error("register failed: mobile or bankNo is empty.");
-			retInfo.setMessage("手机号或，预留手机号或银行卡号不能为空。");
+			retInfo.setMessage("register failed: mobile or bankNo is empty.");
 			return retInfo;
 		}
 		//查询手机号是否已被注册
 		User user1 = userService.findByMobile(user.getMobile());
 		if (ObjUtil.notEmpty(user1)){
 			retInfo.setCode(IConstants.QT_MOBILE_EXISTS);
-			retInfo.setMessage("手机号已经被注册。");
+			retInfo.setMessage("register failed: mobile is already exists.");
 			logger.error("register failed: mobile is already exists.");
 			return retInfo;
 		}
-		//TODO调银行开户接口
+		//新增用户权限层级信息
 		user.setBank(bank);
 		if (userService.save(user)){
 			user.setId(user.getId());
-			int result = permissionService.addPermission(user);  //新增用户权限层级信息
+			int result = permissionService.addPermission(user);
 			if(result == 0){
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("注册失败");
+				retInfo.setMessage("register failed");
 				logger.error("注册失败");
 				return retInfo;
 			}
@@ -104,7 +108,7 @@ public class UserController extends BaseController{
 			int result2 = permissionService.saveRoots(code,userid);
 			if(result2 == 0){
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("注册失败");
+				retInfo.setMessage("register failed");
 				logger.error("注册失败");
 				return retInfo;
 			}
@@ -118,25 +122,50 @@ public class UserController extends BaseController{
 						MultipartFile files = file[i];
 						flag = sysUploadImg(files);
 					}
-					if(flag){
-						retInfo.setCode(IConstants.QT_CODE_OK);
-						retInfo.setMessage("上传成功");
-					}else{
-						retInfo.setCode(IConstants.QT_CODE_ERROR);
-						retInfo.setMessage("上传失败");
+					if(!flag){
+						retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
+						retInfo.setMessage("上传图片失败");
+						logger.error(">>>>>>>>注册时上传图片失败的用户为：" + user.getMobile());
+						return retInfo;
 					}
 				}catch(Exception e){
 					logger.error(">>>>>>上传文件异常为：" , e );
 				}
 
 			}else{
-//				retInfo.setCode(IConstants.QT_CODE_ERROR);
-//				retInfo.setMessage("file is null");
-				logger.error("file is null");
+				retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
+				retInfo.setMessage("图片为空");
+				logger.error("图片为空");
+				return retInfo;
 			}
-
+			if(bank.getType() == 0){
+				//开通上海银行二类账户
+				Map<String,Object> param = new HashMap<>();
+				param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
+				param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+				param.put("CustName" , user.getUserName());				//姓名
+				param.put("IdNo" , user.getCardNo());					//身份证号
+				param.put("MobllePhone" , user.getMobile());			//手机号
+				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
+				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
+				param.put("Sign" , "Y");								//是否开通余额理财功能
+				SecondAcount sa = ShangHaiAccount.register(param);
+				if(!sa.getServerStatusCode().equals("0000")){
+					retInfo.setCode(Integer.parseInt(sa.getStatusCode()));
+					retInfo.setMessage(sa.getServerStatusCode());
+				}
+				sa.setUserid(user.getId());
+				//新增用户二类账户信息
+				int se = userService.insertSecondAccount(sa);
+				if(se == 0){
+					retInfo.setCode(IConstants.QT_CODE_ERROR);
+					retInfo.setMessage("新增二类账户信息失败");
+					logger.info(user.getMobile() + " 新增二类账户信息失败.");
+					return retInfo;
+				}
+			}
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("注册成功");
+			retInfo.setMessage("register successed");
 			logger.info(user.getMobile() + " register successed.");
 		}
 		logger.debug("register end...");
@@ -244,32 +273,33 @@ public class UserController extends BaseController{
 	}
 	
 	/**
-	 * validate
-	 * 
-	 * @param mobile
-	 * @param captcha
-	 * @param password
-	 * @param confirm_password
+	 * 验证
+	 * @param mobile 手机号
+	 * @param captcha 验证码
+	 * @param password 登录密码
+	 * @param confirm_password 确认密码
+	 * @param code 邀请码
 	 * @param request
 	 * @param response
-	 * @return
+	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "validate", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo validateCaptcha(String mobile, String captcha, String password, String confirm_password,
+	public ResultInfo validateCaptcha(String mobile, String captcha, String password, String confirm_password,String code,
 			HttpServletRequest request, HttpServletResponse response){
 		
 		ResultInfo retInfo = new ResultInfo();
-		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password)){
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha)
+				|| StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password) || StringUtil.isEmpty(code)){
 			logger.error("params can not be null.");
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("参数不能为空。");
+			retInfo.setMessage("参数不能为空");
 			return retInfo;
 		}
 		if (!StringUtils.equals(password, confirm_password)){
 			logger.error("confirmed password and new password do not match.");
 			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("新密码与确认密码不一致。");
+			retInfo.setMessage("新密码与确认密码不一致");
 			return retInfo;
 		}
 		String cap = captchaMap.get(mobile);
@@ -277,10 +307,29 @@ public class UserController extends BaseController{
 		if (!StringUtils.equals(captcha, cap)){
 			logger.error("captcha error.");
 			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("验证码错误。");
+			retInfo.setMessage("验证码错误");
 			return retInfo;
 		}
-		
+		//验证邀请码
+		Company com = userService.validateCode(code);
+		if(StringUtil.isEmpty(com)){
+			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			retInfo.setMessage("邀请码不存在");
+			return retInfo;
+		}
+		//根据公司编号查询绑定的银行
+		Bank bank = userService.queryBankByCompay(com.getCompanyNumber());
+		if(StringUtil.isEmpty(bank)){
+			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			retInfo.setMessage("公司未绑定银行");
+			return retInfo;
+		}
+		switch (bank.getType()){
+			case 0:
+				//上海银行图片压缩大小
+				retInfo.setData(300);
+				break;
+		}
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		return retInfo;
 	}

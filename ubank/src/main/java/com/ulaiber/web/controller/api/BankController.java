@@ -2,9 +2,14 @@ package com.ulaiber.web.controller.api;
 
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.model.BankAccount;
+import com.ulaiber.web.model.Company;
+import com.ulaiber.web.service.UserService;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,9 @@ public class BankController extends BaseController {
 	
 	@Autowired
 	private BankService bankservice;
+
+	@Resource
+	private UserService userService;
 	
 	@RequestMapping(value = "getBankById", method = RequestMethod.GET)
 	@ResponseBody
@@ -39,13 +47,33 @@ public class BankController extends BaseController {
 		}
 		return bankservice.getBankByBankNo(bankNo);
 	}
-	
+
+	/**
+	 * 根据邀请码，查询银行
+	 * @param code 邀请码
+	 * @return ResultInfo
+	 */
 	@RequestMapping(value = "queryAllBanks", method = RequestMethod.GET)
 	@ResponseBody
-	public ResultInfo queryAllBanks(){
+	public ResultInfo queryAllBanks(String code){
 		logger.debug("queryAllBanks start...");
 		ResultInfo retInfo = new ResultInfo();
-		List<Bank> banks = bankservice.getAllBanks();
+		//List<Bank> banks = bankservice.getAllBanks();
+		//获取公司绑定的银行信息
+		BankAccount bankAccount = bankservice.getBankByCode(code);
+		if(StringUtil.isEmpty(bankAccount)){
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("公司没有绑定银行");
+			logger.error(">>>>>>>>>>>>>>公司没有绑定银行");
+			return retInfo;
+		}
+		//根据银行编号获取银行信息
+		Bank banks = bankservice.queryBanksByNumber(bankAccount.getBankNumber());
+		if(StringUtil.isEmpty(banks)){
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("查询失败");
+			logger.error(">>>>>>>>>>查询银行失败");
+		}
 		retInfo.setCode(IConstants.QT_CODE_OK);
 		retInfo.setData(banks);
 		logger.debug("queryAllBanks end...");

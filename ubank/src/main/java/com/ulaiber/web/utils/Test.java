@@ -5,6 +5,7 @@ import java.util.*;
 import com.qiniu.util.Auth;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ReimbursementVO;
+import com.ulaiber.web.secondAccount.ShangHaiAccount;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -324,8 +325,8 @@ public class Test {
 		JSONObject json = JSONObject.fromObject(resultMap);
 		//JSONArray json = JSONArray.fromObject(resultMap);
 		System.out.println(">>>>>>>>>>>json："+ json.toString());
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/insertReim",json.toString());
-		System.out.print(">>>>>>>>>>>增报销记录结果为："+ result);
+//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/insertReim",json.toString());
+//		System.out.print(">>>>>>>>>>>增报销记录结果为："+ result);
 
 	}
 
@@ -386,6 +387,22 @@ public class Test {
 		System.out.print(">>>>>>>>结果为："+result);
 	}
 
+	//申请二类户测试
+	@org.junit.Test
+	public void secondAcount(){
+		Map<String,Object> param = new HashMap<>();
+		param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
+		param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+		param.put("CustName" , "张三");				//姓名
+		param.put("IdNo" , "422129199210220539");					//身份证号
+		param.put("MobllePhone" , "15072836822");			//手机号
+		param.put("BindCardNo" , "67844000083766334399");				//绑定银行卡号
+		param.put("ReservedPhone" , "13165601258");	//银行卡预留手机号
+		param.put("Sign" , "Y");								//是否开通余额理财功能
+//		boolean result = ShangHaiAccount.register(param);
+//		System.out.print(">>>>>>>>>申请二类户结果为：" + result);
+	}
+
 
 	@org.junit.Test
 	public void md5(){
@@ -400,7 +417,7 @@ public class Test {
 	//生成字母和数字的随机数
 	@org.junit.Test
 	public void random(){
-		System.out.println(">>>>>>>>>>随机数为：" + StringUtil.getStringRandom(8));
+		System.out.println(">>>>>>>>>>随机数为：" + StringUtil.getStringRandom(36));
 	}
 
 }

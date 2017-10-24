@@ -130,5 +130,20 @@
 			and u.user_name like concat('%',#{search},'%')
 		</if>
 	</select>
-	
+
+	<!--新增二类账户信息-->
+	<insert id="insertSecondAccount" parameterType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount" >
+		INSERT INTO tbl_secondAccount (userid,EacctNo,SubAcctNo,CoopCustNo,ProductCd,Sign,FundCode
+				,AcctOpenResult,AcctOpenDesc,FundAcctOpenResult,FundAcctOpenDesc,FundAcct,FundTxnAcct)
+			VALUES (#{userid},#{EacctNo},#{SubAcctNo},#{CoopCustNo},#{ProductCd},#{Sign},#{FundCode},
+			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct})
+	</insert>
+
+	<!--根据公司编号查询绑定的银行-->
+	<select id="queryBankByCompay" parameterType="int" resultType="com.ulaiber.web.model.Bank">
+		select DISTINCT a.* from tbl_banks a
+			left join tbl_bankAccount b on a.bankNo = b.bankNumber
+			left join tbl_company c on b.companyNumber = b.companyNumber
+			where c.companyNumber = #{companyNumber}
+	</select>
 </mapper>

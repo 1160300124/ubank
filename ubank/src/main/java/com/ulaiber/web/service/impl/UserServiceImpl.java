@@ -10,7 +10,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ulaiber.web.dao.BanksRootDao;
-import com.ulaiber.web.model.BankUsers;
+import com.ulaiber.web.dao.PermissionDao;
+import com.ulaiber.web.model.*;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,9 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.ulaiber.web.dao.UserDao;
-import com.ulaiber.web.model.Menu;
-import com.ulaiber.web.model.Message;
-import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
@@ -37,6 +36,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	@Resource
 	private BanksRootDao banksRootDao;
+
+	@Resource
+	private PermissionDao permissionDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
@@ -173,8 +175,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		//o_List.get(0).get("PLAIN");
 
 		//发送请求
-		String apiUrl = "https://10.17.2.93:8080/sendRegister";
-		String response = HttpsUtil.doPost(apiUrl, json);
+		String response = "";
 
 		return StringUtil.parserJson(response);
 
@@ -225,5 +226,20 @@ public class UserServiceImpl extends BaseService implements UserService {
 	@Override
 	public BankUsers bankUserLogin(String mobile) {
 		return banksRootDao.bankUserLogin(mobile);
+	}
+
+    @Override
+    public int insertSecondAccount(SecondAcount sa) {
+        return mapper.insertSecondAccount(sa);
+    }
+
+	@Override
+	public Company validateCode(String code) {
+		return permissionDao.getComAndGroupByCode(code);
+	}
+
+	@Override
+	public Bank queryBankByCompay(int companyNumber) {
+		return mapper.queryBankByCompay(companyNumber);
 	}
 }

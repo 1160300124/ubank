@@ -10,6 +10,12 @@ public class Bank implements Serializable{
 	//银行名称
 	private String bankName;
 
+	//银行类型
+	private int type;
+
+	//银行连号
+	private String number;
+
 	public String getBankNo() {
 		return bankNo;
 	}
@@ -25,5 +31,20 @@ public class Bank implements Serializable{
 	public void setBankName(String bankName) {
 		this.bankName = bankName;
 	}
-	
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
 }

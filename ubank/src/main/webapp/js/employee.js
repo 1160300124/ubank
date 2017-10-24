@@ -311,6 +311,12 @@ var EmployeeFun = {
             Ewin.alert("银行账号长度在18-21位");
             return;
         }
+        var entryDate = $('#entryDate').val();
+        var leaveDate = $('#leaveDate').val();
+        if(entryDate > leaveDate){
+            Ewin.alert("入职时间不能大于离职时间");
+            return;
+        }
         $.ajax({
             url : 'addEmployee?flag=' + flag + "&pwd=" + pwd,
             dataType : 'json',

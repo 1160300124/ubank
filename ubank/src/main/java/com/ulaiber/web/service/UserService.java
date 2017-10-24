@@ -2,10 +2,8 @@ package com.ulaiber.web.service;
 
 import java.util.List;
 
-import com.ulaiber.web.model.BankUsers;
-import com.ulaiber.web.model.Menu;
-import com.ulaiber.web.model.Message;
-import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.*;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 
 public interface UserService {
 	
@@ -131,5 +129,24 @@ public interface UserService {
 	 */
 	BankUsers bankUserLogin(String mobile);
 
+	/**
+	 * 新增二类账户信息
+	 * @param sa
+	 * @return int
+	 */
+    int insertSecondAccount(SecondAcount sa);
 
+	/**
+	 * 验证邀请码
+	 * @param code 邀请码
+	 * @return Company
+	 */
+	Company validateCode(String code);
+
+	/**
+	 * 根据公司编号查询绑定的银行
+	 * @param companyNumber 公司编号
+	 * @return Bank
+	 */
+	Bank queryBankByCompay(int companyNumber);
 }

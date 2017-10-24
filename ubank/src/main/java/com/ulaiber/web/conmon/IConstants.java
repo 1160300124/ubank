@@ -166,4 +166,11 @@ public class IConstants
 	public static final String menuId = "101,101001,102,102001,102002,102003,103,103001,103002," +
 			"103003,102004,102005,103004,104,104001,104002,104003,104004,104005";
 
+	//注册上传照片状态 成功
+	public static final int UPLOAD_STATUS_OK = 1200;
+
+	//注册上传照片状态 失败
+	public static final int UPLOAD_STATUS_ERROR = 1500;
+
+
 }
