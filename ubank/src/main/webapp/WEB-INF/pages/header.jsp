@@ -10,6 +10,7 @@
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-treeview.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-datetimepicker.min.css" rel="stylesheet" />	
+	<link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap-select.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/bootstrap-table/bootstrap-theme.min.css" rel="stylesheet" />
 	<link href="<%=request.getContextPath()%>/css/zTreeStyle.css" rel="stylesheet" />
@@ -23,6 +24,8 @@
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-datetimepicker.fr.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/bootstrap-select.min.js" type="text/javascript"></script>
+	<script src="<%=request.getContextPath()%>/js/bootstrap/defaults-zh_CN.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/js/icheck/icheck.min.js" type="text/javascript"></script>

@@ -3,7 +3,7 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.AttendanceStatistic;
+import com.ulaiber.web.model.attendance.AttendanceStatistic;
 
 /** 
  * 考勤统计业务逻辑接口

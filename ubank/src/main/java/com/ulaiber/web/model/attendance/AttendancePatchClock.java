@@ -1,4 +1,4 @@
-package com.ulaiber.web.model;
+package com.ulaiber.web.model.attendance;
 
 /** 
  * 补卡

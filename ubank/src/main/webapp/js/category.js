@@ -16,13 +16,20 @@ $(function(){
 
 	$("#btn_add_confirm").unbind().bind("click", function(){
 
-		$("#btn_add_confirm").attr("disabled", true);
-
 		var addModal = $("#add_modal");
 		var params = {};
 		params.categoryName = addModal.find("#category_name").val();
 		params.remark = addModal.find("#remark").val();
+		if (params.categoryName.length == 0 ||  params.categoryName.length > 40){
+			Ewin.alert("类别名称长度40个字符以内");
+			return false;
+		}
+		if (params.remark.length > 200){
+			Ewin.alert("备注长度200个字符以内");
+			return false;
+		}
 
+		$("#btn_add_confirm").attr("disabled", true);
 		$.ajax({
 			url : "saveCategory",
 			type: "post",
@@ -97,14 +104,21 @@ $(function(){
 
 	$("#btn_edit_confirm").unbind().bind("click", function(){
 
-		$("#btn_edit_confirm").attr("disabled", true);
-
 		var editModal = $("#edit_modal");
 		var params = {};
 		params.cid = editModal.find("#category_id").val();
 		params.categoryName = editModal.find("#category_name").val();
 		params.remark = editModal.find("#remark").val();
+		if (params.categoryName.length == 0 ||  params.categoryName.length > 40){
+			Ewin.alert("类别名称长度40个字符以内");
+			return false;
+		}
+		if params.remark.length > 200){
+			Ewin.alert("备注长度200个字符以内");
+			return false;
+		}
 
+		$("#btn_edit_confirm").attr("disabled", true);
 		$.ajax({
 			url : "editCategory",
 			type: "post",

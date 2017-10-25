@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.Attendance;
-import com.ulaiber.web.model.AttendancePatchClock;
-import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.attendance.Attendance;
+import com.ulaiber.web.model.attendance.AttendancePatchClock;
+import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.UserService;

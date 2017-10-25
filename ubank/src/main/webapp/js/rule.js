@@ -136,8 +136,8 @@ $(function(){
 		var ruleName = addModal.find("#rule_name").val();
 		var startTime = addModal.find("#start_time").val();
 		var endTime = addModal.find("#end_time").val();
-		if (ruleName == null || ruleName == "" || ruleName == undefined){
-			Ewin.alert("请填写规则名称。");
+		if (ruleName == null || ruleName == "" || ruleName == undefined || ruleName.length > 40){
+			Ewin.alert("规则名称长度40个字符以内。");
 			return false;
 		}
 		if (startTime == null || startTime == "" || startTime == undefined){
@@ -296,8 +296,8 @@ $(function(){
 		var ruleName = editModal.find("#rule_name").val();
 		var startTime = editModal.find("#start_time").val();
 		var endTime = editModal.find("#end_time").val();
-		if (ruleName == null || ruleName == "" || ruleName == undefined){
-			Ewin.alert("请填写规则名称。");
+		if (ruleName == null || ruleName == "" || ruleName == undefined || ruleName.length > 40){
+			Ewin.alert("规则名称长度40个字符以内。");
 			return false;
 		}
 		if (startTime == null || startTime == "" || startTime == undefined){

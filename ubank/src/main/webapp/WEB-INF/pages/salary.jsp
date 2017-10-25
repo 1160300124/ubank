@@ -19,8 +19,8 @@
 
 		</div>
 
-		<table id="tb_saraly_records" data-toggle="table" data-url="getManagement" data-method="get" data-toolbar="#toolbar" data-striped="true"
-			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true"
+		<table id="tb_saraly_records" data-toggle="table" data-url="getManagement" data-method="post" data-toolbar="#toolbar" data-striped="true"
+			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>

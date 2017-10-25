@@ -30,9 +30,6 @@ $(function(){
 					var select = $("#url_page");
 					for (var i in categories){
 						var option = "<option value='" + categories[i].cid + "'>" + categories[i].categoryName + "</option>";
-//						var option = new Option();
-//						option.value = pages[i].pid;
-//						option.text = pages[i].pageName;
 						select.append(option);
 					}
 				}else{
@@ -57,9 +54,6 @@ $(function(){
 					var select = $("#url_module");
 					for (var i in modules){
 						var option = "<option value='" + modules[i].mid + "'>" + modules[i].moduleName + "</option>";
-//						var option = new Option();
-//						option.value = modules[i].mid;
-//						option.text = modules[i].moduleName;
 						select.append(option);
 					}
 				}else{
@@ -135,16 +129,24 @@ $(function(){
 		params.orderby = addModal.find("#url_sort").val();
 		params.remark = addModal.find("#remark").val();
 		
-		if (params.urlName == "" || params.urlName == null) {
-			Ewin.alert("URL名称不能为空。");
+		if (params.urlName == "" || params.urlName == null || params.urlName.length > 40) {
+			Ewin.alert("URL名称长度40个字符以内。");
+			return;
+		}
+		if (params.url == "" || params.url == null || params.url.length > 300){
+			Ewin.alert("URL链接长度300个字符以内。");
 			return;
 		}
 		if (params.picPath == "" || params.picPath == null) {
 			Ewin.alert("请上传图标。");
 			return;
 		}
-		if (params.orderby == "" || params.orderby == null) {
-			Ewin.alert("排序不能为空。");
+		if (params.orderby == "" || !/^[1-9]\d{0,2}$/.test(params.orderby)) {
+			Ewin.alert("排序必须为1~999之间的数字。");
+			return;
+		}
+		if (params.remark.length > 200){
+			Ewin.alert("备注长度200个字符以内。");
 			return;
 		}
 		
@@ -194,16 +196,24 @@ $(function(){
 		params.orderby = editModal.find("#url_sort").val();
 		params.remark = editModal.find("#remark").val();
 		
-		if (params.urlName == "" || params.urlName == null) {
-			Ewin.alert("URL名称不能为空。");
+		if (params.urlName == "" || params.urlName == null || params.urlName.length > 40) {
+			Ewin.alert("URL名称长度40个字符以内。");
+			return;
+		}
+		if (params.url == "" || params.url == null || params.url.length > 300){
+			Ewin.alert("URL链接长度300个字符以内。");
 			return;
 		}
 		if (params.picPath == "" || params.picPath == null) {
 			Ewin.alert("请上传图标。");
 			return;
 		}
-		if (params.orderby == "" || params.orderby == null) {
-			Ewin.alert("排序不能为空。");
+		if (params.orderby == "" || !/^[1-9]\d{0,2}$/.test(params.orderby)) {
+			Ewin.alert("排序必须为1~999之间的数字。");
+			return;
+		}
+		if (params.remark.length > 200){
+			Ewin.alert("备注长度200个字符以内。");
 			return;
 		}
 		

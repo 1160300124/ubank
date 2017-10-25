@@ -3,7 +3,7 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.Attendance;
+import com.ulaiber.web.model.attendance.Attendance;
 
 /**
  * 考勤记录数据接口

@@ -4,6 +4,7 @@ import com.qiniu.util.Auth;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
+import com.ulaiber.web.model.attendance.AttendancePatchClock;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.ReimbursementService;

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.SalaryRuleDao">
+    <resultMap id="SalaryRuleMap" type="SalaryRule" >
+    	<id column="rid" property="rid" jdbcType="BIGINT" />
+    	<result column="salaryRuleName" property="salaryRuleName" jdbcType="VARCHAR" />
+    	<result column="operateName" property="operateName" jdbcType="VARCHAR" />
+    	<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+    	<result column="companyId" property="companyId" jdbcType="VARCHAR" />
+    	<result column="companyName" property="companyName" jdbcType="VARCHAR" />
+    	<result column="overtime_flag" property="overtimeFlag" jdbcType="INTEGER" />
+    	<result column="socialInsurance" property="socialInsurance" jdbcType="DOUBLE" />
+    	<result column="publicAccumulationFunds" property="publicAccumulationFunds" jdbcType="DOUBLE" />
+    	<result column="taxThreshold" property="taxThreshold" jdbcType="DOUBLE" />
+    	<result column="laterCutPayment" property="laterCutPayment" jdbcType="VARCHAR" />
+    	<result column="leaveEarlyCutPayment" property="leaveEarlyCutPayment" jdbcType="VARCHAR" />
+    	<result column="leaveCutPayment" property="leaveCutPayment" jdbcType="VARCHAR" />
+    	<result column="allow_forget_clock_count" property="allowForgetClockCount" jdbcType="INTEGER" />
+		<result column="forget_clock_cut_payment" property="forgetClockCutPayment" jdbcType="DOUBLE" />
+		<result column="forget_clock_cut_unit" property="forgetClockCutUnit" jdbcType="INTEGER" />
+		<result column="no_clock_cut_payment" property="noClockCutPayment" jdbcType="DOUBLE" />
+		<result column="no_clock_cut_unit" property="noClockCutUnit" jdbcType="INTEGER" />
+   </resultMap>
+   
+    <resultMap id="LeaveCutMap" type="com.ulaiber.web.model.attendance.LeaveCutPayment" >
+    	<id column="lr_id" property="lrid" jdbcType="BIGINT" />
+    	<result column="personal_leave" property="personalLeave" jdbcType="VARCHAR" />
+    	<result column="sick_leave" property="sickLeave" />
+    	<result column="annual_leave" property="annualLeave" jdbcType="VARCHAR" />
+    	<result column="days_off" property="daysOff" />
+    	<result column="wedding_leave" property="weddingLeave" />
+    	<result column="maternity_leave" property="maternityLeave" jdbcType="VARCHAR" />
+    	<result column="else_leave" property="elseLeave" jdbcType="VARCHAR" />
+   </resultMap>
+  
+	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<insert id="save" parameterType="SalaryRule" useGeneratedKeys="true" keyProperty="rid">
+		insert into tbl_salaries_rules(salaryRuleName,operateName,createTime,updateTime,companyId,companyName,overtime_flag,socialInsurance,publicAccumulationFunds,taxThreshold,
+		laterCutPayment,leaveEarlyCutPayment,leaveCutPayment,allow_forget_clock_count,forget_clock_cut_payment,forget_clock_cut_unit,no_clock_cut_payment,no_clock_cut_unit)
+		values(#{salaryRuleName},#{operateName}, #{createTime},#{updateTime},#{companyId},#{companyName},#{overtimeFlag},#{socialInsurance},#{publicAccumulationFunds},
+		#{taxThreshold},#{laterCutPayment},#{leaveEarlyCutPayment},#{leaveCutPayment},#{allowForgetClockCount},#{forgetClockCutPayment},#{forgetClockCutUnit},
+		#{noClockCutPayment},#{noClockCutUnit}) 
+	</insert>
+	
+	<select id="getSalaryRules" parameterType="Map" resultMap="SalaryRuleMap">
+		select * from tbl_salaries_rules
+		<if test="search != null and search != ''">
+			where operateName like concat('%',#{search},'%') or companyName like concat('%',#{search},'%')
+		</if>
+		order by updateTime desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_salaries_rules
+	</select>
+	
+	<delete id="deleteByRids" parameterType="java.util.List">  
+		delete from tbl_salaries_rules where rid in
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+	<update id="updateSalaryRuleByRid" parameterType="SalaryRule">
+		update tbl_salaries_rules set salaryRuleName=#{salaryRuleName},operateName=#{operateName},updateTime=#{updateTime},companyId=#{companyId},companyName=#{companyName},
+		overtime_flag=#{overtimeFlag},socialInsurance=#{socialInsurance},publicAccumulationFunds=#{publicAccumulationFunds},taxThreshold=#{taxThreshold},
+		laterCutPayment=#{laterCutPayment},leaveEarlyCutPayment=#{leaveEarlyCutPayment},leaveCutPayment=#{leaveCutPayment},allow_forget_clock_count=#{allowForgetClockCount},
+		forget_clock_cut_payment=#{forgetClockCutPayment},forget_clock_cut_unit=#{forgetClockCutUnit},no_clock_cut_payment=#{noClockCutPayment},no_clock_cut_unit=#{noClockCutUnit}
+		where rid=#{rid}
+	</update>
+	
+	<sql id="byCond">
+		where r.company_num = #{company_num} and r.clock_date &gt;= #{start_date} and r.clock_date &lt;= #{end_date}
+		<if test="dept_num != null and dept_num != 0">
+			and r.dept_num = #{dept_num}
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and r.user_name like concat('%',#{user_name},'%')
+		</if>
+	</sql>
+	
+	
+</mapper>
