@@ -3,7 +3,7 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.AttendanceStatistic;
+import com.ulaiber.web.model.attendance.AttendanceStatistic;
 
 /** 
  * <一句话概述功能>

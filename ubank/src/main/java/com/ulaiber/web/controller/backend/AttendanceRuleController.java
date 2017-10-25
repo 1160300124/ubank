@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.AttendanceRule;
+import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.UserOfRule;
+import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.UserService;
@@ -52,7 +53,7 @@ public class AttendanceRuleController extends BaseController {
 	private UserService userService;
 	
 	@Autowired
-	private PermissionService permissionSerivce; 
+	private PermissionService permissionService; 
 
 	@RequestMapping(value = "rule", method = RequestMethod.GET)
 	public String attendance(HttpServletRequest request, HttpServletResponse response){
@@ -109,19 +110,23 @@ public class AttendanceRuleController extends BaseController {
 		List<Map<String, Object>> companyTree = new ArrayList<Map<String, Object>>();
 		try {
 			String[] companyNums = conuser.getCompanyNumber().split(",");
+			List<Company> companys = permissionService.getCompanysByNums(companyNums);
+			Map<String, String> comMap = new HashMap<String, String>();
+			for (Company com : companys){
+				comMap.put(com.getCompanyNumber() + "", com.getName());
+			}
 			for (String companyNum : companyNums){
 				List<UserOfRule> uofs = service.getUserIdsByComId(Integer.parseInt(companyNum));
 				List<Long> userIds = new ArrayList<Long>();
 				for (UserOfRule uof : uofs){
 					userIds.add(uof.getUserId());
 				}
-				List<Departments> depts = permissionSerivce.getDeptByCom(companyNum);
+				List<Departments> depts = permissionService.getDeptByCom(companyNum);
 				List<User> users = userService.getUsersByComNum(companyNum, search);
 				
-				String companyName = "";
+				String companyName = comMap.get(companyNum);
 				List<Map<String, Object>> deptTree = new ArrayList<Map<String, Object>>();
 				for (Departments dept : depts){
-					companyName = dept.getComName();
 					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 					for (User user : users){
 						if (StringUtils.equals(dept.getDept_number(), user.getDept_number())){

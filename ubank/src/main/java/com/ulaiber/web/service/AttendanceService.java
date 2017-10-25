@@ -3,10 +3,10 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.Attendance;
-import com.ulaiber.web.model.AttendancePatchClock;
-import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.attendance.Attendance;
+import com.ulaiber.web.model.attendance.AttendancePatchClock;
+import com.ulaiber.web.model.attendance.AttendanceRule;
 
 /** 
  * 考勤记录业务逻辑接口

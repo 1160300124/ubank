@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.AttendanceStatistic;
+import com.ulaiber.web.model.attendance.AttendanceStatistic;
 import com.ulaiber.web.service.AttendanceStatisticService;
 import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.ExportExcel;

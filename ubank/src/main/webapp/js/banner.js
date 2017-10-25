@@ -100,16 +100,24 @@ $(function(){
 		params.orderby = addModal.find("#banner_sort").val();
 		params.remark = addModal.find("#remark").val();
 		
-		if (params.bannerName == "" || params.bannerName == null) {
-			Ewin.alert("Banner名称不能为空。");
+		if (params.bannerName == "" || params.bannerName == null || params.bannerName.length > 40) {
+			Ewin.alert("Banner名称长度40个字符以内。");
+			return;
+		}
+		if (params.url == "" || params.url == null || params.url.length > 300){
+			Ewin.alert("Banner链接长度300个字符以内。");
 			return;
 		}
 		if (params.picPath == "" || params.picPath == null) {
-			Ewin.alert("请上传图片。");
+			Ewin.alert("请上传图标。");
 			return;
 		}
-		if (params.orderby == "" || params.orderby == null) {
-			Ewin.alert("排序不能为空。");
+		if (params.orderby == "" || !/^[1-9]\d{0,2}$/.test(params.orderby)) {
+			Ewin.alert("排序必须为1~999之间的数字。");
+			return;
+		}
+		if (params.remark.length > 200){
+			Ewin.alert("备注长度200个字符以内。");
 			return;
 		}
 		
@@ -156,16 +164,24 @@ $(function(){
 		params.orderby = editModal.find("#banner_sort").val();
 		params.remark = editModal.find("#remark").val();
 		
-		if (params.bannerName == "" || params.bannerName == null) {
-			Ewin.alert("Banner名称不能为空。");
+		if (params.bannerName == "" || params.bannerName == null || params.bannerName.length > 40) {
+			Ewin.alert("Banner名称长度40个字符以内。");
+			return;
+		}
+		if (params.url == "" || params.url == null || params.url.length > 300){
+			Ewin.alert("Banner链接长度300个字符以内。");
 			return;
 		}
 		if (params.picPath == "" || params.picPath == null) {
-			Ewin.alert("请上传图片。");
+			Ewin.alert("请上传图标。");
 			return;
 		}
-		if (params.orderby == "" || params.orderby == null) {
-			Ewin.alert("排序不能为空。");
+		if (params.orderby == "" || !/^[1-9]\d{0,2}$/.test(params.orderby)) {
+			Ewin.alert("排序必须为1~999之间的数字。");
+			return;
+		}
+		if (params.remark.length > 200){
+			Ewin.alert("备注长度200个字符以内。");
 			return;
 		}
 		

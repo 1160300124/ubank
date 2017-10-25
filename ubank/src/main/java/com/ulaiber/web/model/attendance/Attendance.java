@@ -1,4 +1,7 @@
-package com.ulaiber.web.model;
+package com.ulaiber.web.model.attendance;
+
+import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.Departments;
 
 /** 
  * 考勤记录实体类

@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ulaiber.web.dao.AttendanceRuleDao;
-import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.UserOfRule;
+import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.BaseService;
 

@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.Attendance;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.attendance.Attendance;
 import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.DateTimeUtil;

@@ -2,9 +2,9 @@ package com.ulaiber.web.service;
 
 import java.util.List;
 
-import com.ulaiber.web.model.AttendanceRule;
 import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.UserOfRule;
+import com.ulaiber.web.model.attendance.AttendanceRule;
 
 /** 
  * <一句话概述功能>
