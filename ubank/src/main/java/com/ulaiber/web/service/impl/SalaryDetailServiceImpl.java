@@ -37,5 +37,10 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 		return mapper.batchDeleteSalaryDetails(sids) > 0;
 	}
 
+	@Override
+	public int getTotalBySid(long sid) {
+		return mapper.getTotalBySid(sid);
+	}
+
 
 }

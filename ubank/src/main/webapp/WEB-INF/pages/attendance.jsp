@@ -4,7 +4,6 @@
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 
 <div class="page-content">
-	<div class="panel-body" style="padding-bottom:0px;">
 		<form class="form-horizontal" role="form" id="record_form">
 			<div class="form-group">
 				<label class="col-sm-1 control-label" for="company">公司</label>
@@ -90,9 +89,6 @@
 			</thead>
 
 		</table>
-	</div>
-	
-	
 	
 </div>
 <script src="<%=request.getContextPath()%>/js/attendance.js" type="text/javascript" ></script>

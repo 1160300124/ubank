@@ -117,21 +117,29 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		att.setClockDate(today);
 		
-		//是否开启弹性时间
-		if (rule.getFlexibleFlag() == 0){
-			clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, rule.getFlexibleTime());
-			//下班是否顺延
-			if (rule.getPostponeFlag() == 0){
-				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 0, 0, rule.getFlexibleTime());
-			}
-		}
-		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", att.getUserId());
 		params.put("dateBegin", today);
 		params.put("dateEnd", today);
 		//查询该用户当天的打卡记录
 		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
+		
+		//是否开启弹性时间
+		if (rule.getFlexibleFlag() == 0){
+			if (records == null || records.size() == 0){
+				clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, rule.getFlexibleTime());
+			} else {
+				//获取当前时间>上班时间的分钟数
+				int minute = records.get(0).getClockOnDateTime() == null ? 0 : DateTimeUtil.getminute(clockOnTime, records.get(0).getClockOnDateTime());
+				//下班是否顺延
+				if (rule.getPostponeFlag() == 0){
+					//在弹性上班时间内打卡，下班时间才顺延
+					if (minute > 0 && minute <= rule.getFlexibleTime()){
+						clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 0, 0, minute);
+					}
+				}
+			}
+		}
 		
 		//新增，更新标志，默认失败
 		boolean flag = false;

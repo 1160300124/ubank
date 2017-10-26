@@ -4,46 +4,44 @@
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/attendance.css">
 <div class="page-content">
-	<div class="panel-body" style="padding-bottom:0px;">
-		<div id="toolbar" class="btn-group">
-	 		<button id="btn_add" type="button" class="btn btn-default">
-                <span class="fa icon-plus" aria-hidden="true"></span>新增
-            </button>
-			<button id="btn_delete" type="button" class="btn btn-default">
-				<span class="fa icon-remove" aria-hidden="true"></span>删除
-			</button>
-			<button id="btn_refresh" type="button" class="btn btn-default">
-				<span class="fa icon-refresh" aria-hidden="true"></span>刷新
-			</button>
+	<div id="toolbar" class="btn-group">
+ 		<button id="btn_add" type="button" class="btn btn-default">
+               <span class="fa icon-plus" aria-hidden="true"></span>新增
+           </button>
+		<button id="btn_delete" type="button" class="btn btn-default">
+			<span class="fa icon-remove" aria-hidden="true"></span>删除
+		</button>
+		<button id="btn_refresh" type="button" class="btn btn-default">
+			<span class="fa icon-refresh" aria-hidden="true"></span>刷新
+		</button>
 
-		</div>
-		
-		<table id="tb_rules" data-toggle="table" data-url="getRules" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
-			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
-			   data-page-size="10" data-page-list="[10,15,20]">
-			<thead>
-			<tr>
-				<th data-checkbox="true"></th>
-				<th data-field="ruleName">名称</th>
-				<th data-field="clockOnTime" >上班时间</th>
-				<th data-field="clockOffTime" >下班时间</th>
-				<th data-field="restStartTime">休息开始时间</th>
-				<th data-field="restEndTime">休息结束时间</th>
-				<th data-field="clockOnAdvanceHours">最早上班</th>
-				<th data-field="clockOffDelayHours">最晚下班</th>
-				<th data-field="workday">工作日</th>
-				<th data-field="holidayFlag" data-formatter="holidayFormatter">遵循法定节假日</th>
-				<th data-field="flexibleFlag" data-formatter="flexibleFormatter">弹性上班</th>
-				<th data-field="flexibleTime">弹性时间(min)</th>
-				<th data-field="postponeFlag" data-formatter="postponeFormatter">下班顺延</th>
-				<th data-field="clockBounds">打卡范围(m)</th>
-				<th data-field="clockLocation">考勤地点</th>
-				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
-			</tr>
-			</thead>
-
-		</table>
 	</div>
+	
+	<table id="tb_rules" data-toggle="table" data-url="getRules" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
+		   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
+		   data-page-size="10" data-page-list="[10,15,20]">
+		<thead>
+		<tr>
+			<th data-checkbox="true"></th>
+			<th data-field="ruleName">名称</th>
+			<th data-field="clockOnTime" >上班时间</th>
+			<th data-field="clockOffTime" >下班时间</th>
+			<th data-field="restStartTime">休息开始时间</th>
+			<th data-field="restEndTime">休息结束时间</th>
+			<th data-field="clockOnAdvanceHours">最早上班</th>
+			<th data-field="clockOffDelayHours">最晚下班</th>
+			<th data-field="workday">工作日</th>
+			<th data-field="holidayFlag" data-formatter="holidayFormatter">遵循法定节假日</th>
+			<th data-field="flexibleFlag" data-formatter="flexibleFormatter">弹性上班</th>
+			<th data-field="flexibleTime">弹性时间(min)</th>
+			<th data-field="postponeFlag" data-formatter="postponeFormatter">下班顺延</th>
+			<th data-field="clockBounds">打卡范围(m)</th>
+			<th data-field="clockLocation">考勤地点</th>
+			<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
+		</tr>
+		</thead>
+
+	</table>
 	
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y:auto;">
