@@ -26,6 +26,13 @@ public interface SalaryDetailDao {
      * @return
      */
     List<SalaryDetail> getDetailsBySid(long sid);
+    
+    /**
+     * 根据工资流水id查询记录条数
+     * @param sid
+     * @return
+     */
+    int getTotalBySid(long sid);
 
     /**
      * 根据id批量删除

@@ -32,6 +32,10 @@
 		select * from tbl_salaries_detail where sid=#{sid}
 	</select>
 	
+	<select id="getTotalBySid" resultType="Integer">
+		select count(1) from tbl_salaries_detail where sid=#{sid}
+	</select>
+	
 	<delete id="batchDeleteSalaryDetails" parameterType="java.util.List">  
 		delete from tbl_salaries_detail where sid in
 	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">   

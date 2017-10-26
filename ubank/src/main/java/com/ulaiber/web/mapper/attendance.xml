@@ -47,9 +47,9 @@
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="Attendance" >
 		insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,
-		clock_off_datetime,clock_off_status,clock_off_location,clock_off_device,patchClock_status) values(#{userId},#{userName},#{dept.dept_number},
+		clock_off_datetime,clock_off_status,clock_off_location,clock_off_device,patchClock_type,patchClock_status) values(#{userId},#{userName},#{dept.dept_number},
 		#{company.companyNumber},#{clockDate},#{clockOnDateTime},#{clockOnStatus},#{clockOnLocation},#{clockOnDevice},#{clockOffDateTime},#{clockOffStatus},
-		#{clockOffLocation},#{clockOffDevice},#{patchClockStatus}) 
+		#{clockOffLocation},#{clockOffDevice},#{patchClockType},#{patchClockStatus}) 
 	</insert>
 	
 	<sql id="byCond">
@@ -88,13 +88,14 @@
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
 		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,
-		clock_off_device,patchClock_status from tbl_attendance_records where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by rid
+		clock_off_device,patchClock_type,patchClock_status from tbl_attendance_records where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd}
+		order by rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
 		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_off_datetime,r.clock_off_status,
-		r.clock_off_location,r.clock_off_device,r.patchClock_status from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id where u.mobile=#{mobile}
-		and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by r.rid
+		r.clock_off_location,r.clock_off_device,r.patchClock_type,r.patchClock_status from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id
+		where u.mobile=#{mobile} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by r.rid
 	</select>
 	
 	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
@@ -170,7 +171,7 @@
 		<if test="patchClockType == 2">
 			clock_off_datetime = #{patchClockOffTime},clock_off_status = #{patchClockOffStatus},
 		</if>
-		patchClock_status = #{patchClockStatus} where user_id=#{userId} and clock_date = #{clockDate}
+		patchClock_type = #{patchClockType},patchClock_status = #{patchClockStatus} where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
 	<update id="updatePatchClockStatus" parameterType="Map">

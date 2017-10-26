@@ -3,7 +3,6 @@
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <!-- 公司页 -->
 <div class="page-content">
-	<div class="panel-body" style="padding-bottom:0px;">
     <%--工具栏--%>
     <div id="toolbar" class="btn-group">
         <button  onclick="SalaryConfigFun.openAdd()" type="button" class="btn btn-default">
@@ -28,7 +27,7 @@
 				<th data-field="socialInsurance">社保缴纳金额</th>
 				<th data-field="publicAccumulationFunds">公积金缴纳金额</th>
 				<th data-field="taxThreshold">个税起征点</th>
-				<th data-field="updateTime" data-width="150px">修改时间</th>
+				<th data-field="updateTime" data-width="160px">修改时间</th>
 				<th data-field="operateName">修改人</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
@@ -50,7 +49,7 @@
 					<form class="form-horizontal" role="form" id="salaryRule_config_form">
 						<input type="hidden" id="salarySule_id" name="salarySule_id" value="" />
 						<div class="form-group">
-                              <label class="col-sm-3 control-label" for="exampleInputName2">工资计算模板名称</label>
+                              <label class="col-sm-3 control-label" for="exampleInputName2">工资规则名称</label>
                               <div class="col-sm-6">
                                   <input type="text" class="form-control" id="salaryRuleName" name="salaryRuleName" placeholder="请输入名称" >
                               </div>
@@ -414,7 +413,6 @@
             
         </div>
     </div>
-  </div>
 </div>
 <script src="<%=request.getContextPath()%>/js/salaryRule.js" type="text/javascript"></script>
 <style>

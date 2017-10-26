@@ -84,7 +84,13 @@ public class Attendance {
 	private String clockOffDevice;
 	
 	/**
-	 * 补卡审批状态 0：已通过  1：未通过  2：审批中
+	 * 补卡类型 0：全天补卡 1：上班补卡 2：下班补卡
+	 *
+	 */
+	private String patchClockType;
+	
+	/**
+	 * 补卡审批状态 0：审批中  1：已通过  2：未通过  3:已取消
 	 */
 	private String patchClockStatus;
 	
@@ -198,6 +204,14 @@ public class Attendance {
 
 	public void setClockOffDevice(String clockOffDevice) {
 		this.clockOffDevice = clockOffDevice;
+	}
+
+	public String getPatchClockType() {
+		return patchClockType;
+	}
+
+	public void setPatchClockType(String patchClockType) {
+		this.patchClockType = patchClockType;
 	}
 
 	public String getPatchClockStatus() {

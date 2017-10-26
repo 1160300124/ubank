@@ -25,7 +25,6 @@ import com.ulaiber.web.model.Holiday;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.attendance.Attendance;
-import com.ulaiber.web.model.attendance.AttendancePatchClock;
 import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.AttendanceService;
@@ -183,18 +182,26 @@ public class AttendanceApiController extends BaseController {
 			return data;
 		}
 		
-		//是否开启弹性时间
-		if (rule.getFlexibleFlag() == 0){
-			//下班是否顺延
-			if (rule.getPostponeFlag() == 0){
-				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 0, 0, rule.getFlexibleTime());
-			}
-		}
-		
 		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡  5不能打卡
 		int type = 0;
 		//查询当天的考勤记录
 		List<Attendance> records = service.getRecordsByDateAndMobile(today, today, mobile);
+		
+		//是否开启弹性时间
+		if (rule.getFlexibleFlag() == 0){
+			if (records != null && records.size() > 0){
+				//获取当前时间>上班时间的分钟数
+				int minute = records.get(0).getClockOnDateTime() == null ? 0 : DateTimeUtil.getminute(clockOnTime, records.get(0).getClockOnDateTime());
+				//下班是否顺延
+				if (rule.getPostponeFlag() == 0){
+					//在弹性上班时间内打卡，下班时间才顺延
+					if (minute > 0 && minute <= rule.getFlexibleTime()){
+						clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 0, 0, minute);
+					}
+				}
+			}
+		}
+		
 		if (null == records || records.size() == 0){
 			//当前时间在下班时间和最晚下半时间之间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){

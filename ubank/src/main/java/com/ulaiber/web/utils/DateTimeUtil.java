@@ -370,15 +370,26 @@ public class DateTimeUtil {
 		return days;
 	}
 	
+	/**
+	 * 获得时间段的分钟数
+	 * @param startStr yyyy-MM-dd HH:mm
+	 * @param endStr  yyyy-MM-dd HH:mm
+	 * @return int
+	 */
+	public static int getminute(String startStr, String endStr){
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(str2Date(startStr, DATE_FORMAT_MINUTETIME));
+		long start = calendar.getTimeInMillis();
+		calendar.setTime(str2Date(endStr, DATE_FORMAT_MINUTETIME));
+		long end = calendar.getTimeInMillis();
+		return Integer.parseInt((end - start) / (1000 * 60) + "");
+	}
+
+	
 	public static void main(String[] args) {
-		String dateBegin = "2017-09-09";
-		String dateEnd = "2017-09-09";
-		String beginMonth = dateBegin.substring(0, dateBegin.lastIndexOf("-"));
-		String beginDay = dateBegin.substring(dateBegin.lastIndexOf("-") + 1, dateBegin.length());
-		
-		System.out.println(getNumFromdate(dateBegin, dateEnd));
-		System.out.println(getDaysFromDate(dateBegin, dateEnd));
-		
+		String dateBegin = "2017-09-09 09:20";
+		String dateEnd = "2017-09-09 09:45";
+		System.out.println(getminute(dateBegin, dateEnd));
 		
 	}
 }

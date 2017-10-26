@@ -10,23 +10,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.model.User;
-import com.ulaiber.web.model.attendance.SalaryRule;
-import com.ulaiber.web.service.SalaryRuleService;
+import com.ulaiber.web.model.Salary;
+import com.ulaiber.web.model.SalaryDetail;
+import com.ulaiber.web.service.SalaryDetailService;
+import com.ulaiber.web.service.SalaryService;
 
 /** 
- * 工资后台控制器
+ * 工资控制位
  *
  * @author  huangguoqing
- * @date 创建时间：2017年10月9日 上午10:41:32
+ * @date 创建时间：2017年10月25日 下午5:47:09
  * @version 1.0 
  * @since 
  */
@@ -37,11 +35,19 @@ public class SalaryController extends BaseController {
 	private static Logger logger = Logger.getLogger(SalaryController.class);
 	
 	@Autowired
-	private SalaryRuleService service;
+	private SalaryService service;
+	
+	@Autowired
+	private SalaryDetailService detailService;
 	
 	@RequestMapping(value = "salary", method = RequestMethod.GET)
 	public String salary(HttpServletRequest request, HttpServletResponse response){
 		return "salary";
+	}
+	
+	@RequestMapping(value = "salaryConfig", method = RequestMethod.GET)
+	public String salaryConfig(HttpServletRequest request, HttpServletResponse response){
+		return "salaryConfig";
 	}
 	
 	@RequestMapping(value = "salaryDetail", method = RequestMethod.GET)
@@ -49,101 +55,27 @@ public class SalaryController extends BaseController {
 		return "salaryDetail";
 	}
 	
-	@RequestMapping(value = "salaryRule", method = RequestMethod.GET)
-	public String salaryConfig(HttpServletRequest request, HttpServletResponse response){
-		return "salaryRule";
-	}
-	
-	@RequestMapping(value = "salaryRules", method = RequestMethod.GET)
+	@RequestMapping(value = "getSalaries", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> salaryRules(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
+	public Map<String, Object> getSalaries(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> data = new HashMap<String, Object>();
-		List<SalaryRule> rules = service.getSalaryRules(limit, offset, order, search);
-		int total = service.getTotal();
+		List<Salary> rules = service.getSalaries(limit, offset, search);
+		int total = service.getTotalNum();
 		data.put("rows", rules);
 		data.put("total", total);
 		return data;
 	}
 	
-	@RequestMapping(value = "saveSalaryRule", method = RequestMethod.POST)
+	@RequestMapping(value = "getSalaryDetails", method = RequestMethod.GET)
 	@ResponseBody
-	public ResultInfo saveSalaryRule(@RequestBody SalaryRule salaryRule, HttpServletRequest request, HttpServletResponse response){
-		ResultInfo info = new ResultInfo(); 
-		try {
-			User user = (User)getUserFromSession(request);
-			salaryRule.setOperateName(user.getUserName());
-			boolean flag = service.save(salaryRule);
-			if (flag){
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("新增工资规则成功。");
-				logger.info("新增工资规则成功。");
-			} else {
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("新增工资规则失败。");
-				logger.info("新增工资规则失败。");
-			}
-			
-			
-		} catch (Exception e) {
-			logger.error("saveSalaryRule exception", e);
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("新增工资规则失败。");
-		}
-		
-		return info;
+	public Map<String, Object> getSalaryDetails(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
+		logger.debug(",,,,,,");
+		Map<String, Object> data = new HashMap<String, Object>();
+		List<SalaryDetail> rules = detailService.getDetailsBySid(1);
+		int total = detailService.getTotalBySid(1);
+		data.put("rows", rules);
+		data.put("total", total);
+		return data;
 	}
-	
-	@RequestMapping(value = "updateSalaryRule", method = RequestMethod.POST)
-	@ResponseBody
-	public ResultInfo updateSalaryRule(@RequestBody SalaryRule salaryRule, HttpServletRequest request, HttpServletResponse response){
-		ResultInfo info = new ResultInfo(); 
-		try {
-			User user = (User)getUserFromSession(request);
-			salaryRule.setOperateName(user.getUserName());
-			boolean flag = service.updateSalaryRuleByRid(salaryRule);
-			if (flag){
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("修改工资规则成功。");
-				logger.info("修改工资规则成功。");
-			} else {
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("修改工资规则失败。");
-				logger.info("修改工资规则失败。");
-			}
-			
-		} catch (Exception e) {
-			logger.error("deleteSalaryRules exception", e);
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("修改工资规则失败。");
-		}
-		
-		return info;
-	} 
-
-	@RequestMapping(value = "deleteSalaryRules", method = RequestMethod.POST)
-	@ResponseBody
-	public ResultInfo deleteSalaryRules(@RequestBody List<Long> rids, HttpServletRequest request, HttpServletResponse response){
-		ResultInfo info = new ResultInfo(); 
-		try {
-			boolean flag = service.deleteByRids(rids);
-			if (flag){
-				info.setCode(IConstants.QT_CODE_OK);
-				info.setMessage("删除工资规则成功。");
-				logger.info("删除工资规则成功。");
-			} else {
-				info.setCode(IConstants.QT_CODE_ERROR);
-				info.setMessage("删除工资规则失败。");
-				logger.info("删除工资规则失败。");
-			}
-			
-		} catch (Exception e) {
-			logger.error("deleteSalaryRules exception", e);
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("删除工资规则失败。");
-		}
-		
-		return info;
-	}
-	
 	
 }
