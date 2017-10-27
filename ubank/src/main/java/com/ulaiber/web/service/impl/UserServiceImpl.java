@@ -256,4 +256,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 		map.put("bankCardNo",bankCardNo);
         return mapper.insertUserToBank(map);
     }
+
+    @Override
+    public SecondAcount findSecondAcc(int id) {
+        return mapper.findSecondAcc(id);
+    }
 }

@@ -152,4 +152,11 @@ public interface UserDao {
      * @return int
      */
     int insertUserToBank(Map<String, Object> map);
+
+    /**
+     * 查询用户是否已注册二类账户
+     * @param id 用户ID
+     * @return SecondAcount
+     */
+    SecondAcount findSecondAcc(int id);
 }

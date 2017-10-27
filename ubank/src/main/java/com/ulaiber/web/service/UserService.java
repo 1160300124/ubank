@@ -165,4 +165,11 @@ public interface UserService {
 	 * @return int
 	 */
 	int insertUserToBank(int userid, int bankNo, String bankCardNo);
+
+	/**
+	 * 查询用户是否已注册二类账户
+	 * @param id 用户ID
+	 * @return SecondAcount
+	 */
+	SecondAcount findSecondAcc(int id);
 }

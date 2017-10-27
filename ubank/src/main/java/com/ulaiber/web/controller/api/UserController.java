@@ -96,6 +96,14 @@ public class UserController extends BaseController{
 			logger.error("register failed: mobile is already exists.");
 			return retInfo;
 		}
+		//查询用户是否已注册二类账户
+		int id = (int) user.getId();
+		SecondAcount acc = userService.findSecondAcc(id);
+		if(!StringUtil.isEmpty(acc)){
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("用户已注册二类账户");
+			return retInfo;
+		}
 		//新增用户权限层级信息
 		user.setBank(bank);
 		if (userService.save(user)){
