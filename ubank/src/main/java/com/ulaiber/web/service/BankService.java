@@ -34,5 +34,13 @@ public interface BankService {
 	 * @param bankNumber 银行编号
 	 * @return Bank
 	 */
-	Bank queryBanksByNumber(String bankNumber);
+	List<Bank> queryBanksByNumber(String bankNumber);
+
+	/**
+	 * 删除原绑定银行卡
+	 * @param originCart 原绑定卡号
+	 * @param userid 用户ID
+	 * @return int
+	 */
+    int deleteOriginCart(String originCart, int userid);
 }

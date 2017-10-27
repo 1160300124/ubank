@@ -72,18 +72,18 @@
                                     <input type="text" name="cardNo" class="base-form-input base-request" value="">
                                 </div>
                             </div>
-                            <div class="form-group col-md-12">
-                                <label class="col-md-3" for="exampleInputName2">绑定银行</label>
-                                <div class="col-md-9">
-                                    <select class="combobox form-control" name="bankNo" id="emp_select_bank"  ></select>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="col-md-3" for="exampleInputName2">银行卡号</label>
-                                <div class="col-md-9">
-                                    <input type="text" name="bankCardNo" class="base-form-input base-request" value="" >
-                                </div>
-                            </div>
+                            <%--<div class="form-group col-md-12">--%>
+                                <%--<label class="col-md-3" for="exampleInputName2">绑定银行</label>--%>
+                                <%--<div class="col-md-9">--%>
+                                    <%--<select class="combobox form-control" name="bankNo" id="emp_select_bank"  ></select>--%>
+                                <%--</div>--%>
+                            <%--</div>--%>
+                            <%--<div class="form-group col-md-12">--%>
+                                <%--<label class="col-md-3" for="exampleInputName2">银行卡号</label>--%>
+                                <%--<div class="col-md-9">--%>
+                                    <%--<input type="text" name="bankCardNo" class="base-form-input base-request" value="" >--%>
+                                <%--</div>--%>
+                            <%--</div>--%>
                             <div class="form-group col-md-12">
                                 <label class="col-md-3" for="exampleInputName2">预留手机</label>
                                 <div class="col-md-9">

@@ -265,10 +265,10 @@ var EmployeeFun = {
             Ewin.alert("部门不能为空");
             return;
         }
-        if(bank == ""){
-            Ewin.alert("银行不能为空");
-            return;
-        }
+        // if(bank == ""){
+        //     Ewin.alert("银行不能为空");
+        //     return;
+        // }
         if(role == ""){
             Ewin.alert("角色不能为空");
             return;
@@ -301,16 +301,16 @@ var EmployeeFun = {
             Ewin.alert("身份证号格式不合法，请重新输入");
             return;
         }
-        if(bankCardNo == ""){
-            Ewin.alert("银行账号不能为空");
-            return;
-        }else if(!Validate.regNumber(bankCardNo)){
-            Ewin.alert("银行账号必须为数字");
-            return;
-        }else if(bankCardNo.length <= 18 || bankCardNo.length > 21 ){
-            Ewin.alert("银行账号长度在18-21位");
-            return;
-        }
+        // if(bankCardNo == ""){
+        //     Ewin.alert("银行账号不能为空");
+        //     return;
+        // }else if(!Validate.regNumber(bankCardNo)){
+        //     Ewin.alert("银行账号必须为数字");
+        //     return;
+        // }else if(bankCardNo.length <= 18 || bankCardNo.length > 21 ){
+        //     Ewin.alert("银行账号长度在18-21位");
+        //     return;
+        // }
         var entryDate = $('#entryDate').val();
         var leaveDate = $('#leaveDate').val();
         if(entryDate > leaveDate){

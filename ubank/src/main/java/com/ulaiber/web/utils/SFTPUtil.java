@@ -28,7 +28,6 @@ public class SFTPUtil {
 //    private String host = "119.23.247.226";
 //    /** FTP 端口*/
 //    private int port = 22;
-    private static Properties prop = new Properties();
 
     /**
      * 连接sftp服务器
@@ -37,13 +36,13 @@ public class SFTPUtil {
      */
     public void login(MultipartFile file, String fileName){
         try {
-            InputStream in = SysConf.class.getClassLoader().getResourceAsStream("config/config.properties");
-            prop.load(in);
-            String username = prop.getProperty("username");
-            String password = prop.getProperty("password");
-            String host = prop.getProperty("host");
-            String directory = prop.getProperty("directory");
-            int port = Integer.parseInt(prop.getProperty("port"));
+            //加载配置文件
+            Map<String,Object> configMap = StringUtil.loadConfig();
+            String username = (String) configMap.get("SH_username");
+            String password = (String) configMap.get("password");
+            int port = (int) configMap.get("port");
+            String host = (String) configMap.get("host");
+            String directory = (String) configMap.get("directory");
             JSch jsch = new JSch();
             log.info("sftp connect by host:{} username:{}");
 

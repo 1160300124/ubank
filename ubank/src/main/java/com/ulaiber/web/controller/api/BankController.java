@@ -1,13 +1,12 @@
 package com.ulaiber.web.controller.api;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ulaiber.web.model.BankAccount;
-import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
+import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +22,8 @@ import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.BankService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/")
@@ -53,7 +54,7 @@ public class BankController extends BaseController {
 	 * @param code 邀请码
 	 * @return ResultInfo
 	 */
-	@RequestMapping(value = "queryAllBanks", method = RequestMethod.GET)
+	@RequestMapping(value = "queryAllBanks", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo queryAllBanks(String code){
 		logger.debug("queryAllBanks start...");
@@ -68,7 +69,7 @@ public class BankController extends BaseController {
 			return retInfo;
 		}
 		//根据银行编号获取银行信息
-		Bank banks = bankservice.queryBanksByNumber(bankAccount.getBankNumber());
+		List<Bank> banks = bankservice.queryBanksByNumber(bankAccount.getBankNumber());
 		if(StringUtil.isEmpty(banks)){
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
 			retInfo.setMessage("查询失败");
@@ -78,6 +79,43 @@ public class BankController extends BaseController {
 		retInfo.setData(banks);
 		logger.debug("queryAllBanks end...");
 		return retInfo;
+	}
+
+	/**
+	 * 改绑（上海银行二类户）银行卡
+	 * @param shCard
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "SHChangeBind", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo SHChangeBind(SHChangeCard shCard){
+		logger.info(">>>>>>>>>>开始改绑银行卡");
+		ResultInfo resultInfo = new ResultInfo();
+		ResultInfo re = SHChangeBinding.changeBindCard(shCard);
+		if(re.getCode() == 1010){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("改绑失败");
+			logger.error(">>>>>>>>>>>>改绑失败");
+			return resultInfo;
+		}
+		SHChangeCard data = (SHChangeCard) re.getData();
+		if(data.getStatusCode().equals("0000")){
+			resultInfo.setCode(Integer.parseInt(data.getStatusCode()));
+			resultInfo.setMessage(data.getServerStatusCode());
+			return resultInfo;
+		}
+		String originCart = shCard.getBindCardNo();  //原绑定卡号
+		int userid = (int) shCard.getUserid();	//用户ID
+		//删除原绑定银行卡
+		int result = bankservice.deleteOriginCart(originCart,userid);
+		if(result == 0){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("改绑失败");
+			logger.error(">>>>>>>>>>>>改绑失败");
+		}
+		resultInfo.setCode(IConstants.QT_CODE_OK);
+		resultInfo.setMessage("改绑成功");
+		return resultInfo;
 	}
 
 }

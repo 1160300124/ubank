@@ -1,5 +1,7 @@
 package com.ulaiber.web.model;
 
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
@@ -114,6 +116,10 @@ public class User implements Serializable {
 
 	//离职时间
 	private String leaveDate;
+
+	//二类户信息
+	private SecondAcount secondAcount;
+
 
 	public long getId() {
 		return id;
@@ -409,5 +415,13 @@ public class User implements Serializable {
 
 	public void setLeaveDate(String leaveDate) {
 		this.leaveDate = leaveDate;
+	}
+
+	public SecondAcount getSecondAcount() {
+		return secondAcount;
+	}
+
+	public void setSecondAcount(SecondAcount secondAcount) {
+		this.secondAcount = secondAcount;
 	}
 }

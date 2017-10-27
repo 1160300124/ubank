@@ -242,4 +242,18 @@ public class UserServiceImpl extends BaseService implements UserService {
 	public Bank queryBankByCompay(int companyNumber) {
 		return mapper.queryBankByCompay(companyNumber);
 	}
+
+    @Override
+    public SecondAcount getSecondAccountByUserId(int userid) {
+        return mapper.getSecondAccountByUserId(userid);
+    }
+
+    @Override
+    public int insertUserToBank(int userid, int bankNo, String bankCardNo) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("userid",userid);
+		map.put("bankNo",bankNo);
+		map.put("bankCardNo",bankCardNo);
+        return mapper.insertUserToBank(map);
+    }
 }

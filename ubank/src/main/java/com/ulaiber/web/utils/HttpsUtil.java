@@ -245,8 +245,7 @@ public class HttpsUtil {
     /** 
      * 发送 POST 请求（HTTP）
      * @param apiUrl 
-     * @param String data
-     * @return 
+     * @return
      */  
     public static String doPost(String apiUrl, String data, boolean signFlag) {  
         CloseableHttpClient httpClient = HttpClients.createDefault();  
@@ -289,6 +288,8 @@ public class HttpsUtil {
      * @return
      */
     public static String doPost(String apiUrl, String str) throws URISyntaxException {
+//        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
+//                .setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String httpStr = null;
 //        URL newUrl = null;
@@ -380,9 +381,9 @@ public class HttpsUtil {
      */  
     public static String doPostSSL(String apiUrl, Object json) {  
         CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
-        		.setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();  
-        HttpPost httpPost = new HttpPost(apiUrl);  
-        CloseableHttpResponse response = null;  
+        		.setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();
+        HttpPost httpPost = new HttpPost(apiUrl);
+        CloseableHttpResponse response = null;
         String httpStr = null;  
   
         try {  

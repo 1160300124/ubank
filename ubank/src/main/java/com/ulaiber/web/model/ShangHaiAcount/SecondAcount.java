@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class SecondAcount implements Serializable {
     private long userid;                //用户ID
     private String EacctNo;             //E账户主账户
+    private String CustName;             //姓名
     private String SubAcctNo;           //平台理财专属子账户
     private String CoopCustNo;          //合作方客户账号
     private String ProductCd;           //理财产品参数
@@ -22,6 +23,11 @@ public class SecondAcount implements Serializable {
     private String FundTxnAcct;         //基金交易账号
     private String StatusCode;          //返回结果码
     private String ServerStatusCode;    //返回结果信息
+    private int disabled;               //是否作废 0 否 1 是
+    private String createDate;          //创建时间
+    private String IdNo;                //身份证号
+    private String SPRsUID;             //主机流水号
+    private String RqUID;              //请求流水号
 
     public long getUserid() {
         return userid;
@@ -37,6 +43,14 @@ public class SecondAcount implements Serializable {
 
     public void setEacctNo(String eacctNo) {
         EacctNo = eacctNo;
+    }
+
+    public String getCustName() {
+        return CustName;
+    }
+
+    public void setCustName(String custName) {
+        CustName = custName;
     }
 
     public String getSubAcctNo() {
@@ -141,5 +155,45 @@ public class SecondAcount implements Serializable {
 
     public void setServerStatusCode(String serverStatusCode) {
         ServerStatusCode = serverStatusCode;
+    }
+
+    public int getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(int disabled) {
+        this.disabled = disabled;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getIdNo() {
+        return IdNo;
+    }
+
+    public void setIdNo(String idNo) {
+        IdNo = idNo;
+    }
+
+    public String getSPRsUID() {
+        return SPRsUID;
+    }
+
+    public void setSPRsUID(String SPRsUID) {
+        this.SPRsUID = SPRsUID;
+    }
+
+    public String getRqUID() {
+        return RqUID;
+    }
+
+    public void setRqUID(String rqUID) {
+        RqUID = rqUID;
     }
 }

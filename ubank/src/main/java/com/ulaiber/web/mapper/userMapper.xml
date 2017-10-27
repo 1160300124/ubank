@@ -134,9 +134,9 @@
 	<!--新增二类账户信息-->
 	<insert id="insertSecondAccount" parameterType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount" >
 		INSERT INTO tbl_secondAccount (userid,EacctNo,SubAcctNo,CoopCustNo,ProductCd,Sign,FundCode
-				,AcctOpenResult,AcctOpenDesc,FundAcctOpenResult,FundAcctOpenDesc,FundAcct,FundTxnAcct)
+				,AcctOpenResult,AcctOpenDesc,FundAcctOpenResult,FundAcctOpenDesc,FundAcct,FundTxnAcct,disabled,createDate)
 			VALUES (#{userid},#{EacctNo},#{SubAcctNo},#{CoopCustNo},#{ProductCd},#{Sign},#{FundCode},
-			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct})
+			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct},0,#{createDate})
 	</insert>
 
 	<!--根据公司编号查询绑定的银行-->
@@ -146,4 +146,16 @@
 			left join tbl_company c on b.companyNumber = b.companyNumber
 			where c.companyNumber = #{companyNumber}
 	</select>
+
+	<!--获取二类帐户信息-->
+	<select id="getSecondAccountByUserId" parameterType="int" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		SELECT * FROM tbl_secondAccount where disabled = 0 and userid = #{userid}
+	</select>
+
+	<!--新增用户绑定银行卡信息-->
+	<insert id="insertUserToBank" parameterType="Map" >
+		INSERT INTO tbl_userToBank (userid,bankNo,bankCardNo,disabled)
+			VALUES (#{userid},#{bankNo},#{bankCardNo},0)
+	</insert>
+
 </mapper>

@@ -4,13 +4,10 @@ import java.util.*;
 
 import com.qiniu.util.Auth;
 import com.ulaiber.web.model.Reimbursement;
-import com.ulaiber.web.model.ReimbursementVO;
-import com.ulaiber.web.secondAccount.ShangHaiAccount;
-import net.sf.json.JSONArray;
+import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import javax.xml.crypto.dsig.TransformException;
 
 public class Test {
 	public static final String priKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKh7bxbe5dhwuZzNkeDXrpHx7o5k+uIWrbY1+8c6Oqgq2AfajnK5v10OfQW85xNUn/4TzoRcCOCaK2LZO4QJoQmgs41x45jZNvI/f8EGcJvt2oCs3S2Da98+v6VVfDXoSfgeHlNRcDSYlZF2E31KQLtdTGva9IeECx2CpPIkbVeXAgMBAAECgYA0QlUq2uigQhbQtFLTUxMq4cgFEv1es3oeUpBOM5mOH/vyM7CLlWHuE1hkNzvVmyIlRS+BjqqSQD/E4Wy8f+AbAznky5F8q5Afe5ZKxi+n2M4ZMgh9uryVMcAHCXu1RnOrtsnGjJvp23ku4wZtWCHLNAuQfI9zj6ncq4v50RKKQQJBAN8tSbcT37Mq3Y50zVnnmGxNEgUZKJXwPw/KnO6EeR/Nfpmzy40GQU8y+GGoq5cVY5NDOqYVi6nh21mLXQij9AsCQQDBQt0zU8zurSNaoRYsjhNrHJHQjBt0WuIxtluZz44CTbNQw5/3kA1jVvt1EXOE1hF+l2QVIuLgvgIeHDwvenYlAkAeiusgtAaUVZR2r4N+/1P71lxV+Eh2pKdsuNTbS6Pr90qRLGr6BNYhSZ92dgftqE61U6kOG7q+aBuF2K3FxfJbAkA1oCES4fjmbYJ23mXxvQakXQwU6xufIKzNEIXAWzhTaU4NZgrYPc+JNhSWOl5siJ3YG5f4yXJc3DxoMHt+zSNFAkEA25eGORpWtXERhGXHZR8f3nWIHTAF+EM1O8T7YXp+y7sWs8YvtNI3ZtzjzncHWk4YdScNqkXC1UJz2hokLUR7Aw==";
@@ -345,9 +342,8 @@ public class Test {
 	@org.junit.Test
 	public void getDetails(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("type","2");
-		map.put("recordNo",488);
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getApplyDetails",map);
+		map.put("code","82n6");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAllBanks",map);
 		System.out.print(">>>>>>>>结果为："+result);
 	}
 
@@ -394,13 +390,14 @@ public class Test {
 		param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
 		param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
 		param.put("CustName" , "张三");				//姓名
-		param.put("IdNo" , "422129199210220539");					//身份证号
-		param.put("MobllePhone" , "15072836822");			//手机号
-		param.put("BindCardNo" , "67844000083766334399");				//绑定银行卡号
+		param.put("IdNo" , "420106199901118018");					//身份证号
+		param.put("MobllePhone" , "13165601258");			//手机号
+		param.put("BindCardNo" , "6222084000003899529");				//绑定银行卡号
 		param.put("ReservedPhone" , "13165601258");	//银行卡预留手机号
-		param.put("Sign" , "Y");								//是否开通余额理财功能
-//		boolean result = ShangHaiAccount.register(param);
-//		System.out.print(">>>>>>>>>申请二类户结果为：" + result);
+		param.put("Sign" , "N");								//是否开通余额理财功能
+
+		ResultInfo result = ShangHaiAccount.register(param);
+		System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}
 
 

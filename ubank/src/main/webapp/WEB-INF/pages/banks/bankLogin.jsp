@@ -72,9 +72,9 @@
         return true;
     }
 
-    $("#user_login").unbind().bind("click", function(){
+    //登录
+    function bankLogin() {
         $(".form-error").text("");
-        $("#user_login").attr("disabled", true);
         if (validate()){
             var mobile = $("#user_mobile").val();
             var password = $("#user_pwd").val();
@@ -88,7 +88,6 @@
                 async : true,
                 dataType : "json",
                 success : function(data, status) {
-                    $("#btn_login").attr("disabled", false);
                     var code = data['code'];
                     if (code == 1000) {
                         window.location = "bank_index";
@@ -102,9 +101,17 @@
                 }
             });
         }
-        $("#btn_login").attr("disabled", false);
         return false;
+    }
+    //点击事件
+    $("#user_login").click(bankLogin);
 
+    //键盘事件
+    $(document).keydown(function (event) {
+        e = event ? event : (window.event ? window.event : null);
+        if(e.keyCode ==13){
+            bankLogin();
+        }
     });
 </script>
 </body>

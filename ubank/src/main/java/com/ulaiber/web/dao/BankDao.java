@@ -1,6 +1,7 @@
 package com.ulaiber.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
@@ -44,5 +45,12 @@ public interface BankDao {
      * @param bankNumber 银行编号
      * @return Bank
      */
-    Bank queryBanksByNumber(String bankNumber);
+    List<Bank> queryBanksByNumber(String bankNumber);
+
+    /**
+     * 删除原绑定银行卡
+     * @param map
+     * @return int
+     */
+    int deleteOriginCart(Map<String, Object> map);
 }

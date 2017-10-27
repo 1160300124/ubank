@@ -44,7 +44,12 @@
 
 	<!--根据银行编号获取银行信息-->
 	<select id="queryBanksByNumber" parameterType="String" resultType="com.ulaiber.web.model.Bank">
-		select a.type,b.name as bankName from tbl_banks a inner join tbl_bindBank b on a.bankNo = b.bankNo
+		select a.bankNo,a.type,b.name as bankName from tbl_banks a inner join tbl_bindBank b on a.bankNo = b.bankNo
 			where a.bankNo = #{bankNumber}
 	</select>
+
+	<!--删除原绑定银行卡-->
+	<update id="deleteOriginCart" parameterType="Map">
+		UPDATE tbl_userToBank SET disabled = 1 where userid = #{userid} and bankCardNo = #{originCart}
+	</update>
 </mapper>

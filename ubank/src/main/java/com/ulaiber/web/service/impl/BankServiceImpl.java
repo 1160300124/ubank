@@ -1,6 +1,8 @@
 package com.ulaiber.web.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -36,8 +38,17 @@ public class BankServiceImpl extends BaseService implements BankService {
     }
 
 	@Override
-	public Bank queryBanksByNumber(String bankNumber) {
-		return mapper.queryBanksByNumber(bankNumber);
+	public List<Bank> queryBanksByNumber(String bankNumber) {
+		List<Bank> banks =mapper.queryBanksByNumber(bankNumber);
+		return banks;
 	}
+
+    @Override
+    public int deleteOriginCart(String originCart, int userid) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("originCart",originCart);
+		map.put("userid",userid);
+        return mapper.deleteOriginCart(map);
+    }
 
 }

@@ -149,4 +149,20 @@ public interface UserService {
 	 * @return Bank
 	 */
 	Bank queryBankByCompay(int companyNumber);
+
+	/**
+	 * 获取二类帐户信息
+	 * @param userid 用户id
+	 * @return SecondAcount
+	 */
+	SecondAcount getSecondAccountByUserId(int userid);
+
+	/**
+	 * 新增用户绑定银行卡信息
+	 * @param userid 用户id
+	 * @param bankNo 银行编号
+	 * @param bankCardNo 银行卡号
+	 * @return int
+	 */
+	int insertUserToBank(int userid, int bankNo, String bankCardNo);
 }

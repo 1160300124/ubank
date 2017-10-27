@@ -3,19 +3,21 @@
  */
 package com.ulaiber.web.utils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.MSGContent;
 import com.ulaiber.web.model.Message;
 
 import com.ulaiber.web.service.LeaveService;
+import org.apache.log4j.Logger;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 import sun.misc.BASE64Encoder;
 
 
@@ -25,6 +27,8 @@ import sun.misc.BASE64Encoder;
  *
  */
 public class StringUtil {
+
+	private static final Logger logger = Logger.getLogger(StringUtil.class);
 	
 	// 简体中文的编码范围从B0A1（45217）一直到F7FE（63486）
     private static int BEGIN = 45217;
@@ -439,5 +443,76 @@ public class StringUtil {
 		return val;
 	}
 
+	/**
+	 * 读取配置文件信息
+	 * @return map
+	 */
+	public static Map<String,Object> loadConfig(){
+		Map<String,Object> map = new HashMap<>();
+		Properties prop = new Properties();
+		InputStream in = SysConf.class.getClassLoader().getResourceAsStream("config/config.properties");
+		try {
+			prop.load(in);
+		} catch (IOException e) {
+			logger.error(">>>>>>>>加载config配置文件异常",e);
+		}
+		String privateKey = prop.getProperty("SH_privateKey");
+		String publicKey = prop.getProperty("SH_publicKey");
+		String postUrl = prop.getProperty("SH_postUrl");
+		String pwd = prop.getProperty("SH_pwd");
+		String username = prop.getProperty("SH_username");
+		String password = prop.getProperty("SH_password");
+		String host = prop.getProperty("SH_host");
+		int port = Integer.parseInt(prop.getProperty("SH_port"));
+		String directory = prop.getProperty("SH_directory");
+		map.put("privateKey",privateKey);
+		map.put("publicKey",publicKey);
+		map.put("postUrl",postUrl);
+		map.put("pwd",pwd);
+		map.put("username",username);
+		map.put("password",password);
+		map.put("host",host);
+		map.put("port",port);
+		map.put("directory",directory);
+		return map;
+
+	}
+
+
+	/**
+	 * 解析xml
+	 * @param xml
+	 * @return map
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	public static Map<String, String> xmlParse(String xml) throws XmlPullParserException, IOException {
+		Map<String, String> map = null;
+		if (!StringUtil.isEmpty(xml)) {
+			InputStream inputStream = new ByteArrayInputStream(xml.getBytes());
+			XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
+			pullParser.setInput(inputStream, "UTF-8"); // 为xml设置要解析的xml数据
+			int eventType = pullParser.getEventType();
+
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				switch (eventType) {
+					case XmlPullParser.START_DOCUMENT:
+						map = new HashMap<String, String>();
+						break;
+					case XmlPullParser.START_TAG:
+						String key = pullParser.getName();
+						if (key.equals("xml"))
+							break;
+						String value = pullParser.nextText().trim();
+						map.put(key, value);
+						break;
+					case XmlPullParser.END_TAG:
+						break;
+				}
+				eventType = pullParser.next();
+			}
+		}
+		return map;
+	}
 
 }

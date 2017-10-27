@@ -81,7 +81,7 @@ public class MD5Util {
 		byte[] str = mac.doFinal(text);
 		// Create Hex String
 		StringBuffer hexString = new StringBuffer();
-		// 字节数组转换为 十六进制 数
+		// 字节数组转换为 十六进制数
 		for (int i = 0; i < str.length; i++) {
 			String shaHex = Integer.toHexString(str[i] & 0xFF);
 			if (shaHex.length() < 2) {

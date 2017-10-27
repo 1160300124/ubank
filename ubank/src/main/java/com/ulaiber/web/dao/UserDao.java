@@ -136,4 +136,20 @@ public interface UserDao {
      * @return Bank
      */
     Bank queryBankByCompay(int companyNumber);
+
+    /**
+     * 获取二类帐户信息
+     * @param userid
+     * @return SecondAcount
+     */
+    SecondAcount getSecondAccountByUserId(int userid);
+
+
+
+    /**
+     * 新增用户绑定银行卡信息
+     * @param map
+     * @return int
+     */
+    int insertUserToBank(Map<String, Object> map);
 }
