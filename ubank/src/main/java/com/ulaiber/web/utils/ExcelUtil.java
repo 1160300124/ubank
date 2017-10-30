@@ -178,7 +178,7 @@ public class ExcelUtil {
                     if(xssfRow != null){  
                         //读取列，从第一列开始  
                     	if (rowNum == 1){
-                    		sa.setCompany(getXValue(xssfRow.getCell(1)));
+//                    		sa.setCompany(getXValue(xssfRow.getCell(1)));
                     		continue;
                     	}
                     	if (rowNum == 2){
@@ -258,7 +258,7 @@ public class ExcelUtil {
                     HSSFRow hssfRow = hssfSheet.getRow(rowNum);
                     if (hssfRow != null){  
                        	if (rowNum == 1){
-                    		sa.setCompany(getHValue(hssfRow.getCell(0)));
+//                    		sa.setCompany(getHValue(hssfRow.getCell(0)));
                     		continue;
                     	}
                     	if (rowNum == 2){

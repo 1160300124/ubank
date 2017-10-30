@@ -757,7 +757,4 @@
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.core.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.excheck.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/rule.js" type="text/javascript" ></script>
-<%-- <script src="<%=request.getContextPath()%>/js/map.js" type="text/javascript" ></script> --%>
-<script type="text/javascript">
-</script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

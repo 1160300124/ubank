@@ -632,9 +632,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		boolean flag = false;
 		//补卡审批状态 0：审批中  1：已通过  2：未通过  3:已取消
 		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
-			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockType(), patchClock.getPatchClockStatus());
 			if (flag){
-				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
+				logger.info("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为审批中。");
 			} else {
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为审批中失败。");
 			}
@@ -679,22 +679,22 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			
 			flag =  dao.patchClock(params);
 			if (flag){
-				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡成功。");
+				logger.info("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡成功。");
 			} else {
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡失败。");
 			}
 			
 		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "2")){
-			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockType(), patchClock.getPatchClockStatus());
 			if (flag){
-				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
+				logger.info("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为未通过。");
 			} else {
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为未通过失败。");
 			}
 		} else if (StringUtils.equals(patchClock.getPatchClockStatus(), "3")){
-			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockStatus());
+			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockType(), patchClock.getPatchClockStatus());
 			if (flag){
-				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为已取消。");
+				logger.info("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "补卡状态更改为已取消。");
 			} else {
 				logger.error("用户 " + patchClock.getUserId() + " " + patchClock.getPatchClockDate() + "更新补卡状态为已取消失败。");
 			}
@@ -703,7 +703,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		return flag;
 	}
 
-	private boolean updatePatchClockStatus(User user, String clockDate, String patchClockStatus) {
+	private boolean updatePatchClockStatus(User user, String clockDate, int patchClockType, String patchClockStatus) {
+		logger.info("--------------------" + clockDate + "-------" + patchClockType + "-----------" + patchClockStatus);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", user.getId());
 		params.put("dateBegin", clockDate);
@@ -711,12 +712,14 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		List<Attendance> records = dao.getRecordsByDateAndUserId(params);
 		if (records.size() > 0){
 			params.put("clockDate", clockDate);
+			params.put("patchClockType", patchClockType);
 			params.put("patchClockStatus", patchClockStatus);
 			return dao.updatePatchClockStatus(params);
 		} else {
 			if (StringUtils.equals(patchClockStatus, "0")){
 				Attendance att = new Attendance();
 				att.setClockDate(clockDate);
+				att.setPatchClockType(patchClockType + "");
 				att.setPatchClockStatus(patchClockStatus);
 				att.setUserId(user.getId());
 				att.setUserName(user.getUserName());

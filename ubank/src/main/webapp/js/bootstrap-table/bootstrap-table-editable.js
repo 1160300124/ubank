@@ -114,9 +114,9 @@
         if (isNaN(rowNum)){
             return;
         }
-        if(that.$body.find('.editable-select').data('index') != rowNum){
-            recover(that);
-        }
+        // if(that.$body.find('.editable-select').data('index') != rowNum){
+        //     recover(that);
+        // }
         //删除数据
         that.options.data.splice(rowNum,1);
         if (len === that.options.data.length){
@@ -301,7 +301,7 @@
         that.enableAppend = true;
         var $td = $(_this);
         var $tr = $td.parent();
-        var rowData = that.data[$tr.data('index')];//当前点击td所在行的数据
+        var rowData = that.options.data[$tr.data('index')];//当前点击td所在行的数据
         var tdIndex = $tr.children().index($td);//当前点击的td下标
         var tdOpt = that.columns[tdIndex];
         if(rowData.IS_TYPING!="0"&&rowData.IS_TYPING!="2"){//判断接口取数方式
@@ -376,7 +376,6 @@
      */
     function recover(that){
         var isModi = false;//判断行值是否变动过
-        console.log(that.prevEditRow);
         if(that.prevEditRow != null){
             that.prevEditRow.find('td').closest('td').siblings().html(function(i,html){
                 $(this).attr('style',$(this).data('style'));

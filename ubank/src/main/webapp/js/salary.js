@@ -87,50 +87,6 @@ $(function () {
 		
 	});
 
-	$('#tb_saraly_configs').on('load-success.bs.table',function(data){
-	       console.log("load success");
-	       var table = $('#tb_saraly_configs');
-			table.bootstrapTable('prepend',{
-		        'id':0,
-		        'userName': '快速批量设置',
-		        'cardNo': '--',
-		        'pre_tax_salaries': '10000',
-		        'bonuses': 0,
-		        'subsidies': 0,
-		        'attendance_cut_payment': '--',
-		        'askForLeave_cut_payment': '--',
-		        'socialInsurance': 0,
-		        'publicAccumulationFunds': 0,
-		        'taxThreshold': 3500,
-		        'personalIncomeTax': '--',
-		        'else_cut_payment': 0,
-		        'salaries': '--',
-		    });
-			table.bootstrapTable('editAll');
-
-		    var firstRow = table.find('tbody').children()[0];
-		    var inputs = $(firstRow).find('input');
-		    var selects = $(firstRow).find('select');
-		    inputs.on('keyup', function(e){
-		        var tdIndex = $(this).parent().parent().index();
-		        var value = this.value;
-		        table.find('tbody').children().each(function(index, row){
-		            if (index !== 0){
-		                $($(row).children()[tdIndex]).find('input[type="text"]').val(value);
-		            }
-		        })
-		    });
-		    selects.on('change', function(e){
-		        var tdIndex = $(this).parent().index();
-		        var value = this.value;
-		        table.find('tbody').children().each(function(index, row){
-		            if (index !== 0){
-		                $($(row).children()[tdIndex]).find('select').val(value);
-		            }
-		        })
-		    });
-	});
-	
 	$("#btn_import").unbind().bind("click", function(){
 		$("#file").val("");
 		$("#file_tmp").val("");

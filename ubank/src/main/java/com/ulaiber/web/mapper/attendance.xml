@@ -22,6 +22,7 @@
     	<result column="clock_off_status" property="clockOffStatus" jdbcType="VARCHAR" />
     	<result column="clock_off_location" property="clockOffLocation" jdbcType="VARCHAR" />
     	<result column="clock_off_device" property="clockOffDevice" jdbcType="VARCHAR" />
+    	<result column="patchClock_type" property="patchClockType" jdbcType="VARCHAR" />
     	<result column="patchClock_status" property="patchClockStatus" jdbcType="VARCHAR" />
     	<association column="dept_num" property="dept" javaType="com.ulaiber.web.model.Departments" resultMap="DepartmentMap"/>
     	<association column="company_num" property="company" javaType="com.ulaiber.web.model.Company" resultMap="CompanyMap"/>
@@ -175,7 +176,7 @@
 	</update>
 	
 	<update id="updatePatchClockStatus" parameterType="Map">
-		update tbl_attendance_records set patchClock_status = #{patchClockStatus} where user_id=#{userId} and clock_date = #{clockDate}
+		update tbl_attendance_records set patchClock_type = #{patchClockType},patchClock_status = #{patchClockStatus} where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
 </mapper>

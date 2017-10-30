@@ -1,6 +1,7 @@
 package com.ulaiber.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.web.model.SalaryDetail;
 
@@ -22,10 +23,10 @@ public interface SalaryDetailDao {
     /**
      * 根据工资流水id查询流水详情
      *
-     * @param sid
+     * @param params Map<String, Object> 
      * @return
      */
-    List<SalaryDetail> getDetailsBySid(long sid);
+    List<SalaryDetail> getDetailsBySid(Map<String, Object> params);
     
     /**
      * 根据工资流水id查询记录条数
@@ -41,5 +42,18 @@ public interface SalaryDetailDao {
      * @return
      */
     int batchDeleteSalaryDetails(List<Long> sids);
+    
+    /**
+     * 根据id和月份获取用户的工资详细
+     * @param userId
+     * @return
+     */
+    SalaryDetail getSalaryDetailByUserIdAndMonth(Map<String, Object> params);
+    
+    /**
+     * 获取最近一个月的工资表详细
+     * @return
+     */
+    List<SalaryDetail> getLatestSalaryDetail();
 
 }
