@@ -12,28 +12,57 @@
     <resultMap id="SalaryDetailMap" type="SalaryDetail" >
     	<id column="did" property="did" jdbcType="BIGINT" />
     	<result column="sid" property="sid" jdbcType="BIGINT" />
+    	<result column="userId" property="userId" jdbcType="VARCHAR" />
     	<result column="userName" property="userName" jdbcType="VARCHAR" />
     	<result column="cardNo" property="cardNo" jdbcType="VARCHAR" />
+    	<result column="pre_tax_salaries" property="preTaxSalaries" jdbcType="DOUBLE" />
+    	<result column="bonuses" property="bonuses" jdbcType="DOUBLE" />
+    	<result column="subsidies" property="subsidies" jdbcType="DOUBLE" />
+    	<result column="attendance_cut_payment" property="attendanceCutPayment" jdbcType="DOUBLE" />
+    	<result column="askForLeave_cut_payment" property="askForLeaveCutPayment" jdbcType="DOUBLE" />
+    	<result column="overtime_payment" property="overtimePayment" jdbcType="DOUBLE" />
+    	<result column="socialInsurance" property="socialInsurance" jdbcType="DOUBLE" />
+    	<result column="publicAccumulationFunds" property="publicAccumulationFunds" jdbcType="DOUBLE" />
+    	<result column="taxThreshold" property="taxThreshold" jdbcType="DOUBLE" />
+    	<result column="personalIncomeTax" property="personalIncomeTax" jdbcType="DOUBLE" />
+    	<result column="else_cut_payment" property="elseCutPayment" jdbcType="DOUBLE" />
     	<result column="salaries" property="salaries" jdbcType="DOUBLE" />
-    	<result column="salaryDate" property="salaryDate" jdbcType="VARCHAR" />
     	<result column="remark" property="remark" jdbcType="VARCHAR" />
    </resultMap>
    
   	<!-- 批量插入-->
     <insert id ="saveBatch" parameterType="java.util.List" useGeneratedKeys="true">
-         insert into tbl_salaries_detail(sid, userName, cardNo, salaries, salaryDate, remark) values
+         insert into tbl_salaries_detail(sid, userId, userName, cardNo, pre_tax_salaries, bonuses, subsidies, attendance_cut_payment, askForLeave_cut_payment,
+         overtime_payment, socialInsurance, publicAccumulationFunds, taxThreshold, personalIncomeTax, else_cut_payment, salaries, remark) values
          <foreach collection ="list" item="detail" index= "index" separator =",">
-             (#{detail.sid}, #{detail.userName}, #{detail.cardNo}, #{detail.salaries}, #{detail.salaryDate}, #{detail.remark})
+             (#{detail.sid}, #{detail.userId}, #{detail.userName}, #{detail.cardNo}, #{detail.preTaxSalaries}, #{detail.bonuses}, #{detail.subsidies}, #{detail.attendanceCutPayment}, 
+             #{detail.askForLeaveCutPayment}, #{detail.overtimePayment}, #{detail.socialInsurance}, #{detail.publicAccumulationFunds}, #{detail.taxThreshold}, 
+             #{detail.personalIncomeTax}, #{detail.elseCutPayment}, #{detail.salaries}, #{detail.remark})
          </foreach >
     </insert >
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
-	<select id="getDetailsBySid" parameterType="Long" resultMap="SalaryDetailMap">
+	<select id="getDetailsBySid" parameterType="Map" resultMap="SalaryDetailMap">
 		select * from tbl_salaries_detail where sid=#{sid}
+		<if test="search != null and search != ''">
+			and userName like concat('%',#{search},'%')
+		</if>
+		order by did asc
+		<if test="limit != null and limit != ''">
+			limit #{offset},#{limit}
+		</if>
+	</select>
+	
+	<select id="getSalaryDetailByUserIdAndMonth" parameterType="Map" resultMap="SalaryDetailMap">
+		select d.* from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId} and s.salary_month=#{salaryMonth}
 	</select>
 	
 	<select id="getTotalBySid" resultType="Integer">
 		select count(1) from tbl_salaries_detail where sid=#{sid}
+	</select>
+	
+	<select id="getLatestSalaryDetail" resultMap="SalaryDetailMap">
+		select * from tbl_salaries_detail where sid = (select sid from tbl_salaries where company_name='20047' order by salary_month desc limit 1)
 	</select>
 	
 	<delete id="batchDeleteSalaryDetails" parameterType="java.util.List">  

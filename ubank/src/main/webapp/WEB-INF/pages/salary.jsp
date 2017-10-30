@@ -24,11 +24,12 @@
 		<thead>
 		<tr>
 			<th data-checkbox="true"></th>
-			<th data-field="company">公司名称</th>
+			<th data-field="companyName">公司名称</th>
 			<th data-field="salaryDate">发放时间</th>
 			<th data-field="totalNumber">发放人数</th>
-			<th data-field="status" data-formatter="statusFormatter">发放状态</th>
 			<th data-field="totalAmount">发放金额</th>
+			<th data-field="status" data-formatter="statusFormatter">发放状态</th>
+			<th data-field="operateName">操作人</th>
 			<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 		</tr>
 		</thead>

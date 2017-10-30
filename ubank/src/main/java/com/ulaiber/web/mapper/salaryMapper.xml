@@ -11,20 +11,24 @@
 
     <resultMap id="SalaryMap" type="Salary" >
        	<id column="sid" property="sid" jdbcType="BIGINT" />
-    	<result column="userName" property="userName" jdbcType="VARCHAR" />
-    	<result column="totalNumber" property="totalNumber" jdbcType="INTEGER" />
-    	<result column="totalAmount" property="totalAmount" jdbcType="DOUBLE" />
-    	<result column="salaryDate" property="salaryDate" jdbcType="VARCHAR" />
-    	<result column="salary_createTime" property="salary_createTime" jdbcType="VARCHAR" />
-    	<result column="company" property="company" jdbcType="VARCHAR" />
+    	<result column="operate_name" property="operateName" jdbcType="VARCHAR" />
+    	<result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    	<result column="total_number" property="totalNumber" jdbcType="INTEGER" />
+    	<result column="total_amount" property="totalAmount" jdbcType="DOUBLE" />
+    	<result column="salary_month" property="salaryMonth" jdbcType="VARCHAR" />
+    	<result column="salary_date" property="salaryDate" jdbcType="VARCHAR" />
+    	<result column="salary_createTime" property="salaryCreateTime" jdbcType="VARCHAR" />
+    	<result column="approve_ids" property="approveIds" jdbcType="VARCHAR" />
+    	<result column="approve_names" property="approveNames" jdbcType="VARCHAR" />
     	<result column="status" property="status" jdbcType="VARCHAR" />
     	<result column="entrustSeqNo" property="entrustSeqNo" jdbcType="VARCHAR" />
     	<result column="remark" property="remark" jdbcType="VARCHAR" />
    </resultMap>
   
    <insert id="save" parameterType="Salary" useGeneratedKeys="true" keyProperty="sid">
-   		insert into tbl_salaries(userName, totalNumber, totalAmount, salaryDate, salary_createTime, company, status, entrustSeqNo, remark) values
-   			(#{userName}, #{totalNumber}, #{totalAmount}, #{salaryDate}, #{salary_createTime}, #{company}, #{status}, #{entrustSeqNo}, #{remark})
+   		insert into tbl_salaries(operate_name, company_name, total_number, total_amount, salary_month, salary_date, salary_createTime, approve_ids, approve_names, status,
+   		entrustSeqNo, remark) values (#{operateName}, #{companyName}, #{totalNumber}, #{totalAmount}, #{salaryMonth}, #{salaryDate}, #{salaryCreateTime}, #{approveIds},
+   		#{approveNames}, #{status}, #{entrustSeqNo}, #{remark})
    </insert>
 	
 	<select id="getAllSalaries" resultMap="SalaryMap">
@@ -33,6 +37,10 @@
 	
 	<select id="getTotalNum" resultType="Integer">
 		select count(1) from tbl_salaries
+	</select>
+	
+	<select id="getSalariesByUserId" parameterType="Long" resultType="Map">
+		select s.salary_month,d.salaries from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId}
 	</select>
 	
 	<select id="getSalaries" parameterType="Map" resultMap="SalaryMap">

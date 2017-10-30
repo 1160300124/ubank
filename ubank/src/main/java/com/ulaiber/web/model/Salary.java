@@ -1,5 +1,7 @@
 package com.ulaiber.web.model;
 
+import java.util.List;
+
 public class Salary {
 	
 	/**
@@ -10,7 +12,12 @@ public class Salary {
 	/**
 	 * 发工资人姓名
 	 */
-	private String userName;
+	private String operateName;
+	
+	/**
+	 * 企业名称
+	 */
+	private String companyName;
 	
 	/**
 	 * 工资总笔数
@@ -23,6 +30,11 @@ public class Salary {
 	private double totalAmount;
 	
 	/**
+	 * 工资统计月份
+	 */
+	private String salaryMonth;
+	
+	/**
 	 * 工资发放时间
 	 */
 	private String salaryDate;
@@ -30,12 +42,17 @@ public class Salary {
 	/**
 	 * 生成时间
 	 */
-	private String salary_createTime;
+	private String salaryCreateTime;
 	
 	/**
-	 * 企业名称
+	 * 审批者id
 	 */
-	private String company;
+	private String approveIds;
+	
+	/**
+	 * 审批者姓名
+	 */
+	private String approveNames;
 	
 	/**
 	 * 状态  调银企直联接口会返回7种状态, 状态5代表成功
@@ -59,6 +76,11 @@ public class Salary {
 	 * 备注
 	 */
 	private String remark;
+	
+	/**
+	 * 工资详细
+	 */
+	List<SalaryDetail> details;
 
 	public long getSid() {
 		return sid;
@@ -67,13 +89,21 @@ public class Salary {
 	public void setSid(long sid) {
 		this.sid = sid;
 	}
-	
-	public String getUserName() {
-		return userName;
+
+	public String getOperateName() {
+		return operateName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setOperateName(String operateName) {
+		this.operateName = operateName;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	public int getTotalNumber() {
@@ -92,6 +122,14 @@ public class Salary {
 		this.totalAmount = totalAmount;
 	}
 
+	public String getSalaryMonth() {
+		return salaryMonth;
+	}
+
+	public void setSalaryMonth(String salaryMonth) {
+		this.salaryMonth = salaryMonth;
+	}
+
 	public String getSalaryDate() {
 		return salaryDate;
 	}
@@ -100,28 +138,28 @@ public class Salary {
 		this.salaryDate = salaryDate;
 	}
 
-	public String getRemark() {
-		return remark;
+	public String getSalaryCreateTime() {
+		return salaryCreateTime;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-	
-	public String getCompany() {
-		return company;
+	public void setSalaryCreateTime(String salaryCreateTime) {
+		this.salaryCreateTime = salaryCreateTime;
 	}
 
-	public void setCompany(String company) {
-		this.company = company;
+	public String getApproveIds() {
+		return approveIds;
 	}
 
-	public String getSalary_createTime() {
-		return salary_createTime;
+	public void setApproveIds(String approveIds) {
+		this.approveIds = approveIds;
 	}
 
-	public void setSalary_createTime(String salary_createTime) {
-		this.salary_createTime = salary_createTime;
+	public String getApproveNames() {
+		return approveNames;
+	}
+
+	public void setApproveNames(String approveNames) {
+		this.approveNames = approveNames;
 	}
 
 	public String getStatus() {
@@ -138,6 +176,22 @@ public class Salary {
 
 	public void setEntrustSeqNo(String entrustSeqNo) {
 		this.entrustSeqNo = entrustSeqNo;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public List<SalaryDetail> getDetails() {
+		return details;
+	}
+
+	public void setDetails(List<SalaryDetail> details) {
+		this.details = details;
 	}
 
 }

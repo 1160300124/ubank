@@ -212,8 +212,8 @@ public class ManagerController extends BaseController{
 			info.setCode(IConstants.QT_GET_BALANCE_ERROR);
 			return info;
 		}
-    	sa.setUserName(currentUser.getUserName());
-    	sa.setSalary_createTime(DateTimeUtil.date2Str(new Date()));
+    	sa.setOperateName(currentUser.getUserName());
+    	sa.setSalaryCreateTime(DateTimeUtil.date2Str(new Date()));
     	String bespearkDate = sa.getSalaryDate();
     	int totalNumber = sa.getTotalNumber();
     	double totalAmount = sa.getTotalAmount();

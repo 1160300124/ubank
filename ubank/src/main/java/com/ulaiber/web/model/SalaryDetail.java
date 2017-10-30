@@ -18,7 +18,12 @@ public class SalaryDetail {
 	private long sid;
 	
 	/**
-	 * 员工姓名
+	 * 收款人ID
+	 */
+	private long userId;
+	
+	/**
+	 * 收款人姓名
 	 */
 	private String userName;
 	
@@ -30,7 +35,7 @@ public class SalaryDetail {
 	/**
 	 * 税前工资
 	 */
-	private double pre_tax_salaries;
+	private double preTaxSalaries;
 	
 	/**
 	 * 奖金
@@ -45,17 +50,17 @@ public class SalaryDetail {
 	/**
 	 * 考勤扣款
 	 */
-	private double attendance_cut_payment;
+	private double attendanceCutPayment;
 	
 	/**
 	 * 请假扣款
 	 */
-	private double askForLeave_cut_payment;
+	private double askForLeaveCutPayment;
 	
 	/**
 	 * 加班费
 	 */
-	private double overtime_payment;
+	private double overtimePayment;
 	
 	/**
 	 * 社保
@@ -80,7 +85,7 @@ public class SalaryDetail {
 	/**
 	 * 其他扣款
 	 */
-	private double else_cut_payment;
+	private double elseCutPayment;
 	
 	/**
 	 * 应发工资
@@ -96,7 +101,7 @@ public class SalaryDetail {
 	 * 备注
 	 */
 	private String remark;
-	
+
 	public long getDid() {
 		return did;
 	}
@@ -111,6 +116,14 @@ public class SalaryDetail {
 
 	public void setSid(long sid) {
 		this.sid = sid;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public String getUserName() {
@@ -129,12 +142,12 @@ public class SalaryDetail {
 		this.cardNo = cardNo;
 	}
 
-	public double getPre_tax_salaries() {
-		return pre_tax_salaries;
+	public double getPreTaxSalaries() {
+		return preTaxSalaries;
 	}
 
-	public void setPre_tax_salaries(double pre_tax_salaries) {
-		this.pre_tax_salaries = pre_tax_salaries;
+	public void setPreTaxSalaries(double preTaxSalaries) {
+		this.preTaxSalaries = preTaxSalaries;
 	}
 
 	public double getBonuses() {
@@ -153,28 +166,28 @@ public class SalaryDetail {
 		this.subsidies = subsidies;
 	}
 
-	public double getAttendance_cut_payment() {
-		return attendance_cut_payment;
+	public double getAttendanceCutPayment() {
+		return attendanceCutPayment;
 	}
 
-	public void setAttendance_cut_payment(double attendance_cut_payment) {
-		this.attendance_cut_payment = attendance_cut_payment;
+	public void setAttendanceCutPayment(double attendanceCutPayment) {
+		this.attendanceCutPayment = attendanceCutPayment;
 	}
 
-	public double getAskForLeave_cut_payment() {
-		return askForLeave_cut_payment;
+	public double getAskForLeaveCutPayment() {
+		return askForLeaveCutPayment;
 	}
 
-	public void setAskForLeave_cut_payment(double askForLeave_cut_payment) {
-		this.askForLeave_cut_payment = askForLeave_cut_payment;
+	public void setAskForLeaveCutPayment(double askForLeaveCutPayment) {
+		this.askForLeaveCutPayment = askForLeaveCutPayment;
 	}
 
-	public double getOvertime_payment() {
-		return overtime_payment;
+	public double getOvertimePayment() {
+		return overtimePayment;
 	}
 
-	public void setOvertime_payment(double overtime_payment) {
-		this.overtime_payment = overtime_payment;
+	public void setOvertimePayment(double overtimePayment) {
+		this.overtimePayment = overtimePayment;
 	}
 
 	public double getSocialInsurance() {
@@ -209,12 +222,12 @@ public class SalaryDetail {
 		this.personalIncomeTax = personalIncomeTax;
 	}
 
-	public double getElse_cut_payment() {
-		return else_cut_payment;
+	public double getElseCutPayment() {
+		return elseCutPayment;
 	}
 
-	public void setElse_cut_payment(double else_cut_payment) {
-		this.else_cut_payment = else_cut_payment;
+	public void setElseCutPayment(double elseCutPayment) {
+		this.elseCutPayment = elseCutPayment;
 	}
 
 	public double getSalaries() {
@@ -240,5 +253,5 @@ public class SalaryDetail {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-
+	
 }

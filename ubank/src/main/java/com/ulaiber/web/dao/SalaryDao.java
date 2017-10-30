@@ -55,4 +55,12 @@ public interface SalaryDao {
      * @return
      */
     int batchDeleteSalaries(List<Long> sids);
+    
+    /**
+     * 获取用户的工资流水
+     * @param userId
+     * @return
+     */
+    List<Map<String, Object>> getSalariesByUserId(Long userId);
+    
 }
