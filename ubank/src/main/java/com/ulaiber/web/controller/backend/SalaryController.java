@@ -151,7 +151,7 @@ public class SalaryController extends BaseController {
 		}
 		
 		try {
-			List<SalaryDetail> details = detailService.getLatestSalaryDetail();
+			List<SalaryDetail> details = detailService.getLatestSalaryDetail(comNum);
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setData(details);
 		} catch (Exception e) {

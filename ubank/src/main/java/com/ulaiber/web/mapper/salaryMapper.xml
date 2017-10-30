@@ -26,9 +26,9 @@
    </resultMap>
   
    <insert id="save" parameterType="Salary" useGeneratedKeys="true" keyProperty="sid">
-   		insert into tbl_salaries(operate_name, company_name, total_number, total_amount, salary_month, salary_date, salary_createTime, approve_ids, approve_names, status,
-   		entrustSeqNo, remark) values (#{operateName}, #{companyName}, #{totalNumber}, #{totalAmount}, #{salaryMonth}, #{salaryDate}, #{salaryCreateTime}, #{approveIds},
-   		#{approveNames}, #{status}, #{entrustSeqNo}, #{remark})
+   		insert into tbl_salaries(operate_name, company_id, company_name, total_number, total_amount, salary_month, salary_date, salary_createTime, approve_ids,
+   		approve_names, status, entrustSeqNo, remark) values (#{operateName}, #{companyId},  #{companyName}, #{totalNumber}, #{totalAmount}, #{salaryMonth},
+   		#{salaryDate}, #{salaryCreateTime}, #{approveIds}, #{approveNames}, #{status}, #{entrustSeqNo}, #{remark})
    </insert>
 	
 	<select id="getAllSalaries" resultMap="SalaryMap">
@@ -39,8 +39,9 @@
 		select count(1) from tbl_salaries
 	</select>
 	
-	<select id="getSalariesByUserId" parameterType="Long" resultType="Map">
-		select s.salary_month,d.salaries from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId}
+	<select id="getSalariesByUserId" parameterType="Map" resultType="Map">
+		select s.salary_month,d.salaries from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId} 
+		order by s.salary_month desc limit #{offset},#{limit}
 	</select>
 	
 	<select id="getSalaries" parameterType="Map" resultMap="SalaryMap">

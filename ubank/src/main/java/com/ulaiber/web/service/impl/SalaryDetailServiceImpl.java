@@ -59,9 +59,9 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 	}
 
 	@Override
-	public List<SalaryDetail> getLatestSalaryDetail() {
+	public List<SalaryDetail> getLatestSalaryDetail(String companyId) {
 		
-		return mapper.getLatestSalaryDetail();
+		return mapper.getLatestSalaryDetail(companyId);
 	}
 
 

@@ -43,10 +43,16 @@ public class SalaryApiController extends BaseController {
 	
 	@RequestMapping(value = "getSalaryList", method = RequestMethod.GET)
 	@ResponseBody
-	public ResultInfo getSalaryList(long userId, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo getSalaryList(long userId, int pageSize, int pageNum, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
+		if (pageSize <= 0){
+			pageSize =20;
+		}
+		if(pageNum <= 0){
+			pageNum = 1;
+		}
 		try {
-			List<Map<String, Object>> data = service.getSalariesByUserId(userId);
+			List<Map<String, Object>> data = service.getSalariesByUserId(userId, pageSize, pageNum);
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("获取用户工资流水成功。");
 			info.setData(data);

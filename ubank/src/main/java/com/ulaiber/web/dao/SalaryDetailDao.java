@@ -54,6 +54,6 @@ public interface SalaryDetailDao {
      * 获取最近一个月的工资表详细
      * @return
      */
-    List<SalaryDetail> getLatestSalaryDetail();
+    List<SalaryDetail> getLatestSalaryDetail(String companyId);
 
 }

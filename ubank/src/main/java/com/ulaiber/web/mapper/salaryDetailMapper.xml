@@ -61,8 +61,8 @@
 		select count(1) from tbl_salaries_detail where sid=#{sid}
 	</select>
 	
-	<select id="getLatestSalaryDetail" resultMap="SalaryDetailMap">
-		select * from tbl_salaries_detail where sid = (select sid from tbl_salaries where company_name='20047' order by salary_month desc limit 1)
+	<select id="getLatestSalaryDetail" parameterType="String" resultMap="SalaryDetailMap">
+		select * from tbl_salaries_detail where sid = (select sid from tbl_salaries where company_id=#{companyId} order by salary_month desc limit 1)
 	</select>
 	
 	<delete id="batchDeleteSalaryDetails" parameterType="java.util.List">  
