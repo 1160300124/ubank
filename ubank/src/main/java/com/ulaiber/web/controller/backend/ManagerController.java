@@ -264,9 +264,9 @@ public class ManagerController extends BaseController{
     		return null;
     	}
     	
-    	List<SalaryDetail> details = salaryDetailService.getDetailsBySid(Long.valueOf(sid));
+//    	List<SalaryDetail> details = salaryDetailService.getDetailsBySid(Long.valueOf(sid));
     	
-    	return details;
+    	return null;
     }
     
     @RequestMapping(value = "batchDelete", method = RequestMethod.POST)
