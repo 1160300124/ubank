@@ -1,6 +1,8 @@
 package com.ulaiber.web.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -26,8 +28,14 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 	}
 
 	@Override
-	public List<SalaryDetail> getDetailsBySid(long sid) {
-		return mapper.getDetailsBySid(sid);
+	public List<SalaryDetail> getDetailsBySid(long sid, int limit, int offset, String orderby, String search) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("sid", sid);
+		params.put("limit", limit);
+		params.put("offset", offset);
+		params.put("orderby", orderby);
+		params.put("search", search);
+		return mapper.getDetailsBySid(params);
 	}
 
 	@Override
@@ -40,6 +48,20 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 	@Override
 	public int getTotalBySid(long sid) {
 		return mapper.getTotalBySid(sid);
+	}
+
+	@Override
+	public SalaryDetail getSalaryDetailByUserIdAndMonth(long userId, String month) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", userId);
+		params.put("salaryMonth", month);
+		return mapper.getSalaryDetailByUserIdAndMonth(params);
+	}
+
+	@Override
+	public List<SalaryDetail> getLatestSalaryDetail() {
+		
+		return mapper.getLatestSalaryDetail();
 	}
 
 

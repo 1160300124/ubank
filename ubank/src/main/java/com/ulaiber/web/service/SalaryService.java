@@ -1,6 +1,7 @@
 package com.ulaiber.web.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.web.model.Salary;
 
@@ -17,7 +18,7 @@ public interface SalaryService {
 	 * @param sa
 	 * @return
 	 */
-	boolean save(Salary sa);
+	boolean save(Salary salary);
 	
 	/**
 	 * 查询所有的工资流水
@@ -50,5 +51,11 @@ public interface SalaryService {
 	 * @return
 	 */
 	boolean batchDeleteSalaries(List<Long> sids);
-
+	
+    /**
+     * 获取用户的工资流水
+     * @param userId
+     * @return
+     */
+	List<Map<String, Object>> getSalariesByUserId(Long userId);
 }

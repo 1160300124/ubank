@@ -23,24 +23,24 @@
 		</button>
 	</div>
 
-	<table id="tb_saraly_details" data-toggle="table" data-url="getSalaryDetails" data-method="get" data-toolbar="#toolbar" data-striped="true"
+	<table id="tb_saraly_details" data-toggle="table" data-url="getSalaryDetails?sid=${param.sid}" data-method="get" data-toolbar="#toolbar" data-striped="true"
 		   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true"
 		   data-page-size="10" data-page-list="[10,15,20]">
  		 <thead>
 		<tr>
 			<th data-field="userName">姓名</th>
 			<th data-field="cardNo" data-edit="{false}">身份证号码</th>
-			<th data-field="pre_tax_salaries">税前工资</th>
+			<th data-field="preTaxSalaries">税前工资</th>
 			<th data-field="bonuses">奖金</th>
 			<th data-field="subsidies">补贴</th>
-			<th data-field="attendance_cut_payment">考勤扣款</th>
-			<th data-field="askForLeave_cut_payment">请假扣款</th>
-			<th data-field="overtime_payment">加班费</th>
+			<th data-field="attendanceCutPayment">考勤扣款</th>
+			<th data-field="askForLeaveCutPayment">请假扣款</th>
+			<th data-field="overtimePayment">加班费</th>
 			<th data-field="socialInsurance">社保缴纳</th>
 			<th data-field="publicAccumulationFunds">公积金</th>
 			<th data-field="taxThreshold">个税起征点</th>
 			<th data-field="personalIncomeTax">个人所得税</th>
-			<th data-field="else_cut_payment">其他扣款</th>
+			<th data-field="elseCutPayment">其他扣款</th>
 			<th data-field="salaries">应发工资</th>
 		</tr>
 		</thead> 

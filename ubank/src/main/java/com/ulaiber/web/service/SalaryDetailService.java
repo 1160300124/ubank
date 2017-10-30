@@ -24,7 +24,7 @@ public interface SalaryDetailService {
 	 * @param sid
 	 * @return
 	 */
-	List<SalaryDetail> getDetailsBySid(long sid);
+	List<SalaryDetail> getDetailsBySid(long sid, int limit, int offset, String orderby, String search);
 	
     /**
      * 根据工资流水id查询记录条数
@@ -39,4 +39,18 @@ public interface SalaryDetailService {
 	 * @return
 	 */
 	boolean batchDeleteSalaryDetails(List<Long> sids);
+	
+    /**
+     * 根据id和月份获取用户的工资详细
+     * @param userId
+     * @param month
+     * @return
+     */
+    SalaryDetail getSalaryDetailByUserIdAndMonth(long userId, String month);
+    
+    /**
+     * 获取最近一个月的工资表详细
+     * @return
+     */
+    List<SalaryDetail> getLatestSalaryDetail();
 }
