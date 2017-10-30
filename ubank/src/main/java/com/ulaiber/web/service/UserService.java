@@ -13,7 +13,7 @@ public interface UserService {
 	 * @param user User
 	 * @return boolean true/flase
 	 */
-	boolean save(User user);
+	int save(User user,String code);
 	
 	/**
 	 * 更新ticket和token

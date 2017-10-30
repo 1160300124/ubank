@@ -20,14 +20,6 @@ public class SFTPUtil {
     private ChannelSftp sftp;
 
     private Session session;
-    /** FTP 登录用户名*/
-//    private String username = "ftpuser";
-//    /** FTP 登录密码*/
-//    private String password = "ftpuser";
-//    /** FTP 服务器地址IP地址*/
-//    private String host = "119.23.247.226";
-//    /** FTP 端口*/
-//    private int port = 22;
 
     /**
      * 连接sftp服务器
@@ -38,11 +30,12 @@ public class SFTPUtil {
         try {
             //加载配置文件
             Map<String,Object> configMap = StringUtil.loadConfig();
-            String username = (String) configMap.get("SH_username");
+            String username = (String) configMap.get("username");
             String password = (String) configMap.get("password");
             int port = (int) configMap.get("port");
             String host = (String) configMap.get("host");
             String directory = (String) configMap.get("directory");
+            log.info(">>>>>>>>>>用户名、密码、IP、端口为：" +username+":"+password+":"+ host +":"+ port);
             JSch jsch = new JSch();
             log.info("sftp connect by host:{} username:{}");
 
@@ -75,11 +68,14 @@ public class SFTPUtil {
         } catch (JSchException e) {
             log.error("Cannot connect to specified sftp server , Exception message is: ", e);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error(">>>>>>>>>>file not found :",e);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error(">>>>>>>>>>IOException :" ,e);
         } catch (SftpException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error(">>>>>>>>>>SftpException : " ,e);
         }
     }
 

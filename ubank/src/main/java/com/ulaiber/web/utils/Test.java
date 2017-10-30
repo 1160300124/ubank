@@ -408,7 +408,8 @@ public class Test {
 //		String userId = "359";
 //		long ll = Long.valueOf(userId);
 
-		System.out.print(">>>>>>userID：" + UUID.randomUUID());
+		//System.out.print(">>>>>>userID：" + UUID.randomUUID());
+		StringUtil.loadConfig();
 	}
 
 	//生成字母和数字的随机数

@@ -118,6 +118,7 @@ public class ShangHaiAccount {
                 Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
                 while (iters.hasNext()){
                     Element recordEles = (Element) iters.next();
+                    //响应报文头信息
                     secondAcount.setStatusCode(recordEles.elementTextTrim("StatusCode"));  //返回结果码
                     secondAcount.setServerStatusCode(recordEles.elementTextTrim("ServerStatusCode")); //返回结果信息
                     secondAcount.setSPRsUID(recordEles.elementTextTrim("SPRsUID"));   // 主机流水号
@@ -145,8 +146,8 @@ public class ShangHaiAccount {
             resultInfo.setData(secondAcount);
             resultInfo.setCode(IConstants.QT_CODE_OK);
         } catch (Exception e) {
-            e.printStackTrace();
-           // logger.error(">>>>>>>>加密签字异常：",e);
+           // e.printStackTrace();
+           logger.error(">>>>>>>>加密签字异常：",e);
         }
 
         return resultInfo;

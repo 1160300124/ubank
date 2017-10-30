@@ -77,51 +77,36 @@ public class UserController extends BaseController{
 	public ResultInfo register(@RequestParam("file") MultipartFile[] file, User user, Bank bank,String code,
 							   HttpServletRequest request, HttpServletResponse response){
 		logger.debug("register statrt...");
-		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
-		if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
-			logger.error("register failed: user or bank is empty.");
-			retInfo.setMessage("register failed: user or bank is empty");
-			return retInfo;
-		}
-		if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(user.getBankCardNo())){
-			logger.error("register failed: mobile or bankNo is empty.");
-			retInfo.setMessage("register failed: mobile or bankNo is empty.");
-			return retInfo;
-		}
-		//查询手机号是否已被注册
-		User user1 = userService.findByMobile(user.getMobile());
-		if (ObjUtil.notEmpty(user1)){
-			retInfo.setCode(IConstants.QT_MOBILE_EXISTS);
-			retInfo.setMessage("register failed: mobile is already exists.");
-			logger.error("register failed: mobile is already exists.");
-			return retInfo;
-		}
-		//查询用户是否已注册二类账户
-		int id = (int) user.getId();
-		SecondAcount acc = userService.findSecondAcc(id);
-		if(!StringUtil.isEmpty(acc)){
-			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("用户已注册二类账户");
-			return retInfo;
-		}
-		//新增用户权限层级信息
-		user.setBank(bank);
-		if (userService.save(user)){
-			user.setId(user.getId());
-			int result = permissionService.addPermission(user);
-			if(result == 0){
-				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("register failed");
-				logger.error("注册失败");
+		logger.info(">>>>>>>>>>user :" + user.getUserName());
+		logger.info(">>>>>>>>>>bank :" + user.getBankCardNo());
+		logger.info(">>>>>>>>>>code :" + code);
+		logger.info(">>>>>>>>>>file :" + file);
+		ResultInfo retInfo = new ResultInfo();
+		try{
+			if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
+				logger.error("register failed: user or bank is empty.");
+				retInfo.setMessage("register failed: user or bank is empty");
 				return retInfo;
 			}
-			//给注册用户分配公司和集团
-			int userid = (int) user.getId();
-			int result2 = permissionService.saveRoots(code,userid);
-			if(result2 == 0){
+			if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(user.getBankCardNo())){
+				logger.error("register failed: mobile or bankNo is empty.");
+				retInfo.setMessage("register failed: mobile or bankNo is empty.");
+				return retInfo;
+			}
+			//查询手机号是否已被注册
+			User user1 = userService.findByMobile(user.getMobile());
+			if (ObjUtil.notEmpty(user1)){
+				retInfo.setCode(IConstants.QT_MOBILE_EXISTS);
+				retInfo.setMessage("register failed: mobile is already exists.");
+				logger.error("register failed: mobile is already exists.");
+				return retInfo;
+			}
+			//查询用户是否已注册二类账户
+			int id = (int) user.getId();
+			SecondAcount acc = userService.findSecondAcc(id);
+			if(!StringUtil.isEmpty(acc)){
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("register failed");
-				logger.error("注册失败");
+				retInfo.setMessage("用户已注册二类账户");
 				return retInfo;
 			}
 			// 0 上海银行二类户
@@ -129,10 +114,12 @@ public class UserController extends BaseController{
 				//上传图片到sftp服务器上
 				logger.info(">>>>>>>>开始上传文件到sftp服务器");
 				if (file != null && file.length > 0) {
+					logger.info(">>>>>>>>>>file is :" + file);
 					boolean flag = false;
 					// 循环获取file数组中得文件
 					try {
 						for (int i = 0; i < file.length; i++) {
+							logger.info(">>>>>>>>>>上传文件第"+i+":" + file);
 							MultipartFile files = file[i];
 							flag = sysUploadImg(files);
 						}
@@ -167,7 +154,7 @@ public class UserController extends BaseController{
 				if(ri.getCode() == 1010){
 					retInfo.setCode(IConstants.QT_CODE_ERROR);
 					retInfo.setMessage("注册二类账户信息失败");
-					logger.info(user.getMobile() + " 注册二类账户信息失败.");
+					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败.");
 					return retInfo;
 				}
 				if(!sa.getStatusCode().equals("0000")){
@@ -181,10 +168,20 @@ public class UserController extends BaseController{
 				if(se == 0){
 					retInfo.setCode(IConstants.QT_CODE_ERROR);
 					retInfo.setMessage("新增二类账户失败");
-					logger.info(user.getMobile() + " 新增二类账户信息失败.");
+					logger.info(">>>>>>>>>>"+user.getMobile() + " 新增二类账户信息失败.");
 					return retInfo;
 				}
 			}
+			//新增用户权限层级信息
+			user.setBank(bank);
+			int save = userService.save(user,code);
+			if(save == 0){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("register failed");
+				logger.error(">>>>>>>>>>插入用户信息异常");
+				return retInfo;
+			}
+			int userid = (int) user.getId();
 			//新增用户绑定银行卡信息
 			int bankNo = Integer.parseInt(bank.getBankNo());
 			String bankCardNo = user.getBankCardNo();
@@ -194,13 +191,11 @@ public class UserController extends BaseController{
 				retInfo.setMessage("register failed");
 				return retInfo;
 			}
-			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("register successed");
-			logger.info(user.getMobile() + " register successed.");
-		}else{
-			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("register failed");
-			logger.info(user.getMobile() + " register failed.");
+				retInfo.setCode(IConstants.QT_CODE_OK);
+				retInfo.setMessage("register successed");
+				logger.info(">>>>>>>>>>"+user.getMobile() + " register successed.");
+		}catch(Exception e){
+			logger.error(">>>>>>>>>>注册失败,原因为：" ,e);
 		}
 		logger.debug("register end...");
 		return retInfo;
@@ -587,9 +582,11 @@ public class UserController extends BaseController{
 		ResultInfo resultInfo = new ResultInfo();
 		if (file != null && file.length > 0) {
 			boolean flag = false;
+			logger.info(">>>>>>>>>>file is :" + file);
 			// 循环获取file数组中得文件
 			try {
 				for (int i = 0; i < file.length; i++) {
+					logger.info(">>>>>>>>>>上传文件第"+i+":" + file);
 					MultipartFile files = file[i];
 					flag = sysUploadImg(files);
 				}

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ulaiber.web.dao.BanksRootDao;
+import com.ulaiber.web.dao.LevelInfoDao;
 import com.ulaiber.web.dao.PermissionDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
@@ -40,6 +41,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 	@Resource
 	private PermissionDao permissionDao;
 
+	@Resource
+	private LevelInfoDao levelInfoDao;
+
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean delete(String mobile) {
@@ -63,14 +67,27 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean save(User user) {
-	
+	public int save(User user,String code) {
 		user.setRole_id(2);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
 		user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
-
-		return mapper.save(user) > 0;
+		int result = mapper.save(user);
+		if(result == 0){
+			return result;
+		}
+		//根据邀请码获取公司信息
+		Company company =  permissionDao.getComAndGroupByCode(code);
+		if(StringUtil.isEmpty(company)){
+			return 0;
+		}
+		Map<String,Object> map = new HashMap<>();
+		map.put("userid" ,user.getId());
+		map.put("companyNumber" ,company.getCompanyNumber());
+		map.put("group_num" ,company.getGroup_num());
+		//给注册用户分配公司和集团
+		int result2 = permissionDao.insertRoots(map);
+		return result2;
 	}
 
 	@Override

@@ -30,7 +30,6 @@ public class SHQueryBalance {
 
     private static final SimpleDateFormat TIME = new SimpleDateFormat("HHmmss");
 
-
     /**
      * 查询二类户余额
      * @param SubAcctNo 余额理财子账号
