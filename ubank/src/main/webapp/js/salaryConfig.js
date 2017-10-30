@@ -286,8 +286,9 @@ $(function () {
 	});
 	
 	$("#btn_save").unbind().bind("click", function(){
-		var companyName = $("#company_select").val();
-		if (companyName == "" || companyName == null || companyName == undefined){
+		var companyId = $("#company_select").val();
+		var companyName = $("#company_select").find("option:selected").text();
+		if (companyId == "" || companyId == null || companyId == undefined){
 			Ewin.alert("请先选择公司");
 			return false;
 		}
@@ -351,6 +352,7 @@ $(function () {
 	    }
 	    
 	    var params = {};
+	    params.companyId = companyId;
 	    params.companyName = companyName;
 	    params.salaryMonth = statistic_date;
 	    params.salaryDate = pay_date;
@@ -377,6 +379,7 @@ $(function () {
 				if (code == 1000) {
 					Ewin.alert("保存成功");
 					$("#tb_saraly_configs").bootstrapTable("refresh");
+					window.location.href = "salary";
 				}else{
 					Ewin.alert(data['message']);
 				}

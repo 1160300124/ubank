@@ -57,5 +57,5 @@ public interface SalaryService {
      * @param userId
      * @return
      */
-	List<Map<String, Object>> getSalariesByUserId(Long userId);
+	List<Map<String, Object>> getSalariesByUserId(long userId, int pageSize, int pageNum);
 }

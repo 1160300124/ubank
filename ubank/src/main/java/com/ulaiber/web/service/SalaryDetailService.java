@@ -50,7 +50,8 @@ public interface SalaryDetailService {
     
     /**
      * 获取最近一个月的工资表详细
+     * @param companyId
      * @return
      */
-    List<SalaryDetail> getLatestSalaryDetail();
+    List<SalaryDetail> getLatestSalaryDetail(String companyId);
 }

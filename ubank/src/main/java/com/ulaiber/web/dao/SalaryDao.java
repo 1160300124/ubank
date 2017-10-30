@@ -61,6 +61,6 @@ public interface SalaryDao {
      * @param userId
      * @return
      */
-    List<Map<String, Object>> getSalariesByUserId(Long userId);
+    List<Map<String, Object>> getSalariesByUserId(Map<String, Object> params);
     
 }

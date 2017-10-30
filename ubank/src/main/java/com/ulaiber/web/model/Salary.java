@@ -15,7 +15,12 @@ public class Salary {
 	private String operateName;
 	
 	/**
-	 * 企业名称
+	 * 公司id
+	 */
+	private String companyId;
+	
+	/**
+	 * 公司名称
 	 */
 	private String companyName;
 	
@@ -96,6 +101,14 @@ public class Salary {
 
 	public void setOperateName(String operateName) {
 		this.operateName = operateName;
+	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
 	}
 
 	public String getCompanyName() {

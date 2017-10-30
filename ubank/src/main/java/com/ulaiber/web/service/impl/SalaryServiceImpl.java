@@ -88,8 +88,14 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getSalariesByUserId(Long userId) {
-		List<Map<String, Object>> list = this.mapper.getSalariesByUserId(userId);
+	public List<Map<String, Object>> getSalariesByUserId(long userId, int pageSize, int pageNum) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		int offset = pageSize * (pageNum -1);
+		params.put("limit", pageSize);
+		params.put("offset", offset);
+		params.put("userId", userId);
+		List<Map<String, Object>> list = this.mapper.getSalariesByUserId(params);
+		
 //		Set<String> yearSet = new HashSet<String>();
 //		for (Map<String, Object> map : list) {
 //			for (Entry<String, Object> entry : map.entrySet()) {
