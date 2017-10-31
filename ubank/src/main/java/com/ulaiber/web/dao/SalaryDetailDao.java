@@ -18,7 +18,14 @@ public interface SalaryDetailDao {
      * @param details
      * @return
      */
-    int saveBatch(List<SalaryDetail> details);
+    int batchSave(List<SalaryDetail> details);
+    
+    /**
+     * 批量更新
+     * @param details
+     * @return
+     */
+    int batchUpdate(List<SalaryDetail> details);
 
     /**
      * 根据工资流水id查询流水详情
@@ -26,7 +33,14 @@ public interface SalaryDetailDao {
      * @param params Map<String, Object> 
      * @return
      */
-    List<SalaryDetail> getDetailsBySid(Map<String, Object> params);
+    List<SalaryDetail> getDetailsBySid2(Map<String, Object> params);
+    
+	/**
+	 * 根据工资流水id查询流水详情
+	 * @param sid
+	 * @return
+	 */
+	List<SalaryDetail> getDetailsBySid(long sid);
     
     /**
      * 根据工资流水id查询记录条数

@@ -31,7 +31,7 @@
    </resultMap>
    
   	<!-- 批量插入-->
-    <insert id ="saveBatch" parameterType="java.util.List" useGeneratedKeys="true">
+    <insert id ="batchSave" parameterType="java.util.List" useGeneratedKeys="true">
          insert into tbl_salaries_detail(sid, userId, userName, cardNo, pre_tax_salaries, bonuses, subsidies, attendance_cut_payment, askForLeave_cut_payment,
          overtime_payment, socialInsurance, publicAccumulationFunds, taxThreshold, personalIncomeTax, else_cut_payment, salaries, remark) values
          <foreach collection ="list" item="detail" index= "index" separator =",">
@@ -40,9 +40,22 @@
              #{detail.personalIncomeTax}, #{detail.elseCutPayment}, #{detail.salaries}, #{detail.remark})
          </foreach >
     </insert >
+    
+    <update id="batchUpdate"  parameterType="java.util.List">  
+         <foreach collection="list" item="detail" index="index" open="" close="" separator=";">  
+             update tbl_salaries_detail   
+             <set>  
+             	pre_tax_salaries=#{detail.preTaxSalaries}, bonuses=#{detail.bonuses}, subsidies=#{detail.subsidies}, attendance_cut_payment=#{detail.attendanceCutPayment},
+             	askForLeave_cut_payment=#{detail.askForLeaveCutPayment}, overtime_payment=#{detail.overtimePayment}, socialInsurance=#{detail.socialInsurance},
+             	publicAccumulationFunds=#{detail.publicAccumulationFunds}, taxThreshold=#{detail.taxThreshold}, personalIncomeTax= #{detail.personalIncomeTax},
+             	else_cut_payment=#{detail.elseCutPayment}, salaries=#{detail.salaries}, remark=#{detail.remark}
+             </set>  
+             where did=${detail.did}  
+        </foreach>  
+    </update>  
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
-	<select id="getDetailsBySid" parameterType="Map" resultMap="SalaryDetailMap">
+	<select id="getDetailsBySid2" parameterType="Map" resultMap="SalaryDetailMap">
 		select * from tbl_salaries_detail where sid=#{sid}
 		<if test="search != null and search != ''">
 			and userName like concat('%',#{search},'%')
@@ -51,6 +64,10 @@
 		<if test="limit != null and limit != ''">
 			limit #{offset},#{limit}
 		</if>
+	</select>
+	
+	<select id="getDetailsBySid" parameterType="Long" resultMap="SalaryDetailMap">
+		select * from tbl_salaries_detail where sid=#{sid}
 	</select>
 	
 	<select id="getSalaryDetailByUserIdAndMonth" parameterType="Map" resultMap="SalaryDetailMap">

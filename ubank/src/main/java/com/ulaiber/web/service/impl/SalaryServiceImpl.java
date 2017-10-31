@@ -46,10 +46,20 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			for (SalaryDetail detail : salary.getDetails()){
 				detail.setSid(sid);
 			}
-			return detailDao.saveBatch(salary.getDetails()) > 0;
+			return detailDao.batchSave(salary.getDetails()) > 0;
 		}
-		
-		return true;
+		return false;
+	}
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public boolean update(Salary salary) {
+		salary.setSalaryCreateTime(DateTimeUtil.date2Str(new Date()));
+		if (this.mapper.update(salary) > 0){
+			
+			return detailDao.batchUpdate(salary.getDetails()) > 0;
+		}
+		return false;
 	}
 
 	@Override
@@ -83,8 +93,11 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean batchDeleteSalaries(List<Long> sids) {
+		if (this.mapper.batchDeleteSalaries(sids) > 0){
+			return detailDao.batchDeleteSalaryDetails(sids) > 0;
+		}
+		return false;
 		
-		return this.mapper.batchDeleteSalaries(sids) > 0;
 	}
 
 	@Override
@@ -121,5 +134,4 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		return list;
 	}
 
-	
 }

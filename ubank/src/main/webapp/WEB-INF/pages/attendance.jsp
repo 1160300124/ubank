@@ -77,11 +77,12 @@
 				<th data-field="userName">姓名</th>
 				<th data-field="company.name">公司</th>
 				<th data-field="dept.deptName">部门</th>
-				<th data-field="clockOnDateTime">上班时间</th>
+				<th data-field="clockDate"  data-width="100px">打卡日期</th>
+				<th data-field="clockOnDateTime" data-width="140px">上班时间</th>
 				<th data-field="clockOnStatus" data-formatter="clockOnStatusFormatter">上班状态</th>
 				<th data-field="clockOnLocation">上班打卡位置</th>
 				<th data-field="clockOnDevice">上班打卡设备号</th>
-				<th data-field="clockOffDateTime">下班时间</th>
+				<th data-field="clockOffDateTime"  data-width="140px">下班时间</th>
 				<th data-field="clockOffStatus" data-formatter="clockOffStatusFormatter">下班状态</th>
 				<th data-field="clockOffLocation">下班打卡位置</th>
 				<th data-field="clockOffDevice">下班打卡设备号</th>

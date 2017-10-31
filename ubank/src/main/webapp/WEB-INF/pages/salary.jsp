@@ -12,9 +12,6 @@
 		<button id="btn_delete" type="button" class="btn btn-default">
 			<span class="fa icon-remove" aria-hidden="true"></span>删除
 		</button>
-		<button id="btn_import" type="button" class="btn btn-default">
-			<span class="fa icon-download-alt" aria-hidden="true"></span>导出
-		</button>
 
 	</div>
 

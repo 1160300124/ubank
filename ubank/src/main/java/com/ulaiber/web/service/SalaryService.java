@@ -21,6 +21,13 @@ public interface SalaryService {
 	boolean save(Salary salary);
 	
 	/**
+	 * 修改
+	 * @param salary
+	 * @return
+	 */
+	boolean update(Salary salary);
+	
+	/**
 	 * 查询所有的工资流水
 	 * @return
 	 */

@@ -32,7 +32,7 @@ public class ManagerServiceImpl extends BaseService implements ManagerService {
 			for (SalaryDetail detail : details){
 				detail.setSid(sid);
 			}
-			return detailDao.saveBatch(details) > 0;
+			return detailDao.batchSave(details) > 0;
 		}
 		
 		return false;

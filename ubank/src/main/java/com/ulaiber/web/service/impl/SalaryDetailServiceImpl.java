@@ -24,7 +24,7 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean saveBatch(List<SalaryDetail> details) {
-		return mapper.saveBatch(details) > 0;
+		return mapper.batchSave(details) > 0;
 	}
 
 	@Override
@@ -35,7 +35,12 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 		params.put("offset", offset);
 		params.put("orderby", orderby);
 		params.put("search", search);
-		return mapper.getDetailsBySid(params);
+		return mapper.getDetailsBySid2(params);
+	}
+	
+	@Override
+	public List<SalaryDetail> getDetailsBySid(long sid) {
+		return mapper.getDetailsBySid(sid);
 	}
 
 	@Override
