@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 
 /**
  * 银行卡数据库接口
@@ -53,4 +54,11 @@ public interface BankDao {
      * @return int
      */
     int deleteOriginCart(Map<String, Object> map);
+
+    /**
+     * 根据二类户账号ID和银行卡号查询二类户信息
+     * @param map
+     * @return SecondAcount
+     */
+    SecondAcount querySecondAccount(Map<String, Object> map);
 }

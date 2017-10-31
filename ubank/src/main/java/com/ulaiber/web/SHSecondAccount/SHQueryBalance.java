@@ -46,6 +46,7 @@ public class SHQueryBalance {
         String KoalB64Cert = "";
         String Signature = "";
         try {
+            logger.info(">>>>>>>>>>开始加签");
             //加签
             SvsSign signer = new SvsSign();
             signer.initSignCertAndKey(privateKey,pwd);
@@ -55,6 +56,7 @@ public class SHQueryBalance {
             String signDataStr = "";
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
+            logger.info(">>>>>>>>>>开始拼接查询xml");
             //拼接xml
             String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
                     "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +

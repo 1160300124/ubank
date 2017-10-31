@@ -24,7 +24,6 @@ import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
-import com.ulaiber.web.utils.HttpsUtil;
 import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.StringUtil;
@@ -67,7 +66,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public int save(User user,String code) {
+	public int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo) {
 		user.setRole_id(2);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
@@ -76,6 +75,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		if(result == 0){
 			return result;
 		}
+		sa.setUserid(user.getId());
 		//根据邀请码获取公司信息
 		Company company =  permissionDao.getComAndGroupByCode(code);
 		if(StringUtil.isEmpty(company)){
@@ -87,7 +87,22 @@ public class UserServiceImpl extends BaseService implements UserService {
 		map.put("group_num" ,company.getGroup_num());
 		//给注册用户分配公司和集团
 		int result2 = permissionDao.insertRoots(map);
-		return result2;
+		//新增用户二类账户信息
+		int result3 = mapper.insertSecondAccount(sa);
+		if(result3 == 0){
+			return result3;
+		}
+		int userid = (int) user.getId();
+		//新增用户绑定银行卡信息
+		Map<String,Object> paraMap = new HashMap<>();
+		paraMap.put("userid",userid);
+		paraMap.put("bankNo",bankNo);
+		paraMap.put("bankCardNo",bankCardNo);
+		int result4 = mapper.insertUserToBank(paraMap);
+		if(result4 == 0){
+			return result4;
+		}
+		return result4;
 	}
 
 	@Override
@@ -266,7 +281,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public int insertUserToBank(int userid, int bankNo, String bankCardNo) {
+    public int insertUserToBank(int userid, long bankNo, String bankCardNo) {
 		Map<String,Object> map = new HashMap<>();
 		map.put("userid",userid);
 		map.put("bankNo",bankNo);

@@ -7,6 +7,7 @@ import java.io.Serializable;
  * Created by daiqingwen on 2017/10/25.
  */
 public class SHChangeCard implements Serializable{
+    private long id;
     private long userid;                //用户ID
     private String SubAcctNo;           //子账号
     private String ProductCd;           //理财产品参数
@@ -19,6 +20,16 @@ public class SHChangeCard implements Serializable{
     private String ModiType;            //修改类型  00:换卡 01:修改绑定卡手机号
     private String StatusCode;          //返回结果码
     private String ServerStatusCode;    //返回结果信息
+    private String SPRsUID;             //主机流水号
+    private String RqUID;              //请求流水号
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getUserid() {
         return userid;
@@ -114,5 +125,21 @@ public class SHChangeCard implements Serializable{
 
     public void setServerStatusCode(String serverStatusCode) {
         ServerStatusCode = serverStatusCode;
+    }
+
+    public String getSPRsUID() {
+        return SPRsUID;
+    }
+
+    public void setSPRsUID(String SPRsUID) {
+        this.SPRsUID = SPRsUID;
+    }
+
+    public String getRqUID() {
+        return RqUID;
+    }
+
+    public void setRqUID(String rqUID) {
+        RqUID = rqUID;
     }
 }

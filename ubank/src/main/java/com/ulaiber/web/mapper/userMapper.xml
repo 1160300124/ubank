@@ -133,9 +133,9 @@
 
 	<!--新增二类账户信息-->
 	<insert id="insertSecondAccount" parameterType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount" >
-		INSERT INTO tbl_secondAccount (userid,EacctNo,SubAcctNo,CoopCustNo,ProductCd,Sign,FundCode
+		INSERT INTO tbl_secondAccount (userid,EacctNo,CustName,SubAcctNo,CoopCustNo,ProductCd,Sign,FundCode
 				,AcctOpenResult,AcctOpenDesc,FundAcctOpenResult,FundAcctOpenDesc,FundAcct,FundTxnAcct,disabled,createDate)
-			VALUES (#{userid},#{EacctNo},#{SubAcctNo},#{CoopCustNo},#{ProductCd},#{Sign},#{FundCode},
+			VALUES (#{userid},#{EacctNo},#{CustName},#{SubAcctNo},#{CoopCustNo},#{ProductCd},#{Sign},#{FundCode},
 			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct},0,#{createDate})
 	</insert>
 

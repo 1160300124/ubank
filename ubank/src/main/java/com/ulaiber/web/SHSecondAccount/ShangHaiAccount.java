@@ -1,5 +1,6 @@
 package com.ulaiber.web.SHSecondAccount;
 
+
 import com.koalii.svs.SvsSign;
 import com.koalii.svs.SvsVerify;
 import com.ulaiber.web.conmon.IConstants;
@@ -33,40 +34,44 @@ public class ShangHaiAccount {
      */
     public static ResultInfo register(Map<String,Object> map){
         logger.info(">>>>>>>>>>开始拼接注册XML");
-        Map<String,Object> configMap = StringUtil.loadConfig();
-        String privateKey = (String) configMap.get("privateKey");
-        String publicKey = (String) configMap.get("publicKey");
-        String postUrl = (String) configMap.get("postUrl");
-        String pwd = (String) configMap.get("pwd");
-
-        String CoopCustNo = (String) map.get("CoopCustNo");
-        String ProductCd = (String) map.get("ProductCd");
-        String CustName = (String) map.get("CustName");
-        String IdNo = (String) map.get("IdNo");
-        String MobllePhone = (String) map.get("MobllePhone");
-        String BindCardNo = (String) map.get("BindCardNo");
-        String ReservedPhone = (String) map.get("ReservedPhone");
-        String Sign = (String) map.get("Sign");
-        String KoalB64Cert = "";
-        String Signature = "";
         ResultInfo resultInfo = new ResultInfo();
-
         try {
+            Map<String,Object> configMap = StringUtil.loadConfig();
+            String privateKey = (String) configMap.get("privateKey");
+            String publicKey = (String) configMap.get("publicKey");
+            String postUrl = (String) configMap.get("postUrl");
+            String pwd = (String) configMap.get("pwd");
+
+            String CoopCustNo = (String) map.get("CoopCustNo");
+            String ProductCd = (String) map.get("ProductCd");
+            String CustName = (String) map.get("CustName");
+            String IdNo = (String) map.get("IdNo");
+            String MobllePhone = (String) map.get("MobllePhone");
+            String BindCardNo = (String) map.get("BindCardNo");
+            String ReservedPhone = (String) map.get("ReservedPhone");
+            String Sign = (String) map.get("Sign");
+            String KoalB64Cert = "";
+            String Signature = "";
+            logger.info(">>>>>>>>>>开始加签");
             //加签
             SvsSign signer = new SvsSign();
             signer.initSignCertAndKey(privateKey,pwd);
+            logger.info(">>>>>>>>>>加签成功");
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
             String random = StringUtil.getStringRandom(36);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            logger.info(">>>>>>>>>开始拼接待签名数据");
             //待签名的数据
             String signDataStr = "BindCardNo="+BindCardNo+"&ChannelId=YFY&ClearDate="+date+"&CoopCustNo="+CoopCustNo
                     +"&CustName="+CustName+"&IdNo="+IdNo+"&MobllePhone="+MobllePhone+"&ProductCd="+ProductCd
                     +"&ReservedPhone="+ReservedPhone+"&RqUID="+random+"&SPName=CBIB&Sign="+Sign+"&TranDate="+date+"&TranTime="+time;
             //System.out.print(">>>>>>>>> sign:" + signDataStr);
+            logger.info(">>>>>>>>>获取Signature");
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
+            logger.info(">>>>>>>>>>开始拼接xml");
             //拼接xml
             String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
                     "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
@@ -85,13 +90,17 @@ public class ShangHaiAccount {
                     "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
                     "</YFY0001Rq>" +
                     "</BOSFXII>";
+            logger.info(">>>>>>>>>>拼接xml完毕");
+            logger.info(">>>>>>>>>>开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
-            //System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
+           // logger.info(">>>>>>>>>>请求结果为：" + result);
+          //  System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
             if(StringUtil.isEmpty(result)){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 return resultInfo;
             }
+            logger.info(">>>>>>>>>>开始解析xml");
             //解析XML
             Map<String,String> resultXML = new HashMap<>();
             Document document = DocumentHelper.parseText(result);
@@ -125,29 +134,41 @@ public class ShangHaiAccount {
                     secondAcount.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
                 }
             }
+            if(!secondAcount.getStatusCode().equals("0000")){
+                resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+                resultInfo.setMessage(secondAcount.getServerStatusCode());
+                return resultInfo;
+            }
+            logger.info(">>>>>>>>>>解析xml完毕");
             signDataStr = "AcctOpenResult="+secondAcount.getAcctOpenResult()+"&CoopCustNo="+secondAcount.getCoopCustNo()+"&CustName="
                     +secondAcount.getCustName()+"&EacctNo="+secondAcount.getEacctNo()
                     +"&IdNo="+secondAcount.getIdNo()+"&ProductCd="+secondAcount.getProductCd()+"&RqUID="+secondAcount.getRqUID()
                     +"&SPRsUID="+secondAcount.getSPRsUID()+"&ServerStatusCode="+secondAcount.getServerStatusCode()+"&Sign="
                     +secondAcount.getSign()+"&StatusCode="+secondAcount.getStatusCode()+"&SubAcctNo="+secondAcount.getSubAcctNo();
-           // System.out.println(">>>>>>>>>signDataStr :" + signDataStr);
+            System.out.println(">>>>>>>>>signDataStr :" + signDataStr);
            // System.out.println(">>>>>>>>>resultSign :" + resultSign);
+            logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
-            System.out.println(">>>>>>>>>>>验签结果为：" + verifyRet);
+            //  System.out.println(">>>>>>>>>>>验签结果为：" + verifyRet);
             if(verifyRet != 0){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+                resultInfo.setMessage(secondAcount.getServerStatusCode());
+                logger.error(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
+                logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
                 return resultInfo;
             }
             if(!secondAcount.getStatusCode().equals("0000")){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+                resultInfo.setMessage(secondAcount.getServerStatusCode());
+                logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
                 return resultInfo;
             }
             resultInfo.setData(secondAcount);
-            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
         } catch (Exception e) {
            // e.printStackTrace();
-           logger.error(">>>>>>>>加密签字异常：",e);
+           logger.error(">>>>>>>>申请上海银行二类户异常：",e);
         }
 
         return resultInfo;

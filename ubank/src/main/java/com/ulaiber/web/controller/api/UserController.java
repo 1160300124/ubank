@@ -77,10 +77,6 @@ public class UserController extends BaseController{
 	public ResultInfo register(@RequestParam("file") MultipartFile[] file, User user, Bank bank,String code,
 							   HttpServletRequest request, HttpServletResponse response){
 		logger.debug("register statrt...");
-		logger.info(">>>>>>>>>>user :" + user.getUserName());
-		logger.info(">>>>>>>>>>bank :" + user.getBankCardNo());
-		logger.info(">>>>>>>>>>code :" + code);
-		logger.info(">>>>>>>>>>file :" + file);
 		ResultInfo retInfo = new ResultInfo();
 		try{
 			if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
@@ -102,13 +98,13 @@ public class UserController extends BaseController{
 				return retInfo;
 			}
 			//查询用户是否已注册二类账户
-			int id = (int) user.getId();
-			SecondAcount acc = userService.findSecondAcc(id);
-			if(!StringUtil.isEmpty(acc)){
-				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("用户已注册二类账户");
-				return retInfo;
-			}
+//			int id = (int) user.getId();
+//			SecondAcount acc = userService.findSecondAcc(id);
+//			if(!StringUtil.isEmpty(acc)){
+//				retInfo.setCode(IConstants.QT_CODE_ERROR);
+//				retInfo.setMessage("用户已注册二类账户");
+//				return retInfo;
+//			}
 			// 0 上海银行二类户
 			if(bank.getType() == 0){
 				//上传图片到sftp服务器上
@@ -148,49 +144,55 @@ public class UserController extends BaseController{
 				param.put("MobllePhone" , user.getMobile());			//手机号
 				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
 				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
-				param.put("Sign" , "Y");								//是否开通余额理财功能
+				param.put("Sign" , "N");								//是否开通余额理财功能
+				logger.info(">>>>>>>参数为："+user.getUserName() + ":" + user.getCardNo()+":"+user.getMobile()
+						+":"+user.getBankCardNo()+":"+user.getReserve_mobile());
 				ResultInfo ri = ShangHaiAccount.register(param);
 				SecondAcount sa = (SecondAcount) ri.getData();
-				if(ri.getCode() == 1010){
-					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage("注册二类账户信息失败");
+				logger.info(">>>>>>>>>>code is ：" +ri.getCode());
+				if(ri.getCode() != 0000){
+					retInfo.setCode(Integer.parseInt(sa.getStatusCode()));
+					retInfo.setMessage(sa.getServerStatusCode());
 					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败.");
 					return retInfo;
 				}
 				if(!sa.getStatusCode().equals("0000")){
 					retInfo.setCode(Integer.parseInt(sa.getStatusCode()));
 					retInfo.setMessage(sa.getServerStatusCode());
-				}
-				sa.setUserid(user.getId());
-				sa.setCreateDate(SDF.format(new Date()));
-				//新增用户二类账户信息
-				int se = userService.insertSecondAccount(sa);
-				if(se == 0){
-					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage("新增二类账户失败");
-					logger.info(">>>>>>>>>>"+user.getMobile() + " 新增二类账户信息失败.");
 					return retInfo;
 				}
+				//新增用户权限层级信息
+				user.setBank(bank);
+				sa.setCreateDate(SDF.format(new Date()));
+				long bankNo = Long.parseLong(bank.getBankNo());
+				String bankCardNo = user.getBankCardNo();
+				int save = userService.save(user,code,sa,bankNo,bankCardNo);
+				if(save == 0){
+					retInfo.setCode(IConstants.QT_CODE_ERROR);
+					retInfo.setMessage("register failed");
+					logger.error(">>>>>>>>>>插入用户信息异常");
+					return retInfo;
+				}
+//				//新增用户二类账户信息
+//				int se = userService.insertSecondAccount(sa);
+//				if(se == 0){
+//					retInfo.setCode(IConstants.QT_CODE_ERROR);
+//					retInfo.setMessage("新增二类账户失败");
+//					logger.info(">>>>>>>>>>"+user.getMobile() + " 新增二类账户信息失败.");
+//					return retInfo;
+//				}
 			}
-			//新增用户权限层级信息
-			user.setBank(bank);
-			int save = userService.save(user,code);
-			if(save == 0){
-				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("register failed");
-				logger.error(">>>>>>>>>>插入用户信息异常");
-				return retInfo;
-			}
-			int userid = (int) user.getId();
-			//新增用户绑定银行卡信息
-			int bankNo = Integer.parseInt(bank.getBankNo());
-			String bankCardNo = user.getBankCardNo();
-			int result3 = userService.insertUserToBank(userid,bankNo,bankCardNo);
-			if(result3 == 0){
-				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("register failed");
-				return retInfo;
-			}
+//
+//			int userid = (int) user.getId();
+//			//新增用户绑定银行卡信息
+//			long bankNo = Long.parseLong(bank.getBankNo());
+//			String bankCardNo = user.getBankCardNo();
+//			int result3 = userService.insertUserToBank(userid,bankNo,bankCardNo);
+//			if(result3 == 0){
+//				retInfo.setCode(IConstants.QT_CODE_ERROR);
+//				retInfo.setMessage("register failed");
+//				return retInfo;
+//			}
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("register successed");
 				logger.info(">>>>>>>>>>"+user.getMobile() + " register successed.");
@@ -601,10 +603,11 @@ public class UserController extends BaseController{
 				logger.error(">>>>>>上传文件异常为：" , e );
 			}
 
+		}else{
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("file is null");
+			logger.error("file is null");
 		}
-		resultInfo.setCode(IConstants.QT_CODE_ERROR);
-		resultInfo.setMessage("file is null");
-		logger.error("file is null");
 		return resultInfo;
 	}
 

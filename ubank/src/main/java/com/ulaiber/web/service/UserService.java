@@ -11,9 +11,11 @@ public interface UserService {
 	 * 新增用户
 	 * 
 	 * @param user User
-	 * @return boolean true/flase
+	 * @param sa
+	 * @param bankNo
+	 *@param bankCardNo @return boolean true/flase
 	 */
-	int save(User user,String code);
+	int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo);
 	
 	/**
 	 * 更新ticket和token
@@ -164,7 +166,7 @@ public interface UserService {
 	 * @param bankCardNo 银行卡号
 	 * @return int
 	 */
-	int insertUserToBank(int userid, int bankNo, String bankCardNo);
+	int insertUserToBank(int userid, long bankNo, String bankCardNo);
 
 	/**
 	 * 查询用户是否已注册二类账户

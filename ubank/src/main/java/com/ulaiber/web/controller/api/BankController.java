@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -88,26 +90,40 @@ public class BankController extends BaseController {
 	 */
 	@RequestMapping(value = "SHChangeBind", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo SHChangeBind(SHChangeCard shCard){
+	public ResultInfo SHChangeBind(SHChangeCard shCard,User user){
 		logger.info(">>>>>>>>>>开始改绑银行卡");
 		ResultInfo resultInfo = new ResultInfo();
+		//根据二类户账号ID和原银行卡号查询二类户信息
+		long id = shCard.getId();
+		SecondAcount sa = bankservice.querySecondAccount(id);
+		shCard.setSubAcctNo(sa.getSubAcctNo());
+		shCard.setProductCd(sa.getProductCd());
+		shCard.setCustName(sa.getCustName());
+		shCard.setIdNo(sa.getIdNo());
+		shCard.setBindCardNo(sa.getBindCardNo());
+		shCard.setReservedPhone(sa.getReservedPhone());
+		shCard.setModiType("00");
 		ResultInfo re = SHChangeBinding.changeBindCard(shCard);
-		if(re.getCode() == 1010){
-			resultInfo.setCode(IConstants.QT_CODE_ERROR);
-			resultInfo.setMessage("改绑失败");
-			logger.error(">>>>>>>>>>>>改绑失败");
+		if(re.getCode() != 0000){
+			resultInfo.setCode(Integer.parseInt(shCard.getStatusCode()));
+			resultInfo.setMessage(shCard.getServerStatusCode());
+			logger.info(">>>>>>>>>>>>改绑失败");
 			return resultInfo;
 		}
 		SHChangeCard data = (SHChangeCard) re.getData();
-		if(data.getStatusCode().equals("0000")){
+		if(!data.getStatusCode().equals("0000")){
 			resultInfo.setCode(Integer.parseInt(data.getStatusCode()));
 			resultInfo.setMessage(data.getServerStatusCode());
+			logger.info(">>>>>>>>>>>>改绑失败");
 			return resultInfo;
 		}
-		String originCart = shCard.getBindCardNo();  //原绑定卡号
-		int userid = (int) shCard.getUserid();	//用户ID
+
+		String originCart = sa.getBindCardNo();  //原绑定卡号
+		long userid = shCard.getUserid();	//用户ID
+		long bankNo = Long.parseLong(user.getBankNo()); //银行卡编号
+		String newCardNo = shCard.getNewCardNo();	//新银行卡
 		//删除原绑定银行卡
-		int result = bankservice.deleteOriginCart(originCart,userid);
+		int result = bankservice.deleteOriginCart(originCart,userid,bankNo,newCardNo);
 		if(result == 0){
 			resultInfo.setCode(IConstants.QT_CODE_ERROR);
 			resultInfo.setMessage("改绑失败");

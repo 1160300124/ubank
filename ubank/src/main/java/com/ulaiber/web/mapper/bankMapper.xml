@@ -52,4 +52,12 @@
 	<update id="deleteOriginCart" parameterType="Map">
 		UPDATE tbl_userToBank SET disabled = 1 where userid = #{userid} and bankCardNo = #{originCart}
 	</update>
+
+	<!--根据二类户账号ID和银行卡号查询二类户信息-->
+	<select id="querySecondAccount" parameterType="Map" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		select a.*,b.cardNo as IdNo,b.reserve_mobile as ReservedPhone,c.bankCardNo as BindCardNo from tbl_secondAccount a
+		left join tbl_users b on a.userid = b.user_id
+		left join tbl_userToBank c on a.userid = c.userid
+		where c.disabled = 0 and  a.id = #{id}
+	</select>
 </mapper>

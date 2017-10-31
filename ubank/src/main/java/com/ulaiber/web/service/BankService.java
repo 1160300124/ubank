@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 
 public interface BankService {
 	
@@ -40,7 +41,15 @@ public interface BankService {
 	 * 删除原绑定银行卡
 	 * @param originCart 原绑定卡号
 	 * @param userid 用户ID
-	 * @return int
+	 * @param bankNo
+	 *@param newCardNo @return int
 	 */
-    int deleteOriginCart(String originCart, int userid);
+    int deleteOriginCart(String originCart, long userid, long bankNo, String newCardNo);
+
+	/**
+	 * 根据二类户账号ID和银行卡号查询二类户信息
+	 * @param id 二类户ID
+	 * @return SecondAcount
+	 */
+    SecondAcount querySecondAccount(long id);
 }

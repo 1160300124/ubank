@@ -7,9 +7,10 @@ import java.io.Serializable;
  * Created by daiqingwen on 2017/10/23.
  */
 public class SecondAcount implements Serializable {
+    private long id;
     private long userid;                //用户ID
     private String EacctNo;             //E账户主账户
-    private String CustName;             //姓名
+    private String CustName;            //姓名
     private String SubAcctNo;           //平台理财专属子账户
     private String CoopCustNo;          //合作方客户账号
     private String ProductCd;           //理财产品参数
@@ -27,7 +28,17 @@ public class SecondAcount implements Serializable {
     private String createDate;          //创建时间
     private String IdNo;                //身份证号
     private String SPRsUID;             //主机流水号
-    private String RqUID;              //请求流水号
+    private String RqUID;               //请求流水号
+    private String BindCardNo;          //绑定银行卡号
+    private String ReservedPhone;       //银行卡预留手机号
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getUserid() {
         return userid;
@@ -195,5 +206,21 @@ public class SecondAcount implements Serializable {
 
     public void setRqUID(String rqUID) {
         RqUID = rqUID;
+    }
+
+    public String getBindCardNo() {
+        return BindCardNo;
+    }
+
+    public void setBindCardNo(String bindCardNo) {
+        BindCardNo = bindCardNo;
+    }
+
+    public String getReservedPhone() {
+        return ReservedPhone;
+    }
+
+    public void setReservedPhone(String reservedPhone) {
+        ReservedPhone = reservedPhone;
     }
 }

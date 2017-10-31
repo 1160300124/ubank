@@ -35,7 +35,6 @@ public class SFTPUtil {
             int port = (int) configMap.get("port");
             String host = (String) configMap.get("host");
             String directory = (String) configMap.get("directory");
-            log.info(">>>>>>>>>>用户名、密码、IP、端口为：" +username+":"+password+":"+ host +":"+ port);
             JSch jsch = new JSch();
             log.info("sftp connect by host:{} username:{}");
 
