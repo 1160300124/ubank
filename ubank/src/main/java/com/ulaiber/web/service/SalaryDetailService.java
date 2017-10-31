@@ -20,11 +20,18 @@ public interface SalaryDetailService {
 	boolean saveBatch(List<SalaryDetail> details);
 	
 	/**
-	 * 根据工资流水id查询流水详情
+	 * 根据工资流水id查询流水详情,带分页
 	 * @param sid
 	 * @return
 	 */
 	List<SalaryDetail> getDetailsBySid(long sid, int limit, int offset, String orderby, String search);
+	
+	/**
+	 * 根据工资流水id查询流水详情
+	 * @param sid
+	 * @return
+	 */
+	List<SalaryDetail> getDetailsBySid(long sid);
 	
     /**
      * 根据工资流水id查询记录条数

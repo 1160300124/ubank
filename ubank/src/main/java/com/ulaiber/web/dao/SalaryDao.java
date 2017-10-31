@@ -19,6 +19,13 @@ public interface SalaryDao {
      * @return
      */
     int save(Salary sa);
+    
+    /**
+     * 更新
+     * @param sa
+     * @return
+     */
+    int update(Salary sa);
 
     /**
      * 查询所有的工资流水

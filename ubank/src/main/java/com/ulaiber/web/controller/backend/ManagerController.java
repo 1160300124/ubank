@@ -269,24 +269,4 @@ public class ManagerController extends BaseController{
     	return null;
     }
     
-    @RequestMapping(value = "batchDelete", method = RequestMethod.POST)
-    @ResponseBody
-    public ResultInfo batchDelete(@RequestBody List<Long> sids, HttpServletRequest request, HttpServletResponse response){
-    	
-    	ResultInfo info = new ResultInfo();
-    	
-    	if (null == sids || sids.size() == 0){
-    		return info;
-    	}
-    	boolean flag = managerService.batchDelete(sids);
-    	if (flag){
-    		info.setCode(IConstants.QT_CODE_OK);
-    		info.setMessage("batch delete successed.");
-    	} else {
-    		info.setCode(IConstants.QT_CODE_ERROR);
-    		info.setMessage("batch delete failed.");
-    	}
-    	
-    	return info;
-    }
 }

@@ -89,12 +89,6 @@
 	            	<button type="button" class="btn btn-primary" id="btn_save" >
 	            		保存
 	            	</button>
-	            			<button id="editBtn" type="button" class="btn btn-default">
-					<span class="fa icon-download-alt" aria-hidden="true"></span>编辑
-				</button>
-				<button id="saveBtn" type="button" class="btn btn-default">
-					<span class="fa icon-download-alt" aria-hidden="true"></span>保存
-				</button>
 	            </div>
 			</div>
 			
@@ -172,6 +166,12 @@
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.excheck.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/salaryConfig.js" type="text/javascript" ></script>
 <script type="text/javascript">
+var companyId = "${param.companyId}";
+var salaryMonth = "${param.salaryMonth}";
+var salaryDate = "${param.salaryDate}";
+var peopleId = "${param.peopleId}";
+var peopleName = "${param.peopleName}";
+var sid = "${param.sid}";
 $("#editBtn").bind('click',function(event){
     var table = $('#tb_saraly_configs');
     var isEdit = table.bootstrapTable('getEditStatus')

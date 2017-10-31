@@ -82,11 +82,24 @@ public class SalaryController extends BaseController {
 		if (sid == null){
 			return data;
 		}
-		List<SalaryDetail> rules = detailService.getDetailsBySid(sid, limit, offset, order, search);
+		List<SalaryDetail> details = detailService.getDetailsBySid(sid, limit, offset, order, search);
 		int total = detailService.getTotalBySid(sid);
-		data.put("rows", rules);
+		data.put("rows", details);
 		data.put("total", total);
 		return data;
+	}
+	
+	@RequestMapping(value = "getSalaryDetailsBySid", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getSalaryDetailsBySid(Long sid, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		if (sid == null){
+			return info;
+		}
+		List<SalaryDetail> details = detailService.getDetailsBySid(sid);
+		info.setCode(IConstants.QT_CODE_OK);
+		info.setData(details);;
+		return info;
 	}
 	
 	@RequestMapping(value = "saveSalary", method = RequestMethod.POST)
@@ -97,6 +110,32 @@ public class SalaryController extends BaseController {
 			User user = getUserFromSession(request);
 			salary.setOperateName(user.getUserName());
 			boolean flag = service.save(salary);
+			if (flag){
+				logger.info("保存成功。");
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("保存成功。");
+			} else {
+				logger.info("保存失败。");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("保存失败。");
+			}
+		} catch (Exception e) {
+			logger.info("保存失败。" , e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("系统内部异常。");
+		}
+		 
+		return info;
+	}
+	
+	@RequestMapping(value = "updateSalary", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo updateSalary(@RequestBody Salary salary, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		try {
+			User user = getUserFromSession(request);
+			salary.setOperateName(user.getUserName());
+			boolean flag = service.update(salary);
 			if (flag){
 				logger.info("保存成功。");
 				info.setCode(IConstants.QT_CODE_OK);
@@ -162,5 +201,34 @@ public class SalaryController extends BaseController {
 		 
 		return info;
 	}
+	
+    @RequestMapping(value = "batchDelete", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo batchDelete(@RequestBody List<Long> sids, HttpServletRequest request, HttpServletResponse response){
+    	
+    	ResultInfo info = new ResultInfo();
+    	if (null == sids || sids.size() == 0){
+    		return info;
+    	}
+    	
+    	try {
+    		boolean flag = service.batchDeleteSalaries(sids);
+    		if (flag){
+    			info.setCode(IConstants.QT_CODE_OK);
+    			info.setMessage("删除工资记录成功。");
+    			logger.info("删除工资记录成功。");
+    		} else {
+    			info.setCode(IConstants.QT_CODE_ERROR);
+    			info.setMessage("删除工资记录失败。");
+    			logger.error("删除工资记录失败。");
+    		}
+		} catch (Exception e) {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("删除工资记录失败。");
+			logger.error("删除工资记录失败。", e);
+		}
+    	
+    	return info;
+    }
 	
 }

@@ -41,7 +41,7 @@ $(function () {
 	$("#btn_delete").unbind().bind("click", function(){
 
 		//取表格的选中行数据
-		var arrselections = $("#tb_managetments").bootstrapTable('getSelections');
+		var arrselections = $("#tb_saraly_records").bootstrapTable('getSelections');
 		if (arrselections.length <= 0) {
 			Ewin.alert("请选择有效数据");
 			return;
@@ -68,7 +68,7 @@ $(function () {
 					var code = data['code'];
 					if (code == 1000) {
 						Ewin.alert("删除成功");
-						$("#tb_managetments").bootstrapTable("refresh");
+						$("#tb_saraly_records").bootstrapTable("refresh");
 					}else{
 						Ewin.alert(data['message']);
 					}
@@ -84,6 +84,25 @@ $(function () {
 	
 	$("#btn_add").unbind().bind("click", function(){
 		window.location.href = "salaryConfig";
+		
+	});
+	
+	$("#btn_edit").unbind().bind("click", function(){
+		//取表格的选中行数据
+		var arrselections = $("#tb_saraly_records").bootstrapTable('getSelections');
+		if (arrselections.length != 1) {
+			Ewin.alert("请选择一条数据");
+			return;
+		}
+		var companyId = arrselections[0].companyId;
+		var salaryMonth = arrselections[0].salaryMonth;
+		var salaryDate = arrselections[0].salaryDate;
+		var peopleId = arrselections[0].approveIds;
+		var peopleName = arrselections[0].approveNames;
+		var sid = arrselections[0].sid;
+		
+		window.location.href = "salaryConfig?companyId=" + companyId + "&salaryMonth=" + salaryMonth + "&salaryDate=" + salaryDate
+			+ "&peopleId=" + peopleId + "&peopleName=" + peopleName + "&sid=" + sid;
 		
 	});
 

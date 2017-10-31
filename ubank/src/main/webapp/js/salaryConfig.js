@@ -1,3 +1,5 @@
+//0 新增工资表  1 修改工资表
+var flag = 0;
 $(function () {
 	$("#datetimepicker_statistic").datetimepicker({  
 		format: 'yyyy-mm',  
@@ -40,6 +42,7 @@ $(function () {
 					var option = "<option value='" + data[i].companyNumber + "'>" + data[i].name + "</option>";
 					select.append(option);
 				}
+				$("#company_select").val(companyId);
 			},
 			error : function(data, status, e) {
 				Ewin.alert("系统内部错误！");
@@ -47,52 +50,43 @@ $(function () {
 		});
 		
 	}
-
-	$('#tb_saraly_configs').on('load-success.bs.table',function(data){
-	       var table = $('#tb_saraly_configs');
-	       var isEdit = table.bootstrapTable('getEditStatus')
-	       if (isEdit) return;
-			table.bootstrapTable('prepend',{
-		        'id':0,
-		        'userName': '快速批量设置',
-		        'cardNo': '--',
-		        'preTaxSalaries': '10000',
-		        'bonuses': 0,
-		        'subsidies': 0,
-		        'attendanceCutPayment': '--',
-		        'askForLeaveCutPayment': '--',
-		        'overtimePayment': '--',
-		        'socialInsurance': 0,
-		        'publicAccumulationFunds': 0,
-		        'taxThreshold': 3500,
-		        'personalIncomeTax': '--',
-		        'elseCutPayment': 0,
-		        'salaries': '--',
-		    });
-			table.bootstrapTable('editAll');
-
-		    var firstRow = table.find('tbody').children()[0];
-		    var inputs = $(firstRow).find('input');
-		    var selects = $(firstRow).find('select');
-		    inputs.on('keyup', function(e){
-		        var tdIndex = $(this).parent().parent().index();
-		        var value = this.value;
-		        table.find('tbody').children().each(function(index, row){
-		            if (index !== 0){
-		                $($(row).children()[tdIndex]).find('input[type="text"]').val(value);
-		            }
-		        })
-		    });
-		    selects.on('change', function(e){
-		        var tdIndex = $(this).parent().index();
-		        var value = this.value;
-		        table.find('tbody').children().each(function(index, row){
-		            if (index !== 0){
-		                $($(row).children()[tdIndex]).find('select').val(value);
-		            }
-		        })
-		    });
-	});
+	
+	load();
+	function load(){
+		if (sid == "" || sid == null || sid == undefined){
+			//0 新增工资表  1 修改工资表
+			flag = 0;
+			return;
+		}
+		flag = 1;
+		$("#statistic_month").val(salaryMonth);
+		$("#pay_salaries_date").val(salaryDate);
+		$("#pay_salaries_date").val(salaryDate);
+		$("#choose_id").val(peopleId);
+		$("#choose_people").val(peopleName);
+		
+		$.ajax({
+			url : "getSalaryDetailsBySid",
+			type: "get",
+			data : {
+				sid : sid
+			},
+			async : true, 
+			dataType : "json",
+			success : function(data, status) {
+				var code = data['code'];
+				if (code == 1000) {
+					$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
+					tableLoadSuceess();
+				}else{
+					Ewin.alert("导入员工信息失败！" + data['message']);
+				}
+			},
+			error : function(data, status, e) {
+				Ewin.alert("系统内部错误！");
+			}
+		});
+	}
 	
 	function tableLoadSuceess(){
 		var table = $('#tb_saraly_configs');
@@ -168,7 +162,6 @@ $(function () {
 						var code = data['code'];
 						if (code == 1000) {
 							Ewin.alert("导入员工信息成功！");
-							console.log(data.data);
 							$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
 							tableLoadSuceess();
 						}else{
@@ -194,7 +187,6 @@ $(function () {
 					var code = data['code'];
 					if (code == 1000) {
 						Ewin.alert("导入员工信息成功！");
-						console.log(data.data);
 						$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
 						tableLoadSuceess();
 					}else{
@@ -233,12 +225,11 @@ $(function () {
 					success : function(data, status) {
 						var code = data['code'];
 						if (code == 1000) {
-							Ewin.alert("导入员工信息成功！");
-							console.log(data.data);
+							Ewin.alert("导入最近工资表成功！");
 							$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
 							tableLoadSuceess();
 						}else{
-							Ewin.alert("导入员工信息失败！" + data['message']);
+							Ewin.alert("导入最近工资表失败！" + data['message']);
 						}
 					},
 					error : function(data, status, e) {
@@ -259,12 +250,11 @@ $(function () {
 				success : function(data, status) {
 					var code = data['code'];
 					if (code == 1000) {
-						Ewin.alert("导入员工信息成功！");
-						console.log(data.data);
+						Ewin.alert("导入最近工资表成功！");
 						$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
 						tableLoadSuceess();
 					}else{
-						Ewin.alert("导入员工信息失败！" + data['message']);
+						Ewin.alert("导入最近工资表失败！" + data['message']);
 					}
 				},
 				error : function(data, status, e) {
@@ -366,28 +356,59 @@ $(function () {
 	    	Ewin.alert("请先导入员工信息或导入最近工资表信息。");
 	    	return false;
 	    }
+	    var totalAmount = 0;
+	    for (var i in allDatas){
+	    	totalAmount += allDatas[i].salaries;
+	    }
+	    params.totalNumber = allDatas.length;
+	    params.totalAmount = totalAmount;
 	    params.details = allDatas;
 	    
-	    $.ajax({
-			url : "saveSalary",
-			type: "post",
-			contentType : 'application/json;charset=utf-8',
-			data : JSON.stringify(params),
-			dataType : "json",
-			success : function(data, status) {
-				var code = data['code'];
-				if (code == 1000) {
-					Ewin.alert("保存成功");
-					$("#tb_saraly_configs").bootstrapTable("refresh");
-					window.location.href = "salary";
-				}else{
-					Ewin.alert(data['message']);
-				}
-			},
-			error : function(data, status, e) {
-				Ewin.alert("系统异常");
-			}
-		})	
+	  //0 新增工资表  1 修改工资表
+	    if (flag == 0){
+	    	$.ajax({
+	    		url : "saveSalary",
+	    		type: "post",
+	    		contentType : 'application/json;charset=utf-8',
+	    		data : JSON.stringify(params),
+	    		dataType : "json",
+	    		success : function(data, status) {
+	    			var code = data['code'];
+	    			if (code == 1000) {
+	    				Ewin.alert("保存成功");
+	    				window.location.href = "salary";
+	    			}else{
+	    				Ewin.alert(data['message']);
+	    			}
+	    		},
+	    		error : function(data, status, e) {
+	    			Ewin.alert("系统异常");
+	    		}
+	    	});	
+	    } else {
+	    	params.sid = sid;
+	    	$.ajax({
+	    		url : "updateSalary",
+	    		type: "post",
+	    		contentType : 'application/json;charset=utf-8',
+	    		data : JSON.stringify(params),
+	    		dataType : "json",
+	    		success : function(data, status) {
+	    			var code = data['code'];
+	    			if (code == 1000) {
+	    				Ewin.alert("保存成功");
+	    				window.location.href = "salary";
+	    			}else{
+	    				Ewin.alert(data['message']);
+	    			}
+	    		},
+	    		error : function(data, status, e) {
+	    			Ewin.alert("系统异常");
+	    		}
+	    	});
+	    }
+
+	    
 
 	});
 	

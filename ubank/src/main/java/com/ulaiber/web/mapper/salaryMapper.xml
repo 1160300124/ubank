@@ -12,6 +12,7 @@
     <resultMap id="SalaryMap" type="Salary" >
        	<id column="sid" property="sid" jdbcType="BIGINT" />
     	<result column="operate_name" property="operateName" jdbcType="VARCHAR" />
+    	<result column="company_id" property="companyId" jdbcType="VARCHAR" />
     	<result column="company_name" property="companyName" jdbcType="VARCHAR" />
     	<result column="total_number" property="totalNumber" jdbcType="INTEGER" />
     	<result column="total_amount" property="totalAmount" jdbcType="DOUBLE" />
@@ -27,9 +28,15 @@
   
    <insert id="save" parameterType="Salary" useGeneratedKeys="true" keyProperty="sid">
    		insert into tbl_salaries(operate_name, company_id, company_name, total_number, total_amount, salary_month, salary_date, salary_createTime, approve_ids,
-   		approve_names, status, entrustSeqNo, remark) values (#{operateName}, #{companyId},  #{companyName}, #{totalNumber}, #{totalAmount}, #{salaryMonth},
+   		approve_names, status, entrustSeqNo, remark) values (#{operateName}, #{companyId}, #{companyName}, #{totalNumber}, #{totalAmount}, #{salaryMonth},
    		#{salaryDate}, #{salaryCreateTime}, #{approveIds}, #{approveNames}, #{status}, #{entrustSeqNo}, #{remark})
    </insert>
+   
+   <update id="update" parameterType="Salary">
+   		update tbl_salaries set operate_name=#{operateName}, company_id=#{companyId}, company_name=#{companyName}, total_number=#{totalNumber}, total_amount=#{totalAmount},
+   		salary_month=#{salaryMonth}, salary_date=#{salaryDate}, salary_createTime=#{salaryCreateTime}, approve_ids=#{approveIds}, approve_names=#{approveNames}
+   		where sid=#{sid}
+   </update>
 	
 	<select id="getAllSalaries" resultMap="SalaryMap">
 		select * from tbl_salaries
@@ -49,7 +56,7 @@
 		<if test="search != null and search != ''">
 			where userName like concat('%',#{search},'%') or company like concat('%',#{search},'%')
 		</if>
-		order by salary_createTime desc limit #{offset},#{limit}
+		order by salary_date desc limit #{offset},#{limit}
 	</select>
 	
 	<update id="updateStatusBySeqNo" parameterType="Salary">
