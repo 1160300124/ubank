@@ -98,19 +98,19 @@ $(function () {
 		table.bootstrapTable('prepend',{
 			'id':0,
 			'userName': '快速批量设置',
-			'cardNo': '--',
+			'cardNo': '-',
 			'preTaxSalaries': '10000',
 			'bonuses': 0,
 			'subsidies': 0,
-			'attendanceCutPayment': '--',
-			'askForLeaveCutPayment': '--',
-			'overtimePayment': '--',
+			'attendanceCutPayment': '-',
+			'askForLeaveCutPayment': '-',
+			'overtimePayment': '-',
 			'socialInsurance': 0,
 			'publicAccumulationFunds': 0,
 			'taxThreshold': 3500,
-			'personalIncomeTax': '--',
+			'personalIncomeTax': '-',
 			'elseCutPayment': 0,
-			'salaries': '--',
+			'salaries': '-',
 		});
 		table.bootstrapTable('editAll');
 
@@ -413,8 +413,24 @@ $(function () {
 	});
 	
 	$("#choose_people").unbind().bind("click", function(){
-		
-		renderPeople("add");
+		var companyId = $("#company_select").val();
+		var companyName = $("#company_select").find("option:selected").text();
+		if (companyId == "" || companyId == null || companyId == undefined){
+			Ewin.alert("请先选择公司");
+			return false;
+		}
+		renderPeople(companyId, companyName);
+		if (flag == 1){
+			renderPeople(companyId, companyName);
+			var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
+			zTreeObj.checkAllNodes(false);   //清空tree
+			zTreeObj.checkNode(zTreeObj.getNodeByParam("id", companyId), true);
+			var peopleArr = peopleId.split(",");
+			for (var i in peopleArr){
+				zTreeObj.checkNode(zTreeObj.getNodeByParam("id", peopleArr[i]), true);
+			}
+			renderSelected("peoplesTree");
+		}
 		$("#people_search").val("");
 		$('#peopleModal').modal("show");
 
@@ -422,9 +438,14 @@ $(function () {
 	});
 	
 	$("#people_search").unbind().bind("input propertychange", function(){
-		
+		var companyId = $("#company_select").val();
+		var companyName = $("#company_select").find("option:selected").text();
+		if (companyId == "" || companyId == null || companyId == undefined){
+			Ewin.alert("请先选择公司");
+			return false;
+		}
 		var search = $("#people_search").val();
-		renderPeople("add", search);
+		renderPeople("add", companyId, companyName, search);
 		
 	});
 	
@@ -517,32 +538,29 @@ function renderSelected(treeId) {
             '<span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp' + item.name + '</td>' +
             '</tr>';
     })
-    if (treeId == "peoplesTree"){
-        $("#peopleModal").find('.selected-people-table').html(selectedPeoplesDom);
-    } else if (treeId == "peoplesTree_edit"){
-    	$("#attendancePeopleModal_edit").find('.selected-people-table').html(selectedPeoplesDom);
-    }
+    $("#peopleModal").find('.selected-people-table').html(selectedPeoplesDom);
 }
 
 //选择部门与人员modal 所有员工渲染
-function renderPeople(flag, search) {
+function renderPeople(companyId, companyName, search) {
 	if (search == undefined){
 		search == "";
 	}
+	if (companyId == undefined || companyName == undefined){
+		return;
+	}
 	$.ajax({
-		url : "getDeptsAndUsers",
+		url : "getDeptsAndUsersFromCompany",
 		type: "get",
 		data : {
+			companyId : companyId,
+			companyName : companyName,
 			search : search
 		},
 		async : false, 
 		dataType : "json",
 		success : function(data, status) {
-			if (flag == "add"){
-				$.fn.zTree.init($("#peoplesTree"), setting, data);
-			} else if (flag == "edit") {
-				$.fn.zTree.init($("#peoplesTree_edit"), setting, data);
-			}
+			$.fn.zTree.init($("#peoplesTree"), setting, data);
 		},
 		error : function(data, status, e) {
 			Ewin.alert("系统内部错误！");
@@ -562,10 +580,6 @@ window.operateEvents = {
 		'click .detail': function (e, value, row, index) {
 			
 			window.location.href = "salaryDetail?sid=" + row.sid;
-//			$("#detail_modal").modal("show");
-//			$("#tb_salary_detail").bootstrapTable("refresh", {
-//				url : "details?sid=" + row.sid
-//			});
 		}
 };
 

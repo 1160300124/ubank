@@ -74,6 +74,11 @@ public class AttendanceStatistic {
 	private int noClockOffCount;
 	
 	/**
+	 * 旷工次数
+	 */
+	private int noClockCount;
+	
+	/**
 	 * 备注
 	 */
 	private String remark;
@@ -172,6 +177,14 @@ public class AttendanceStatistic {
 
 	public void setNoClockOffCount(int noClockOffCount) {
 		this.noClockOffCount = noClockOffCount;
+	}
+
+	public int getNoClockCount() {
+		return noClockCount;
+	}
+
+	public void setNoClockCount(int noClockCount) {
+		this.noClockCount = noClockCount;
 	}
 
 	public String getRemark() {

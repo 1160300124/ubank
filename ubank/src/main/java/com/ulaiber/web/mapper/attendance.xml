@@ -146,7 +146,7 @@
 	</select>
 	
 	<select id="getStatistis" parameterType="Map" resultType="Map">
-		select user_id,user_name,clock_date,clock_on_status,clock_off_status from tbl_attendance_records where company_num=#{company_num}
+		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_off_datetime,clock_off_status from tbl_attendance_records where company_num=#{company_num}
 		<if test="dept_num != null and dept_num != 0">
 			and dept_num = #{dept_num}
 		</if>
@@ -154,7 +154,7 @@
 		<if test="user_name != null and user_name != ''">
 			and user_name like concat('%',#{user_name},'%')
 		</if>
-		group by user_id,user_name,clock_date,clock_on_status,clock_off_status
+		group by user_id,user_name,clock_on_datetime,clock_date,clock_off_datetime,clock_on_status,clock_off_status
 	</select>
 	
 	<select id="getRecordsByDate" parameterType="Map" resultMap="AttendanceMap">

@@ -105,13 +105,14 @@ public class AttendanceStatisticController extends BaseController {
 				staList.add(sta.getNormalClockOffCount() + "");
 				staList.add(sta.getLeaveEarlyCount() + "");
 				staList.add(sta.getNoClockOffCount() + "");
+				staList.add(sta.getNoClockCount() + "");
 				staList.add(StringUtils.isEmpty(sta.getRemark()) ? "" : sta.getRemark());
 				list.add(staList);
 			}
 
 			ExportExcel exportExcel = new ExportExcel();
 			String title = "考勤记录";
-			String[] headers = {"姓名","公司","部门","应出勤天数","正常上班打卡(次)","迟到(次)","上班未打卡(次)","正常下班打卡(次)","早退(次)","下班未打卡(次)","备注"};
+			String[] headers = {"姓名","公司","部门","应出勤天数","正常上班打卡(次)","迟到(次)","上班未打卡(次)","正常下班打卡(次)","早退(次)","下班未打卡(次)","旷工","备注"};
 			out = new FileOutputStream("/var/text001.xls");
 			exportExcel.exportExcel(title, headers, list, out);
 			out.close();

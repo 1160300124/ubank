@@ -392,6 +392,9 @@
 					          通过encoding属性设置字符编码，  
 					          告诉maven这个项目使用UTF-8来编译 -->  
 			        <encoding>utf8</encoding>   
+			        <compilerArguments>            
+                       <extdirs>src/main/webapp/WEB-INF/lib</extdirs> 
+                    </compilerArguments>
 			    </configuration>  
 			</plugin>  
 			<plugin>
