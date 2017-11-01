@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,8 @@ import com.ulaiber.web.utils.DateTimeUtil;
  */
 @Service
 public class AttendanceStatisticServiceImpl extends BaseService implements AttendanceStatisticService {
+	
+	private static Logger logger = Logger.getLogger(AttendanceStatisticServiceImpl.class);
 	
 	@Resource
 	private AttendanceStatisticDao dao;
@@ -83,6 +86,9 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			statistic.setCompany(company);
 			//应工作天数
 			List<String> workdays = getWorkdaysForDate((Long)user.get("user_id"), params.get("start_date").toString(), params.get("end_date").toString());
+			if (workdays == null){
+				continue;
+			}
 			statistic.setWorkdaysCount(workdays.size());
 			//实际工作天数
 			List<String> realWorkdays = new ArrayList<String>();
@@ -94,20 +100,29 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			List<String> noClockOnWorkdays = new ArrayList<String>();
 			//下班未打卡天数
 			List<String> noClockOffWorkdays = new ArrayList<String>();
+			//旷工天数
+			List<String> noClockWorkdays = new ArrayList<String>();
 			
 			int normalClockOnCount = 0;
 			int normalClockOffCount = 0;
 			int laterCount = 0;
 			int leaveEarlyCount = 0;
 			for (Map<String, Object> map : list){
+				//内层循环过滤掉id不同的数据
 				if (!StringUtils.equals(user.get("user_id").toString(), map.get("user_id").toString())){
 					continue;
 				}
-				realWorkdays.add(map.get("clock_date").toString());
-				if (null == map.get("clock_on_status")){
+				//过滤掉上班，下班都没打卡或打卡日期不在应工作天之内的数据
+				if (null == map.get("clock_on_datetime") && null == map.get("clock_off_datetime") || !workdays.contains(map.get("clock_date").toString())){
+					continue;
+				}
+				if (null != map.get("clock_on_datetime") || null != map.get("clock_off_datetime")){
+					realWorkdays.add(map.get("clock_date").toString());
+				}
+				if (null == map.get("clock_on_datetime")){
 					noClockOnWorkdays.add(map.get("clock_date").toString());
 				}
-				if (null == map.get("clock_off_status")){
+				if (null == map.get("clock_off_datetime")){
 					noClockOffWorkdays.add(map.get("clock_date").toString());
 				}
 				String clockOnStatus = null == map.get("clock_on_status") ? "" : map.get("clock_on_status").toString(); 
@@ -126,7 +141,7 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 					normalClockOffCount ++;
 				}
 				//早退
-				if (StringUtils.equals(clockOffStatus, "1")){
+				if (StringUtils.equals(clockOffStatus, "2")){
 					leaveEarlyCount ++;
 					leaveEarlyWorkdays.add(map.get("clock_date").toString());
 				}
@@ -136,17 +151,22 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			statistic.setLaterCount(laterCount);
 			statistic.setLeaveEarlyCount(leaveEarlyCount);
 			//上班未打卡
-			statistic.setNoClockOnCount(workdays.size() - statistic.getNormalClockOnCount() - laterCount);
-			//下班未打卡
-			statistic.setNoClockOffCount(workdays.size() - statistic.getNormalClockOffCount() - leaveEarlyCount);
+//			statistic.setNoClockOnCount(workdays.size() - statistic.getNormalClockOnCount() - laterCount);
+//			//下班未打卡
+//			statistic.setNoClockOffCount(workdays.size() - statistic.getNormalClockOffCount() - leaveEarlyCount);
 			
-			noClockOnWorkdays.addAll(getDiffrent(workdays, realWorkdays));
-			noClockOffWorkdays.addAll(getDiffrent(workdays, realWorkdays));
+//			noClockOnWorkdays.addAll(getDiffrent(workdays, realWorkdays));
+//			noClockOffWorkdays.addAll(getDiffrent(workdays, realWorkdays));
+			statistic.setNoClockOnCount(noClockOnWorkdays.size());
+			statistic.setNoClockOffCount(noClockOffWorkdays.size());
+			noClockWorkdays.addAll(getDiffrent(workdays, realWorkdays));
+			statistic.setNoClockCount(noClockWorkdays.size());
 			
 			Collections.sort(laterWorkdays);
 			Collections.sort(leaveEarlyWorkdays);
 			Collections.sort(noClockOnWorkdays);
 			Collections.sort(noClockOffWorkdays);
+			Collections.sort(noClockWorkdays);
 			
 			StringBuffer sb = new StringBuffer();
 			if (laterWorkdays.size() > 0){
@@ -160,6 +180,9 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			}
 			if (noClockOffWorkdays.size() > 0){
 				sb.append("  下班未打卡：" + noClockOffWorkdays);
+			}
+			if (noClockWorkdays.size() > 0){
+				sb.append("  旷工：" + noClockWorkdays);
 			}
 			statistic.setRemark(sb.toString());
 			
@@ -209,6 +232,10 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 	@Override
 	public List<String> getWorkdaysForDate(long userId, String dateBegin, String dateEnd) {
 		AttendanceRule rule = ruleDao.getRuleByUserId(userId);
+		if (null == rule){
+			logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
+			return null;
+		}
 		//获取指定时间段的天数
 		List<String> days = DateTimeUtil.getDaysFromDate(dateBegin, dateEnd);
 			

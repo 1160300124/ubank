@@ -1,5 +1,6 @@
 package com.ulaiber.web.controller.backend;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
+import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.Salary;
 import com.ulaiber.web.model.SalaryDetail;
 import com.ulaiber.web.model.User;
+import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.SalaryDetailService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
@@ -48,6 +51,9 @@ public class SalaryController extends BaseController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private PermissionService permissionService; 
 	
 	@RequestMapping(value = "salary", method = RequestMethod.GET)
 	public String salary(HttpServletRequest request, HttpServletResponse response){
@@ -229,6 +235,46 @@ public class SalaryController extends BaseController {
 		}
     	
     	return info;
+    }
+    
+    @RequestMapping(value = "getDeptsAndUsersFromCompany", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getDeptsAndUsers(String companyId, String companyName, String search, HttpServletRequest request, HttpServletResponse response){
+    	Map<String, Object> tree = new HashMap<String, Object>();
+    	try {
+    		List<Departments> depts = permissionService.getDeptByCom(companyId);
+    		List<User> users = userService.getUsersByComNum(companyId, search);
+
+    		List<Map<String, Object>> deptTree = new ArrayList<Map<String, Object>>();
+    		for (Departments dept : depts){
+    			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+    			for (User user : users){
+    				if (StringUtils.equals(dept.getDept_number(), user.getDept_number())){
+    					Map<String, Object> userMap = new HashMap<String, Object>();
+    					userMap.put("id", user.getId());
+    					userMap.put("name", user.getUserName());
+    					list.add(userMap);
+    				}
+    			}
+    			Map<String, Object> map = new HashMap<String, Object>();
+    			map.put("id", dept.getDept_number());
+    			map.put("name", dept.getName());
+    			map.put("children" , list);
+    			map.put("isParent", true);//设置根节点为父节点
+    			map.put("open", true); //根节点展开
+    			deptTree.add(map);
+    		}
+
+    		tree.put("id", companyId);
+    		tree.put("name", companyName);
+    		tree.put("children" , deptTree);
+    		tree.put("isParent", true);//设置根节点为父节点
+    		tree.put("open", true); //根节点展开
+    	} catch (Exception e) {
+    		logger.error("getDeptsAndUsers exception:", e);
+    	}
+
+    	return tree;
     }
 	
 }
