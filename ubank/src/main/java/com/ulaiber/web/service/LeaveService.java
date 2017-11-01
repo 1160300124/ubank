@@ -55,4 +55,6 @@ public interface LeaveService {
     int insertRemedy(Remedy remedy); //新增补卡记录
 
     Remedy getRemedyRecordByUserId(int recordNo); //根据记录Id查询补卡信息
+
+    LeaveRecord queryApplyStatus(String recordNo);  //根据审批状态获取申请记录状态
 }

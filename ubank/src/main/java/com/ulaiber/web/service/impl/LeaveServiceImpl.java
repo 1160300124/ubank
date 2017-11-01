@@ -325,5 +325,11 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return leaveDao.getRemedyRecordByUserId(recordNo);
     }
 
+    @Override
+    public LeaveRecord queryApplyStatus(String recordNo) {
+        int id = Integer.parseInt(recordNo);
+        return leaveDao.queryApplyStatus(id);
+    }
+
 
 }

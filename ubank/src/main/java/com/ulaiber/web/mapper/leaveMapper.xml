@@ -134,4 +134,9 @@
         SELECT a.*,b.userId FROM tbl_remedy a LEFT join tbl_leave_record b on a.recordNo = b.id
             where a.recordNo = #{recordNo}
     </select>
+
+    <!--根据审批状态获取申请记录状态-->
+    <select id="queryApplyStatus" parameterType="int" resultType="com.ulaiber.web.model.LeaveRecord">
+        select disable FROM tbl_leave_record where id = #{recordNo}
+    </select>
 </mapper>

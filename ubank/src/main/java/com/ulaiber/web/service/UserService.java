@@ -157,7 +157,7 @@ public interface UserService {
 	 * @param userid 用户id
 	 * @return SecondAcount
 	 */
-	SecondAcount getSecondAccountByUserId(int userid);
+	SecondAccountAO getSecondAccountByUserId(int userid);
 
 	/**
 	 * 新增用户绑定银行卡信息
@@ -174,4 +174,11 @@ public interface UserService {
 	 * @return SecondAcount
 	 */
 	SecondAcount findSecondAcc(int id);
+
+	/**
+	 * 根据电话获取二类帐户信息
+	 * @param mobile 电话
+	 * @return SecondAccountAO
+	 */
+	SecondAccountAO getSecondAccountByMobile(String mobile);
 }

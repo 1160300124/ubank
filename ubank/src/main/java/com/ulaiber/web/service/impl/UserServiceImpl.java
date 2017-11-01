@@ -276,7 +276,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
     @Override
-    public SecondAcount getSecondAccountByUserId(int userid) {
+    public SecondAccountAO getSecondAccountByUserId(int userid) {
         return mapper.getSecondAccountByUserId(userid);
     }
 
@@ -292,5 +292,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     public SecondAcount findSecondAcc(int id) {
         return mapper.findSecondAcc(id);
+    }
+
+    @Override
+    public SecondAccountAO getSecondAccountByMobile(String mobile) {
+        return mapper.getSecondAccountByMobile(mobile);
     }
 }

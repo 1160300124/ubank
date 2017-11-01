@@ -67,7 +67,7 @@ public class User implements Serializable {
 	private String bankCardNo;
 
 	//二类户账号
-	private String secondBankCardNo;
+	private Object secondAccount;
 
 	//账户余额
 	private double balance;
@@ -116,9 +116,6 @@ public class User implements Serializable {
 
 	//离职时间
 	private String leaveDate;
-
-	//二类户信息
-	private SecondAcount secondAcount;
 
 
 	public long getId() {
@@ -369,12 +366,12 @@ public class User implements Serializable {
 		this.login_fail_time = login_fail_time;
 	}
 
-	public String getSecondBankCardNo() {
-		return secondBankCardNo;
+	public Object getSecondAccount() {
+		return secondAccount;
 	}
 
-	public void setSecondBankCardNo(String secondBankCardNo) {
-		this.secondBankCardNo = secondBankCardNo;
+	public void setSecondAccount(Object secondAccount) {
+		this.secondAccount = secondAccount;
 	}
 
 	public String getSysflag() {
@@ -417,11 +414,4 @@ public class User implements Serializable {
 		this.leaveDate = leaveDate;
 	}
 
-	public SecondAcount getSecondAcount() {
-		return secondAcount;
-	}
-
-	public void setSecondAcount(SecondAcount secondAcount) {
-		this.secondAcount = secondAcount;
-	}
 }

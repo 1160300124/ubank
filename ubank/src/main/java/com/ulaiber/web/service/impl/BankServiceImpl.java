@@ -69,9 +69,9 @@ public class BankServiceImpl extends BaseService implements BankService {
     }
 
     @Override
-    public SecondAcount querySecondAccount(long id) {
+    public SecondAcount querySecondAccount(String SubAcctNo) {
 		Map<String,Object> map = new HashMap<>();
-		map.put("id",id);
+		map.put("SubAcctNo",SubAcctNo);
 		SecondAcount sa = mapper.querySecondAccount(map);
         return sa;
     }

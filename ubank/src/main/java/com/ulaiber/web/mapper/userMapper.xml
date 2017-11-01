@@ -148,8 +148,11 @@
 	</select>
 
 	<!--获取二类帐户信息-->
-	<select id="getSecondAccountByUserId" parameterType="int" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
-		SELECT * FROM tbl_secondAccount where disabled = 0 and userid = #{userid}
+	<select id="getSecondAccountByUserId" parameterType="int" resultType="com.ulaiber.web.model.SecondAccountAO">
+		SELECT a.*,b.bankNo,b.bankCardNo,d.name as bankName FROM tbl_secondAccount a
+		left join tbl_userToBank b on a.userid = b.userid
+		left join tbl_bindBank d on b.bankNo = d.bankNo
+			where b.disabled = 0 and a.userid = #{userid}
 	</select>
 
 	<!--新增用户绑定银行卡信息-->
@@ -162,4 +165,15 @@
 	<select id="findSecondAcc" parameterType="int" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
 		SELECT userid FROM tbl_secondAccount where userid = #{id}
 	</select>
+
+	<!-- 根据电话获取二类帐户信息-->
+	<select id="getSecondAccountByMobile" parameterType="int" resultType="com.ulaiber.web.model.SecondAccountAO">
+		SELECT a.*,b.bankNo,b.bankCardNo,d.name as bankName,d.type FROM tbl_secondAccount a
+			left join tbl_userToBank b on a.userid = b.userid
+			left join tbl_users c on a.userid = c.user_id
+			left join tbl_bindBank d on b.bankNo = d.bankNo
+			where b.disabled = 0 and c.mobile = #{mobile}
+	</select>
+
+
 </mapper>

@@ -5,6 +5,7 @@ import com.koalii.svs.SvsSign;
 import com.koalii.svs.SvsVerify;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.ShangHaiAcount.ResultAccStatus;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.utils.*;
 import org.apache.log4j.Logger;
@@ -96,13 +97,9 @@ public class ShangHaiAccount {
             String result = st.postRequest(postUrl,xml, 10000);
            // logger.info(">>>>>>>>>>请求结果为：" + result);
           //  System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
-            if(StringUtil.isEmpty(result)){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                return resultInfo;
-            }
+            Map<String,Object> resultMap = new HashMap<>();
             logger.info(">>>>>>>>>>开始解析xml");
             //解析XML
-            Map<String,String> resultXML = new HashMap<>();
             Document document = DocumentHelper.parseText(result);
             Element root = document.getRootElement();
             String resultSign = "";
@@ -134,12 +131,19 @@ public class ShangHaiAccount {
                     secondAcount.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
                 }
             }
+            logger.info(">>>>>>>>>>解析xml完毕");
+            logger.info(">>>>>>>>>>secondAcount is :" + secondAcount);
             if(!secondAcount.getStatusCode().equals("0000")){
-                resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(secondAcount.getServerStatusCode());
+                resultMap.put("secondAcount",secondAcount);
+                resultMap.put("status",secondAcount.getStatusCode());
+                resultInfo.setData(resultMap);
+//                Map<String,Object> map2 = (Map<String, Object>) resultInfo.getData();
+//                SecondAcount sa = (SecondAcount) map2.get("secondAcount");
+//                String status = (String) resultMap.get("status");
                 return resultInfo;
             }
-            logger.info(">>>>>>>>>>解析xml完毕");
             signDataStr = "AcctOpenResult="+secondAcount.getAcctOpenResult()+"&CoopCustNo="+secondAcount.getCoopCustNo()+"&CustName="
                     +secondAcount.getCustName()+"&EacctNo="+secondAcount.getEacctNo()
                     +"&IdNo="+secondAcount.getIdNo()+"&ProductCd="+secondAcount.getProductCd()+"&RqUID="+secondAcount.getRqUID()
@@ -152,20 +156,30 @@ public class ShangHaiAccount {
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
             //  System.out.println(">>>>>>>>>>>验签结果为：" + verifyRet);
             if(verifyRet != 0){
-                resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(secondAcount.getServerStatusCode());
+                resultMap.put("secondAcount",secondAcount);
+                resultMap.put("status",secondAcount.getStatusCode());
+                resultInfo.setData(resultMap);
                 logger.error(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
                 logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
                 return resultInfo;
             }
             if(!secondAcount.getStatusCode().equals("0000")){
-                resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(secondAcount.getServerStatusCode());
+                resultMap.put("secondAcount",secondAcount);
+                resultMap.put("status",secondAcount.getStatusCode());
+                resultInfo.setData(resultMap);
                 logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
                 return resultInfo;
             }
-            resultInfo.setData(secondAcount);
-            resultInfo.setCode(Integer.parseInt(secondAcount.getStatusCode()));
+            resultMap.put("secondAcount",secondAcount);
+            resultMap.put("status",secondAcount.getStatusCode());
+            resultInfo.setData(resultMap);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+
+
         } catch (Exception e) {
            // e.printStackTrace();
            logger.error(">>>>>>>>申请上海银行二类户异常：",e);

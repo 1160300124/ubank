@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.SecondAccountAO;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.User;
 
@@ -142,7 +143,7 @@ public interface UserDao {
      * @param userid
      * @return SecondAcount
      */
-    SecondAcount getSecondAccountByUserId(int userid);
+    SecondAccountAO getSecondAccountByUserId(int userid);
 
 
 
@@ -159,4 +160,11 @@ public interface UserDao {
      * @return SecondAcount
      */
     SecondAcount findSecondAcc(int id);
+
+    /**
+     * 根据电话获取二类帐户信息
+     * @param mobile 电话
+     * @return SecondAcount
+     */
+    SecondAccountAO getSecondAccountByMobile(String mobile);
 }

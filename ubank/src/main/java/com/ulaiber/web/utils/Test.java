@@ -4,10 +4,13 @@ import java.util.*;
 
 import com.qiniu.util.Auth;
 import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
+import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
+import com.ulaiber.web.model.ShangHaiAcount.ResultAccStatus;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -392,7 +395,7 @@ public class Test {
 		param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
 		param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
 		param.put("CustName" , "焦敏");				//姓名
-		param.put("IdNo" , "421821133212423772");					//身份证号
+		param.put("IdNo" , "110103198301019458");					//身份证号
 		param.put("MobllePhone" , "18503036206");			//手机号
 		param.put("BindCardNo" , "6217007200027221449");				//绑定银行卡号
 		param.put("ReservedPhone" , "18503036206");	//银行卡预留手机号
@@ -415,10 +418,23 @@ public class Test {
 		sh.setReservedPhone("18503036206");
 		sh.setNewReservedPhone("18503036206");
 		sh.setModiType("00");
-		SHChangeBinding.changeBindCard(sh);
+		Map<String,Object> map = new HashMap<>();
+		map.put("sh",sh);
+		SHChangeCard ss = (SHChangeCard) map.get("sh");
+		//SHChangeBinding.changeBindCard(sh);
+
+
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}
 
+
+	//上海银行二类户改绑测试
+	@org.junit.Test
+	public void queryBalance(){
+		String str = "623185009300012603";
+		SHQueryBalance.queryBalance(str);
+		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
+	}
 
 	@org.junit.Test
 	public void md5(){

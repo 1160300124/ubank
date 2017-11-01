@@ -1,5 +1,6 @@
 package com.ulaiber.web.controller.api;
 
+import java.rmi.MarshalledObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.*;
+import com.ulaiber.web.model.ShangHaiAcount.ResultAccStatus;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import com.ulaiber.web.service.PermissionService;
@@ -28,9 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.CaptchaUtil;
 import com.ulaiber.web.utils.ObjUtil;
@@ -74,10 +73,11 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo register(@RequestParam("file") MultipartFile[] file, User user, Bank bank,String code,
-							   HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo register(@RequestParam("file") MultipartFile[] file, User user, Bank bank, String code,
+									HttpServletRequest request, HttpServletResponse response){
 		logger.debug("register statrt...");
 		ResultInfo retInfo = new ResultInfo();
+		String status = "";
 		try{
 			if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
 				logger.error("register failed: user or bank is empty.");
@@ -145,20 +145,18 @@ public class UserController extends BaseController{
 				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
 				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
 				param.put("Sign" , "N");								//是否开通余额理财功能
-				logger.info(">>>>>>>参数为："+user.getUserName() + ":" + user.getCardNo()+":"+user.getMobile()
-						+":"+user.getBankCardNo()+":"+user.getReserve_mobile());
+				//注册二类户
 				ResultInfo ri = ShangHaiAccount.register(param);
-				SecondAcount sa = (SecondAcount) ri.getData();
-				logger.info(">>>>>>>>>>code is ：" +ri.getCode());
-				if(ri.getCode() != 0000){
-					retInfo.setCode(Integer.parseInt(sa.getStatusCode()));
+				logger.info(">>>>>>>>>> 注册结果为：" + ri);
+				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
+				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
+				status = (String) resultMap.get("status");
+				if(!"0000".equals(status)){
+					retInfo.setCode(IConstants.QT_CODE_ERROR);
 					retInfo.setMessage(sa.getServerStatusCode());
+					retInfo.setData(status);
 					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败.");
-					return retInfo;
-				}
-				if(!sa.getStatusCode().equals("0000")){
-					retInfo.setCode(Integer.parseInt(sa.getStatusCode()));
-					retInfo.setMessage(sa.getServerStatusCode());
 					return retInfo;
 				}
 				//新增用户权限层级信息
@@ -169,33 +167,16 @@ public class UserController extends BaseController{
 				int save = userService.save(user,code,sa,bankNo,bankCardNo);
 				if(save == 0){
 					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage("register failed");
+					retInfo.setMessage("注册失败");
+					retInfo.setData(status);
 					logger.error(">>>>>>>>>>插入用户信息异常");
 					return retInfo;
 				}
-//				//新增用户二类账户信息
-//				int se = userService.insertSecondAccount(sa);
-//				if(se == 0){
-//					retInfo.setCode(IConstants.QT_CODE_ERROR);
-//					retInfo.setMessage("新增二类账户失败");
-//					logger.info(">>>>>>>>>>"+user.getMobile() + " 新增二类账户信息失败.");
-//					return retInfo;
-//				}
 			}
-//
-//			int userid = (int) user.getId();
-//			//新增用户绑定银行卡信息
-//			long bankNo = Long.parseLong(bank.getBankNo());
-//			String bankCardNo = user.getBankCardNo();
-//			int result3 = userService.insertUserToBank(userid,bankNo,bankCardNo);
-//			if(result3 == 0){
-//				retInfo.setCode(IConstants.QT_CODE_ERROR);
-//				retInfo.setMessage("register failed");
-//				return retInfo;
-//			}
 				retInfo.setCode(IConstants.QT_CODE_OK);
-				retInfo.setMessage("register successed");
-				logger.info(">>>>>>>>>>"+user.getMobile() + " register successed.");
+				retInfo.setMessage("注册成功");
+				retInfo.setData(status);
+				logger.info(">>>>>>>>>>"+user.getMobile() + " 注册成功.");
 		}catch(Exception e){
 			logger.error(">>>>>>>>>>注册失败,原因为：" ,e);
 		}
@@ -225,7 +206,7 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping("getUserInfo")
 	@ResponseBody
-	public ResultInfo getUserInfo(String mobile,HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo getUserInfo(String mobile,String SubAcctNo,HttpServletRequest request, HttpServletResponse response){
 		logger.debug("getUserInfo start...");
 		ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
 		if (!ObjUtil.notEmpty(mobile)){
@@ -233,38 +214,44 @@ public class UserController extends BaseController{
 			logger.equals("mobile is empty.");
 			return retInfo;
 		}
-		User user = userService.findByMobile(mobile);
-		if (ObjUtil.notEmpty(user)){
-			//获取二类帐户信息
-			int userid = (int) user.getId();
-			SecondAcount secondAcount = userService.getSecondAccountByUserId(userid);
-			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("获取用户信息成功");
-			logger.info("get user information successed");
-			User tempUser = new User();
-			tempUser.setId(user.getId());
-			tempUser.setUserName(user.getUserName());
-			tempUser.setMobile(user.getMobile());
-			tempUser.setReserve_mobile(user.getReserve_mobile());
-			tempUser.setBankCardNo(user.getBankCardNo());
-			tempUser.setBank(user.getBank());
-			tempUser.setCardNo(user.getCardNo());
-			tempUser.setCompanyId(user.getCompanyId());
-			tempUser.setCom_name(user.getCom_name());
-			tempUser.setDept_number(user.getDept_number());
-			tempUser.setDept_name(user.getDept_name());
-			//TODO 调二类户接口查询余额
-			double balance = 0.00;
-			tempUser.setBalance(balance);
-			tempUser.setSecondAcount(secondAcount);
-			retInfo.setData(tempUser);
+		try{
+			User user = userService.findByMobile(mobile);
+			if (ObjUtil.notEmpty(user)){
+				User tempUser = new User();
+				//获取二类帐户信息
+				int userid = (int) user.getId();
+				logger.info(">>>>>>>>>>登录的用户ID是：" +userid);
+				SecondAccountAO secondAccount = userService.getSecondAccountByUserId(userid);
+				if(!StringUtil.isEmpty(secondAccount)){
+					tempUser.setBankCardNo(secondAccount.getBankCardNo());
+//					tempUser.setBankNo(String.valueOf(secondAccount.getBankNo()));
+					tempUser.setSecondAccount(secondAccount);
+				}
+				logger.info(userid + ">>>>>>>>>>二类户secondAccount数据为：" + secondAccount);
+				retInfo.setCode(IConstants.QT_CODE_OK);
+				retInfo.setMessage("获取用户信息成功");
+				tempUser.setId(user.getId());
+				tempUser.setUserName(user.getUserName());
+				tempUser.setMobile(user.getMobile());
+				tempUser.setReserve_mobile(user.getReserve_mobile());
+				tempUser.setBank(user.getBank());
+				tempUser.setCardNo(user.getCardNo());
+				tempUser.setCompanyId(user.getCompanyId());
+				tempUser.setCom_name(user.getCom_name());
+				tempUser.setDept_number(user.getDept_number());
+				tempUser.setDept_name(user.getDept_name());
+				//TODO 调二类户接口查询余额
+				double balance = 0.00;
+				tempUser.setBalance(balance);
+				retInfo.setData(tempUser);
+				logger.info(">>>>>>>>>获取用户信息成功");
+			}else {
+				logger.error(">>>>>>>>>>手机号不存在");
+				retInfo.setMessage("手机号不存在");
+			}
+		}catch(Exception e){
+			logger.error(">>>>>>>>>>获取用户信息异常的原因是：" ,e);
 		}
-		else {
-			logger.error("get user information failed: mobile not exists.");
-			retInfo.setMessage("手机号不存在。");
-		}
-		
-		logger.debug("getUserInfo end...");
 		return retInfo;
 	}
 	
@@ -584,7 +571,7 @@ public class UserController extends BaseController{
 		ResultInfo resultInfo = new ResultInfo();
 		if (file != null && file.length > 0) {
 			boolean flag = false;
-			logger.info(">>>>>>>>>>file is :" + file);
+			logger.info(">>>>>>>>>>文件是 :" + file);
 			// 循环获取file数组中得文件
 			try {
 				for (int i = 0; i < file.length; i++) {
@@ -595,9 +582,11 @@ public class UserController extends BaseController{
 				if(flag){
 					resultInfo.setCode(IConstants.QT_CODE_OK);
 					resultInfo.setMessage("上传成功");
+					logger.info(">>>>>>>>>>测试上传图片成功");
 				}else{
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage("上传失败");
+					logger.info(">>>>>>>>>>测试上传图片失败");
 				}
 			}catch(Exception e){
 				logger.error(">>>>>>上传文件异常为：" , e );

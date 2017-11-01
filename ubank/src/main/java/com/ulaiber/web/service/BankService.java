@@ -48,8 +48,8 @@ public interface BankService {
 
 	/**
 	 * 根据二类户账号ID和银行卡号查询二类户信息
-	 * @param id 二类户ID
+	 * @param SubAcctNo 二类户ID
 	 * @return SecondAcount
 	 */
-    SecondAcount querySecondAccount(long id);
+    SecondAcount querySecondAccount(String SubAcctNo);
 }

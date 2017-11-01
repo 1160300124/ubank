@@ -20,6 +20,9 @@ public class IConstants
     //失败
     public final static int QT_CODE_ERROR = 1010;
 
+    //申请已取消
+	public final static int QT_CODE_CANCEL = 1020;
+
     //密码不一致
     public final static int QT_PWD_NOT_MATCH = 1011;
 

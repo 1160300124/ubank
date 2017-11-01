@@ -31,6 +31,12 @@ public class SecondAcount implements Serializable {
     private String RqUID;               //请求流水号
     private String BindCardNo;          //绑定银行卡号
     private String ReservedPhone;       //银行卡预留手机号
+    private long bankNo;                //银行卡编号
+    private double AvaiBal;             //可用余额 (子账户余额+可用基金份额)
+    private double WorkingBal;          //余额(子账户余额)
+    private double FundShare;           //基金份额(以基金公司为准，不含当日申购赎回的交易份额)
+    private double AvaiFundShare;       //可用基金份额(当前实际可用的基金份额，含当日申购赎回的交易份额)
+    private double EarningsYesterday;   //昨日收益
 
     public long getId() {
         return id;
@@ -222,5 +228,53 @@ public class SecondAcount implements Serializable {
 
     public void setReservedPhone(String reservedPhone) {
         ReservedPhone = reservedPhone;
+    }
+
+    public long getBankNo() {
+        return bankNo;
+    }
+
+    public void setBankNo(long bankNo) {
+        this.bankNo = bankNo;
+    }
+
+    public double getAvaiBal() {
+        return AvaiBal;
+    }
+
+    public void setAvaiBal(double avaiBal) {
+        AvaiBal = avaiBal;
+    }
+
+    public double getWorkingBal() {
+        return WorkingBal;
+    }
+
+    public void setWorkingBal(double workingBal) {
+        WorkingBal = workingBal;
+    }
+
+    public double getFundShare() {
+        return FundShare;
+    }
+
+    public void setFundShare(double fundShare) {
+        FundShare = fundShare;
+    }
+
+    public double getAvaiFundShare() {
+        return AvaiFundShare;
+    }
+
+    public void setAvaiFundShare(double avaiFundShare) {
+        AvaiFundShare = avaiFundShare;
+    }
+
+    public double getEarningsYesterday() {
+        return EarningsYesterday;
+    }
+
+    public void setEarningsYesterday(double earningsYesterday) {
+        EarningsYesterday = earningsYesterday;
     }
 }

@@ -82,20 +82,16 @@ public class SHChangeBinding {
                     "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
                     "</YFY0002Rq>" +
                     "</BOSFXII>";
-            System.out.println(">>>>>>>>>>xml is :" + xml);
+           // System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
-            System.out.print(">>>>>>>>>>>>>>改绑请求结果为 ：" + result);
+            //System.out.print(">>>>>>>>>>>>>>改绑请求结果为 ：" + result);
             logger.info(">>>>>>>>>>>>>>改绑请求结果为 ："+ result);
-            if(StringUtil.isEmpty(result)){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                return resultInfo;
-            }
             logger.info(">>>>>>>>>>开始解析xml");
+            Map<String,Object> resultMap = new HashMap<>();
             //解析XML
-            Map<String,String> resultXML = new HashMap<>();
             Document document = DocumentHelper.parseText(result);
             Element root = document.getRootElement();
             String resultSign = "";
@@ -120,8 +116,11 @@ public class SHChangeBinding {
                 }
             }
             if(!shChangeCard.getStatusCode().equals("0000")){
-                resultInfo.setCode(Integer.parseInt(shChangeCard.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(shChangeCard.getServerStatusCode());
+                resultMap.put("status",shChangeCard.getStatusCode());
+                resultMap.put("SHChangeCard",shChangeCard);
+                resultInfo.setData(resultMap);
                 return resultInfo;
             }
             logger.info(">>>>>>>>>>解析xml完毕");
@@ -135,21 +134,28 @@ public class SHChangeBinding {
             if(verifyRet != 0){
                 resultInfo.setCode(Integer.parseInt(shChangeCard.getStatusCode()));
                 resultInfo.setMessage(shChangeCard.getServerStatusCode());
-                System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-                System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
-               // logger.error(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-               // logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
+                resultMap.put("status",shChangeCard.getStatusCode());
+                resultMap.put("SHChangeCard",shChangeCard);
+                resultInfo.setData(resultMap);
+                //System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
+               // System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
+                logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }
             if(!shChangeCard.getStatusCode().equals("0000")){
-                resultInfo.setCode(Integer.parseInt(shChangeCard.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(shChangeCard.getServerStatusCode());
-                System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
-                //logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
+                resultMap.put("status",shChangeCard.getStatusCode());
+                resultMap.put("SHChangeCard",shChangeCard);
+                resultInfo.setData(resultMap);
+                //System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
+                logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }
-            resultInfo.setData(shChangeCard);
-            resultInfo.setCode(Integer.parseInt(shChangeCard.getStatusCode()));
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultMap.put("status",shChangeCard.getStatusCode());
+            resultMap.put("SHChangeCard",shChangeCard);
+            resultInfo.setData(resultMap);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(">>>>>>>>上海二类账户改绑异常：",e);
