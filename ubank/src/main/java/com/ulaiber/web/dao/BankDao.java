@@ -61,4 +61,18 @@ public interface BankDao {
      * @return SecondAcount
      */
     SecondAcount querySecondAccount(Map<String, Object> map);
+
+    /**
+     * 根据用户ID获取对应公司的邀请码
+     * @param userid 用户ID
+     * @return String
+     */
+    String getCodeByuserid(long userid);
+
+    /**
+     * 更新二类账户余额
+     * @param sa 上海银行二类账户
+     * @return int
+     */
+    int updateSecondAcc(SecondAcount sa);
 }

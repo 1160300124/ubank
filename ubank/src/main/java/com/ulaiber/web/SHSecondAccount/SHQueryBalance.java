@@ -15,6 +15,7 @@ import org.dom4j.Element;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,16 +37,16 @@ public class SHQueryBalance {
      */
     public static ResultInfo queryBalance(String SubAcctNo){
         logger.info(">>>>>>>>>>开始查询上海银行二类户余额");
-        Map<String,Object> map = StringUtil.loadConfig();
-        String privateKey = (String) map.get("privateKey");
-        String publicKey = (String) map.get("publicKey");
-        String postUrl = (String) map.get("postUrl");
-        String pwd = (String) map.get("pwd");
         ResultInfo resultInfo = new ResultInfo();
-        String KoalB64Cert = "";
-        String Signature = "";
         try {
-            logger.info(">>>>>>>>>>开始加签");
+            Map<String,Object> map = StringUtil.loadConfig();
+            String privateKey = (String) map.get("privateKey");
+            String publicKey = (String) map.get("publicKey");
+            String postUrl = (String) map.get("postUrl");
+            String pwd = (String) map.get("pwd");
+            String KoalB64Cert = "";
+            String Signature = "";
+            logger.info(">>>>>>>>>>开始查余额加签");
             //加签
             SvsSign signer = new SvsSign();
             signer.initSignCertAndKey(privateKey,pwd);
@@ -79,8 +80,8 @@ public class SHQueryBalance {
             logger.info(">>>>>>>>>>开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 8000);
-            System.out.print(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ：" + result);
-            logger.info(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ："+ result);
+            //System.out.print(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ：" + result);
+           // logger.info(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ："+ result);
             logger.info(">>>>>>>>>>开始解析xml");
             SecondAcount sa = new SecondAcount();
             Map<String,Object> resultMap = new HashMap<>();
@@ -89,18 +90,22 @@ public class SHQueryBalance {
             Element root = document.getRootElement();
             String resultSign = "";
             Iterator iter = root.elementIterator("YFY0101Rs"); // 获取根节点下的子节点BOSFXII
+            String workingBal = "";
+            String avaifundShare = "";
+            String fundShare = "";
+            String earningsYesterday = "";
+            String avaiBal = "";
+
             while(iter.hasNext()){
                 Element recordEle = (Element) iter.next();
                 sa.setSubAcctNo(recordEle.elementTextTrim("SubAcctNo"));
-                double bal = Double.parseDouble(recordEle.elementTextTrim("WorkingBal"));
-                double avaifun = Double.parseDouble(recordEle.elementTextTrim("AvaiFundShare"));
-                sa.setAvaiBal(bal + avaifun);
-                sa.setWorkingBal(bal);
-                sa.setFundShare(Double.parseDouble(recordEle.elementTextTrim("FundShare")));
-                sa.setAvaiFundShare(Double.parseDouble(recordEle.elementTextTrim("AvaiFundShare")));
-                sa.setEarningsYesterday(Double.parseDouble(recordEle.elementTextTrim("EarningsYesterday")));
+                avaiBal = recordEle.elementTextTrim("AvaiBal");
+                workingBal = recordEle.elementTextTrim("WorkingBal");
+                avaifundShare = recordEle.elementTextTrim("AvaiFundShare");
+                fundShare =recordEle.elementTextTrim("FundShare");
+                earningsYesterday = recordEle.elementTextTrim("EarningsYesterday");
                 Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
-                resultSign = recordEle.elementTextTrim("Signature"); // 拿到YFY0001Rs下的字节点Signature
+                resultSign = recordEle.elementTextTrim("Signature"); // 拿到YFY0101Rs下的字节点Signature
                 while (iters.hasNext()){
                     Element recordEles = (Element) iters.next();
                     //响应报文头信息
@@ -111,45 +116,61 @@ public class SHQueryBalance {
                 }
             }
             if(!sa.getStatusCode().equals("0000")){
-                resultInfo.setCode(Integer.parseInt(sa.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(sa.getServerStatusCode());
+                resultMap.put("status",sa.getStatusCode());
+                resultMap.put("secondAccount",sa);
+                resultInfo.setData(resultMap);
                 return resultInfo;
             }
             //验签
-            signDataStr = "AvaiBal="+sa.getAvaiBal()+"&AvaiFundShare="+sa.getAvaiFundShare()+"&EarningsYesterday="+sa.getEarningsYesterday()
-                    +"&FundShare="+sa.getFundShare()+"&RqUID="+sa.getRqUID()+"&SPRsUID="+sa.getSPRsUID()+"&ServerStatusCode="+sa.getServerStatusCode()
-                    +"&StatusCode="+sa.getStatusCode()+"&SubAcctNo="+sa.getSubAcctNo()+"&WorkingBal="+sa.getWorkingBal()+"";
+            signDataStr = "AvaiBal="+avaiBal+"&AvaiFundShare="+avaifundShare+"&EarningsYesterday="+earningsYesterday
+                    +"&FundShare="+fundShare+"&RqUID="+sa.getRqUID()+"&SPRsUID="+sa.getSPRsUID()+"&ServerStatusCode="+sa.getServerStatusCode()
+                    +"&StatusCode="+sa.getStatusCode()+"&SubAcctNo="+sa.getSubAcctNo()+"&WorkingBal="+workingBal+"";
 
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
             if(verifyRet != 0){
-                resultInfo.setCode(Integer.parseInt(sa.getStatusCode()));
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(sa.getServerStatusCode());
-                System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-                System.out.println(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
+                resultMap.put("secondAccount",sa);
+                resultMap.put("status",sa.getStatusCode());
+                resultInfo.setData(resultMap);
+               // System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
+               // System.out.println(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
                 logger.error(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
                 return resultInfo;
             }
+            logger.info(">>>>>>>>>>验签成功");
+            sa.setAvaiBal(StringUtil.round(workingBal) + StringUtil.round(avaifundShare));
+            sa.setWorkingBal(StringUtil.round(workingBal));
+            sa.setFundShare(StringUtil.round(fundShare));
+            sa.setAvaiFundShare(StringUtil.round(avaifundShare));
+            sa.setEarningsYesterday(StringUtil.round(earningsYesterday));
             if(!sa.getStatusCode().equals("0000")){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(sa.getServerStatusCode());
-                resultMap.put("secondAcount",sa);
+                resultMap.put("secondAccount",sa);
                 resultMap.put("status",sa.getStatusCode());
                 resultInfo.setData(resultMap);
                 logger.error(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
                 return resultInfo;
             }
             resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage(sa.getServerStatusCode());
+            resultMap.put("secondAccount",sa);
             resultMap.put("status",sa.getStatusCode());
-            resultMap.put("secondAcount",sa);
             resultInfo.setData(resultMap);
 
         } catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            logger.error(">>>>>>>>>>查询上海银行二类户余额失败，原因为：",e);
         }
-        return null;
+        return resultInfo;
     }
+
+
 
 }

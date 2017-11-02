@@ -1,16 +1,14 @@
 package com.ulaiber.web.utils;
 
+import java.net.URISyntaxException;
 import java.util.*;
 
 import com.qiniu.util.Auth;
-import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
 import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
-import com.ulaiber.web.model.ShangHaiAcount.ResultAccStatus;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
-import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -347,8 +345,9 @@ public class Test {
 	@org.junit.Test
 	public void getDetails(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("code","82n6");
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAllBanks",map);
+		map.put("mobile","18503036209");
+		map.put("SubAcctNo","");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getUserInfo",map);
 		System.out.print(">>>>>>>>结果为："+result);
 	}
 
@@ -407,23 +406,22 @@ public class Test {
 
 	//上海银行二类户改绑测试
 	@org.junit.Test
-	public void changeCard(){
+	public void changeCard() throws URISyntaxException {
 		SHChangeCard sh = new SHChangeCard();
-		sh.setSubAcctNo("623185009300012595");
+		sh.setSubAcctNo("623185009300012652");
 		sh.setProductCd("yfyBalFinancing");
 		sh.setCustName("焦敏");
-		sh.setIdNo("220623199901012375");
-		sh.setBindCardNo("6217007211127331559");
-		sh.setNewCardNo("6217007200027221449");
-		sh.setReservedPhone("18503036206");
-		sh.setNewReservedPhone("18503036206");
+		sh.setIdNo("652101199901014414");
+		sh.setBindCardNo("6217007211147229499");
+		sh.setNewCardNo("6217007211143339499");
+		sh.setReservedPhone("18503036209");
+		sh.setNewReservedPhone("18503036209");
 		sh.setModiType("00");
-		Map<String,Object> map = new HashMap<>();
-		map.put("sh",sh);
-		SHChangeCard ss = (SHChangeCard) map.get("sh");
-		//SHChangeBinding.changeBindCard(sh);
-
-
+		JSONObject json = JSONObject.fromObject(sh);
+		System.out.println(">>>>>>>>>>>json："+ json.toString());
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/SHChangeBind",json.toString());
+		System.out.println(">>>>>>>>>>result is :" + result);
+		//SHChangeBinding.changeBindCard(sh)
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}
 
@@ -431,9 +429,18 @@ public class Test {
 	//上海银行二类户改绑测试
 	@org.junit.Test
 	public void queryBalance(){
-		String str = "623185009300012603";
+		String str = "623185009300012652";
 		SHQueryBalance.queryBalance(str);
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
+	}
+
+	@org.junit.Test
+	public void queryBanks(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code","3cz4");
+		map.put("userId","");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAllBanks",map);
+		System.out.print(">>>>>>>>结果为："+result);
 	}
 
 	@org.junit.Test
@@ -444,7 +451,9 @@ public class Test {
 //		long ll = Long.valueOf(userId);
 
 		//System.out.print(">>>>>>userID：" + UUID.randomUUID());
-		StringUtil.loadConfig();
+		String a  = "0.0000";
+		String b = "0.0";
+		//System.out.println(SHQueryBalance.round(a) + SHQueryBalance.round(b));
 	}
 
 	//生成字母和数字的随机数

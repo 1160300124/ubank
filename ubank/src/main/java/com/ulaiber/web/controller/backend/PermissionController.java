@@ -713,7 +713,7 @@ public class PermissionController extends BaseController {
      * 设置角色权限
      * @param menuId
      * @param roleId
-     * @param flag
+     * @param
      * @return
      */
     @RequestMapping(value = "settingRoleMenu", method = RequestMethod.POST)

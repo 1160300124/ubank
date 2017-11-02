@@ -67,7 +67,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo) {
-		user.setRole_id(2);
+		user.setRole_id(0);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
 		user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));

@@ -74,7 +74,7 @@ var CompanyFun = {
                 }
                 var option = "";
                 for (var i = 0; i < data.length; i++){
-                    option += "<option value='"+data[i].bankNo+"'>"+data[i].bankName+"</option>";
+                    option += "<option value='"+$.trim(data[i].bankNo)+"'>"+$.trim(data[i].bankName)+"</option>";
                 }
                 $("#company_select").append(option);
                 bankInfo = data;
@@ -195,7 +195,7 @@ var CompanyFun = {
             Ewin.alert("公司客户号格式不合法，请重新输入");
             return;
         }else if(customer.length > 20){
-            Ewin.alert("公司账号长度不能超过20个字符");
+            Ewin.alert("公司客户号长度不能超过20个字符");
             return;
         }
         if(certificateNumber == ""){
@@ -222,10 +222,9 @@ var CompanyFun = {
             Ewin.alert("详情长度不能超过200个字符");
             return;
         }
-
         //判断公司账户是否重复
         var accArray = [];
-        $(".form-box>.add-form-item").find("input[name='accounts']").each(function () {
+        $(".add-form-item").find("input[name='accounts']").each(function () {
             accArray.push($(this).val());
         });
         var nary = accArray.sort();
@@ -240,7 +239,7 @@ var CompanyFun = {
         var allBankAccount = [];
         var account = "";
         var str='';
-        $('.form-box .add-form-item').each(function(){
+        $('.add-form-item').each(function(){
             $(this).find('.base-request').each(function(){
                 var _value=$(this).val();
                 str += _value + "/";

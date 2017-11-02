@@ -63,9 +63,9 @@
 
                                 <label class="col-md-3" for="exampleInputName2">公司账户</label>
                                 <div class="col-md-9">
-                                    <%--<button  onclick="" type="button" class="btn btn-default" data-click="addForm">--%>
-                                        <%--<span class="fa icon-plus" aria-hidden="true"></span>添加账号--%>
-                                    <%--</button>--%>
+                                    <button  onclick="" type="button" class="btn btn-default" data-click="addForm">
+                                        <span class="fa icon-plus" aria-hidden="true"></span>添加账号
+                                    </button>
                                 </div>
                                 <div class="col-md-offset-1 col-md-11">
                                     <div class="form-box"></div>

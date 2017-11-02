@@ -1,6 +1,5 @@
 package com.ulaiber.web.controller.api;
 
-import java.rmi.MarshalledObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ulaiber.web.model.*;
-import com.ulaiber.web.model.ShangHaiAcount.ResultAccStatus;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import com.ulaiber.web.service.PermissionService;
@@ -178,6 +176,8 @@ public class UserController extends BaseController{
 				retInfo.setData(status);
 				logger.info(">>>>>>>>>>"+user.getMobile() + " 注册成功.");
 		}catch(Exception e){
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("系统异常");
 			logger.error(">>>>>>>>>>注册失败,原因为：" ,e);
 		}
 		logger.debug("register end...");
@@ -189,7 +189,7 @@ public class UserController extends BaseController{
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("getAllUser")
+	@RequestMapping(value = "getAllUser", method = RequestMethod.POST)
 	@ResponseBody
 	public List<User> getAllUser(HttpServletRequest request){
 		
@@ -204,7 +204,7 @@ public class UserController extends BaseController{
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping("getUserInfo")
+	@RequestMapping(value = "getUserInfo", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo getUserInfo(String mobile,String SubAcctNo,HttpServletRequest request, HttpServletResponse response){
 		logger.debug("getUserInfo start...");
@@ -240,9 +240,6 @@ public class UserController extends BaseController{
 				tempUser.setCom_name(user.getCom_name());
 				tempUser.setDept_number(user.getDept_number());
 				tempUser.setDept_name(user.getDept_name());
-				//TODO 调二类户接口查询余额
-				double balance = 0.00;
-				tempUser.setBalance(balance);
 				retInfo.setData(tempUser);
 				logger.info(">>>>>>>>>获取用户信息成功");
 			}else {

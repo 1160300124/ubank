@@ -5,7 +5,6 @@ import com.koalii.svs.SvsSign;
 import com.koalii.svs.SvsVerify;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.model.ShangHaiAcount.ResultAccStatus;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.utils.*;
 import org.apache.log4j.Logger;
@@ -94,7 +93,7 @@ public class ShangHaiAccount {
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>开始发送请求给上海银行");
             SslTest st = new SslTest();
-            String result = st.postRequest(postUrl,xml, 10000);
+            String result = st.postRequest(postUrl,xml, 30000);
            // logger.info(">>>>>>>>>>请求结果为：" + result);
           //  System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
             Map<String,Object> resultMap = new HashMap<>();
@@ -177,8 +176,8 @@ public class ShangHaiAccount {
             resultMap.put("secondAcount",secondAcount);
             resultMap.put("status",secondAcount.getStatusCode());
             resultInfo.setData(resultMap);
+            resultInfo.setMessage(secondAcount.getServerStatusCode());
             resultInfo.setCode(IConstants.QT_CODE_OK);
-
 
         } catch (Exception e) {
            // e.printStackTrace();

@@ -167,4 +167,11 @@ public interface UserDao {
      * @return SecondAcount
      */
     SecondAccountAO getSecondAccountByMobile(String mobile);
+
+    /**
+     * 根据用户ID修改银行卡预留电话
+     * @param paramMap
+     * @return int
+     */
+    int modifyReserveMobile(Map<String, Object> paramMap);
 }

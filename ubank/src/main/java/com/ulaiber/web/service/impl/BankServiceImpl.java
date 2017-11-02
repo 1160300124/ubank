@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.ulaiber.web.dao.BankDao;
@@ -20,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BankServiceImpl extends BaseService implements BankService {
+
+	private static Logger logger = Logger.getLogger(BankServiceImpl.class);
 
 	@Resource
 	private BankDao mapper;
@@ -52,20 +55,41 @@ public class BankServiceImpl extends BaseService implements BankService {
 
     @Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int deleteOriginCart(String originCart, long userid, long bankNo, String newCardNo) {
-		Map<String,Object> map = new HashMap<>();
-		map.put("originCart",originCart);
-		map.put("userid",userid);
-		map.put("bankNo",bankNo);
-		map.put("bankCardNo",newCardNo);
-		//删除原绑定银行卡
-		int result = mapper.deleteOriginCart(map);
-		if(result == 0){
+    public int deleteOriginCart(Map<String, Object> map) {
+		Map<String,Object> Map = new HashMap<>();
+		Map.put("originCart",map.get("originCart"));
+		Map.put("userid",map.get("userid"));
+		Map.put("bankNo",map.get("bankNo"));
+		Map.put("type",map.get("type"));
+		Map.put("bankCardNo",map.get("newCardNo"));
+		logger.info(">>>>>>>>>新银行卡为:" + map.get("newCardNo"));
+		int result = 0;
+		if(map.get("modiType").equals("00")){   //改卡
+			//删除原绑定银行卡
+			result = mapper.deleteOriginCart(Map);
+			if(result == 0){
+				logger.error(">>>>>>>>>>删除原绑定银行卡失败");
+				return result;
+			}
+			logger.info(">>>>>>>>>>删除原绑定银行卡操作成功，开始新增改绑银行卡信息");
+			//新增改绑后的银行卡信息
+			 result = userDao.insertUserToBank(Map);
+			if(result == 0){
+				logger.error(">>>>>>>>>>新增改绑后的银行卡信息失败");
+			}
+			return result;
+		}else { //改电话
+			//根据用户ID修改银行卡预留电话
+			Map<String,Object> paramMap = new HashMap<>();
+			paramMap.put("userid",map.get("userid"));
+			paramMap.put("newReserveMobile",map.get("newReserveMobile"));
+			result = userDao.modifyReserveMobile(paramMap);
+			if(result == 0){
+				logger.error(">>>>>>>>>>修改银行卡电话号码失败");
+			}
 			return result;
 		}
-		//新增改绑后的银行卡信息
-		int result2 = userDao.insertUserToBank(map);
-        return result2;
+
     }
 
     @Override
@@ -74,6 +98,17 @@ public class BankServiceImpl extends BaseService implements BankService {
 		map.put("SubAcctNo",SubAcctNo);
 		SecondAcount sa = mapper.querySecondAccount(map);
         return sa;
+    }
+
+    @Override
+    public String getCodeByuserid(long userid) {
+        return mapper.getCodeByuserid(userid);
+    }
+
+    @Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int updateSecondAcc(SecondAcount sa ) {
+        return mapper.updateSecondAcc(sa);
     }
 
 }

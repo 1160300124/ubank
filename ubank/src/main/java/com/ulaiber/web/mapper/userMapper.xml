@@ -157,8 +157,8 @@
 
 	<!--新增用户绑定银行卡信息-->
 	<insert id="insertUserToBank" parameterType="Map" >
-		INSERT INTO tbl_userToBank (userid,bankNo,bankCardNo,disabled)
-			VALUES (#{userid},#{bankNo},#{bankCardNo},0)
+		INSERT INTO tbl_userToBank (userid,bankNo,bankCardNo,disabled,type)
+			VALUES (#{userid},#{bankNo},#{bankCardNo},0,#{type})
 	</insert>
 
 	<!--查询用户是否已注册二类账户-->
@@ -176,4 +176,8 @@
 	</select>
 
 
+	<!--根据用户ID修改银行卡预留电话-->
+	<update id="modifyReserveMobile" parameterType="Map">
+		update tbl_users set reserve_mobile = #{newReserveMobile} where user_id = #{userid}
+	</update>
 </mapper>

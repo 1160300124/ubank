@@ -16,6 +16,13 @@ public class SecondAccountAO implements Serializable {
     private long bankNo;                //银行编号
     private String bankName;            //银行名称
     private String type;                 //银行类型
+    private double AvaiBal;             //可用余额 (子账户余额+可用基金份额)
+    private double WorkingBal;          //余额(子账户余额)
+    private double FundShare;           //基金份额(以基金公司为准，不含当日申购赎回的交易份额)
+    private double AvaiFundShare;       //可用基金份额(当前实际可用的基金份额，含当日申购赎回的交易份额)
+    private double EarningsYesterday;   //昨日收益
+    private String ProductCd;            //理财产品参数
+    private String ModiType;            //修改类型  00:换卡 01:修改绑定卡手机号
 
     public String getCustName() {
         return CustName;
@@ -79,5 +86,61 @@ public class SecondAccountAO implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public double getAvaiBal() {
+        return AvaiBal;
+    }
+
+    public void setAvaiBal(double avaiBal) {
+        AvaiBal = avaiBal;
+    }
+
+    public double getWorkingBal() {
+        return WorkingBal;
+    }
+
+    public void setWorkingBal(double workingBal) {
+        WorkingBal = workingBal;
+    }
+
+    public double getFundShare() {
+        return FundShare;
+    }
+
+    public void setFundShare(double fundShare) {
+        FundShare = fundShare;
+    }
+
+    public double getAvaiFundShare() {
+        return AvaiFundShare;
+    }
+
+    public void setAvaiFundShare(double avaiFundShare) {
+        AvaiFundShare = avaiFundShare;
+    }
+
+    public double getEarningsYesterday() {
+        return EarningsYesterday;
+    }
+
+    public void setEarningsYesterday(double earningsYesterday) {
+        EarningsYesterday = earningsYesterday;
+    }
+
+    public String getProductCd() {
+        return ProductCd;
+    }
+
+    public void setProductCd(String productCd) {
+        ProductCd = productCd;
+    }
+
+    public String getModiType() {
+        return ModiType;
+    }
+
+    public void setModiType(String modiType) {
+        ModiType = modiType;
     }
 }

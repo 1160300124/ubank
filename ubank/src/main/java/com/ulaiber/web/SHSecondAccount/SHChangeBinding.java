@@ -43,7 +43,7 @@ public class SHChangeBinding {
         String Signature = "";
         ResultInfo resultInfo = new ResultInfo();
         try {
-            logger.info(">>>>>>>>>>开始加签");
+            logger.info(">>>>>>>>>>开始改绑加签");
             //加签
             SvsSign signer = new SvsSign();
             signer.initSignCertAndKey(privateKey,pwd);
@@ -88,7 +88,7 @@ public class SHChangeBinding {
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
             //System.out.print(">>>>>>>>>>>>>>改绑请求结果为 ：" + result);
-            logger.info(">>>>>>>>>>>>>>改绑请求结果为 ："+ result);
+           // logger.info(">>>>>>>>>>>>>>改绑请求结果为 ："+ result);
             logger.info(">>>>>>>>>>开始解析xml");
             Map<String,Object> resultMap = new HashMap<>();
             //解析XML
