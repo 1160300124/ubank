@@ -46,6 +46,8 @@ public interface LeaveDao {
     int addRemedy(Remedy remedy);  //新增补卡信息
 
     Remedy getRemedyRecordByUserId(int recordNo); //根据记录Id查询补卡信息
+    
+    List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(Map<String, Object> params); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长
 
     LeaveRecord queryApplyStatus(int recordNo); //根据审批状态获取申请记录状态
 }

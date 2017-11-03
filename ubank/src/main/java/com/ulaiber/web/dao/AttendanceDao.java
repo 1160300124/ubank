@@ -82,11 +82,11 @@ public interface AttendanceDao {
 	List<Attendance> getRecordsByDate(Map<String, Object> params);
 	
 	/**
-	 * 分组查询获取统计数据
+	 * 查询统计数据
 	 * @param params
 	 * @return
 	 */
-	List<Map<String, Object>> getStatistis(Map<String, Object> params);
+	List<Attendance> getStatistis(Map<String, Object> params);
 	
 	/**
 	 * 获取统计数据条数

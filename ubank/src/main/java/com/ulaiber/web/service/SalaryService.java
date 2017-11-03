@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ulaiber.web.model.Salary;
+import com.ulaiber.web.model.SalaryDetail;
 
 /**
  * 工资流水服务接口
@@ -65,4 +66,12 @@ public interface SalaryService {
      * @return
      */
 	List<Map<String, Object>> getSalariesByUserId(long userId, int pageSize, int pageNum);
+	
+	/**
+	 * 导入用户信息
+	 * @param companyNum
+	 * @param salaryMonth
+	 * @return
+	 */
+	List<SalaryDetail> importUserInfo(String companyNum,String salaryMonth);
 }

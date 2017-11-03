@@ -77,15 +77,9 @@
 		where rid=#{rid}
 	</update>
 	
-	<sql id="byCond">
-		where r.company_num = #{company_num} and r.clock_date &gt;= #{start_date} and r.clock_date &lt;= #{end_date}
-		<if test="dept_num != null and dept_num != 0">
-			and r.dept_num = #{dept_num}
-		</if>
-		<if test="user_name != null and user_name != ''">
-			and r.user_name like concat('%',#{user_name},'%')
-		</if>
-	</sql>
+	<select id="getSalaryRuleByCompanyId" parameterType="String" resultMap="SalaryRuleMap">
+		select * from tbl_salaries_rules where find_in_set(#{companyId}, companyId) > 0
+	</select>
 	
 	
 </mapper>

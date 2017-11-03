@@ -162,9 +162,9 @@ public class SalaryController extends BaseController {
 	
 	@RequestMapping(value = "importUserInfo", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo importUserInfo(String comNum, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo importUserInfo(String companyNum, String salaryMonth, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
-		if(StringUtils.isEmpty(comNum)){
+		if(StringUtils.isEmpty(companyNum)){
 			logger.info("公司不能为空。");
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("请选择公司。");
@@ -172,9 +172,9 @@ public class SalaryController extends BaseController {
 		}
 		
 		try {
-			List<User> users = userService.getUsersByComNum(comNum, "");
+			List<SalaryDetail> details = service.importUserInfo(companyNum, salaryMonth);
 			info.setCode(IConstants.QT_CODE_OK);
-			info.setData(users);
+			info.setData(details);
 		} catch (Exception e) {
 			logger.info("获取用户信息失败。" , e);
 			info.setCode(IConstants.QT_CODE_ERROR);

@@ -1,14 +1,20 @@
 package com.ulaiber.web.utils;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.ulaiber.web.model.attendance.LaterCutPayment;
 
 /**
  * 一组关于时间工具方法集合
@@ -196,7 +202,7 @@ public class DateTimeUtil {
 	 * @return String yyyy-MM-dd 格式
 	 */
 	public static String getMonthBegin(String strdate) {
-		Date date = str2Date(strdate);
+		Date date = str2Date(strdate, DATE_FORMAT_MONTHTIME);
 		return date2Str(date, DATE_FORMAT_MONTHTIME) + "-01";
 	}
 
@@ -382,14 +388,22 @@ public class DateTimeUtil {
 		long start = calendar.getTimeInMillis();
 		calendar.setTime(str2Date(endStr, DATE_FORMAT_MINUTETIME));
 		long end = calendar.getTimeInMillis();
-		return Integer.parseInt((end - start) / (1000 * 60) + "");
+		return Math.abs(Integer.parseInt((end - start) / (1000 * 60) + ""));
 	}
-
 	
-	public static void main(String[] args) {
-		String dateBegin = "2017-09-09 09:20";
-		String dateEnd = "2017-09-09 09:45";
-		System.out.println(getminute(dateBegin, dateEnd));
-		
+	/**
+	 * 获得时间段的小时数
+	 * @param startStr yyyy-MM-dd HH:mm
+	 * @param endStr  yyyy-MM-dd HH:mm
+	 * @return int
+	 */
+	public static double gethour(String startStr, String endStr){
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(str2Date(startStr, DATE_FORMAT_MINUTETIME));
+		long start = calendar.getTimeInMillis();
+		calendar.setTime(str2Date(endStr, DATE_FORMAT_MINUTETIME));
+		long end = calendar.getTimeInMillis();
+		return new BigDecimal(Math.abs((double)(end - start) / (1000 * 60 * 60))).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
+	
 }

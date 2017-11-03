@@ -299,10 +299,24 @@ public class MathUtil {
 	 * @return
 	 */
 	public static BigDecimal formatBigDecimal(BigDecimal number, int flag){
-		if (flag==1)
+		if (flag == 1)
 			return number.setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_HALF_UP);
 		else
 			return number.setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_DOWN);
+	}
+	
+	/**
+	 * 使用系统内置的精度位数-2位来格式化一个BigDecimal数字<br/>
+	 * 如：123.456 , 四舍五入为123.46
+	 * @param number 原double数字
+	 * @param flag 是否需要四舍五入，需要1 不需要0
+	 * @return
+	 */
+	public static double formatDouble(double number, int flag){
+		if (flag == 1)
+			return new BigDecimal(number).setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_HALF_UP).doubleValue();
+		else
+			return new BigDecimal(number).setScale(DEF_DECIMAL_SCALEE, BigDecimal.ROUND_DOWN).doubleValue();
 	}
 }
 

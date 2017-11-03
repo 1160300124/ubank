@@ -603,13 +603,14 @@ $(function(){
 			Ewin.alert("最早签到时间不能大于开始上班时间。");
 			return false;
 		}
-		var newStartTime = parseInt(startHours) - parseInt(workOnBeforeHours) + ":" + startMinutes;
+		var hour = parseInt(startHours) - parseInt(workOnBeforeHours);
+		var newStartTime = hour < 10 ? "0" + hour + ":" + startMinutes : hour + ":" + startMinutes;
 
 		var endHours = endTime.split(":")[0];
 		var endMinutes = endTime.split(":")[1];
 		if (parseInt(endHours) + parseInt(workOffAfterHours) >= 24){
 			endHours = parseInt(endHours) + parseInt(workOffAfterHours) - 24;
-			var newEndTime = parseInt(endHours) + ":" + endMinutes;
+			var newEndTime = parseInt(endHours) < 10 ? "0" + parseInt(endHours) + ":" + endMinutes : parseInt(endHours) + ":" + endMinutes;
 			if (newStartTime <= newEndTime){
 				Ewin.alert("最早签到时间和最晚下班时间不能有重叠。");
 				return false;
@@ -657,13 +658,14 @@ $(function(){
 			Ewin.alert("最早签到时间不能大于开始上班时间。");
 			return false;
 		}
-		var newStartTime = parseInt(startHours) - parseInt(workOnBeforeHours) + ":" + startMinutes;
+		var hour = parseInt(startHours) - parseInt(workOnBeforeHours);
+		var newStartTime = hour < 10 ? "0" + hour + ":" + startMinutes : hour + ":" + startMinutes;
 
 		var endHours = endTime.split(":")[0];
 		var endMinutes = endTime.split(":")[1];
 		if (parseInt(endHours) + parseInt(workOffAfterHours) >= 24){
 			endHours = parseInt(endHours) + parseInt(workOffAfterHours) - 24;
-			var newEndTime = parseInt(endHours) + ":" + endMinutes;
+			var newEndTime = parseInt(endHours) < 10 ? "0" + parseInt(endHours) + ":" + endMinutes : parseInt(endHours) + ":" + endMinutes;
 			if (newStartTime <= newEndTime){
 				Ewin.alert("最早签到时间和最晚下班时间不能有重叠。");
 				return false;

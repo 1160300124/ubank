@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.CutPaymentDao">
+
+    <resultMap id="CutPaymentMap" type="CutPayment" >
+    	<id column="cid" property="cid" jdbcType="BIGINT" />
+    	<result column="user_id" property="userId" jdbcType="BIGINT" />
+    	<result column="user_name" property="userName" jdbcType="VARCHAR" />
+    	<result column="cut_date" property="cutDate" jdbcType="VARCHAR" />
+    	<result column="cut_type" property="cutType" jdbcType="VARCHAR" />
+    	<result column="cut_reason" property="cutReason" jdbcType="VARCHAR" />
+    	<result column="cut_money" property="cutMoney" jdbcType="VARCHAR" />
+    	<association column="dept_num" property="dept" javaType="com.ulaiber.web.model.Departments" resultMap="DepartmentMap"/>
+    	<association column="company_num" property="company" javaType="com.ulaiber.web.model.Company" resultMap="CompanyMap"/>
+   </resultMap>
+   
+   <resultMap id="DepartmentMap" type="com.ulaiber.web.model.Departments" >
+    	<id column="dept_number" property="dept_number" jdbcType="INTEGER" />
+    	<result column="deptName" property="deptName" jdbcType="VARCHAR" />
+    	<result column="count" property="count" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+    	<result column="company_num" property="company_num" />
+   </resultMap>
+   
+   <resultMap id="CompanyMap" type="com.ulaiber.web.model.Company" >
+    	<id column="companyNumber" property="companyNumber" jdbcType="INTEGER" />
+    	<result column="name" property="name" jdbcType="VARCHAR" />
+    	<result column="account" property="account" jdbcType="VARCHAR" />
+    	<result column="legalPerson" property="legalPerson" jdbcType="VARCHAR" />
+    	<result column="details" property="details" jdbcType="VARCHAR" />
+    	<result column="group_num" property="group_num" />
+   </resultMap>
+  
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<insert id="save" parameterType="CutPayment" >
+		insert into tbl_cut_payment(user_id,user_name,dept_num,company_num,cut_date,cut_type,cut_reason,cut_money) values(#{userId},#{userName},#{dept.dept_number},
+		#{company.companyNumber},#{cutDate},#{cutType},#{cutReason},#{cutMoney}) 
+	</insert>
+	
+	<insert id="batchSave" parameterType="java.util.List">
+		insert into tbl_cut_payment(user_id,user_name,dept_num,company_num,cut_date,cut_type,cut_reason,cut_money) values
+		<foreach collection ="list" item="item" index= "index" separator =",">
+       		(#{item.userId},#{item.userName},#{item.dept.dept_number},#{item.company.companyNumber},#{item.cutDate},#{item.cutType},#{item.cutReason},#{item.cutMoney})
+        </foreach >
+	</insert>
+	
+	<select id="getCutPaymentByMonthAndUserId" parameterType="Map" resultMap="CutPaymentMap">
+		select cid,user_id,user_name,cut_date,cut_type,cut_reason,cut_money from tbl_cut_payment where locate(#{month},cut_date) > 0 and user_id=#{userId} 
+	</select>
+	
+	<select id="getTotalNum" resultType="int">
+		select count(1) from tbl_cut_payment p left join tbl_departments d on p.dept_num=d.dept_number left join tbl_company c on d.company_num=c.companyNumber
+		<include refid="byCond" />
+	</select>
+	
+	<select id="getCutPaymentList" parameterType="Map" resultMap="CutPaymentMap">
+		select p.*,d.dept_number,d.name deptName,c.companyNumber,c.name from tbl_cut_payment p left join tbl_departments d on p.dept_num=d.dept_number 
+		left join tbl_company c on d.company_num=c.companyNumber
+		<include refid="byCond" />
+		order by cid,cut_date
+		<if test="limit != null and limit != ''">
+			limit #{offset},#{limit}
+		</if>
+	</select>
+	
+	<sql id="byCond">
+		where p.cut_date &gt;= #{start_date} and p.cut_date &lt;= #{end_date}
+		<if test="company_num != null and company_num != 0">
+			and p.company_num = #{company_num}
+		</if>
+		<if test="dept_num != null and dept_num != 0">
+			and p.dept_num = #{dept_num}
+		</if>
+		<if test="cut_type != null and cut_type != ''">
+			and p.cut_type = #{cut_type}
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and p.user_name like concat('%',#{user_name},'%')
+		</if>
+	</sql>
+	
+	<delete id="batchDelete">
+		delete from tbl_cut_payment where locate(#{month},cut_date) > 0 and user_id in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item.userId}   
+	    </foreach>
+	</delete>
+	
+	
+</mapper>
