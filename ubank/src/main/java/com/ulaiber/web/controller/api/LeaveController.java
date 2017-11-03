@@ -723,6 +723,14 @@ public class LeaveController extends BaseController {
             logger.info(">>>>>>>>>>>>>审批状态为空");
             return resultInfo;
         }
+        //根据审批状态获取申请记录状态
+        LeaveRecord le = leaveService.queryApplyStatus(auditData.getRecordNo());
+        if(le.getDisable().equals("1")){
+            resultInfo.setCode(IConstants.QT_CODE_CANCEL);
+            resultInfo.setMessage("申请记录已取消");
+            logger.info(">>>>>>>>>>>>>申请记录已取消");
+            return resultInfo;
+        }
         int result = leaveService.confirmAudit(auditData);
         if(result <= 0){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);

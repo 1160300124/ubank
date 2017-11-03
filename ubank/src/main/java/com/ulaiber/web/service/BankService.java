@@ -1,6 +1,7 @@
 package com.ulaiber.web.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
@@ -39,17 +40,30 @@ public interface BankService {
 
 	/**
 	 * 删除原绑定银行卡
-	 * @param originCart 原绑定卡号
-	 * @param userid 用户ID
-	 * @param bankNo
-	 *@param newCardNo @return int
+	 * @param map
+	 * @return int
 	 */
-    int deleteOriginCart(String originCart, long userid, long bankNo, String newCardNo);
+    int deleteOriginCart(Map<String, Object> map);
 
 	/**
 	 * 根据二类户账号ID和银行卡号查询二类户信息
-	 * @param id 二类户ID
+	 * @param SubAcctNo 二类户ID
 	 * @return SecondAcount
 	 */
-    SecondAcount querySecondAccount(long id);
+    SecondAcount querySecondAccount(String SubAcctNo);
+
+	/**
+	 * 根据用户ID获取对应公司的邀请码
+	 * @param userid 用户ID
+	 * @return String
+	 */
+	String getCodeByuserid(long userid);
+
+	/**
+	 * 更新二类账户余额
+	 * @param sa 上海银行二类账户
+	 * @return int
+	 */
+	int updateSecondAcc(SecondAcount sa );
+
 }

@@ -4,6 +4,7 @@
 package com.ulaiber.web.utils;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -514,5 +515,17 @@ public class StringUtil {
 		}
 		return map;
 	}
+
+	/**
+	 * 四舍五入
+	 * @param val
+	 * @return
+	 */
+	public static double round(String val) {
+		BigDecimal bg = new BigDecimal(val);
+		double f1 = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		return f1;
+	}
+
 
 }

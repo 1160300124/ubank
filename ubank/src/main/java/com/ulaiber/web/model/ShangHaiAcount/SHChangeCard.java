@@ -3,13 +3,13 @@ package com.ulaiber.web.model.ShangHaiAcount;
 import java.io.Serializable;
 
 /**
- *
+ * 改绑信息
  * Created by daiqingwen on 2017/10/25.
  */
 public class SHChangeCard implements Serializable{
     private long id;
-    private long userid;                //用户ID
-    private String SubAcctNo;           //子账号
+    private long userId;                //用户ID
+    private String SubAcctNo;           //平台理财专属子账户
     private String ProductCd;           //理财产品参数
     private String CustName;            //姓名
     private String IdNo;                //身份证号
@@ -31,12 +31,12 @@ public class SHChangeCard implements Serializable{
         this.id = id;
     }
 
-    public long getUserid() {
-        return userid;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setUserid(long userid) {
-        this.userid = userid;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getSubAcctNo() {

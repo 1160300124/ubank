@@ -66,27 +66,27 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 			}
 		}else if (uri.contains("/api/v1/")){
 //			//根据ticket和token获取用户
-			String login_ticket = request.getHeader("login_ticket");
-			String access_token = request.getHeader("access_token");
-			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
-				response.setCharacterEncoding("UTF-8");
-				response.sendError(HttpStatus.UNAUTHORIZED.value());
-				return false;
-			}
-
-			User user = userService.getUserByTicketAndToken(login_ticket, access_token);
-			if (null == user) {
-				response.setCharacterEncoding("UTF-8");
-				response.sendError(HttpStatus.UNAUTHORIZED.value());
-				return false;
-			}
-			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
-				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
-					response.setCharacterEncoding("UTF-8");
-					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
-					return false;
-				}
-			}
+//			String login_ticket = request.getHeader("login_ticket");
+//			String access_token = request.getHeader("access_token");
+//			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
+//				response.setCharacterEncoding("UTF-8");
+//				response.sendError(HttpStatus.UNAUTHORIZED.value());
+//				return false;
+//			}
+//
+//			User user = userService.getUserByTicketAndToken(login_ticket, access_token);
+//			if (null == user) {
+//				response.setCharacterEncoding("UTF-8");
+//				response.sendError(HttpStatus.UNAUTHORIZED.value());
+//				return false;
+//			}
+//			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
+//				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
+//					response.setCharacterEncoding("UTF-8");
+//					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
+//					return false;
+//				}
+//			}
 
 		}
 		

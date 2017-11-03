@@ -7,7 +7,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by emacs on 2017/10/27.
+ * 用户处理二类户发送请求是过滤掉证书
+ * Created by daiqingwen on 2017/10/27.
  */
 public class SslTest {
 

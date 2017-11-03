@@ -139,5 +139,10 @@
     <select id="getTotalTimeByCompanyNumAndMonth" parameterType="Map" resultType="Map">
     	select l.userId,sum(l.leaveTime) totalTime from tbl_leave_record l join tbl_roots r on l.userId=r.userId 
 		where r.companyNumber=#{companyNum} and  l.type=#{type} and l.status='1' and l.disable='0' and locate(#{month},l.startDate)>0 group by l.userId
+	</select>
+	
+    <!--根据审批状态获取申请记录状态-->
+    <select id="queryApplyStatus" parameterType="int" resultType="com.ulaiber.web.model.LeaveRecord">
+        select disable FROM tbl_leave_record where id = #{recordNo}
     </select>
 </mapper>

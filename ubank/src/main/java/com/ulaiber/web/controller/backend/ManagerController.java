@@ -178,9 +178,9 @@ public class ManagerController extends BaseController{
 		Map<String, String> map = new HashMap<String, String>();
     	List<User> users = userService.findAll();
     	//有二类账户则取二类账户，否则取一类账户(银行卡)
-    	for (User user : users){
-    		map.put(user.getCardNo(), StringUtils.isNotEmpty(user.getSecondBankCardNo()) ? user.getSecondBankCardNo() : user.getBankCardNo());
-    	}
+//    	for (User user : users){
+//    		map.put(user.getCardNo(), StringUtils.isNotEmpty(user.getSecondBankCardNo()) ? user.getSecondBankCardNo() : user.getBankCardNo());
+//    	}
     	
     	//从sesison获取当前用户
     	User currentUser = getUserFromSession(request);

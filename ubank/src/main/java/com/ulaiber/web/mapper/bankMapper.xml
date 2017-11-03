@@ -13,12 +13,12 @@
     	<id column="bankNo" property="bankNo" jdbcType="VARCHAR" />
     	<result column="bankName" property="bankName" jdbcType="VARCHAR" />
    </resultMap>
-  
-	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->
 	<select id="getBankByBankNo" parameterType="String" resultMap="BankMap">
-		select * from tbl_banks where bankNo=#{bankNo}
+		select bankNo,name as bankName,type,number from tbl_bindBank where bankNo=#{bankNo}
 	</select>
-	
+
 	<select id="getAllBanks" resultMap="BankMap">
 		select * from tbl_banks
 	</select>
@@ -44,7 +44,8 @@
 
 	<!--根据银行编号获取银行信息-->
 	<select id="queryBanksByNumber" parameterType="String" resultType="com.ulaiber.web.model.Bank">
-		select a.bankNo,a.type,b.name as bankName from tbl_banks a inner join tbl_bindBank b on a.bankNo = b.bankNo
+		select b.bankNo,a.type,b.name as bankName from tbl_banks a
+		inner join tbl_bindBank b on a.type = b.type
 			where a.bankNo = #{bankNumber}
 	</select>
 
@@ -55,9 +56,22 @@
 
 	<!--根据二类户账号ID和银行卡号查询二类户信息-->
 	<select id="querySecondAccount" parameterType="Map" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
-		select a.*,b.cardNo as IdNo,b.reserve_mobile as ReservedPhone,c.bankCardNo as BindCardNo from tbl_secondAccount a
+		select a.*,b.cardNo as IdNo,b.reserve_mobile as ReservedPhone,c.bankCardNo as BindCardNo,c.bankNo from tbl_secondAccount a
 		left join tbl_users b on a.userid = b.user_id
 		left join tbl_userToBank c on a.userid = c.userid
-		where c.disabled = 0 and  a.id = #{id}
+		where c.disabled = 0 and  a.SubAcctNo = #{SubAcctNo}
 	</select>
+
+	<!--根据用户ID获取对应公司的邀请码-->
+	<select id="getCodeByuserid" parameterType="Long" resultType="String" >
+		select distinct b.code from tbl_roots a
+		left join tbl_company b on a.companyNumber = b.companyNumber
+		 where a.userid = #{userid}
+	</select>
+
+	<!--更新二类账户余额-->
+	<update id="updateSecondAcc" parameterType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount" >
+		update tbl_secondAccount set EarningsYesterday = #{EarningsYesterday} , AvaiBal = #{AvaiBal},AvaiFundShare = #{AvaiFundShare} , FundShare = #{FundShare},
+				WorkingBal = #{WorkingBal} where SubAcctNo = #{subAcctNo}
+	</update>
 </mapper>
