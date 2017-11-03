@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="col-md-offset-1 col-md-11">
                                     <div class="form-box"></div>
-                                    <div class="add-form-item clone-form" style="">
+                                    <div class="add-form-item clone-form" style="display:none;">
                                         <span class="toggle-form" data-click="toggleForm">展开</span>
                                         <div class="base-right-btn">
                                             <span class="fl edit-form" data-click="editForm">编辑</span>

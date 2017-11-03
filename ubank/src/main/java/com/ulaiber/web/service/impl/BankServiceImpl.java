@@ -111,4 +111,9 @@ public class BankServiceImpl extends BaseService implements BankService {
         return mapper.updateSecondAcc(sa);
     }
 
+    @Override
+    public SecondAcount queryAccount(String subAcctNo) {
+        return mapper.queryAccount(subAcctNo);
+    }
+
 }

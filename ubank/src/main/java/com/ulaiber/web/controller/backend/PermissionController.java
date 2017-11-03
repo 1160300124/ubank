@@ -294,7 +294,8 @@ public class PermissionController extends BaseController {
             String[] data = rows[i].split("/");
             Map<String,Object> map = new HashMap<String,Object>();
             for (int j = 0 ; j< data.length; j++){
-                map.put("bankNo" , data[0]);
+                String bankNo = data[0].replaceAll(" ", "");
+                map.put("bankNo" , bankNo);
                 map.put("accounts" , data[1]);
                 map.put("customer" , data[2]);
                 map.put("certificateNumber" , data[3]);
@@ -451,8 +452,14 @@ public class PermissionController extends BaseController {
                     resultInfo.setMessage("电话号码已存在，请重新输入");
                     resultInfo.setCode(300);
                     return resultInfo;
-                }else if (emp.getUserName().equals(user.getUserName())){
-                    resultInfo.setMessage("已存在，请重新输入");
+                }
+//                else if (emp.getUserName().equals(user.getUserName())){
+//                    resultInfo.setMessage("已存在，请重新输入");
+//                    resultInfo.setCode(300);
+//                    return resultInfo;
+//                }
+                else if(emp.getCardNo().equals(user.getCardNo())){
+                    resultInfo.setMessage("身份证已存在，请重新输入");
                     resultInfo.setCode(300);
                     return resultInfo;
                 }

@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
+import com.ulaiber.web.SHSecondAccount.SHWithdraw;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
@@ -102,7 +103,7 @@ public class BankController extends BaseController {
 	 * @param shCard
 	 * @return ResultInfo
 	 */
-	@RequestMapping(value = "SHChangeBind", method = RequestMethod.POST)
+	@RequestMapping(value = "ChangeBind", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo changeBind( SHChangeCard shCard ,Bank bank){
 		logger.info(">>>>>>>>>>开始改绑银行卡");
@@ -172,7 +173,7 @@ public class BankController extends BaseController {
 	 * @param SubAcctNo
 	 * @return
 	 */
-	@RequestMapping(value = "SHQueryBalance", method = RequestMethod.POST)
+	@RequestMapping(value = "QueryBalance", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo queryBalance(String SubAcctNo,String type){
 		logger.info(SubAcctNo +">>>>>>>>>>开始查询上海二类户余额");
@@ -181,7 +182,7 @@ public class BankController extends BaseController {
 		try{
 			if(type.equals("0")){  // 上海银行二类户
 				ResultInfo result = SHQueryBalance.queryBalance(SubAcctNo);
-				logger.info(">>>>>>>>>> 查询上海二类户结果为：" + result);
+				logger.info(">>>>>>>>>> 查询上海二类户余额结果为：" + result);
 				logger.info(">>>>>>>>>>返回data为：" + result.getData());
 				Map<String,Object> resultMap = (Map<String, Object>) result.getData();
 				logger.info(">>>>>>>>>resultMap is :" + resultMap);
@@ -230,21 +231,48 @@ public class BankController extends BaseController {
 	 * @param wid 提现信息
 	 * @return resultInfo
 	 */
-	@RequestMapping(value = "withdraw", method = RequestMethod.POST)
+	@RequestMapping(value = "Withdraw", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo widthdraw(Withdraw wid){
 		logger.info(">>>>>>>>>>开始提现操作，银行类型为：" + wid.getType());
 		ResultInfo resultInfo = new ResultInfo();
+		Map<String,Object> map = new HashMap<>();
 		String status = "";
-		try{
+		if(wid.getType().equals("0")){
+			try{
+				//提现
+				ResultInfo result = SHWithdraw.withdraw(wid);
+				logger.info(">>>>>>>>>>上海银行提现结果为：" + result);
+				logger.info(">>>>>>>>>>返回data为：" + result.getData());
+				Map<String,Object> resultMap = (Map<String, Object>) result.getData();
+				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+				Withdraw withd = (Withdraw) resultMap.get("withdraw");
+				if(!"0000".equals(status)){
+					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setMessage(withd.getServerStatusCode());
+					map.put("status",status);
+					map.put("withdraw","");
+					resultInfo.setData(map);
+					logger.info(">>>>>>>>>>上海银行二类户提现失败，银行卡号为"+withd.getBindCardNo());
+					return resultInfo;
+				}
+				String SubAcctNo = withd.getSubAcctNo();
+				//根据二类账户号查询账户余额
+				SecondAcount sa = bankservice.queryAccount(SubAcctNo);
+				double WorkingBal = 0.0;
+				double FundShare = 0.0;
 
-		}catch(Exception e){
-			resultInfo.setCode(IConstants.QT_CODE_ERROR);
-			resultInfo.setMessage("提现失败");
-			resultInfo.setData(status);
-			e.printStackTrace();
-			logger.error(">>>>>>>>>>提现失败");
+				//更新数据库的金额
+				//bankservice.updateAccount();
+			}catch(Exception e){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("提现失败");
+				resultInfo.setData(status);
+				e.printStackTrace();
+				logger.error(">>>>>>>>>>提现失败");
+			}
 		}
+
 		return resultInfo;
 	}
 

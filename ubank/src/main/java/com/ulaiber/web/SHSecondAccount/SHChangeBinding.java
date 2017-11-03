@@ -53,7 +53,8 @@ public class SHChangeBinding {
             String random = StringUtil.getStringRandom(36);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
-            logger.info(">>>>>>>>>开始拼接待签名数据");
+            logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
+            logger.info(">>>>>>>>>>请求流水号为：" + random);
             //待签名的数据
             String signDataStr = "BindCardNo="+ shCard.getBindCardNo() +"&ChannelId=YFY&ClearDate="+date+"&CustName=" +
                     shCard.getCustName() + "&IdNo=" + shCard.getIdNo() +"&ModiType=" + shCard.getModiType() +"&NewCardNo="+
@@ -84,7 +85,7 @@ public class SHChangeBinding {
                     "</BOSFXII>";
            // System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
-            logger.info(">>>>>>>>>>开始发送请求给上海银行");
+            logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
             //System.out.print(">>>>>>>>>>>>>>改绑请求结果为 ：" + result);

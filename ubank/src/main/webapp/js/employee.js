@@ -247,6 +247,9 @@ var EmployeeFun = {
     },
     //新增
     addEmp: function () {
+        $("input[name=userName]").prop("disabled","");
+        $("input[name=cardNo]").prop("disabled","");
+        $("input[name=mobile]").prop("disabled","");
         var mobile = $("input[name=mobile]").val();
         var userName = $("input[name=userName]").val();
         var pwd = mobile.substr(5,6);
@@ -313,6 +316,7 @@ var EmployeeFun = {
         // }
         var entryDate = $('#entryDate').val();
         var leaveDate = $('#leaveDate').val();
+        debugger
         if(entryDate > leaveDate){
             Ewin.alert("入职时间不能大于离职时间");
             return;
@@ -342,6 +346,9 @@ var EmployeeFun = {
     },
     //修改操作
     openModify : function () {
+        $("input[name=userName]").prop("disabled","disabled");
+        $("input[name=cardNo]").prop("disabled","disabled");
+        $("input[name=mobile]").prop("disabled","disabled");
         flag = 1;
         $(".modal-title").html("修改");
         var row = $('#employee_table').bootstrapTable('getSelections');

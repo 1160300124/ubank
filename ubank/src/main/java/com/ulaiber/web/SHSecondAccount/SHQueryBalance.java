@@ -55,6 +55,8 @@ public class SHQueryBalance {
             String random = StringUtil.getStringRandom(36);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            logger.info(">>>>>>>>>流水号为'"+random+"'开始拼接待签名数据");
+            logger.info(">>>>>>>>>>请求流水号为：" + random);
             //待签名的数据
             String signDataStr = "ChannelId=YFY&ClearDate="+date+"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+SubAcctNo+"&TranDate="+date+"&TranTime="+time+"";
             //获取签名数据，其中signDataStr为待签名字符串
@@ -77,7 +79,7 @@ public class SHQueryBalance {
                     "</BOSFXII>";
             System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
-            logger.info(">>>>>>>>>>开始发送请求给上海银行");
+            logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 8000);
             //System.out.print(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ：" + result);

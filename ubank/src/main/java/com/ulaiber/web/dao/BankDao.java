@@ -75,4 +75,11 @@ public interface BankDao {
      * @return int
      */
     int updateSecondAcc(SecondAcount sa);
+
+    /**
+     * 根据二类账户号查询账户余额
+     * @param subAcctNo 二类账户号
+     * @return SecondAcount
+     */
+    SecondAcount queryAccount(String subAcctNo);
 }

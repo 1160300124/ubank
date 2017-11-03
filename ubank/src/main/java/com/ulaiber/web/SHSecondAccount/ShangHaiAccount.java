@@ -62,12 +62,14 @@ public class ShangHaiAccount {
             String random = StringUtil.getStringRandom(36);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
-            logger.info(">>>>>>>>>开始拼接待签名数据");
+            logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
+            logger.info(">>>>>>>>>>请求流水号为：" + random);
             //待签名的数据
             String signDataStr = "BindCardNo="+BindCardNo+"&ChannelId=YFY&ClearDate="+date+"&CoopCustNo="+CoopCustNo
                     +"&CustName="+CustName+"&IdNo="+IdNo+"&MobllePhone="+MobllePhone+"&ProductCd="+ProductCd
                     +"&ReservedPhone="+ReservedPhone+"&RqUID="+random+"&SPName=CBIB&Sign="+Sign+"&TranDate="+date+"&TranTime="+time;
             //System.out.print(">>>>>>>>> sign:" + signDataStr);
+            logger.debug(">>>>>>>>>>sign :" + signDataStr);
             logger.info(">>>>>>>>>获取Signature");
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
@@ -91,7 +93,7 @@ public class ShangHaiAccount {
                     "</YFY0001Rq>" +
                     "</BOSFXII>";
             logger.info(">>>>>>>>>>拼接xml完毕");
-            logger.info(">>>>>>>>>>开始发送请求给上海银行");
+            logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 30000);
            // logger.info(">>>>>>>>>>请求结果为：" + result);

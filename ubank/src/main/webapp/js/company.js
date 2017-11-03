@@ -140,6 +140,7 @@ var CompanyFun = {
     },
     //新增
     companyAdd : function () {
+        $('[data-click="addForm"]').show();
         var companyNo = $("input[name=name]").val();
         //var comName = $("input[name=name]").text();
         var group = $("#group_select").val();
@@ -254,7 +255,7 @@ var CompanyFun = {
         account = allBankAccount.join(",");
         $("#allAccount").val(account);
         $.ajax({
-            url: 'addCom?items= ' + str + "&flag=" + flag + "&comNum=" + comNum + "&roleid=" + ROLEID ,
+            url: 'addCom?items=' + str + "&flag=" + flag + "&comNum=" + comNum + "&roleid=" + ROLEID ,
             dataType : 'json',
             type : 'post',
             data:  $("#company_form").serialize(),
@@ -280,6 +281,7 @@ var CompanyFun = {
     openEdit : function () {
         var row = $('#company_table').bootstrapTable('getSelections');
         $(".modal-title").html("修改");
+        $('[data-click="addForm"]').hide();
         if(row.length > 1){
             Ewin.alert("不能多选，请重新选择");
             return;
@@ -426,11 +428,15 @@ $(document).on('click','[data-click]',function(e){
 
     var self=$(this),
         name=$(this).data('click'),
-        html='<div class="add-form-item">'+$('.clone-form').html()+'</div>';
+        html='<div class="add-form-item add-form-item-new">'+$('.clone-form').html()+'</div>';
 
     switch (name){
 
         case 'addForm': //确定操作
+            console.log($('.add-form-item-new').length);
+            if($('.add-form-item-new').length>=1){
+                return false;
+            }
             $('.form-box').append(html);
             break;
 

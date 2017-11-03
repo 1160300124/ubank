@@ -56,6 +56,7 @@ public class SHWithdraw {
             String random = StringUtil.getStringRandom(36);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            logger.info(">>>>>>>>>>请求流水号为：" + random);
             //待签名的数据
             String signDataStr = "Amount="+wd.getAmount()+"&Attach="+wd.getAttach()+"&BindCardNo="+wd.getBindCardNo()+"&ChannelId=YFY&ClearDate="+date
                     +"&Currency="+wd.getCurrency()+"&MemoInfo="+wd.getMemoInfo()+"&ProductCd="+wd.getProductCd()+"&Purpose="+wd.getPurpose()
@@ -103,12 +104,12 @@ public class SHWithdraw {
                 withdraw.setBindCardNo(recordEle.elementTextTrim("BindCardNo"));    //银行卡号
                 withdraw.setProductCd(recordEle.elementTextTrim("ProductCd"));      //银行卡号
                 String amount = recordEle.elementTextTrim("Amount");
-                withdraw.setAmount(StringUtil.round(amount));                           //交易金额
+                withdraw.setAmount(StringUtil.round(amount));                          //交易金额
                 withdraw.setCurrency(recordEle.elementTextTrim("Currency"));        //入账币种
                 withdraw.setTheirRef(recordEle.elementTextTrim("TheirRef"));        //交易摘要
                 withdraw.setPurpose(recordEle.elementTextTrim("Purpose"));          //用途
                 withdraw.setAttach(recordEle.elementTextTrim("Attach"));            //附件信息
-                withdraw.setMemoInfo(recordEle.elementTextTrim("MemoInfo"));        //MemoInfo
+                withdraw.setMemoInfo(recordEle.elementTextTrim("MemoInfo"));        //交易备注
                 Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
                 resultSign = recordEle.elementTextTrim("Signature"); // 拿到YFY0021Rs下的字节点Signature
                 while (iters.hasNext()){
@@ -153,7 +154,7 @@ public class SHWithdraw {
                 resultMap.put("status",withdraw.getStatusCode());
                 resultMap.put("withdraw",withdraw);
                 resultInfo.setData(resultMap);
-                //System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
+                System.out.println(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 return resultInfo;
             }

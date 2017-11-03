@@ -63,7 +63,7 @@
                                 <label class="col-md-3" for="exampleInputName2">姓名</label>
                                 <div class="col-md-9">
                                     <input type="text" name="userName" class="base-form-input base-request" value="">
-                                    <input type="text" name="id" style="display: none;" class="base-form-input base-request" value="1">
+                                    <input type="text" name="id"  style="display: none;" class="base-form-input base-request" value="1">
                                 </div>
                             </div>
                             <div class="form-group col-md-12">

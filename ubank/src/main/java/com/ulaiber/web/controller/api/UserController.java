@@ -154,7 +154,7 @@ public class UserController extends BaseController{
 					retInfo.setCode(IConstants.QT_CODE_ERROR);
 					retInfo.setMessage(sa.getServerStatusCode());
 					retInfo.setData(status);
-					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败.");
+					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
 					return retInfo;
 				}
 				//新增用户权限层级信息

@@ -74,4 +74,9 @@
 		update tbl_secondAccount set EarningsYesterday = #{EarningsYesterday} , AvaiBal = #{AvaiBal},AvaiFundShare = #{AvaiFundShare} , FundShare = #{FundShare},
 				WorkingBal = #{WorkingBal} where SubAcctNo = #{subAcctNo}
 	</update>
+
+	<!--根据二类账户号查询账户余额-->
+	<select id="queryAccount" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		select * FROM tbl_secondAccount WHERE SubAcctNo =#{subAcctNo}
+	</select>
 </mapper>
