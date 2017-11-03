@@ -122,7 +122,7 @@
 	</select>
 	
 	<select id="getUsersByComNum" parameterType="Map" resultMap="UserMap">
-		select u.user_id,u.user_name,u.cardNo,r.groupNumber,r.dept_number,r.companyNumber,r.sysflag from tbl_users u
+		select u.user_id,u.user_name,u.cardNo,u.salaries,r.groupNumber,r.dept_number,r.companyNumber,r.sysflag from tbl_users u
 		LEFT join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
 		where u.disabled = '0' and r.companyNumber = #{comNum}

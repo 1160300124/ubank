@@ -44,5 +44,12 @@ public interface SalaryRuleDao {
 	 * @return
 	 */
 	int updateSalaryRuleByRid(SalaryRule salaryRule);
+	
+	/**
+	 * 根据公司id获取工资规则
+	 * @param companyId
+	 * @return
+	 */
+	SalaryRule getSalaryRuleByCompanyId(String companyId);
 
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +22,13 @@ import com.ulaiber.web.dao.AttendanceStatisticDao;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.attendance.Attendance;
 import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.model.attendance.AttendanceStatistic;
 import com.ulaiber.web.service.AttendanceStatisticService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.ObjUtil;
 
 /** 
  * 考勤统计业务逻辑实现类
@@ -66,9 +67,8 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 	@Override
 	public List<AttendanceStatistic> getStatisticsByCond(Map<String, Object> params) {
 		List<AttendanceStatistic> statistics = new ArrayList<AttendanceStatistic>();
-		
-		//按用户id, name, clock_on_status, clock_off_status分组查询考勤记录
-		List<Map<String, Object>> list = attDao.getStatistis(params);
+		//查询考勤记录
+		List<Attendance> list = attDao.getStatistis(params);
 		
 		//打卡记录里获取不重名的打卡用户
 		List<Map<String, Object>> users = attDao.getUsersFromRecords(params);
@@ -107,26 +107,26 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			int normalClockOffCount = 0;
 			int laterCount = 0;
 			int leaveEarlyCount = 0;
-			for (Map<String, Object> map : list){
+			for (Attendance att : list){
 				//内层循环过滤掉id不同的数据
-				if (!StringUtils.equals(user.get("user_id").toString(), map.get("user_id").toString())){
+				if (!StringUtils.equals(user.get("user_id").toString(), att.getUserId() + "")){
 					continue;
 				}
 				//过滤掉上班，下班都没打卡或打卡日期不在应工作天之内的数据
-				if (null == map.get("clock_on_datetime") && null == map.get("clock_off_datetime") || !workdays.contains(map.get("clock_date").toString())){
+				if (StringUtils.isEmpty(att.getClockOnDateTime()) && StringUtils.isEmpty(att.getClockOffDateTime()) || !workdays.contains(att.getClockDate())){
 					continue;
 				}
-				if (null != map.get("clock_on_datetime") || null != map.get("clock_off_datetime")){
-					realWorkdays.add(map.get("clock_date").toString());
+				if (StringUtils.isNotEmpty(att.getClockOnDateTime()) || StringUtils.isNotEmpty(att.getClockOffDateTime())){
+					realWorkdays.add(att.getClockDate());
 				}
-				if (null == map.get("clock_on_datetime")){
-					noClockOnWorkdays.add(map.get("clock_date").toString());
+				if (StringUtils.isEmpty(att.getClockOnDateTime())){
+					noClockOnWorkdays.add(att.getClockDate());
 				}
-				if (null == map.get("clock_off_datetime")){
-					noClockOffWorkdays.add(map.get("clock_date").toString());
+				if (StringUtils.isEmpty(att.getClockOffDateTime())){
+					noClockOffWorkdays.add(att.getClockDate());
 				}
-				String clockOnStatus = null == map.get("clock_on_status") ? "" : map.get("clock_on_status").toString(); 
-				String clockOffStatus = null == map.get("clock_off_status") ? "" : map.get("clock_off_status").toString();
+				String clockOnStatus = StringUtils.isEmpty(att.getClockOnStatus()) ? "" : att.getClockOnStatus(); 
+				String clockOffStatus = StringUtils.isEmpty(att.getClockOffStatus()) ? "" : att.getClockOffStatus(); 
 				//正常上班
 				if (StringUtils.equals(clockOnStatus, "0")){
 					normalClockOnCount ++;
@@ -134,7 +134,7 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 				//迟到
 				if (StringUtils.equals(clockOnStatus, "1")){
 					laterCount ++;
-					laterWorkdays.add(map.get("clock_date").toString());
+					laterWorkdays.add(att.getClockDate());
 				}
 				//正常下班
 				if (StringUtils.equals(clockOffStatus, "0")){
@@ -143,23 +143,16 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 				//早退
 				if (StringUtils.equals(clockOffStatus, "2")){
 					leaveEarlyCount ++;
-					leaveEarlyWorkdays.add(map.get("clock_date").toString());
+					leaveEarlyWorkdays.add(att.getClockDate());
 				}
 			}
 			statistic.setNormalClockOnCount(normalClockOnCount);
 			statistic.setNormalClockOffCount(normalClockOffCount);
 			statistic.setLaterCount(laterCount);
 			statistic.setLeaveEarlyCount(leaveEarlyCount);
-			//上班未打卡
-//			statistic.setNoClockOnCount(workdays.size() - statistic.getNormalClockOnCount() - laterCount);
-//			//下班未打卡
-//			statistic.setNoClockOffCount(workdays.size() - statistic.getNormalClockOffCount() - leaveEarlyCount);
-			
-//			noClockOnWorkdays.addAll(getDiffrent(workdays, realWorkdays));
-//			noClockOffWorkdays.addAll(getDiffrent(workdays, realWorkdays));
 			statistic.setNoClockOnCount(noClockOnWorkdays.size());
 			statistic.setNoClockOffCount(noClockOffWorkdays.size());
-			noClockWorkdays.addAll(getDiffrent(workdays, realWorkdays));
+			noClockWorkdays.addAll(ObjUtil.getDiffrent(workdays, realWorkdays));
 			statistic.setNoClockCount(noClockWorkdays.size());
 			
 			Collections.sort(laterWorkdays);
@@ -191,39 +184,6 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 		return statistics;
 	}
 	
-	/**
-     * 获取两个List的不同元素
-     * @param list1
-     * @param list2
-     * @return
-     */
-	private static List<String> getDiffrent(List<String> list1, List<String> list2) {
-		List<String> diff = new ArrayList<String>();
-		List<String> maxList = list1;
-		List<String> minList = list2;
-		if(list2.size() > list1.size()){
-			maxList = list2;
-			minList = list1;
-		}
-		Map<String,Integer> map = new HashMap<String,Integer>(maxList.size());
-		for (String string : maxList) {
-			map.put(string, 1);
-		}
-		for (String string : minList) {
-			if(map.get(string) != null) {
-				map.put(string, 2);
-				continue;
-			}
-			diff.add(string);
-		}
-		for(Map.Entry<String, Integer> entry:map.entrySet()){
-			if(entry.getValue() == 1){
-				diff.add(entry.getKey());
-			}
-		}
-		return diff;
-	}
-
 	@Override
 	public int getCountBycond(Map<String, Object> params) {
 		return attDao.getStatistisCount(params);
@@ -245,6 +205,10 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 	@Override
 	public List<String> getWorkdaysForMonth(long userId, String month) {
 		AttendanceRule rule = ruleDao.getRuleByUserId(userId);
+		if (null == rule){
+			logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
+			return null;
+		}
 		//指定月份为空则获取当前月份
 		if (StringUtils.isEmpty(month)){
 			month = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
@@ -330,7 +294,7 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 		
 		String s1 = "2017-01-27,2017-01-28,2017-01-29,2017-01-30,2017-01-31,2017-02-01,2017-02-02,2017-04-02,2017-04-03";
 		String s2 = "2017-01-27,2017-01-28,2017-01-29,2017-01-30,2017-01-31,2017-02-01,2017-02-02,2017-04-02,2017-04-03,2017-04-04,2017-04-29,2017-04-30";
-		System.out.println(getDiffrent(Arrays.asList(s1.split(",")), Arrays.asList(s2.split(","))));
+		System.out.println(ObjUtil.getDiffrent(Arrays.asList(s1.split(",")), Arrays.asList(s2.split(","))));
 	}
 
 }

@@ -119,7 +119,9 @@ public class User implements Serializable {
 
 	//二类户信息
 	private SecondAcount secondAcount;
-
+	
+	//工资
+	private double salaries;
 
 	public long getId() {
 		return id;
@@ -424,4 +426,13 @@ public class User implements Serializable {
 	public void setSecondAcount(SecondAcount secondAcount) {
 		this.secondAcount = secondAcount;
 	}
+
+	public double getSalaries() {
+		return salaries;
+	}
+
+	public void setSalaries(double salaries) {
+		this.salaries = salaries;
+	}
+	
 }

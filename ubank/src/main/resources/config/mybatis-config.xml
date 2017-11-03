@@ -22,9 +22,7 @@
 		<typeAlias alias="AttendanceRule" type="com.ulaiber.web.model.attendance.AttendanceRule" />
 		<typeAlias alias="AttendanceStatistic" type="com.ulaiber.web.model.attendance.AttendanceStatistic" />
 		<typeAlias alias="SalaryRule" type="com.ulaiber.web.model.attendance.SalaryRule" />
-		<typeAlias alias="LaterCutPayment" type="com.ulaiber.web.model.attendance.LaterCutPayment" />
-		<typeAlias alias="LeaveEarlyCutPayment" type="com.ulaiber.web.model.attendance.LeaveEarlyCutPayment" />
-		<typeAlias alias="LeaveCutPayment" type="com.ulaiber.web.model.attendance.LeaveCutPayment" />
+		<typeAlias alias="CutPayment" type="com.ulaiber.web.model.attendance.CutPayment" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
 
@@ -50,6 +48,7 @@
 		<mapper resource="com/ulaiber/web/mapper/attendanceRule.xml" />
 		<mapper resource="com/ulaiber/web/mapper/attendanceStatistic.xml" />
 		<mapper resource="com/ulaiber/web/mapper/salaryRuleMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/cutPayment.xml" />
 		<mapper resource="com/ulaiber/web/mapper/leaveMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/leaveAuditMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/ReportMapper.xml" />

@@ -18,6 +18,8 @@ import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.SalaryDetail;
+import com.ulaiber.web.model.attendance.CutPayment;
+import com.ulaiber.web.service.CutPaymentService;
 import com.ulaiber.web.service.SalaryDetailService;
 import com.ulaiber.web.service.SalaryService;
 
@@ -40,6 +42,9 @@ public class SalaryApiController extends BaseController {
 	
 	@Autowired
 	private SalaryDetailService detailService;
+	
+	@Autowired
+	private CutPaymentService cutService;
 	
 	@RequestMapping(value = "getSalaryList", method = RequestMethod.GET)
 	@ResponseBody
@@ -81,6 +86,31 @@ public class SalaryApiController extends BaseController {
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("获取用户工资详细流水成功。");
 			info.setData(detail);
+		} catch (Exception e) {
+			logger.error("getSalaryDetail exception: ", e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("系统内部错误。");
+		}
+
+		return info;
+	}
+	
+	@RequestMapping(value = "getCutPaymentMessage", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getCutPaymentMessage(long userId, String month, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		if (StringUtils.isEmpty(month)){
+			logger.error("月份不能为空。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("月份不能为空。");
+			return info;
+		}
+		
+		try {
+			List<CutPayment> list = cutService.getCutPaymentByMonthAndUserId(userId, month);
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("获取用户扣款详细成功。");
+			info.setData(list);
 		} catch (Exception e) {
 			logger.error("getSalaryDetail exception: ", e);
 			info.setCode(IConstants.QT_CODE_ERROR);

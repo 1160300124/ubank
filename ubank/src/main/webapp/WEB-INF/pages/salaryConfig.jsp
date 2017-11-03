@@ -53,9 +53,9 @@
 	                <button type="button" class="btn btn-default" id="btn_import_user_info" >
 	            		<span class="fa " aria-hidden="true"></span>导入员工信息
 	            	</button>
-	            	<button type="button" class="btn btn-default" id="btn_import_latest_salary" >
+<!-- 	            	<button type="button" class="btn btn-default" id="btn_import_latest_salary" >
 	            		<span class="fa " aria-hidden="true"></span>导入最近工资表
-	            	</button>
+	            	</button> -->
 	            </div>
 	            
 			</div>

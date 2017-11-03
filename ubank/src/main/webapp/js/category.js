@@ -113,7 +113,7 @@ $(function(){
 			Ewin.alert("类别名称长度40个字符以内");
 			return false;
 		}
-		if params.remark.length > 200){
+		if (params.remark.length > 200){
 			Ewin.alert("备注长度200个字符以内");
 			return false;
 		}

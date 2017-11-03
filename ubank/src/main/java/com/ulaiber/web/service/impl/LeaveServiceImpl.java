@@ -325,5 +325,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return leaveDao.getRemedyRecordByUserId(recordNo);
     }
 
+	@Override
+	public List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(String companyNum, String type, String month) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("companyNum", companyNum);
+		params.put("type", type);
+		params.put("month", month);
+		return leaveDao.getTotalTimeByCompanyNumAndMonth(params);
+	}
+
 
 }

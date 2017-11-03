@@ -55,4 +55,6 @@ public interface LeaveService {
     int insertRemedy(Remedy remedy); //新增补卡记录
 
     Remedy getRemedyRecordByUserId(int recordNo); //根据记录Id查询补卡信息
+    
+    List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(String companyNum, String type, String month); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长 
 }

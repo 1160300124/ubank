@@ -99,7 +99,7 @@ $(function () {
 			'id':0,
 			'userName': '快速批量设置',
 			'cardNo': '-',
-			'preTaxSalaries': '10000',
+			'preTaxSalaries': 0,
 			'bonuses': 0,
 			'subsidies': 0,
 			'attendanceCutPayment': '-',
@@ -107,7 +107,7 @@ $(function () {
 			'overtimePayment': '-',
 			'socialInsurance': 0,
 			'publicAccumulationFunds': 0,
-			'taxThreshold': 3500,
+			'taxThreshold': 0,
 			'personalIncomeTax': '-',
 			'elseCutPayment': 0,
 			'salaries': '-',
@@ -143,6 +143,11 @@ $(function () {
 			Ewin.alert("请先选择公司");
 			return false;
 		}
+		var month = $("#statistic_month").val();
+		if (month == "" || month == null || month == undefined){
+			Ewin.alert("请先选择考勤统计月份");
+			return false;
+		}
 
 		var allDatas = $('#tb_saraly_configs').bootstrapTable('getData');
 		if (allDatas.length > 0){
@@ -154,7 +159,8 @@ $(function () {
 					url : "importUserInfo",
 					type: "post",
 					data : {
-						comNum : select
+						companyNum : select,
+						salaryMonth : month
 					},
 					async : true, 
 					dataType : "json",
@@ -179,7 +185,8 @@ $(function () {
 				url : "importUserInfo",
 				type: "post",
 				data : {
-					comNum : select
+					companyNum : select,
+					salaryMonth : month
 				},
 				async : true, 
 				dataType : "json",
