@@ -42,7 +42,7 @@ var CompanyFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("没有集团数据");
+                   // Ewin.alert("没有集团数据");
                     return;
                 }
                 var option = "";
@@ -69,7 +69,7 @@ var CompanyFun = {
             data:  {},
             success : function (data) {
                 if(data.length <= 0){
-                    Ewin.alert("获取银行失败");
+                    //Ewin.alert("获取银行失败");
                     return;
                 }
                 var option = "";
@@ -119,10 +119,10 @@ var CompanyFun = {
                         }
                     }
                 },
+                {field : 'code', title : '邀请码', width: 130, align : 'left'},
                 {field : 'details', title : '详情', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'legalPerson', title : '公司法人', width: 130, align : 'left',visible : false},
-                {field : 'code', title : '邀请码', width: 130, align : 'left',visible : false},
                 {field : 'group_num', title : '集团编号', width: 130, align : 'left',visible : false}
             ]
         });
@@ -225,7 +225,7 @@ var CompanyFun = {
         }
         //判断公司账户是否重复
         var accArray = [];
-        $(".add-form-item").find("input[name='accounts']").each(function () {
+        $(".form-box>.add-form-item").find("input[name='accounts']").each(function () {
             accArray.push($(this).val());
         });
         var nary = accArray.sort();
@@ -240,15 +240,16 @@ var CompanyFun = {
         var allBankAccount = [];
         var account = "";
         var str='';
-        $('.add-form-item').each(function(){
+        $('.form-box>.add-form-item').each(function(){
             $(this).find('.base-request').each(function(){
-                var _value=$(this).val();
+                var _value = $(this).val();
                 str += _value + "/";
 
             });
-            allBankAccount.push($(this).find("input[name=accounts]").val());
-            str += $("#companyName").val();
             str= str.substr(0,str.length-1);
+            var acc = $(this).find("input[name=accounts]").val();
+            allBankAccount.push(acc);
+           // str += $("#companyName").val();
             str+=',';
         });
         str = str.substr(0,str.length-1);
@@ -433,7 +434,7 @@ $(document).on('click','[data-click]',function(e){
     switch (name){
 
         case 'addForm': //确定操作
-            console.log($('.add-form-item-new').length);
+            //console.log($('.add-form-item-new').length);
             if($('.add-form-item-new').length>=1){
                 return false;
             }

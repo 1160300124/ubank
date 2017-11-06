@@ -71,7 +71,7 @@ public class BankController extends BaseController {
 				String co = bankservice.getCodeByuserid(userid);
 				code = co;
 			}
-			//获取公司绑定的银行信息
+			//获取公司绑定的银行信息]
 			BankAccount bankAccount = bankservice.getBankByCode(code);
 			if(StringUtil.isEmpty(bankAccount)){
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -256,14 +256,37 @@ public class BankController extends BaseController {
 					logger.info(">>>>>>>>>>上海银行二类户提现失败，银行卡号为"+withd.getBindCardNo());
 					return resultInfo;
 				}
+				withd.setType(wid.getType());
 				String SubAcctNo = withd.getSubAcctNo();
+				double amount = withd.getAmount();
 				//根据二类账户号查询账户余额
 				SecondAcount sa = bankservice.queryAccount(SubAcctNo);
-				double WorkingBal = 0.0;
-				double FundShare = 0.0;
-
-				//更新数据库的金额
-				//bankservice.updateAccount();
+				double WorkingBal = sa.getWorkingBal();  //余额(子账户余额)
+				double FundShare = sa.getFundShare();   //基金份额(以基金公司为准，不含当日申购赎回的交易份额)
+				//如果提现金额减去余额大于零，则继续扣除基金份额的金额
+				amount = amount - WorkingBal ;
+				if(amount > 0 ){
+					FundShare = amount - FundShare;
+				}
+				sa.setAvaiBal(amount + FundShare);
+				sa.setWorkingBal(amount);
+				sa.setFundShare(FundShare);
+				//更新二类账户的金额
+				int upResult = bankservice.updateSecondAcc(sa);
+				if(upResult == 0){
+					resultInfo.setCode(IConstants.INSER_DB_ERROR);
+					resultInfo.setMessage("提现失败");
+					logger.error(">>>>>>>>>>更新二类账户信息失败");
+					return resultInfo;
+				}
+				//新增提现记录
+				int inResult = bankservice.insertWithdraw(withd);
+				if(inResult == 0){
+					resultInfo.setCode(IConstants.INSER_DB_ERROR);
+					resultInfo.setMessage("提现失败");
+					logger.error(">>>>>>>>>>插入提现记录失败");
+					return resultInfo;
+				}
 			}catch(Exception e){
 				resultInfo.setCode(IConstants.QT_CODE_ERROR);
 				resultInfo.setMessage("提现失败");

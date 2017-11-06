@@ -1,6 +1,6 @@
 /**
  * 可编辑表格插件
- * 如果编辑表格中有用到，下拉框和日期，必须先引入 
+ * 如果编辑表格中有用到，下拉框和日期，必须先引入
  * bootstrap-select 和 bootstrap-datetimepicker两个控件
  * @author lizx <851697971@qq.com>
  * @version 1.0
@@ -13,7 +13,7 @@
     $.extend($.fn.bootstrapTable.defaults, {
         editable: false
     });
-    
+
     var BootstrapTable = $.fn.bootstrapTable.Constructor,
         _init = BootstrapTable.prototype.init,
         _initBody = BootstrapTable.prototype.initBody,
@@ -25,7 +25,7 @@
         edit:{
             type:'text'//目前只支持 文本:text 下拉:select 日期:date 
         }
-     });
+    });
     BootstrapTable.prototype.init = function () {
         _init.apply(this, Array.prototype.slice.apply(arguments));
         var that = this;
@@ -34,7 +34,7 @@
         that.insertRowVal = {};//新插入行的默认值
         that.enableAppend = true;//允许添加新行
         that.editing = false;
-        if (that.options.editable) {
+        // if (that.options.editable) {
             var columnObj = this['getColumns']();
             $.each(columnObj,function(i,obj){
                 $.each(obj,function(z,col){
@@ -46,19 +46,19 @@
                 });
             });
             //this.initEdit();
-        }
+        // }
     };
     /*BootstrapTable.prototype.initHeader = function(){
-        _initHeader.apply(this, Array.prototype.slice.apply(arguments));
-        this.$container.find('.fixed-table-header').addClass('success');
-    };*/
+     _initHeader.apply(this, Array.prototype.slice.apply(arguments));
+     this.$container.find('.fixed-table-header').addClass('success');
+     };*/
     BootstrapTable.prototype.initBody = function () {
         var that = this;
-        
+
         _initBody.apply(this, Array.prototype.slice.apply(arguments));
         if (!that.options.editable) return;
         // this.initEdit();
-        
+
         //如果列是下拉框，则转换值为对应的文本
         // $.each(that.columns,function(indx,col){
         //     if(col.edit && col.edit.type == 'select'){
@@ -114,9 +114,9 @@
         if (isNaN(rowNum)){
             return;
         }
-        // if(that.$body.find('.editable-select').data('index') != rowNum){
-        //     recover(that);
-        // }
+        if(that.$body.find('.editable-select').data('index') != rowNum){
+            recover(that);
+        }
         //删除数据
         that.options.data.splice(rowNum,1);
         if (len === that.options.data.length){
@@ -169,9 +169,9 @@
                 that.$body.find('>tr:last').click();
             },60);
         }
-        
+
     };
-    
+
     BootstrapTable.prototype.onSort = function () {
         _onSort.apply(this, Array.prototype.slice.apply(arguments));
         var that = this;
@@ -217,14 +217,14 @@
             else{
                 colNum = $(this).find('td').eq(num).html();
             }
-            
+
             if(!isNaN(colNum)){//是数字才做想加
                 retVal += Number(colNum);
             }
         });
         return retVal;
     };
-    
+
     /**
      * 编辑全部
      */
@@ -260,7 +260,7 @@
      */
     BootstrapTable.prototype.initEdit = function(){
         var that = this,
-        data = this.getData();
+            data = this.getData();
         //this.$body.find('> tr').unbind('click').on('click'
         //this.$body.delegate('>tr','click'
         this.$body.find('> tr').unbind('click').on('click',function(){
@@ -288,12 +288,12 @@
                 },10);
             };
         });
-        
+
     };
-    
+
     $.fn.bootstrapTable.methods.push('getColumns',
         'getModiDatas','removeRow','getColTotal','getAllData', 'editAll', 'cancelEditAll', 'getEditStatus');
-    
+
     /**
      * 给tr添加点击事件
      */
@@ -301,72 +301,72 @@
         that.enableAppend = true;
         var $td = $(_this);
         var $tr = $td.parent();
-        var rowData = that.options.data[$tr.data('index')];//当前点击td所在行的数据
+        var rowData = that.data[$tr.data('index')];//当前点击td所在行的数据
         var tdIndex = $tr.children().index($td);//当前点击的td下标
         var tdOpt = that.columns[tdIndex];
         if(rowData.IS_TYPING!="0"&&rowData.IS_TYPING!="2"){//判断接口取数方式
-        if(!tdOpt.edit || typeof tdOpt.edit != 'object'){
-            return ;
-        }
-        $td.data('field',tdOpt.field);
-        if(!$td.data('oldVal')){
-            $td.data('oldVal',$.trim(rowData[tdOpt.field]));
-        }
-        var height = $td.innerHeight() - 3;
-        var width = $td.innerWidth() - 2;
-        $td.data('style',$td.attr('style'));//保存原来的样式
-        $td.attr('style','margin:0px;padding:1px!important;');
-        var placeholder = '';
-        if(tdOpt.edit.required == true){
-            placeholder = '必填项';
-        }
-        var value = rowData[tdOpt.field] == null || rowData[tdOpt.field] == ''?'':rowData[tdOpt.field];
-        
-        if(!tdOpt.edit.type || tdOpt.edit.type == 'text'){
-            $td.html('<div style="margin:0;padding:0;overflow:hidden;border:solid 0px red;height:'+(height)+'px;width:'+(width)+'px;">'
-                        +'<input type="text" placeholder="'+placeholder+'" value="'+value+'" style="margin-left: 0px; margin-right: 0px; padding-top: 1px; padding-bottom: 1px; width:100%;height:100%">'
-                    +'</div>');
-            $td.width(width);
-            
-        }
-        else if(tdOpt.edit.type == 'select'){
-            var selectValues = tdOpt.edit.selectValues;
-            var selectDom = document.createElement('select');
-            selectDom.classList.add('form-control');
-            
-            for(var i = 0,l = selectValues.length; i < l ; i++ ){
-                var option = document.createElement('option');
-                option.value = selectValues[i].value;
-                option.innerHTML = selectValues[i].text;
-                if($td.html() == selectValues[i].value){
-                    option.setAttribute('selected', 'selected');
-                }
-                selectDom.appendChild(option);
+            if(!tdOpt.edit || typeof tdOpt.edit != 'object'){
+                return ;
             }
-            $td.html('');
-            $td.append(selectDom);
-            $td.width(width);
-        }
-        else if(tdOpt.edit.type == 'date'){
-            $td.html('<div style="margin:0;padding:0;overflow:hidden;border:solid 0px red;height:'+(height)+'px;width:'+(width)+'px;" class="input-group date form_datetime" data-link-field="dtp_editable_input">'
-                        +'<input class="form-control" type="text" value="'+value+'">'
-                        +'<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>'
+            $td.data('field',tdOpt.field);
+            if(!$td.data('oldVal')){
+                $td.data('oldVal',$.trim(rowData[tdOpt.field]));
+            }
+            var height = $td.innerHeight() - 3;
+            var width = $td.innerWidth() - 2;
+            $td.data('style',$td.attr('style'));//保存原来的样式
+            $td.attr('style','margin:0px;padding:1px!important;');
+            var placeholder = '';
+            if(tdOpt.edit.required == true){
+                placeholder = '必填项';
+            }
+            var value = rowData[tdOpt.field] == null || rowData[tdOpt.field] == ''?'':rowData[tdOpt.field];
+
+            if(!tdOpt.edit.type || tdOpt.edit.type == 'text'){
+                $td.html('<div style="margin:0;padding:0;overflow:hidden;border:solid 0px red;height:'+(height)+'px;width:'+(width)+'px;">'
+                    +'<input type="text" placeholder="'+placeholder+'" value="'+value+'" style="margin-left: 0px; margin-right: 0px; padding-top: 1px; padding-bottom: 1px; width:100%;height:100%">'
+                    +'</div>');
+                $td.width(width);
+
+            }
+            else if(tdOpt.edit.type == 'select'){
+                var selectValues = tdOpt.edit.selectValues;
+                var selectDom = document.createElement('select');
+                selectDom.classList.add('form-control');
+
+                for(var i = 0,l = selectValues.length; i < l ; i++ ){
+                    var option = document.createElement('option');
+                    option.value = selectValues[i].value;
+                    option.innerHTML = selectValues[i].text;
+                    if($td.html() == selectValues[i].value){
+                        option.setAttribute('selected', 'selected');
+                    }
+                    selectDom.appendChild(option);
+                }
+                $td.html('');
+                $td.append(selectDom);
+                $td.width(width);
+            }
+            else if(tdOpt.edit.type == 'date'){
+                $td.html('<div style="margin:0;padding:0;overflow:hidden;border:solid 0px red;height:'+(height)+'px;width:'+(width)+'px;" class="input-group date form_datetime" data-link-field="dtp_editable_input">'
+                    +'<input class="form-control" type="text" value="'+value+'">'
+                    +'<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>'
                     +'</div>'
                     +'<input type="hidden" id="dtp_editable_input" value="'+value+'"/>'
-            );
-            that.$body.find('.form_datetime').datetimepicker({
-                weekStart: 1,
-                todayBtn:  1,
-                autoclose: 1,
-                todayHighlight: 1,
-                startView: 2,
-                forceParse: 0,
-                language:'zh-CN',
-                format: 'yyyy-mm-dd hh:ii:ss',
-                pickerPosition: 'bottom-left',
-                showMeridian: 1
-            });
-        }
+                );
+                that.$body.find('.form_datetime').datetimepicker({
+                    weekStart: 1,
+                    todayBtn:  1,
+                    autoclose: 1,
+                    todayHighlight: 1,
+                    startView: 2,
+                    forceParse: 0,
+                    language:'zh-CN',
+                    format: 'yyyy-mm-dd hh:ii:ss',
+                    pickerPosition: 'bottom-left',
+                    showMeridian: 1
+                });
+            }
         }else{
             return;
         }
@@ -376,6 +376,7 @@
      */
     function recover(that){
         var isModi = false;//判断行值是否变动过
+        console.log(that.prevEditRow);
         if(that.prevEditRow != null){
             that.prevEditRow.find('td').closest('td').siblings().html(function(i,html){
                 $(this).attr('style',$(this).data('style'));
@@ -385,7 +386,7 @@
                 if(typeof $(this).find('input[type="text"]') != 'object'){
                     $(this).find('input[type="text"]').bootstrapSelect('destroy');
                 }
-                
+
                 if(textVal != undefined){
                     if($(this).data('oldVal') != (hiddenVal?hiddenVal:$.trim(textVal)) && $(this).data('field')) {
                         that.data[that.prevEditRow.data('index')][$(this).data('field')] = hiddenVal?hiddenVal:$.trim(textVal);
@@ -411,7 +412,7 @@
             that.$body.find('> tr').removeClass('editable-select');
         }
     }
-    
+
     /**
      * 恢复表格，使之处于不可编辑状态
      */
@@ -446,5 +447,5 @@
         });
         that.editing = false;
     }
-    
+
 })(jQuery);

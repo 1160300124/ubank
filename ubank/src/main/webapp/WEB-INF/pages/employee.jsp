@@ -14,7 +14,7 @@
         <button onclick="EmployeeFun.emp_delete(window.event)" id="three-button" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="EmployeeFun.employeeQuery()" type="button" class="btn btn-default">
+        <button onclick="EmployeeFun.reload()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>

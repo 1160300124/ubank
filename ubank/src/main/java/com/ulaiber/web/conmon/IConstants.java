@@ -175,5 +175,8 @@ public class IConstants
 	//注册上传照片状态 失败
 	public static final int UPLOAD_STATUS_ERROR = 1500;
 
+	//操作数据库失败
+	public static final int INSER_DB_ERROR = 1060;
+
 
 }

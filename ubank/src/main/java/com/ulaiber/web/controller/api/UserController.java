@@ -95,68 +95,61 @@ public class UserController extends BaseController{
 				logger.error("register failed: mobile is already exists.");
 				return retInfo;
 			}
-			//查询用户是否已注册二类账户
-//			int id = (int) user.getId();
-//			SecondAcount acc = userService.findSecondAcc(id);
-//			if(!StringUtil.isEmpty(acc)){
-//				retInfo.setCode(IConstants.QT_CODE_ERROR);
-//				retInfo.setMessage("用户已注册二类账户");
-//				return retInfo;
-//			}
 			// 0 上海银行二类户
 			if(bank.getType() == 0){
-				//上传图片到sftp服务器上
-				logger.info(">>>>>>>>开始上传文件到sftp服务器");
-				if (file != null && file.length > 0) {
-					logger.info(">>>>>>>>>>file is :" + file);
-					boolean flag = false;
-					// 循环获取file数组中得文件
-					try {
-						for (int i = 0; i < file.length; i++) {
-							logger.info(">>>>>>>>>>上传文件第"+i+":" + file);
-							MultipartFile files = file[i];
-							flag = sysUploadImg(files);
-						}
-						if(!flag){
-							retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
-							retInfo.setMessage("上传图片失败");
-							logger.error(">>>>>>>>注册时上传图片失败的用户为：" + user.getMobile());
-							return retInfo;
-						}
-					}catch(Exception e){
-						logger.error(">>>>>>上传文件异常为：" , e );
-					}
-
-				}else{
-					retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
-					retInfo.setMessage("图片为空");
-					logger.error(">>>>>>>>>图片为空");
-					return retInfo;
-				}
-				//开通上海银行二类账户
-				Map<String,Object> param = new HashMap<>();
-				param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
-				param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
-				param.put("CustName" , user.getUserName());				//姓名
-				param.put("IdNo" , user.getCardNo());					//身份证号
-				param.put("MobllePhone" , user.getMobile());			//手机号
-				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
-				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
-				param.put("Sign" , "N");								//是否开通余额理财功能
-				//注册二类户
-				ResultInfo ri = ShangHaiAccount.register(param);
-				logger.info(">>>>>>>>>> 注册结果为：" + ri);
-				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-				logger.info(">>>>>>>>>resultMap is :" + resultMap);
-				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
-				status = (String) resultMap.get("status");
-				if(!"0000".equals(status)){
-					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage(sa.getServerStatusCode());
-					retInfo.setData(status);
-					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
-					return retInfo;
-				}
+//				//上传图片到sftp服务器上
+//				logger.info(">>>>>>>>开始上传文件到sftp服务器");
+//				if (file != null && file.length > 0) {
+//					logger.info(">>>>>>>>>>file is :" + file);
+//					boolean flag = false;
+//					// 循环获取file数组中得文件
+//					try {
+//						for (int i = 0; i < file.length; i++) {
+//							logger.info(">>>>>>>>>>上传文件第"+i+":" + file);
+//							MultipartFile files = file[i];
+//							flag = sysUploadImg(files);
+//						}
+//						if(!flag){
+//							retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
+//							retInfo.setMessage("上传图片失败");
+//							logger.error(">>>>>>>>注册时上传图片失败的用户为：" + user.getMobile());
+//							return retInfo;
+//						}
+//					}catch(Exception e){
+//						logger.error(">>>>>>上传文件异常为：" , e );
+//					}
+//
+//				}else{
+//					retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
+//					retInfo.setMessage("图片为空");
+//					logger.error(">>>>>>>>>图片为空");
+//					return retInfo;
+//				}
+//				//开通上海银行二类账户
+//				Map<String,Object> param = new HashMap<>();
+//				param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
+//				param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+//				param.put("CustName" , user.getUserName());				//姓名
+//				param.put("IdNo" , user.getCardNo());					//身份证号
+//				param.put("MobllePhone" , user.getMobile());			//手机号
+//				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
+//				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
+//				param.put("Sign" , "N");								//是否开通余额理财功能
+//				//注册二类户
+//				ResultInfo ri = ShangHaiAccount.register(param);
+//				logger.info(">>>>>>>>>> 注册结果为：" + ri);
+//				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
+//				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+//				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
+//				status = (String) resultMap.get("status");
+//				if(!"0000".equals(status)){
+//					retInfo.setCode(IConstants.QT_CODE_ERROR);
+//					retInfo.setMessage(sa.getServerStatusCode());
+//					retInfo.setData(status);
+//					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+//					return retInfo;
+//				}
+				SecondAcount sa = new SecondAcount();
 				//新增用户权限层级信息
 				user.setBank(bank);
 				sa.setCreateDate(SDF.format(new Date()));

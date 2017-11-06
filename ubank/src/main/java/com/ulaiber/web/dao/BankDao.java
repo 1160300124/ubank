@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 
 /**
  * 银行卡数据库接口
@@ -82,4 +83,12 @@ public interface BankDao {
      * @return SecondAcount
      */
     SecondAcount queryAccount(String subAcctNo);
+
+
+    /**
+     * 新增提现记录
+     * @param withd 提现记录
+     * @return int
+     */
+    int insertWithdraw(Withdraw withd);
 }

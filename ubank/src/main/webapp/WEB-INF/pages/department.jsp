@@ -14,7 +14,7 @@
         <button onclick="DepartmentFun.departmentDelete(window.event)" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick=" DepartmentFun.departmentQuery()" type="button" class="btn btn-default">
+        <button onclick=" DepartmentFun.reload()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>
@@ -172,7 +172,7 @@
                 },
                 success : function (data) {
                     if(data.length <= 0){
-                        Ewin.alert("获取公司失败");
+                       // Ewin.alert("获取公司失败");
                         return;
                     }
                     var option = "";
@@ -304,6 +304,9 @@
                 }
             });
 
+        },
+        reload : function () {
+            $('#department_table').bootstrapTable('refresh');
         }
 
 

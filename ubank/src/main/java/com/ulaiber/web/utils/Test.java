@@ -429,7 +429,7 @@ public class Test {
 	//上海银行二类户改绑测试
 	@org.junit.Test
 	public void queryBalance(){
-		String str = "623185009300012652";
+		String str = "623185009300012603";
 		SHQueryBalance.queryBalance(str);
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}
@@ -451,8 +451,9 @@ public class Test {
 //		long ll = Long.valueOf(userId);
 
 		//System.out.print(">>>>>>userID：" + UUID.randomUUID());
-		String a  = "0.0000";
-		String b = "0.0";
+		String a  = "2017-11-06";
+		String b = "2017-11-08";
+		System.out.println();
 		//System.out.println(SHQueryBalance.round(a) + SHQueryBalance.round(b));
 	}
 

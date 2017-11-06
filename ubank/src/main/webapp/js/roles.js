@@ -446,6 +446,9 @@ var RoleFun = {
         this.rol_roleTable();
         $("#permission_modal").modal("show");
         $(".modal-title").html("权限设置");
+    },
+    reload : function () {
+        $('#role_table').bootstrapTable('refresh');
     }
 };
 

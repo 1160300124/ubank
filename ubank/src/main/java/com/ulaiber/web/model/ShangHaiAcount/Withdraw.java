@@ -7,18 +7,18 @@ import java.io.Serializable;
  * Created by daiqingwen on 2017/11/2.
  */
 public class Withdraw implements Serializable{
-    private long id;            //ID
-    private String SubAcctNo;   //平台理财专属子账户
-    private String ProductCd;   //理财产品参数
-    private String BindCardNo;  //银行卡号
-    private double Amount;      //交易金额
-    private String BizDate;     //交易日期
-    private String Currency;    //入账币种
-    private String TheirRef;    //交易摘要
-    private String Purpose;     //用途
-    private String Attach;      //附件信息
-    private String MemoInfo;    //交易备注
-    private String type;        //银行类型；0 上海银行
+    private long id;                    //ID
+    private String SubAcctNo;           //平台理财专属子账户
+    private String ProductCd;           //理财产品参数
+    private String BindCardNo;          //银行卡号
+    private double Amount;              //交易金额
+    private String BizDate;             //交易日期
+    private String Currency;            //入账币种
+    private String TheirRef;            //交易摘要
+    private String Purpose;             //用途
+    private String Attach;              //附件信息
+    private String MemoInfo;            //交易备注
+    private String type;                //银行类型；0 上海银行
     private String SPRsUID;             //主机流水号
     private String RqUID;               //请求流水号
     private String StatusCode;          //返回结果码

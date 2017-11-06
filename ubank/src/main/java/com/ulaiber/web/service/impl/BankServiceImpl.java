@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -115,5 +116,12 @@ public class BankServiceImpl extends BaseService implements BankService {
     public SecondAcount queryAccount(String subAcctNo) {
         return mapper.queryAccount(subAcctNo);
     }
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public int insertWithdraw(Withdraw withd) {
+		return mapper.insertWithdraw(withd);
+	}
+
 
 }

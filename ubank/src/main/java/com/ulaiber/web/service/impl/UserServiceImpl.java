@@ -88,10 +88,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 		//给注册用户分配公司和集团
 		int result2 = permissionDao.insertRoots(map);
 		//新增用户二类账户信息
-		int result3 = mapper.insertSecondAccount(sa);
-		if(result3 == 0){
-			return result3;
-		}
+//		int result3 = mapper.insertSecondAccount(sa);
+//		if(result3 == 0){
+//			return result3;
+//		}
 		int userid = (int) user.getId();
 		//新增用户绑定银行卡信息
 		Map<String,Object> paraMap = new HashMap<>();

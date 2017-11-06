@@ -14,7 +14,7 @@
         <button onclick="GroupFun.gropDelete()" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-        <button onclick="GroupFun.groupQuery()" type="button" class="btn btn-default">
+        <button onclick="GroupFun.reload()" type="button" class="btn btn-default">
             <span class="fa icon-search" aria-hidden="true"></span>查询
         </button>
     </div>
@@ -320,6 +320,9 @@
                     }
                 }
             });
+        },
+        reload : function () {
+            $('#group_table').bootstrapTable('refresh');
         }
     };
 

@@ -38,7 +38,7 @@
 
 	<!--获取公司绑定的银行信息-->
 	<select id="getBankByCode" parameterType="String" resultType="com.ulaiber.web.model.BankAccount" >
-		select b.bankNumber from tbl_company a left join tbl_bankAccount b on a.companyNumber = b.companyNumber
+		select distinct b.bankNumber from tbl_company a left join tbl_bankAccount b on a.companyNumber = b.companyNumber
 			where a.code = #{code}
 	</select>
 
@@ -79,4 +79,10 @@
 	<select id="queryAccount" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
 		select * FROM tbl_secondAccount WHERE SubAcctNo =#{subAcctNo}
 	</select>
+
+	<!--新增提现记录-->
+	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
+		INSERT INTO tbl_withdraw(SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,Purpose,Attach,MemoInfo,type)
+			VALUES (#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},#{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type})
+	</insert>
 </mapper>

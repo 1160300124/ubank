@@ -316,11 +316,14 @@ var EmployeeFun = {
         // }
         var entryDate = $('#entryDate').val();
         var leaveDate = $('#leaveDate').val();
-        debugger
-        if(entryDate > leaveDate){
+        var d1 = new Date(entryDate.replace(/\-/g, "\/"));
+        var d2 = new Date(leaveDate.replace(/\-/g, "\/"));
+        if(entryDate == "" ){
+            Ewin.alert("入职时间不能为空");
+        }else if(d1 > d2){
             Ewin.alert("入职时间不能大于离职时间");
-            return;
         }
+
         $.ajax({
             url : 'addEmployee?flag=' + flag + "&pwd=" + pwd,
             dataType : 'json',
@@ -368,11 +371,13 @@ var EmployeeFun = {
         $("input[name=cardNo]").val(row[0].cardNo);
         $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
         $("#emp_select").find("option[value="+row[0].companyNumber+"]").prop("selected","selected");
-        $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
+        if(row[0].dept_number != ""){
+            $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
+        }
         $("#emp_select_bank").find("option[value="+row[0].bankNo+"]").prop("selected","selected");
         $("#emp_select_role").find("option[value="+row[0].role_id+"]").prop("selected","selected");
-        $('#entryDate').datetimepicker('setStartDate', row[0].entryDate);
-        $('#leaveDate').datetimepicker('setEndDate', row[0].leaveDate);
+        $('#entryDate').val(row[0].entryDate);
+        $('#leaveDate').val(row[0].leaveDate);
         $("#employee_modal").modal("show");
 
     },
@@ -479,6 +484,9 @@ var EmployeeFun = {
             }
         });
 
+    },
+    reload : function () {
+        $('#employee_table').bootstrapTable('refresh');
     }
 
 
