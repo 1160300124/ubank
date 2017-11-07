@@ -104,7 +104,7 @@
 			<th data-field="preTaxSalaries">税前工资</th>
 			<th data-field="bonuses">奖金</th>
 			<th data-field="subsidies">补贴</th>
-			<th data-field="attendanceCutPayment" data-edit="false">考勤扣款</th>
+			<th data-field="totalCutPayment" data-edit="false">考勤扣款</th>
 			<th data-field="askForLeaveCutPayment" data-edit="false">请假扣款</th>
 			<th data-field="overtimePayment" data-edit="false">加班费</th>
 			<th data-field="socialInsurance">社保缴纳</th>

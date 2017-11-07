@@ -51,7 +51,7 @@
 	</select>
 	
 	<select id="getRuleByMobile" parameterType="String" resultMap="AttendanceRuleMap">
-		select a.* from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid left join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile}
+		select a.* from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid left join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and u.disabled='0'
 	</select>
 	
 	<select id="getRules" parameterType="Map" resultMap="AttendanceRuleMap">
@@ -90,12 +90,12 @@
 	<delete id="deleteUserOfRulesByRids" parameterType="java.util.List">
 		delete from tbl_users_of_rules where rid in
 		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
-	        #{item}   
+	        #{item}
 	    </foreach>  
 	</delete>
 	
 	<select id="getUserIdsByRid" parameterType="Integer" resultType="com.ulaiber.web.model.UserOfRule">
-		select * from tbl_users_of_rules where rid=#{rid}
+		select * from tbl_users_of_rules r join tbl_users u on r.userid=u.user_id where u.disabled='0' and rid=#{rid}
 	</select>
 	
 	<select id="getUserIdsByComId" parameterType="Integer" resultType="com.ulaiber.web.model.UserOfRule">

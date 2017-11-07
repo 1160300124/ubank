@@ -70,7 +70,7 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 		//扣款记录列表
 		List<CutPayment> cutPayments = new ArrayList<CutPayment>();
 		//扣款Map  key为用户ID,value为用户扣款总金额
-		Map<Long, Double> cutMap = new HashMap<Long, Double>();
+		Map<Long, Object> cutMap = new HashMap<Long, Object>();
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("company_num", companyId);
@@ -89,7 +89,15 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				continue;
 			}
 			//扣款总金额
-			double cutTotalAmount = 0;
+			double totalCutAmount = 0;
+			//忘打卡扣款
+			double forgetClockCutAmount = 0;
+			//迟到扣款
+			double laterCutAmount = 0;
+			//早退扣款
+			double leaveEarlyCutAmount = 0;
+			//旷工扣款
+			double noClockCutAmount = 0;
 			//天工资
 			double daySalaries = MathUtil.div(user.getSalaries(), workdays.size());
 			//考勤规则
@@ -124,7 +132,7 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 					cut.setCompany(company);
 					cut.setCutDate(att.getClockDate());
 					cut.setCutType("2");
-					cut.setCutReason(att.getClockDate() + "：缺卡" + forgetClockCount + "次");
+					cut.setCutReason(att.getClockDate() + "：忘打卡" + forgetClockCount + "次");
 					double money = 0;
 					if (forgetClockCount > salaryRule.getAllowForgetClockCount()){
 						money = salaryRule.getForgetClockCutPayment();
@@ -133,7 +141,8 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 						}
 					}
 					cut.setCutMoney(money);
-					cutTotalAmount += money;
+					forgetClockCutAmount += money;
+					totalCutAmount += money;
 					cutPayments.add(cut);
 				}
 				String clockOnStatus = StringUtils.isEmpty(att.getClockOnStatus()) ? "" : att.getClockOnStatus(); 
@@ -158,7 +167,8 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 					cut.setCutType("0");
 					cut.setCutReason(att.getClockDate() + "：迟到" + minute + "分钟");
 					cut.setCutMoney(money);	
-					cutTotalAmount += money;
+					laterCutAmount += money;
+					totalCutAmount += money;
 					cutPayments.add(cut);
 				}
 				//早退
@@ -180,8 +190,9 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 					cut.setCutDate(att.getClockDate());
 					cut.setCutType("1");
 					cut.setCutReason(att.getClockDate() + "：早退" + minute + "分钟");
-					cut.setCutMoney(money);	
-					cutTotalAmount += money;
+					cut.setCutMoney(money);
+					leaveEarlyCutAmount += money;
+					totalCutAmount += money;
 					cutPayments.add(cut);
 				}
 			}
@@ -208,10 +219,18 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				cut.setCutType("3");
 				cut.setCutReason(noClockDay + "：旷工");
 				cut.setCutMoney(money);	
-				cutTotalAmount += money;
+				noClockCutAmount += money;
+				totalCutAmount += money;
 				cutPayments.add(cut);
 			}
-			cutMap.put(user.getId(), MathUtil.formatDouble(cutTotalAmount, 1));
+			
+			Map<String, Object> attCutMap = new HashMap<String, Object>();
+			attCutMap.put("laterCutPayment", MathUtil.formatDouble(laterCutAmount, 1));
+			attCutMap.put("leaveEarlyCutPayment", MathUtil.formatDouble(leaveEarlyCutAmount, 1));
+			attCutMap.put("forgetClockCutPayment", MathUtil.formatDouble(forgetClockCutAmount, 1));
+			attCutMap.put("noClockCutPayment", MathUtil.formatDouble(noClockCutAmount, 1));
+			attCutMap.put("totalCutAmount", MathUtil.formatDouble(totalCutAmount, 1));
+			cutMap.put(user.getId(), attCutMap);
 			
 		}
 		

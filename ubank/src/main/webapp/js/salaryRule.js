@@ -110,7 +110,6 @@ $(function(){
     	+ $("#maternityLeave").val() + ","
     	+ $("#elseLeave").val();
     	params.leaveCutPayment = leaveCutPayment;
-    	console.log(JSON.stringify(params))
     	
     	//标识。 0 表示新增操作，1 表示修改操作
     	if (flag == 0){

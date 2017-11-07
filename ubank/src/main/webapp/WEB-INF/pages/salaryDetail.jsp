@@ -9,11 +9,11 @@
  		 <thead>
 		<tr>
 			<th data-field="userName">姓名</th>
-			<th data-field="cardNo" data-edit="{false}">身份证号码</th>
+			<th data-field="cardNo">身份证号码</th>
 			<th data-field="preTaxSalaries">税前工资</th>
 			<th data-field="bonuses">奖金</th>
 			<th data-field="subsidies">补贴</th>
-			<th data-field="attendanceCutPayment">考勤扣款</th>
+			<th data-field="totalCutPayment">考勤扣款</th>
 			<th data-field="askForLeaveCutPayment">请假扣款</th>
 			<th data-field="overtimePayment">加班费</th>
 			<th data-field="socialInsurance">社保缴纳</th>
@@ -28,5 +28,4 @@
 	</table>
 
 </div>
-<script src="<%=request.getContextPath()%>/js/salaryConfig.js" type="text/javascript" ></script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

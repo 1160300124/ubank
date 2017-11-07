@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -161,16 +162,14 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		List<SalaryDetail> details = new ArrayList<SalaryDetail>();
 		//获取公司的工资规则
 		SalaryRule rule = ruleDao.getSalaryRuleByCompanyId(companyNum);
+		//事假，病假，年假，调休，婚假，产假，其他
+		String[] leaveCutRule = rule.getLeaveCutPayment().split(",");
 		//获取扣款详细和总金额
 		Map<String, Object> cutMap = cutService.getCutPaymentMessage(companyNum, salaryMonth);
 		//扣款总金额Map,key为userId,value为总金额
-		Map<Long, Double> cutMoneyMap = (Map<Long, Double>)cutMap.get("money");
+		Map<Long, Object> cutMoneyMap = (Map<Long, Object>)cutMap.get("money");
 		//分组查询用户的请假扣款
 		List<Map<String, Object>> leaveList = leaveService.getTotalTimeByCompanyNumAndMonth(companyNum, "0", salaryMonth);
-		Map<Long, Double> leaveMap = new HashMap<Long, Double>();
-		for (Map<String, Object> map : leaveList){
-			leaveMap.put(Long.parseLong(map.get("userId").toString()), (Double)map.get("totalTime"));
-		}
 		//分组查询用户的加班费
 		List<Map<String, Object>> overTimeList = leaveService.getTotalTimeByCompanyNumAndMonth(companyNum, "1", salaryMonth);
 		Map<Long, Double> overTimeMap = new HashMap<Long, Double>();
@@ -193,6 +192,10 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
 			//每天工作小时数
 			double workHours = DateTimeUtil.gethour(day + " " + attRule.getClockOnTime(), day + " " + attRule.getClockOffTime());
+			if (attRule.getRestFlag() == 0){
+				double restHours = DateTimeUtil.gethour(day + " " + attRule.getRestEndTime(), day + " " + attRule.getRestStartTime());
+				workHours = MathUtil.formatDouble(MathUtil.sub(workHours, restHours), 1);
+			}
 			//小时工资
 			double hourSalaries = MathUtil.div(user.getSalaries(), workdays.size() * workHours);
 			SalaryDetail detail = new SalaryDetail();
@@ -203,13 +206,52 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			detail.setSocialInsurance(rule.getSocialInsurance());
 			detail.setPublicAccumulationFunds(rule.getPublicAccumulationFunds());
 			detail.setTaxThreshold(rule.getTaxThreshold());
-			detail.setAttendanceCutPayment(null == cutMoneyMap.get(user.getId()) ? 0 : cutMoneyMap.get(user.getId()));
-			double leaveCutPayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == leaveMap.get(user.getId()) ? 0 : leaveMap.get(user.getId())), 1);
+			Map<String, Object> attCutPayment = (Map<String, Object>)cutMoneyMap.get(user.getId());
+			detail.setTotalCutPayment((Double)attCutPayment.get("totalCutAmount"));
+			detail.setLaterCutPayment((Double)attCutPayment.get("leaveEarlyCutPayment"));
+			detail.setLeaveEarlyCutPayment((Double)attCutPayment.get("forgetClockCutPayment"));
+			detail.setForgetClockCutPayment((Double)attCutPayment.get("laterCutPayment"));
+			detail.setNoClockCutPayment((Double)attCutPayment.get("noClockCutPayment"));
+			double leaveCutPayment = 0;
+			for (Map<String, Object> map : leaveList){
+				if (user.getId() != Long.parseLong(map.get("userId").toString())){
+					continue;
+				}
+				double cutPayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == map.get("totalTime") ? 0 : (Double)map.get("totalTime")), 1);
+				//请假类型. 0 年假，1 事假，2 病假，3 调休，4 婚假，5 产假 ，6 其他
+				if (StringUtils.equals(map.get("leaveType").toString(), "0")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[2]) / 100), 1);
+				}
+				else if (StringUtils.equals(map.get("leaveType").toString(), "1")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[0]) / 100), 1);
+				}
+				else if (StringUtils.equals(map.get("leaveType").toString(), "2")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[1]) / 100), 1);
+				}
+				else if (StringUtils.equals(map.get("leaveType").toString(), "3")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[3]) / 100), 1);
+				}
+				else if (StringUtils.equals(map.get("leaveType").toString(), "4")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[4]) / 100), 1);
+				}
+				else if (StringUtils.equals(map.get("leaveType").toString(), "5")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[5]) / 100), 1);
+				}
+				else if (StringUtils.equals(map.get("leaveType").toString(), "6")){
+					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[6]) / 100), 1);
+				}
+				leaveCutPayment += cutPayment;
+				
+			}
 			detail.setAskForLeaveCutPayment(leaveCutPayment);
-			double overTimePayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == overTimeMap.get(user.getId()) ? 0 : overTimeMap.get(user.getId())), 1);
+			double overTimePayment = 0;
+			//0:调休 1:发加班费
+			if (rule.getOvertimeFlag() == 1){
+				overTimePayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == overTimeMap.get(user.getId()) ? 0 : overTimeMap.get(user.getId())), 1);
+			}
 			detail.setOvertimePayment(overTimePayment);
 			//扣除社保公积金等
-			double preSalary = detail.getPreTaxSalaries() - detail.getAttendanceCutPayment() - detail.getAskForLeaveCutPayment() + detail.getOvertimePayment()
+			double preSalary = detail.getPreTaxSalaries() - detail.getTotalCutPayment() - detail.getAskForLeaveCutPayment() + detail.getOvertimePayment()
 							- detail.getSocialInsurance() - detail.getPublicAccumulationFunds();
 			double personalIncomeTax = getPersonalIncomeTax(preSalary, detail.getTaxThreshold());
 			detail.setPersonalIncomeTax(personalIncomeTax);

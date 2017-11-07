@@ -452,7 +452,7 @@ $(function () {
 			return false;
 		}
 		var search = $("#people_search").val();
-		renderPeople("add", companyId, companyName, search);
+		renderPeople(companyId, companyName, search);
 		
 	});
 	
