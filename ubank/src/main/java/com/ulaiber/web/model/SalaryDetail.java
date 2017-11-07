@@ -48,9 +48,29 @@ public class SalaryDetail {
 	private double subsidies;
 	
 	/**
-	 * 考勤扣款
+	 * 考勤扣款总金额
 	 */
-	private double attendanceCutPayment;
+	private double totalCutPayment;
+	
+	/**
+	 * 迟到扣款
+	 */
+	private double laterCutPayment;
+	
+	/**
+	 * 早退扣款
+	 */
+	private double leaveEarlyCutPayment;
+	
+	/**
+	 * 忘打卡扣款
+	 */
+	private double forgetClockCutPayment;
+	
+	/**
+	 * 旷工
+	 */
+	private double noClockCutPayment;
 	
 	/**
 	 * 请假扣款
@@ -166,12 +186,44 @@ public class SalaryDetail {
 		this.subsidies = subsidies;
 	}
 
-	public double getAttendanceCutPayment() {
-		return attendanceCutPayment;
+	public double getTotalCutPayment() {
+		return totalCutPayment;
 	}
 
-	public void setAttendanceCutPayment(double attendanceCutPayment) {
-		this.attendanceCutPayment = attendanceCutPayment;
+	public void setTotalCutPayment(double totalCutPayment) {
+		this.totalCutPayment = totalCutPayment;
+	}
+
+	public double getLaterCutPayment() {
+		return laterCutPayment;
+	}
+
+	public void setLaterCutPayment(double laterCutPayment) {
+		this.laterCutPayment = laterCutPayment;
+	}
+
+	public double getLeaveEarlyCutPayment() {
+		return leaveEarlyCutPayment;
+	}
+
+	public void setLeaveEarlyCutPayment(double leaveEarlyCutPayment) {
+		this.leaveEarlyCutPayment = leaveEarlyCutPayment;
+	}
+
+	public double getForgetClockCutPayment() {
+		return forgetClockCutPayment;
+	}
+
+	public void setForgetClockCutPayment(double forgetClockCutPayment) {
+		this.forgetClockCutPayment = forgetClockCutPayment;
+	}
+
+	public double getNoClockCutPayment() {
+		return noClockCutPayment;
+	}
+
+	public void setNoClockCutPayment(double noClockCutPayment) {
+		this.noClockCutPayment = noClockCutPayment;
 	}
 
 	public double getAskForLeaveCutPayment() {

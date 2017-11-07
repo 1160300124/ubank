@@ -18,7 +18,11 @@
     	<result column="pre_tax_salaries" property="preTaxSalaries" jdbcType="DOUBLE" />
     	<result column="bonuses" property="bonuses" jdbcType="DOUBLE" />
     	<result column="subsidies" property="subsidies" jdbcType="DOUBLE" />
-    	<result column="attendance_cut_payment" property="attendanceCutPayment" jdbcType="DOUBLE" />
+    	<result column="attendance_cut_payment" property="totalCutPayment" jdbcType="DOUBLE" />
+    	<result column="later_cut_payment" property="laterCutPayment" jdbcType="DOUBLE" />
+    	<result column="leave_early_cut_payment" property="leaveEarlyCutPayment" jdbcType="DOUBLE" />
+    	<result column="forget_clock_cut_payment" property="forgetClockCutPayment" jdbcType="DOUBLE" />
+    	<result column="no_clock_cut_payment" property="noClockCutPayment" jdbcType="DOUBLE" />
     	<result column="askForLeave_cut_payment" property="askForLeaveCutPayment" jdbcType="DOUBLE" />
     	<result column="overtime_payment" property="overtimePayment" jdbcType="DOUBLE" />
     	<result column="socialInsurance" property="socialInsurance" jdbcType="DOUBLE" />
@@ -32,11 +36,13 @@
    
   	<!-- 批量插入-->
     <insert id ="batchSave" parameterType="java.util.List" useGeneratedKeys="true">
-         insert into tbl_salaries_detail(sid, userId, userName, cardNo, pre_tax_salaries, bonuses, subsidies, attendance_cut_payment, askForLeave_cut_payment,
+         insert into tbl_salaries_detail(sid, userId, userName, cardNo, pre_tax_salaries, bonuses, subsidies, attendance_cut_payment, 
+         later_cut_payment, leave_early_cut_payment,forget_clock_cut_payment, no_clock_cut_payment, askForLeave_cut_payment,
          overtime_payment, socialInsurance, publicAccumulationFunds, taxThreshold, personalIncomeTax, else_cut_payment, salaries, remark) values
          <foreach collection ="list" item="detail" index= "index" separator =",">
-             (#{detail.sid}, #{detail.userId}, #{detail.userName}, #{detail.cardNo}, #{detail.preTaxSalaries}, #{detail.bonuses}, #{detail.subsidies}, #{detail.attendanceCutPayment}, 
-             #{detail.askForLeaveCutPayment}, #{detail.overtimePayment}, #{detail.socialInsurance}, #{detail.publicAccumulationFunds}, #{detail.taxThreshold}, 
+             (#{detail.sid}, #{detail.userId}, #{detail.userName}, #{detail.cardNo}, #{detail.preTaxSalaries}, #{detail.bonuses}, #{detail.subsidies},
+             #{detail.totalCutPayment}, #{detail.laterCutPayment}, #{detail.leaveEarlyCutPayment}, #{detail.forgetClockCutPayment}, #{detail.noClockCutPayment}, 
+             #{detail.askForLeaveCutPayment}, #{detail.overtimePayment}, #{detail.socialInsurance}, #{detail.publicAccumulationFunds}, #{detail.taxThreshold},
              #{detail.personalIncomeTax}, #{detail.elseCutPayment}, #{detail.salaries}, #{detail.remark})
          </foreach >
     </insert >
@@ -45,10 +51,11 @@
          <foreach collection="list" item="detail" index="index" open="" close="" separator=";">  
              update tbl_salaries_detail   
              <set>  
-             	pre_tax_salaries=#{detail.preTaxSalaries}, bonuses=#{detail.bonuses}, subsidies=#{detail.subsidies}, attendance_cut_payment=#{detail.attendanceCutPayment},
-             	askForLeave_cut_payment=#{detail.askForLeaveCutPayment}, overtime_payment=#{detail.overtimePayment}, socialInsurance=#{detail.socialInsurance},
-             	publicAccumulationFunds=#{detail.publicAccumulationFunds}, taxThreshold=#{detail.taxThreshold}, personalIncomeTax= #{detail.personalIncomeTax},
-             	else_cut_payment=#{detail.elseCutPayment}, salaries=#{detail.salaries}, remark=#{detail.remark}
+             	pre_tax_salaries=#{detail.preTaxSalaries}, bonuses=#{detail.bonuses}, subsidies=#{detail.subsidies}, attendance_cut_payment=#{detail.totalCutPayment},
+             	later_cut_payment=#{detail.laterCutPayment}, leave_early_cut_payment=#{detail.leaveEarlyCutPayment}, forget_clock_cut_payment=#{detail.forgetClockCutPayment},
+             	no_clock_cut_payment=#{detail.noClockCutPayment}, askForLeave_cut_payment=#{detail.askForLeaveCutPayment}, overtime_payment=#{detail.overtimePayment},
+             	socialInsurance=#{detail.socialInsurance}, publicAccumulationFunds=#{detail.publicAccumulationFunds}, taxThreshold=#{detail.taxThreshold},
+             	personalIncomeTax= #{detail.personalIncomeTax}, else_cut_payment=#{detail.elseCutPayment}, salaries=#{detail.salaries}, remark=#{detail.remark}
              </set>  
              where did=${detail.did}  
         </foreach>  
