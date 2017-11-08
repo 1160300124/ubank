@@ -1,14 +1,18 @@
 package com.ulaiber.web.utils;
 
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
 
 import com.qiniu.util.Auth;
+import com.ulaiber.web.SHSecondAccount.EncryDecryUtils;
 import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
+import com.ulaiber.web.SHSecondAccount.SHWithdraw;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
+import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -443,24 +447,165 @@ public class Test {
 		System.out.print(">>>>>>>>结果为："+result);
 	}
 
+	//上海银行二类户提现
 	@org.junit.Test
-	public void md5(){
-//		String pwd = "601258";
-//		String password = MD5Util.getEncryptedPwd(pwd);
-//		String userId = "359";
-//		long ll = Long.valueOf(userId);
+	public void withdraw() throws URISyntaxException {
+		Withdraw wd = new Withdraw();
+		wd.setSubAcctNo("623185009300012603");
+		wd.setProductCd("yfyBalFinancing");
+		wd.setType("0");
+		wd.setPurpose("测试测试");
+		wd.setTheirRef("提现");
+		wd.setAmount(10.0);
+		wd.setBindCardNo("6217007200047229499");
+		wd.setCurrency("156");
+		//SHWithdraw.withdraw(wd);
+		JSONObject json = JSONObject.fromObject(wd);
+		System.out.println(">>>>>>>>>>>json："+ json.toString());
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/Withdraw",json.toString());
+		System.out.println("result is :"+result);
 
-		//System.out.print(">>>>>>userID：" + UUID.randomUUID());
-		String a  = "2017-11-06";
-		String b = "2017-11-08";
-		System.out.println();
-		//System.out.println(SHQueryBalance.round(a) + SHQueryBalance.round(b));
 	}
 
-	//生成字母和数字的随机数
 	@org.junit.Test
-	public void random(){
-		System.out.println(">>>>>>>>>>随机数为：" + StringUtil.getStringRandom(36));
+	public void test(){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("SubAcctNo","623185009300012603");
+		map.put("ProductCd","yfyBalFinancing");
+		map.put("Purpose","");
+		map.put("TheirRef","");
+		map.put("Amount", 10.0);
+		map.put("BindCardNo","6217007200047229499");
+		map.put("Currency","156");
+		 map.put("ChannelId","YFY");
+		 map.put("ClearDate",new Date());
+		 map.put("RqUID","dfasdfdsfadsfdsafrg436255234");
+		 map.put("SPName","CBIB");
+		 map.put("TranDate","TranDate");
+		 map.put("TranTime","TranTime");
+
+		Map<String,String> ma = new HashMap<>();
+		ma.put("SPName","SPName");
+		ma.put("RqUID","RqUID");
+		ma.put("ClearDate","ClearDate");
+		ma.put("TranDate","TranDate");
+		ma.put("TranTime","TranTime");
+		ma.put("ChannelId","ChannelId");
+
+		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
+		//排序方法
+		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
+			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+				//return (o2.getValue() - o1.getValue());
+				return (o1.getKey()).toString().compareTo(o2.getKey());
+			}
+		});
+		//排序后
+		for (int i = 0; i < infoIds.size(); i++) {
+			String id = infoIds.get(i).toString();
+			System.out.println("排序前"+id);
+		}
+		String str = "";
+		StringBuffer sb = new StringBuffer();
+		//排序后
+		for(Map.Entry<String, Object> m : infoIds){
+			boolean flag = true;
+			//System.out.println("排序后"+m.getKey()+":"+ m.getValue());
+			if(!StringUtil.isEmpty(m.getValue())){
+				for(String key : ma.keySet()){
+					if(m.getKey().equals(key)){
+						flag = false;
+						break;
+					}
+				}
+				if(flag){
+					sb.append("<"+m.getKey()+">"+m.getValue()+"</"+m.getKey()+">");
+				}
+			}
+		}
+		System.out.println("拼接的结果为"+sb);
+
+
 	}
+
+	@org.junit.Test
+	public void test2(){
+		try {
+			String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
+			//加密
+			EncryDecryUtils.makeZip("/Users/emacs/Desktop/image",
+					"/Users/emacs/Desktop/image2",indexName);
+			//解密
+//			EncryDecryUtils.unZip(
+//					"D:\\Users\\liao_qping\\Desktop\\temp\\IMGDOC0001_CPH_20170831_1342.zip",
+//					"D:\\Users\\liao_qping\\Desktop\\temp\\aaa");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+//		System.out.println("运行完毕");
+		//创建文件
+//		String name = "/Users/emacs/Desktop/test.txt";
+//		String content = "20171107_YFY_yyyy_ddddd";
+//		File file = new File(name);
+//		try {
+//			if(!file.exists()){
+//				file.createNewFile();
+//			}
+//
+//			writeToTxt(name,content);
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
+	}
+
+	public void writeToTxt(String fileName , String content) throws IOException {
+		String filein = content+"\r\n";//新写入的行，换行
+		String temp = "";
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		FileOutputStream fos = null;
+		PrintWriter pw = null;
+		try {
+			File file = new File(fileName);//文件路径(包括文件名称)
+			//将文件读入输入流
+			fis = new FileInputStream(file);
+			isr = new InputStreamReader(fis);
+			br = new BufferedReader(isr);
+			StringBuffer buffer = new StringBuffer();
+			//文件原有内容
+			for(int i=0;(temp =br.readLine())!=null;i++){
+				buffer.append(temp);
+			// 行与行之间的分隔符 相当于“\n”
+				buffer = buffer.append(System.getProperty("line.separator"));
+			}
+			buffer.append(filein);
+			fos = new FileOutputStream(file);
+			pw = new PrintWriter(fos);
+			pw.write(buffer.toString().toCharArray());
+			pw.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if (pw != null) {
+				pw.close();
+			}
+			if (fos != null) {
+				fos.close();
+			}
+			if (br != null) {
+				br.close();
+			}
+			if (isr != null) {
+				isr.close();
+			}
+			if (fis != null) {
+				fis.close();
+			}
+		}
+	}
+
 
 }

@@ -408,12 +408,17 @@ public class StringUtil {
 				}
 				//消息内容
 				String title = "您有个"+types+"申请待审批";
-				String content = name + "你好，有一条请假申请需要您审批，原因是:"+ reason;
+				String str = "";
+				if(!StringUtil.isEmpty(reason)){
+					str = reason;
+				}
+				String content = name + "你好，有一条请假申请需要您审批，原因是:"+ str;
 				try {
 					//推送审批信息致第一个审批人
 					PushtoSingle.singlePush(cid,type,content,title);
 				} catch (Exception e) {
 					e.printStackTrace();
+					logger.error(">>>>>>>>>>向"+name+"推送消息异常",e);
 				}
 			}
 
@@ -466,6 +471,7 @@ public class StringUtil {
 		String host = prop.getProperty("SH_host");
 		int port = Integer.parseInt(prop.getProperty("SH_port"));
 		String directory = prop.getProperty("SH_directory");
+		String zipDir = prop.getProperty("SH_ZIPDirectory");
 		map.put("privateKey",privateKey);
 		map.put("publicKey",publicKey);
 		map.put("postUrl",postUrl);
@@ -475,6 +481,7 @@ public class StringUtil {
 		map.put("host",host);
 		map.put("port",port);
 		map.put("directory",directory);
+		map.put("zipDir",zipDir);
 		return map;
 
 	}
@@ -527,5 +534,111 @@ public class StringUtil {
 		return f1;
 	}
 
+	/**
+	 *  拼接签名数据
+	 * @param map
+	 * @return
+	 */
+	public static String jointSignature(Map<String,Object> map){
+		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
+		//排序方法
+		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
+			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+				//return (o2.getValue() - o1.getValue());
+				return (o1.getKey()).toString().compareTo(o2.getKey());
+			}
+		});
+		//排序后
+//		for (int i = 0; i < infoIds.size(); i++) {
+//			String id = infoIds.get(i).toString();
+//			System.out.println("排序前"+id);
+//		}
+		StringBuffer sb = new StringBuffer();
+		//排序后
+		for(Map.Entry<String, Object> m : infoIds){
+			//System.out.println("排序后"+m.getKey()+":"+ m.getValue());
+			if(!StringUtil.isEmpty(m.getValue())){
+				sb.append(m.getKey()+ "=" + m.getValue() + "&");
+			}
+		}
+		String str = "";
+		str = sb.substring(0,sb.length()-1);
+		return str;
+	}
+
+	/**
+	 *  拼接XML
+	 * @param map
+	 * @return
+	 */
+	public static String jointXML(Map<String,Object> map){
+		Map<String,String> ma = new HashMap<>();
+		ma.put("SPName","SPName");
+		ma.put("RqUID","RqUID");
+		ma.put("ClearDate","ClearDate");
+		ma.put("TranDate","TranDate");
+		ma.put("TranTime","TranTime");
+		ma.put("ChannelId","ChannelId");
+		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
+		//排序方法
+		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
+			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+				//return (o2.getValue() - o1.getValue());
+				return (o1.getKey()).toString().compareTo(o2.getKey());
+			}
+		});
+		//排序后
+//		for (int i = 0; i < infoIds.size(); i++) {
+//			String id = infoIds.get(i).toString();
+//			System.out.println("排序前"+id);
+//		}
+		StringBuffer sb = new StringBuffer();
+		//排序后
+		for(Map.Entry<String, Object> m : infoIds){
+			boolean flag = true;
+			//System.out.println("排序后"+m.getKey()+":"+ m.getValue());
+			if(!StringUtil.isEmpty(m.getValue())){
+				for(String key : ma.keySet()){
+					if(m.getKey().equals(key)){
+						flag = false;
+						break;
+					}
+				}
+				if(flag){
+					sb.append("<"+m.getKey()+">"+m.getValue()+"</"+m.getKey()+">");
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+
+	/**
+	 * 递归删除目录中的文件
+	 * @param file
+	 * @return
+	 */
+	public static int deleteFile(File file){
+		if(file.exists()){
+			//判断是否文件
+			if(file.isFile()){
+				file.delete();
+			}else if(file.isDirectory()){
+				//声明目录下所有的文件 files[];
+				File[] files = file.listFiles();
+				//遍历目录下所有文件，用递归删除所有目录下的文件
+				for (int i = 0; i < files.length; i++) {
+					StringUtil.deleteFile(files[i]);
+				}
+				//删除所有文件后删除文件夹
+				file.delete();
+			}
+			return IConstants.QT_CODE_OK;
+		}else{
+			System.out.println("文件夹不存在！");
+			logger.error(">>>>>>>>>>文件夹不存在！");
+			return IConstants.QT_CODE_EMPTY;
+		}
+	}
 
 }

@@ -42,14 +42,7 @@ public class ShangHaiAccount {
             String postUrl = (String) configMap.get("postUrl");
             String pwd = (String) configMap.get("pwd");
 
-            String CoopCustNo = (String) map.get("CoopCustNo");
-            String ProductCd = (String) map.get("ProductCd");
-            String CustName = (String) map.get("CustName");
-            String IdNo = (String) map.get("IdNo");
-            String MobllePhone = (String) map.get("MobllePhone");
-            String BindCardNo = (String) map.get("BindCardNo");
-            String ReservedPhone = (String) map.get("ReservedPhone");
-            String Sign = (String) map.get("Sign");
+
             String KoalB64Cert = "";
             String Signature = "";
             logger.info(">>>>>>>>>>开始加签");
@@ -64,16 +57,33 @@ public class ShangHaiAccount {
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             logger.info(">>>>>>>>>>请求流水号为：" + random);
+            //拼接待签名数据
+//            String CoopCustNo = (String) map.get("CoopCustNo");
+//            String ProductCd = (String) map.get("ProductCd");
+//            String CustName = (String) map.get("CustName");
+//            String IdNo = (String) map.get("IdNo");
+//            String MobllePhone = (String) map.get("MobllePhone");
+//            String BindCardNo = (String) map.get("BindCardNo");
+//            String ReservedPhone = (String) map.get("ReservedPhone");
+//            String Sign = (String) map.get("Sign");
+            map.put("SPName","CBIB");
+            map.put("RqUID",random);
+            map.put("ClearDate",date);
+            map.put("TranDate",date);
+            map.put("TranTime",time);
+            map.put("ChannelId","YFY");
+            String signDataStr = StringUtil.jointSignature(map);
             //待签名的数据
-            String signDataStr = "BindCardNo="+BindCardNo+"&ChannelId=YFY&ClearDate="+date+"&CoopCustNo="+CoopCustNo
-                    +"&CustName="+CustName+"&IdNo="+IdNo+"&MobllePhone="+MobllePhone+"&ProductCd="+ProductCd
-                    +"&ReservedPhone="+ReservedPhone+"&RqUID="+random+"&SPName=CBIB&Sign="+Sign+"&TranDate="+date+"&TranTime="+time;
+//            String signDataStr = "BindCardNo="+BindCardNo+"&ChannelId=YFY&ClearDate="+date+"&CoopCustNo="+CoopCustNo
+//                    +"&CustName="+CustName+"&IdNo="+IdNo+"&MobllePhone="+MobllePhone+"&ProductCd="+ProductCd
+//                    +"&ReservedPhone="+ReservedPhone+"&RqUID="+random+"&SPName=CBIB&Sign="+Sign+"&TranDate="+date+"&TranTime="+time;
             //System.out.print(">>>>>>>>> sign:" + signDataStr);
             logger.debug(">>>>>>>>>>sign :" + signDataStr);
             logger.info(">>>>>>>>>获取Signature");
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接xml");
+            String joint = StringUtil.jointXML(map);
             //拼接xml
             String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
                     "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
@@ -84,11 +94,7 @@ public class ShangHaiAccount {
                     "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
                     "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
                     "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" +
-                    "<CoopCustNo>"+ CoopCustNo +"</CoopCustNo><ProductCd>"+ ProductCd+ "</ProductCd>" +
-                    "<CustName>"+ CustName +"</CustName><IdNo>"+ IdNo +"</IdNo>" +
-                    "<MobllePhone>"+ MobllePhone +"</MobllePhone><BindCardNo>"+ BindCardNo +"</BindCardNo>" +
-                    "<ReservedPhone>"+ ReservedPhone +"</ReservedPhone><Sign>"+ Sign +"</Sign>" +
+                    "</CommonRqHdr>" + joint +
                     "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
                     "</YFY0001Rq>" +
                     "</BOSFXII>";
@@ -106,6 +112,7 @@ public class ShangHaiAccount {
             String resultSign = "";
             Iterator iter = root.elementIterator("YFY0001Rs"); // 获取根节点下的子节点BOSFXII
             SecondAcount secondAcount = new SecondAcount();
+            Map<String , Object> rsMap = new HashMap<>();
             while (iter.hasNext()){
                 Element recordEle = (Element) iter.next();
                 //响应报文信息
@@ -140,16 +147,30 @@ public class ShangHaiAccount {
                 resultMap.put("secondAcount",secondAcount);
                 resultMap.put("status",secondAcount.getStatusCode());
                 resultInfo.setData(resultMap);
-//                Map<String,Object> map2 = (Map<String, Object>) resultInfo.getData();
-//                SecondAcount sa = (SecondAcount) map2.get("secondAcount");
-//                String status = (String) resultMap.get("status");
                 return resultInfo;
             }
-            signDataStr = "AcctOpenResult="+secondAcount.getAcctOpenResult()+"&CoopCustNo="+secondAcount.getCoopCustNo()+"&CustName="
-                    +secondAcount.getCustName()+"&EacctNo="+secondAcount.getEacctNo()
-                    +"&IdNo="+secondAcount.getIdNo()+"&ProductCd="+secondAcount.getProductCd()+"&RqUID="+secondAcount.getRqUID()
-                    +"&SPRsUID="+secondAcount.getSPRsUID()+"&ServerStatusCode="+secondAcount.getServerStatusCode()+"&Sign="
-                    +secondAcount.getSign()+"&StatusCode="+secondAcount.getStatusCode()+"&SubAcctNo="+secondAcount.getSubAcctNo();
+            rsMap.put("CoopCustNo",secondAcount.getCoopCustNo());
+            rsMap.put("ProductCd",secondAcount.getProductCd());
+            rsMap.put("CustName",secondAcount.getCustName());
+            rsMap.put("IdNo",secondAcount.getIdNo());
+            rsMap.put("Sign",secondAcount.getSign());
+            rsMap.put("AcctOpenResult",secondAcount.getAcctOpenResult());
+            rsMap.put("EacctNo",secondAcount.getEacctNo());
+            rsMap.put("SubAcctNo",secondAcount.getSubAcctNo());
+            rsMap.put("FundCode",secondAcount.getFundCode());
+            rsMap.put("FundAcctOpenResult",secondAcount.getFundAcctOpenResult());
+            rsMap.put("FundAcct",secondAcount.getFundAcct());
+            rsMap.put("FundTxnAcct",secondAcount.getFundTxnAcct());
+            rsMap.put("StatusCode",secondAcount.getStatusCode());
+            rsMap.put("ServerStatusCode",secondAcount.getServerStatusCode());
+            rsMap.put("SPRsUID",secondAcount.getSPRsUID());
+            rsMap.put("RqUID",secondAcount.getRqUID());
+            signDataStr = StringUtil.jointSignature(rsMap);
+//            signDataStr = "AcctOpenResult="+secondAcount.getAcctOpenResult()+"&CoopCustNo="+secondAcount.getCoopCustNo()+"&CustName="
+//                    +secondAcount.getCustName()+"&EacctNo="+secondAcount.getEacctNo()
+//                    +"&IdNo="+secondAcount.getIdNo()+"&ProductCd="+secondAcount.getProductCd()+"&RqUID="+secondAcount.getRqUID()
+//                    +"&SPRsUID="+secondAcount.getSPRsUID()+"&ServerStatusCode="+secondAcount.getServerStatusCode()+"&Sign="
+//                    +secondAcount.getSign()+"&StatusCode="+secondAcount.getStatusCode()+"&SubAcctNo="+secondAcount.getSubAcctNo();
             System.out.println(">>>>>>>>>signDataStr :" + signDataStr);
            // System.out.println(">>>>>>>>>resultSign :" + resultSign);
             logger.info(">>>>>>>>>>开始验签");

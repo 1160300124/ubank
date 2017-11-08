@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -38,7 +39,7 @@ public class ReimbursementController extends BaseController {
      * @param  VO 报销详细信息
      * @return ResultInfo
      */
-    @RequestMapping("insertReim")
+    @RequestMapping(value = "insertReim", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo insertReimbursement(@RequestBody ReimbursementVO VO,HttpServletRequest request, HttpServletResponse response){
         logger.debug(">>>>>>>>>>>>>>开始保存报销记录");

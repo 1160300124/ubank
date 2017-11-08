@@ -71,7 +71,7 @@ var EmployeeFun = {
                 {field : 'cardNo', title : '身份证', width: 130, align : 'left'},
                 {field : 'bankName', title : '绑定银行', width: 130, align : 'left'},
                 {field : 'bankCardNo', title : '银行卡', width: 130, align : 'left'},
-                {field : 'mobile', title : '预留手机号', width: 130, align : 'left'},
+                {field : 'mobile', title : '手机号', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
                 {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false},
                 {field : 'dept_number', title : '部门编号', width: 130, align : 'left',visible : false},
@@ -320,8 +320,10 @@ var EmployeeFun = {
         var d2 = new Date(leaveDate.replace(/\-/g, "\/"));
         if(entryDate == "" ){
             Ewin.alert("入职时间不能为空");
+            return;
         }else if(d1 > d2){
             Ewin.alert("入职时间不能大于离职时间");
+            return;
         }
 
         $.ajax({

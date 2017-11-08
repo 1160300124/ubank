@@ -55,15 +55,34 @@ public class SHChangeBinding {
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             logger.info(">>>>>>>>>>请求流水号为：" + random);
+            //拼接待签名数据
+            Map<String ,Object> rqMap = new HashMap<>();
+            rqMap.put("BindCardNo",shCard.getBindCardNo());
+            rqMap.put("ChannelId","YFY");
+            rqMap.put("ClearDate",date);
+            rqMap.put("CustName",shCard.getCustName());
+            rqMap.put("IdNo",shCard.getIdNo());
+            rqMap.put("ModiType",shCard.getModiType());
+            rqMap.put("NewCardNo",shCard.getNewCardNo());
+            rqMap.put("NewReservedPhone",shCard.getNewReservedPhone());
+            rqMap.put("ProductCd",shCard.getProductCd());
+            rqMap.put("ReservedPhone",shCard.getReservedPhone());
+            rqMap.put("RqUID",random);
+            rqMap.put("SPName","CBIB");
+            rqMap.put("SubAcctNo",shCard.getSubAcctNo());
+            rqMap.put("TranDate",date);
+            rqMap.put("TranTime",time);
+            String signDataStr = StringUtil.jointSignature(rqMap);
             //待签名的数据
-            String signDataStr = "BindCardNo="+ shCard.getBindCardNo() +"&ChannelId=YFY&ClearDate="+date+"&CustName=" +
-                    shCard.getCustName() + "&IdNo=" + shCard.getIdNo() +"&ModiType=" + shCard.getModiType() +"&NewCardNo="+
-                    shCard.getNewCardNo() +"&NewReservedPhone="+shCard.getNewReservedPhone() +"&ProductCd="+shCard.getProductCd()+
-                    "&ReservedPhone="+ shCard.getReservedPhone() +"&RqUID="+ random +
-                    "&SPName=CBIB&SubAcctNo=" +shCard.getSubAcctNo()+"&TranDate="+date+"&TranTime="+time;
+//            String signDataStr = "BindCardNo="+ shCard.getBindCardNo() +"&ChannelId=YFY&ClearDate="+date+"&CustName=" +
+//                    shCard.getCustName() + "&IdNo=" + shCard.getIdNo() +"&ModiType=" + shCard.getModiType() +"&NewCardNo="+
+//                    shCard.getNewCardNo() +"&NewReservedPhone="+shCard.getNewReservedPhone() +"&ProductCd="+shCard.getProductCd()+
+//                    "&ReservedPhone="+ shCard.getReservedPhone() +"&RqUID="+ random +
+//                    "&SPName=CBIB&SubAcctNo=" +shCard.getSubAcctNo()+"&TranDate="+date+"&TranTime="+time;
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接xml");
+            String joint = StringUtil.jointXML(rqMap);
             //拼接xml
             String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
                     "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
@@ -74,12 +93,7 @@ public class SHChangeBinding {
                     "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
                     "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
                     "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" +
-                    "<SubAcctNo>"+ shCard.getSubAcctNo() +"</SubAcctNo><ProductCd>"+ shCard.getProductCd() +"</ProductCd>" +
-                    "<CustName>"+ shCard.getCustName() +"</CustName><IdNo>"+ shCard.getIdNo()+"</IdNo>" +
-                    "<BindCardNo>"+ shCard.getBindCardNo() +"</BindCardNo><NewCardNo>"+ shCard.getNewCardNo()+"</NewCardNo>" +
-                    "<ReservedPhone>"+ shCard.getReservedPhone() +"</ReservedPhone><NewReservedPhone>"+ shCard.getNewReservedPhone() +"</NewReservedPhone>" +
-                    "<ModiType>"+ shCard.getModiType() +"</ModiType>" +
+                    "</CommonRqHdr>" + joint+
                     "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
                     "</YFY0002Rq>" +
                     "</BOSFXII>";
@@ -98,6 +112,7 @@ public class SHChangeBinding {
             String resultSign = "";
             Iterator iter = root.elementIterator("YFY0002Rs"); // 获取根节点下的子节点BOSFXII
             SHChangeCard shChangeCard = new SHChangeCard();
+            Map<String , Object> rsMap = new HashMap<>();
             while(iter.hasNext()){
                 Element recordEle = (Element) iter.next();
                 shChangeCard.setSubAcctNo(recordEle.elementTextTrim("SubAcctNo"));
@@ -124,10 +139,20 @@ public class SHChangeBinding {
                 resultInfo.setData(resultMap);
                 return resultInfo;
             }
+            rsMap.put("SubAcctNo",shChangeCard.getSubAcctNo());
+            rsMap.put("ProductCd",shChangeCard.getProductCd());
+            rsMap.put("CustName",shChangeCard.getCustName());
+            rsMap.put("NewCardNo",shChangeCard.getNewCardNo());
+            rsMap.put("NewReservedPhone",shChangeCard.getNewReservedPhone());
+            rsMap.put("StatusCode",shChangeCard.getStatusCode());
+            rsMap.put("ServerStatusCode",shChangeCard.getServerStatusCode());
+            rsMap.put("SPRsUID",shChangeCard.getSPRsUID());
+            rsMap.put("RqUID",shChangeCard.getRqUID());
             logger.info(">>>>>>>>>>解析xml完毕");
-            signDataStr = "CustName="+shChangeCard.getCustName()+"&NewCardNo="+shChangeCard.getNewCardNo()+"&NewReservedPhone="+shChangeCard.getNewReservedPhone()
-                    +"&ProductCd="+shChangeCard.getProductCd()+"&RqUID="+shChangeCard.getRqUID()+"&SPRsUID="+shChangeCard.getSPRsUID()
-                    +"&ServerStatusCode="+shChangeCard.getServerStatusCode()+"&StatusCode="+shChangeCard.getStatusCode()+"&SubAcctNo="+shChangeCard.getSubAcctNo()+"";
+            signDataStr = StringUtil.jointSignature(rsMap);
+//            signDataStr = "CustName="+shChangeCard.getCustName()+"&NewCardNo="+shChangeCard.getNewCardNo()+"&NewReservedPhone="+shChangeCard.getNewReservedPhone()
+//                    +"&ProductCd="+shChangeCard.getProductCd()+"&RqUID="+shChangeCard.getRqUID()+"&SPRsUID="+shChangeCard.getSPRsUID()
+//                    +"&ServerStatusCode="+shChangeCard.getServerStatusCode()+"&StatusCode="+shChangeCard.getStatusCode()+"&SubAcctNo="+shChangeCard.getSubAcctNo()+"";
 
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature

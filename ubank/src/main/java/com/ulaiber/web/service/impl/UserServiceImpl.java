@@ -66,7 +66,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo) {
+	public int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo, int type) {
 		user.setRole_id(0);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
@@ -98,6 +98,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		paraMap.put("userid",userid);
 		paraMap.put("bankNo",bankNo);
 		paraMap.put("bankCardNo",bankCardNo);
+		paraMap.put("type",type);
 		int result4 = mapper.insertUserToBank(paraMap);
 		if(result4 == 0){
 			return result4;
@@ -280,14 +281,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         return mapper.getSecondAccountByUserId(userid);
     }
 
-    @Override
-    public int insertUserToBank(int userid, long bankNo, String bankCardNo) {
-		Map<String,Object> map = new HashMap<>();
-		map.put("userid",userid);
-		map.put("bankNo",bankNo);
-		map.put("bankCardNo",bankCardNo);
-        return mapper.insertUserToBank(map);
-    }
 
     @Override
     public SecondAcount findSecondAcc(int id) {

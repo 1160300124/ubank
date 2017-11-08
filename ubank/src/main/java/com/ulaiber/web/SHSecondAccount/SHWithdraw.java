@@ -33,7 +33,7 @@ public class SHWithdraw {
 
     /**
      * 提现
-     * @param wd 提现信息
+     * @rqMap wd 提现信息
      * @return
      */
     public static ResultInfo withdraw(Withdraw wd){
@@ -57,13 +57,30 @@ public class SHWithdraw {
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>>请求流水号为：" + random);
+            //拼接待签名数据
+            Map<String ,Object> rqMap = new HashMap<>();
+            rqMap.put("Amount",wd.getAmount());
+            rqMap.put("ChannelId","YFY");
+            rqMap.put("BindCardNo",wd.getBindCardNo());
+            rqMap.put("Currency",wd.getCurrency());
+            rqMap.put("ClearDate",date);
+            rqMap.put("Purpose",wd.getPurpose());
+            rqMap.put("RqUID",random);
+            rqMap.put("SPName","CBIB");
+            rqMap.put("ProductCd",wd.getProductCd());
+            rqMap.put("TranDate",date);
+            rqMap.put("SubAcctNo",wd.getSubAcctNo());
+            rqMap.put("TheirRef",wd.getTheirRef());
+            rqMap.put("TranTime",time);
+            String signDataStr = StringUtil.jointSignature(rqMap);
             //待签名的数据
-            String signDataStr = "Amount="+wd.getAmount()+"&Attach="+wd.getAttach()+"&BindCardNo="+wd.getBindCardNo()+"&ChannelId=YFY&ClearDate="+date
-                    +"&Currency="+wd.getCurrency()+"&MemoInfo="+wd.getMemoInfo()+"&ProductCd="+wd.getProductCd()+"&Purpose="+wd.getPurpose()
-                    +"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+wd.getSubAcctNo()+"&TheirRef="+wd.getTheirRef()+"&TranDate="+date+"&TranTime="+time;
+//            String signDataStr = "Amount="+wd.getAmount()+"&BindCardNo="+wd.getBindCardNo()+"&ChannelId=YFY&ClearDate="+date
+//                    +"&Currency="+wd.getCurrency()+"&ProductCd="+wd.getProductCd()+"&Purpose="+wd.getPurpose()
+//                    +"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+wd.getSubAcctNo()+"&TheirRef="+wd.getTheirRef()+"&TranDate="+date+"&TranTime="+time;
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接查询xml");
+            String joint = StringUtil.jointXML(rqMap);
             String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
                     "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
                     "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
@@ -73,12 +90,12 @@ public class SHWithdraw {
                     "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
                     "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
                     "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" +
-                    "<SubAcctNo>"+ wd.getSubAcctNo() +"</SubAcctNo>" +
-                    "<BindCardNo>"+wd.getBindCardNo()+"</BindCardNo><ProductCd>"+wd.getProductCd()+"</ProductCd>"+
-                    "<Amount>"+wd.getAmount()+"</Amount><Currency>"+wd.getCurrency()+"</Currency>"+
-                    "<TheirRef>"+wd.getTheirRef()+"</TheirRef><Purpose>"+wd.getPurpose()+"</Purpose>"+
-                    "<Attach>"+wd.getAttach()+"</Attach><MemoInfo>"+wd.getMemoInfo()+"</MemoInfo>"+
+                    "</CommonRqHdr>" + joint+
+//                    "<SubAcctNo>"+ wd.getSubAcctNo() +"</SubAcctNo>" +
+//                    "<BindCardNo>"+wd.getBindCardNo()+"</BindCardNo><ProductCd>"+wd.getProductCd()+"</ProductCd>"+
+//                    "<Amount>"+wd.getAmount()+"</Amount><Currency>"+wd.getCurrency()+"</Currency>"+
+//                    "<TheirRef>"+wd.getTheirRef()+"</TheirRef><Purpose>"+wd.getPurpose()+"</Purpose>"+
+//                    "<Attach>"+wd.getAttach()+"</Attach><MemoInfo>"+wd.getMemoInfo()+"</MemoInfo>"+
                     "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
                     "</YFY0021Rq>" +
                     "</BOSFXII>";
@@ -97,6 +114,7 @@ public class SHWithdraw {
             Element root = document.getRootElement();
             String resultSign = "";
             Iterator iter = root.elementIterator("YFY0021Rs"); // 获取根节点下的子节点BOSFXII
+            Map<String , Object> rsMap = new HashMap<>();
             while (iter.hasNext()){
                 Element recordEle = (Element) iter.next();
                 withdraw.setBizDate(recordEle.elementTextTrim("BizDate"));          //交易日期
@@ -112,6 +130,7 @@ public class SHWithdraw {
                 withdraw.setMemoInfo(recordEle.elementTextTrim("MemoInfo"));        //交易备注
                 Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
                 resultSign = recordEle.elementTextTrim("Signature"); // 拿到YFY0021Rs下的字节点Signature
+                
                 while (iters.hasNext()){
                     Element recordEles = (Element) iters.next();
                     //响应报文头信息
@@ -130,10 +149,26 @@ public class SHWithdraw {
                 resultInfo.setData(resultMap);
                 return resultInfo;
             }
+            rsMap.put("BizDate",withdraw.getBizDate());
+            rsMap.put("SubAcctNo",withdraw.getSubAcctNo());
+            rsMap.put("BindCardNo",withdraw.getBindCardNo());
+            rsMap.put("ProductCd",withdraw.getProductCd());
+            rsMap.put("Amount",withdraw.getAmount());
+            rsMap.put("Currency",withdraw.getCurrency());
+            rsMap.put("TheirRef",withdraw.getTheirRef());
+            rsMap.put("Purpose",withdraw.getPurpose());
+            rsMap.put("Attach",withdraw.getAttach());
+            rsMap.put("MemoInfo",withdraw.getMemoInfo());
+            rsMap.put("StatusCode",withdraw.getStatusCode());
+            rsMap.put("ServerStatusCode",withdraw.getServerStatusCode());
+            rsMap.put("SPRsUID",withdraw.getSPRsUID());
+            rsMap.put("RqUID",withdraw.getRqUID());
             logger.info(">>>>>>>>>>解析xml完毕");
-            signDataStr = "Amount="+withdraw.getAmount()+"&Attach="+withdraw.getAttach()+"&BindCardNo="+withdraw.getBindCardNo()+"&BizDate="+withdraw.getBizDate()+"&ChannelId=YFY&ClearDate="+date
-                    +"&Currency="+withdraw.getCurrency()+"&MemoInfo="+withdraw.getMemoInfo()+"&ProductCd="+withdraw.getProductCd()+"&Purpose="+withdraw.getPurpose()
-                    +"&RqUID="+withdraw.getRqUID()+"&SPRsUID="+withdraw.getSPRsUID()+"&ServerStatusCode="+withdraw.getServerStatusCode()+"&StatusCode="+withdraw.getStatusCode()+"&SubAcctNo="+withdraw.getSubAcctNo()+"&TheirRef="+withdraw.getTheirRef();
+            signDataStr = StringUtil.jointSignature(rsMap);
+//            signDataStr = "Amount="+withdraw.getAmount()+"&BindCardNo="+withdraw.getBindCardNo()+"&BizDate="+withdraw.getBizDate()
+//                    +"&Currency="+withdraw.getCurrency()+"&ProductCd="+withdraw.getProductCd()+"&Purpose="+withdraw.getPurpose()
+//                    +"&RqUID="+withdraw.getRqUID()+"&SPRsUID="+withdraw.getSPRsUID()+"&ServerStatusCode="+withdraw.getServerStatusCode()
+//                    +"&StatusCode="+withdraw.getStatusCode()+"&SubAcctNo="+withdraw.getSubAcctNo()+"&TheirRef="+withdraw.getTheirRef();
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
@@ -165,8 +200,8 @@ public class SHWithdraw {
 
         }catch(Exception e){
             e.printStackTrace();
-            logger.error(">>>>>>>>>上海银行二类户提现操作异常" ,e);
+            logger.error(">>>>>>>>>上海银行二类户提现操作失败" ,e);
         }
-        return null;
+        return resultInfo;
     }
 }

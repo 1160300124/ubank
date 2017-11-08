@@ -13,6 +13,9 @@ public class IConstants
 
     //后台用户SESSION常量名
     public final static String UBANK_BACKEND_USERSESSION = "BACKENDUSER";
+
+	//后台用户session常量名
+	public final static String UBANK_BACKEND_USERMENU = "USERMENU";
     
     //成功
     public final static int QT_CODE_OK = 1000;

@@ -33,24 +33,33 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 		String uri = request.getRequestURI().substring(request.getContextPath().length()); 
 		
 		if (uri.contains("/backend/")){
-
+			String currentUrl = uri.substring(uri.lastIndexOf("/") + 1 ,uri.length());
 			// 从session中获取登录者实体  
 			Object obj = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION);
-			if (!ObjUtil.notEmpty(obj)){
-				boolean isAjaxRequest = isAjaxRequest(request);  
+			//登录用户的权限菜单
+			//Object userUrl = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERMENU);
+			//String[] urlArr = userUrl.toString().split(",");
+			if (!ObjUtil.notEmpty(obj) ){
+				boolean isAjaxRequest = isAjaxRequest(request);
 				if (isAjaxRequest) {  
 					response.setCharacterEncoding("UTF-8");
 				response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");
 			}
 			response.sendRedirect(request.getContextPath() + "/backend/tologin");
 			return false;
-			} else {  
-//				User user = (User)obj;
-//				if (user.getRole_id() == 1 || user.getRole_id() == 2){
-//					
+			} else {
+				//判断当前用户是否有该页面权限
+//				boolean flag = false;
+//				for (int i = 0 ; i < urlArr.length ; i++){
+//					if(currentUrl.equals(urlArr[i])){
+//						flag = true;
+//						break;
+//					}
 //				}
-				// 如果session中存在登录者实体，则继续  
-				
+//				if(flag){
+//					response.sendRedirect(request.getContextPath() + uri);
+//				}
+
 			}  
 		} else if(uri.contains("/backend_bank/")){
 			// 从session中获取登录者实体

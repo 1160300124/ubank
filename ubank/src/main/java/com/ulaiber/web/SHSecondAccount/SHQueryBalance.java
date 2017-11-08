@@ -57,11 +57,22 @@ public class SHQueryBalance {
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为'"+random+"'开始拼接待签名数据");
             logger.info(">>>>>>>>>>请求流水号为：" + random);
+            //拼接待签名数据
+            Map<String ,Object> rqMap = new HashMap<>();
+            rqMap.put("ChannelId","YFY");
+            rqMap.put("ClearDate",date);
+            rqMap.put("RqUID",random);
+            rqMap.put("SPName","CBIB");
+            rqMap.put("SubAcctNo",SubAcctNo);
+            rqMap.put("TranDate",date);
+            rqMap.put("TranTime",time);
+            String signDataStr = StringUtil.jointSignature(rqMap);
             //待签名的数据
-            String signDataStr = "ChannelId=YFY&ClearDate="+date+"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+SubAcctNo+"&TranDate="+date+"&TranTime="+time+"";
+            //String signDataStr = "ChannelId=YFY&ClearDate="+date+"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+SubAcctNo+"&TranDate="+date+"&TranTime="+time+"";
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接查询xml");
+            String joint = StringUtil.jointXML(rqMap);
             //拼接xml
             String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
                     "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
@@ -72,8 +83,7 @@ public class SHQueryBalance {
                     "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
                     "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
                     "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" +
-                    "<SubAcctNo>"+ SubAcctNo +"</SubAcctNo>" +
+                    "</CommonRqHdr>" + joint +
                     "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
                     "</YFY0101Rq>" +
                     "</BOSFXII>";
@@ -81,7 +91,7 @@ public class SHQueryBalance {
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();
-            String result = st.postRequest(postUrl,xml, 8000);
+            String result = st.postRequest(postUrl,xml, 10000);
             //System.out.print(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ：" + result);
            // logger.info(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ："+ result);
             logger.info(">>>>>>>>>>开始解析xml");
@@ -97,7 +107,7 @@ public class SHQueryBalance {
             String fundShare = "";
             String earningsYesterday = "";
             String avaiBal = "";
-
+            Map<String , Object> rsMap = new HashMap<>();
             while(iter.hasNext()){
                 Element recordEle = (Element) iter.next();
                 sa.setSubAcctNo(recordEle.elementTextTrim("SubAcctNo"));
@@ -125,10 +135,21 @@ public class SHQueryBalance {
                 resultInfo.setData(resultMap);
                 return resultInfo;
             }
+            rsMap.put("SubAcctNo",sa.getSubAcctNo());
+            rsMap.put("AvaiBal",avaiBal);
+            rsMap.put("WorkingBal",workingBal);
+            rsMap.put("AvaiFundShare",avaifundShare);
+            rsMap.put("FundShare",fundShare);
+            rsMap.put("EarningsYesterday",earningsYesterday);
+            rsMap.put("StatusCode",sa.getStatusCode());
+            rsMap.put("ServerStatusCode",sa.getServerStatusCode());
+            rsMap.put("SPRsUID",sa.getSPRsUID());
+            rsMap.put("RqUID",sa.getRqUID());
+            signDataStr = StringUtil.jointSignature(rsMap);
             //验签
-            signDataStr = "AvaiBal="+avaiBal+"&AvaiFundShare="+avaifundShare+"&EarningsYesterday="+earningsYesterday
-                    +"&FundShare="+fundShare+"&RqUID="+sa.getRqUID()+"&SPRsUID="+sa.getSPRsUID()+"&ServerStatusCode="+sa.getServerStatusCode()
-                    +"&StatusCode="+sa.getStatusCode()+"&SubAcctNo="+sa.getSubAcctNo()+"&WorkingBal="+workingBal+"";
+//            signDataStr = "AvaiBal="+avaiBal+"&AvaiFundShare="+avaifundShare+"&EarningsYesterday="+earningsYesterday
+//                    +"&FundShare="+fundShare+"&RqUID="+sa.getRqUID()+"&SPRsUID="+sa.getSPRsUID()+"&ServerStatusCode="+sa.getServerStatusCode()
+//                    +"&StatusCode="+sa.getStatusCode()+"&SubAcctNo="+sa.getSubAcctNo()+"&WorkingBal="+workingBal+"";
 
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature

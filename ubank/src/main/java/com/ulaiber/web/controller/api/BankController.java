@@ -233,7 +233,7 @@ public class BankController extends BaseController {
 	 */
 	@RequestMapping(value = "Withdraw", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo widthdraw(Withdraw wid){
+	public ResultInfo widthdraw( Withdraw wid){
 		logger.info(">>>>>>>>>>开始提现操作，银行类型为：" + wid.getType());
 		ResultInfo resultInfo = new ResultInfo();
 		Map<String,Object> map = new HashMap<>();
@@ -287,6 +287,10 @@ public class BankController extends BaseController {
 					logger.error(">>>>>>>>>>插入提现记录失败");
 					return resultInfo;
 				}
+				resultInfo.setCode(IConstants.QT_CODE_OK);
+				resultInfo.setMessage("提现成功");
+				resultInfo.setData(status);
+				logger.info(">>>>>>>>>>流水号为："+withd.getRqUID()+"的上海二类户提现成功");
 			}catch(Exception e){
 				resultInfo.setCode(IConstants.QT_CODE_ERROR);
 				resultInfo.setMessage("提现失败");

@@ -9,13 +9,13 @@ public interface UserService {
 	
 	/**
 	 * 新增用户
-	 * 
-	 * @param user User
+	 *  @param user User
 	 * @param sa
-	 * @param bankNo
-	 *@param bankCardNo @return boolean true/flase
-	 */
-	int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo);
+     * @param bankNo
+     * @param bankCardNo @return boolean true/flase
+     * @param type
+     */
+	int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo, int type);
 	
 	/**
 	 * 更新ticket和token
@@ -159,14 +159,6 @@ public interface UserService {
 	 */
 	SecondAccountAO getSecondAccountByUserId(int userid);
 
-	/**
-	 * 新增用户绑定银行卡信息
-	 * @param userid 用户id
-	 * @param bankNo 银行编号
-	 * @param bankCardNo 银行卡号
-	 * @return int
-	 */
-	int insertUserToBank(int userid, long bankNo, String bankCardNo);
 
 	/**
 	 * 查询用户是否已注册二类账户
