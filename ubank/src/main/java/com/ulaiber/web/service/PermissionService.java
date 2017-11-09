@@ -21,7 +21,7 @@ public interface PermissionService {
 
     int deleteGroup(String[] numberArr);  //删除集团
 
-    List<Company> companyQuery(String search, int pageSize, int pageNum,String sysflag,String groupNumber);   //获取所有公司信息
+    List<Company> companyQuery(String search, int pageSize, int pageNum, String sysflag, String groupNumber, String companyNumber);   //获取所有公司信息
 
     Departments getDeptByNum(String deptNum);   //根据部门编号获取对应部门
 
@@ -45,7 +45,7 @@ public interface PermissionService {
 
     int addBankAccount(List<Map<String, Object>> list); //插入银行账户信息
 
-    int getCompanyTotal(String sysflag,String groupNumber);  //获取公司总数
+    int getCompanyTotal(String sysflag, String groupNumber, String companyNumber);  //获取公司总数
 
     List<BankAccount> getBankAccountByNum(String[] accounts);  //根据银行账户编号获取账户信息
 

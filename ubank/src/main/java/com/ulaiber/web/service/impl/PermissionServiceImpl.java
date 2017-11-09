@@ -5,7 +5,6 @@ import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.StringUtil;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,13 +80,49 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> companyQuery(String search, int pageSize, int pageNum,String sysflag,String groupNumber) {
+    public int getCompanyTotal(String sysflag, String groupNumber, String companyNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
-        map.put("search" ,search );
-        map.put("pageSize" , pageSize);
-        map.put("pageNum" , pageNum);
-        map.put("sysflag" , sysflag);
-        map.put("groupNumber" , groupNumber);
+        if(!"0".equals(sysflag)){
+            String[] comArr = companyNumber.split(",");
+            int arr[] = new int[comArr.length];
+            for (int i = 0 ; i < comArr.length ; i++){
+                arr[i] = Integer.parseInt(comArr[i]);
+            }
+            map.put("companyNumber" , arr);
+            map.put("sysflag" , sysflag);
+            map.put("groupNumber" , groupNumber);
+        }else{
+            map.put("sysflag" , sysflag);
+            map.put("companyNumber" , new int[0]);
+            map.put("groupNumber" , groupNumber);
+        }
+        int comTotal = permissionDao.getCompanyTotal(map);
+        return comTotal;
+    }
+
+    @Override
+    public List<Company> companyQuery(String search, int pageSize, int pageNum, String sysflag, String groupNumber, String companyNumber) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        if(!"0".equals(sysflag)){
+            String[] comArr = companyNumber.split(",");
+            int arr[] = new int[comArr.length];
+            for (int i = 0 ; i < comArr.length ; i++){
+                arr[i] = Integer.parseInt(comArr[i]);
+            }
+            map.put("search" ,search );
+            map.put("pageSize" , pageSize);
+            map.put("pageNum" , pageNum);
+            map.put("sysflag" , sysflag);
+            map.put("groupNumber" , groupNumber);
+            map.put("companyNumber" , arr);
+        }else{
+            map.put("search" ,search );
+            map.put("pageSize" , pageSize);
+            map.put("pageNum" , pageNum);
+            map.put("sysflag" , sysflag);
+            map.put("groupNumber" , groupNumber);
+            map.put("companyNumber" , new int[0]);
+        }
         List<Company> result = permissionDao.companyQuery(map);
         return result;
     }
@@ -198,14 +233,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         return account;
     }
 
-    @Override
-    public int getCompanyTotal(String sysflag,String groupNumber) {
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("sysflag" , sysflag);
-        map.put("groupNumber" , groupNumber);
-        int comTotal = permissionDao.getCompanyTotal(map);
-        return comTotal;
-    }
+
 
     @Override
     public List<BankAccount> getBankAccountByNum(String[] accounts) {

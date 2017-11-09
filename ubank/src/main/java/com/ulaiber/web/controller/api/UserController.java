@@ -2,10 +2,7 @@ package com.ulaiber.web.controller.api;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -538,9 +535,9 @@ public class UserController extends BaseController{
 			for (int i = 0 ; i < file.length ; i++){
 				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
 				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
-				FileInputStream in = (FileInputStream) file[i].getInputStream();
+				InputStream in = file[i].getInputStream();
 				int r = 0;
-				while((r=in.read()) != 1){
+				while((r=in.read()) != -1){
 					out.write(r);
 				}
 				out.flush();
@@ -550,7 +547,7 @@ public class UserController extends BaseController{
 			logger.info(">>>>>>>>>>第一步：上传图片至本地服务器成功");
 			//第二步
 			//拼接索引文件名
-			String random = StringUtil.getStringRandom(4);
+			String random = StringUtil.getFixLenthString(4);
 			String date = simple.format(new Date());
 			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
 			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
@@ -655,9 +652,9 @@ public class UserController extends BaseController{
 			for (int i = 0 ; i < file.length ; i++){
 				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
 				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
-				FileInputStream in = (FileInputStream) file[i].getInputStream();
+				InputStream in = file[i].getInputStream();
 				int r = 0;
-				while((r=in.read()) != 1){
+				while((r=in.read()) != -1){
 					out.write(r);
 				}
 				out.flush();
@@ -667,7 +664,8 @@ public class UserController extends BaseController{
 			logger.info(">>>>>>>>>>第一步：上传图片至本地服务器成功");
 			//第二步
 			//拼接索引文件名
-			String random = StringUtil.getStringRandom(4);
+			String random = StringUtil.getFixLenthString(4);
+			Random r = new Random(4);
 			String date = simple.format(new Date());
 			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
 			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";

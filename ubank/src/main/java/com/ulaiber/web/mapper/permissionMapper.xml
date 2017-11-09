@@ -129,10 +129,14 @@
     </select>
 
     <!--获取公司总数-->
-    <select id="getCompanyTotal" resultType="int">
-        select COUNT(name) total from tbl_company
+    <select id="getCompanyTotal" parameterType="Map" resultType="int">
+        select COUNT(name) total from tbl_company where 1=1
         <if test = 'sysflag == "1"'>
-            where group_num = #{groupNumber}
+             and group_num = #{groupNumber}
+             and companyNumber in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                #{companyNumber}
+            </foreach>
         </if>
     </select>
 
@@ -142,6 +146,10 @@
         from tbl_company a left join tbl_group b on a.group_num = b.groupNumber where 1=1
         <if test = 'sysflag == "1"'>
             and a.group_num = #{groupNumber}
+            and a.companyNumber in
+            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
+                #{companyNumber}
+            </foreach>
         </if>
         <if test="search != null and search != ''">
             and a.name like concat('%',#{search},'%')

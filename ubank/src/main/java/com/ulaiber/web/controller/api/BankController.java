@@ -247,12 +247,11 @@ public class BankController extends BaseController {
 				Map<String,Object> resultMap = (Map<String, Object>) result.getData();
 				logger.info(">>>>>>>>>resultMap is :" + resultMap);
 				Withdraw withd = (Withdraw) resultMap.get("withdraw");
+				status = (String) resultMap.get("status");
 				if(!"0000".equals(status)){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage(withd.getServerStatusCode());
-					map.put("status",status);
-					map.put("withdraw","");
-					resultInfo.setData(map);
+					resultInfo.setData(status);
 					logger.info(">>>>>>>>>>上海银行二类户提现失败，银行卡号为"+withd.getBindCardNo());
 					return resultInfo;
 				}
@@ -263,13 +262,13 @@ public class BankController extends BaseController {
 				SecondAcount sa = bankservice.queryAccount(SubAcctNo);
 				double WorkingBal = sa.getWorkingBal();  //余额(子账户余额)
 				double FundShare = sa.getFundShare();   //基金份额(以基金公司为准，不含当日申购赎回的交易份额)
-				//如果提现金额减去余额大于零，则继续扣除基金份额的金额
-				amount = amount - WorkingBal ;
-				if(amount > 0 ){
-					FundShare = amount - FundShare;
+				//先将余额扣除提现金额，如果大于0，则不用继续扣除份额的金额；如果小于=0，则继续扣除份额的金额
+				WorkingBal = WorkingBal - amount;
+				if(WorkingBal <= 0 ){
+					FundShare = FundShare + WorkingBal;
 				}
-				sa.setAvaiBal(amount + FundShare);
-				sa.setWorkingBal(amount);
+				sa.setAvaiBal(WorkingBal + FundShare);
+				sa.setWorkingBal(WorkingBal);
 				sa.setFundShare(FundShare);
 				//更新二类账户的金额
 				int upResult = bankservice.updateSecondAcc(sa);
@@ -294,7 +293,6 @@ public class BankController extends BaseController {
 			}catch(Exception e){
 				resultInfo.setCode(IConstants.QT_CODE_ERROR);
 				resultInfo.setMessage("提现失败");
-				resultInfo.setData(status);
 				e.printStackTrace();
 				logger.error(">>>>>>>>>>提现失败");
 			}

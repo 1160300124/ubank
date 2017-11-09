@@ -443,8 +443,8 @@ public class PermissionController extends BaseController {
                 pageNum = 0;
             }
             //获取公司总数
-            int deptTotal = permissionService.getCompanyTotal(sysflag,groupNumber);
-            List<Company> list = permissionService.companyQuery(search,pageSize,pageNum,sysflag,groupNumber);
+            int deptTotal = permissionService.getCompanyTotal(sysflag,groupNumber,companyNumber);
+            List<Company> list = permissionService.companyQuery(search,pageSize,pageNum,sysflag,groupNumber,companyNumber);
             map.put("total",deptTotal);
             map.put("rows",list);
         }catch (Exception e){
