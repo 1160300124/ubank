@@ -134,7 +134,8 @@ var CompanyFun = {
             pageNum : params.offset,
             search : params.search,
             sysflag : SYSFLAG,
-            groupNumber : GROUPNUMBER
+            groupNumber : GROUPNUMBER,
+            companyNumber : COMPANYNUMBER
         };
         return paramData;
     },

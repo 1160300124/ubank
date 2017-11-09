@@ -30,59 +30,64 @@ public class SFTPUtil {
      *
      * @throws Exception
      */
-    public boolean login(MultipartFile[] files){
+    public boolean login(String path){
         boolean flag = false;
         try {
             //加载配置文件
-//            Map<String,Object> configMap = StringUtil.loadConfig();
-//            String username = (String) configMap.get("username");
-//            String password = (String) configMap.get("password");
-//            int port = (int) configMap.get("port");
-//            String host = (String) configMap.get("host");
-//            String directory = (String) configMap.get("directory");
-//            String zipDir = (String) configMap.get("zipDir");
-//            JSch jsch = new JSch();
-//            log.info("sftp connect by host:{} username:{}");
-//
-//            session = jsch.getSession(username, host, port);
-//            log.info("Session is build");
-//            if (password != null) {
-//                session.setPassword(password);
+            Map<String,Object> configMap = StringUtil.loadConfig();
+            String username = (String) configMap.get("username");
+            String password = (String) configMap.get("password");
+            int port = (int) configMap.get("port");
+            String host = (String) configMap.get("host");
+            String directory = (String) configMap.get("directory");
+            JSch jsch = new JSch();
+            log.info("sftp connect by host:{} username:{}");
+
+            session = jsch.getSession(username, host, port);
+            log.info("Session is build");
+            if (password != null) {
+                session.setPassword(password);
+            }
+            Properties config = new Properties();
+            config.put("StrictHostKeyChecking", "no");
+
+            session.setConfig(config);
+            session.connect();
+            log.info("Session is connected");
+
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+            log.info("channel is connected");
+
+            sftp = (ChannelSftp) channel;
+            log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
+            //String zipDir = (String) map.get("zipDir");
+//            for (int i = 0; i < files.length; i++) {
+//                log.info(">>>>>>>>>>上传文件第"+i+"个文件:" + files[i]);
+//                MultipartFile file = files[i];
+//                String filename =  file.getOriginalFilename(); // 获取上传文件的原名
+//              //  String sftpFileName = filename;
+//                InputStream ins = file.getInputStream();
+//                upload(directory,filename,ins);
+//                flag = true;
 //            }
-//            Properties config = new Properties();
-//            config.put("StrictHostKeyChecking", "no");
-//
-//            session.setConfig(config);
-//            session.connect();
-//            log.info("Session is connected");
-//
-//            Channel channel = session.openChannel("sftp");
-//            channel.connect();
-//            log.info("channel is connected");
-//
-//            sftp = (ChannelSftp) channel;
-//            log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
-            Map<String,Object> map = connect();
-            String directory = (String) map.get("directory");
-            String zipDir = (String) map.get("zipDir");
+            File file = new File(path);
+            File[] files =  file.listFiles();
             for (int i = 0; i < files.length; i++) {
                 log.info(">>>>>>>>>>上传文件第"+i+"个文件:" + files[i]);
-                MultipartFile file = files[i];
-                String filename =  file.getOriginalFilename(); // 获取上传文件的原名
-              //  String sftpFileName = filename;
-                InputStream ins = file.getInputStream();
+                //System.out.println(">>>>>>>>>>上传文件第"+i+"个文件:" + files[i]);
+                File mul = files[i];
+                String filename =  mul.getName(); // 获取上传文件的原名
+                InputStream ins = new FileInputStream(mul);
                 upload(directory,filename,ins);
-                flag = true;
             }
+            flag = true;
             logout();
         } catch (JSchException e) {
             log.error("Cannot connect to specified sftp server , Exception message is: ", e);
         } catch (FileNotFoundException e) {
             //e.printStackTrace();
             log.error(">>>>>>>>>>file not found :",e);
-        } catch (IOException e) {
-            //e.printStackTrace();
-            log.error(">>>>>>>>>>IOException :" ,e);
         } catch (SftpException e) {
             //e.printStackTrace();
             log.error(">>>>>>>>>>SftpException : " ,e);

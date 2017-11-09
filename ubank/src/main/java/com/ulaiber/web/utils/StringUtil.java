@@ -471,7 +471,6 @@ public class StringUtil {
 		String host = prop.getProperty("SH_host");
 		int port = Integer.parseInt(prop.getProperty("SH_port"));
 		String directory = prop.getProperty("SH_directory");
-		String zipDir = prop.getProperty("SH_ZIPDirectory");
 		map.put("privateKey",privateKey);
 		map.put("publicKey",publicKey);
 		map.put("postUrl",postUrl);
@@ -481,7 +480,6 @@ public class StringUtil {
 		map.put("host",host);
 		map.put("port",port);
 		map.put("directory",directory);
-		map.put("zipDir",zipDir);
 		return map;
 
 	}
@@ -639,6 +637,66 @@ public class StringUtil {
 			logger.error(">>>>>>>>>>文件夹不存在！");
 			return IConstants.QT_CODE_EMPTY;
 		}
+	}
+
+	/**
+	 * 写入内容至txt文件
+	 * @param filePath 文件路径
+	 * @param content 输入的内容
+	 * @return boolean
+	 * @throws IOException
+	 */
+	public static boolean writeToTxt( String filePath, String content) throws IOException {
+		boolean flag = false;
+		String temp = "";
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		FileOutputStream fos = null;
+		PrintWriter pw = null;
+		try {
+			File file = new File(filePath+".txt");
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			File path = new File(filePath+".txt");//文件路径(包括文件名称)
+			//将文件读入输入流
+			fis = new FileInputStream(path);
+			isr = new InputStreamReader(fis);
+			br = new BufferedReader(isr);
+			StringBuffer buffer = new StringBuffer();
+			//文件原有内容
+			for(int i=0;(temp =br.readLine())!=null;i++){
+				buffer.append(temp);
+				// 行与行之间的分隔符 相当于“\n”
+				buffer = buffer.append(System.getProperty("line.separator"));
+			}
+			buffer.append(content);
+			fos = new FileOutputStream(path);
+			pw = new PrintWriter(fos);
+			pw.write(buffer.toString().toCharArray());
+			pw.flush();
+			flag = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if (pw != null) {
+				pw.close();
+			}
+			if (fos != null) {
+				fos.close();
+			}
+			if (br != null) {
+				br.close();
+			}
+			if (isr != null) {
+				isr.close();
+			}
+			if (fis != null) {
+				fis.close();
+			}
+		}
+		return flag;
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.ulaiber.web.controller.api;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,8 +16,7 @@ import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import com.ulaiber.web.service.PermissionService;
-import com.ulaiber.web.utils.SFTPUtil;
-import com.ulaiber.web.utils.StringUtil;
+import com.ulaiber.web.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +30,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.service.UserService;
-import com.ulaiber.web.utils.CaptchaUtil;
-import com.ulaiber.web.utils.ObjUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -102,63 +98,40 @@ public class UserController extends BaseController{
 			}
 			// 0 上海银行二类户
 			if(bank.getType() == 0){
-				//拼接索引文件名
-				String random = StringUtil.getStringRandom(4);
-				String date = simple.format(new Date());
-				String indexFile = "IMGDOC0001_YFY_" + date + "_" + random + ".txt";
-//				//上传图片到sftp服务器上
-//				logger.info(">>>>>>>>开始上传文件到sftp服务器");
-//				if (file != null && file.length > 0) {
-//					logger.info(">>>>>>>>>>file is :" + file);
-//					boolean flag = false;
-//					// 循环获取file数组中得文件
-//					try {
-//						for (int i = 0; i < file.length; i++) {
-//							logger.info(">>>>>>>>>>上传文件第"+i+":" + file);
-//							MultipartFile files = file[i];
-//							flag = sysUploadImg(files);
-//						}
-//						if(!flag){
-//							retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
-//							retInfo.setMessage("上传图片失败");
-//							logger.error(">>>>>>>>注册时上传图片失败的用户为：" + user.getMobile());
-//							return retInfo;
-//						}
-//					}catch(Exception e){
-//						logger.error(">>>>>>上传文件异常为：" , e );
-//					}
-//
-//				}else{
-//					retInfo.setCode(IConstants.UPLOAD_STATUS_ERROR);
-//					retInfo.setMessage("图片为空");
-//					logger.error(">>>>>>>>>图片为空");
-//					return retInfo;
-//				}
-//				//开通上海银行二类账户
-//				Map<String,Object> param = new HashMap<>();
-//				param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
-//				param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
-//				param.put("CustName" , user.getUserName());				//姓名
-//				param.put("IdNo" , user.getCardNo());					//身份证号
-//				param.put("MobllePhone" , user.getMobile());			//手机号
-//				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
-//				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
-//				param.put("Sign" , "N");								//是否开通余额理财功能
-//				//注册二类户
-//				ResultInfo ri = ShangHaiAccount.register(param);
-//				logger.info(">>>>>>>>>> 注册结果为：" + ri);
-//				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-//				logger.info(">>>>>>>>>resultMap is :" + resultMap);
-//				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
-//				status = (String) resultMap.get("status");
-//				if(!"0000".equals(status)){
-//					retInfo.setCode(IConstants.QT_CODE_ERROR);
-//					retInfo.setMessage(sa.getServerStatusCode());
-//					retInfo.setData(status);
-//					logger.info(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
-//					return retInfo;
-//				}
-				SecondAcount sa = new SecondAcount();
+				//开通上海银行二类账户
+				Map<String,Object> param = new HashMap<>();
+				param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
+				param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+				param.put("CustName" , user.getUserName());				//姓名
+				param.put("IdNo" , user.getCardNo());					//身份证号
+				param.put("MobllePhone" , user.getMobile());			//手机号
+				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
+				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
+				param.put("Sign" , "N");								//是否开通余额理财功能
+				//注册二类户
+				ResultInfo ri = ShangHaiAccount.register(param);
+				logger.info(">>>>>>>>>> 注册结果为：" + ri);
+				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
+				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
+				status = (String) resultMap.get("status");
+				if(!"0000".equals(status)){
+					retInfo.setCode(IConstants.QT_CODE_ERROR);
+					retInfo.setMessage(sa.getServerStatusCode());
+					retInfo.setData(status);
+					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+					return retInfo;
+				}
+				String SubAcctNo = sa.getSubAcctNo();
+				String EacctNo = sa.getEacctNo();
+				//上传图片到sftp服务器上
+				ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
+				if(uploadResult.getCode() != 1000){
+					retInfo.setCode(IConstants.QT_CODE_ERROR);
+					retInfo.setMessage("上传图片失败");
+					logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
+					return retInfo;
+				}
 				//新增用户权限层级信息
 				user.setBank(bank);
 				sa.setCreateDate(SDF.format(new Date()));
@@ -359,7 +332,6 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 忘记登录密码
-	 * 
 	 * @param mobile
 	 * @param captcha
 	 * @param password
@@ -464,43 +436,10 @@ public class UserController extends BaseController{
 		logger.debug("forgetPayPassword end...");
 		return retInfo;
 	}
-	
-	/**
-	 * 更新用户信息
-	 * @param user
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping("updateUser")
-	@ResponseBody
-	public String updateUser(User user,HttpServletRequest request, HttpServletResponse response){
-		
-		
-		if(userService.update(user)){
-			
-		}
-		return "/error";
-	}
 
-	/**
-	 * 删除用户
-	 * @param request
-	 * @param response
-	 */
-	@RequestMapping("delUser")
-	@ResponseBody
-	public String delUser(String mobile,HttpServletRequest request, HttpServletResponse response){
-		
-		if(userService.delete(mobile)){
-			
-		}
-		return "";
-		
-	}
 	
 	/**
-	 * 删除用户
+	 * 验证支付密码
 	 * @param request
 	 * @param response
 	 */
@@ -529,7 +468,7 @@ public class UserController extends BaseController{
 	}
 	
 	/**
-	 * 删除用户
+	 * 验证手机号
 	 * @param request
 	 * @param response
 	 */
@@ -559,95 +498,234 @@ public class UserController extends BaseController{
 
 	/**
 	 * 测试上传文件到sftp服务器
-	 * @param file
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param file 图片
+	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "fileUpload", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file, HttpServletRequest request){
 		logger.info(">>>>>>>>开始上传文件到sftp服务器");
 		ResultInfo resultInfo = new ResultInfo();
-		if (file != null && file.length > 0) {
-			boolean flag = false;
-			logger.info(">>>>>>>>>>文件是 :" + file);
-			// 循环获取file数组中得文件
-			SFTPUtil sftpUtil = new SFTPUtil();
-			flag = sftpUtil.login(file);
-			try {
-//				for (int i = 0; i < file.length; i++) {
-//					logger.info(">>>>>>>>>>上传文件第"+i+":" + file[i]);
-//					MultipartFile files = file[i];
-//					flag = sysUploadImg(file);
-//				}
-				if(!flag){
-					resultInfo.setCode(IConstants.QT_CODE_ERROR);
-					resultInfo.setMessage("上传失败");
-					logger.info(">>>>>>>>>>测试上传图片失败");
-					return resultInfo;
-				}
-				//连接sftp服务器
-				Map<String,Object> configMap =sftpUtil.connect();
-				//Map<String,Object> configMap = StringUtil.loadConfig();
-				String directory = (String) configMap.get("directory");
-				String zipDir = (String) configMap.get("zipDir");
-				String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
-				//将上传的文件加密并压缩成zip
-				try {
-					logger.info(">>>>>>>>>>加密的目录为：" + directory +"--"+ zipDir +"--"+ indexName);
-					EncryDecryUtils.makeZip(directory,zipDir,indexName);
-					//加密后删除文件
-					File files = new File(directory);
-					int result = StringUtil.deleteFile(files);
-					if(result == 1000){
-						logger.info(">>>>>>>>>>删除文件成功");
-					}else{
-						logger.info(">>>>>>>>>>文件不存在");
-					}
-					resultInfo.setCode(IConstants.QT_CODE_OK);
-					resultInfo.setMessage("上传成功");
-					logger.info(">>>>>>>>>>测试上传图片成功");
-					//关闭sftp服务器
-					sftpUtil.logout();
-				} catch (IOException e) {
-					resultInfo.setCode(IConstants.QT_CODE_ERROR);
-					resultInfo.setMessage("上传失败");
-					//关闭sftp服务器
-					sftpUtil.logout();
-					e.printStackTrace();
-					logger.error(">>>>>>>>>加密文件失败:",e);
-				}
-
-			}catch(Exception e){
-				resultInfo.setCode(IConstants.QT_CODE_ERROR);
-				resultInfo.setMessage("上传失败");
-				//关闭sftp服务器
-				sftpUtil.logout();
-				e.printStackTrace();
-				logger.error(">>>>>>上传文件异常为：" , e );
-
-			}
-
-		}else{
+		if (file == null && file.length == 0) {
 			resultInfo.setCode(IConstants.QT_CODE_ERROR);
 			resultInfo.setMessage("文件为空");
 			logger.error(">>>>>>>>>>文件为空");
+			return resultInfo;
+		}
+		boolean flag = false;
+		logger.info(">>>>>>>>>>文件是 :" + file);
+		SFTPUtil sftpUtil = new SFTPUtil();
+		try {
+			/**
+			 * 上传图片至sftp服务器共四步：
+			 *  第一：将图片上传至本地服务器
+			 *  第二：将本地服务器上的图片进行加密并压缩，以及生成索引文件
+			 *  第三：将压缩包和索引文件上传至sftp
+			 *  第四：将本地服务器上的图片删除
+			 */
+			//第一步
+			String oriPath = request.getSession().getServletContext().getRealPath("/upload");
+			String zipPath = request.getSession().getServletContext().getRealPath("/shzip");
+			logger.info(">>>>>>>>>根目录为：" + oriPath);
+			File savePath = new File(oriPath);
+			if(!savePath.exists()){
+				savePath.mkdir();
+			}
+			File uploadPath = new File(zipPath);
+			if(!uploadPath.exists()){
+				uploadPath.mkdir();
+			}
+			for (int i = 0 ; i < file.length ; i++){
+				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
+				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
+				FileInputStream in = (FileInputStream) file[i].getInputStream();
+				int r = 0;
+				while((r=in.read()) != 1){
+					out.write(r);
+				}
+				out.flush();
+				out.close();
+				in.close();
+			}
+			logger.info(">>>>>>>>>>第一步：上传图片至本地服务器成功");
+			//第二步
+			//拼接索引文件名
+			String random = StringUtil.getStringRandom(4);
+			String date = simple.format(new Date());
+			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
+			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
+			//将上传的文件加密并压缩成zip
+			//logger.info(">>>>>>>>>>加密的目录为：" + oriPath +"--"+ zipPath +"--"+ indexName);
+			EncryDecryUtils.makeZip(oriPath,zipPath,indexFile+".zip");
+			logger.info(">>>>>>>>>>压缩文件成功");
+			//param : file,request,E账号,,,,
+			//拼接索引文件内容
+			String content = date + "|" + indexFile + "|2|YFY|yfyBalFinancing|" + 2 + "\r\n"
+					+ "000001|" + date + "_345324534253245_000001|JPG|345324534253245|P0001|BS001|"+ "\r\n"
+					+ "000002|" + date + "_345324534253245_000002|JPG|345324534253245|P0002|BS001|";
+			//写入内容至txt文本
+			boolean re = StringUtil.writeToTxt(zipPath+"/"+indexFile,content);
+			if(!re){
+				logger.error(">>>>>>>>>>写入内容至txt文本失败");
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("上传失败");
+				return resultInfo;
+			}
+			logger.info(">>>>>>>>>>第二步：压缩文件和生成索引文件成功");
+			//第三步
+			flag = sftpUtil.login(zipPath);
+			if(!flag){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("上传失败");
+				logger.info(">>>>>>>>>>测试上传图片失败");
+				return resultInfo;
+			}
+			logger.info(">>>>>>>>>>第三步：上传文件至sftp服务器成功");
+			//第四步
+			String[] paths = new String[2];
+			paths[0] = oriPath;
+			paths[1] = zipPath;
+			for (int i = 0 ; i < paths.length ; i++){
+				File files = new File(paths[i]);
+				int result = StringUtil.deleteFile(files);
+				if(result == 1000){
+					logger.info(">>>>>>>>>>第四步：删除本地服务文件成功");
+				}else{
+					logger.info(">>>>>>>>>>文件不存在");
+				}
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("上传成功");
+			logger.info(">>>>>>>>>>测试上传图片成功");
+			//关闭sftp服务器
+			sftpUtil.logout();
+
+		}catch(Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("上传失败");
+			//关闭sftp服务器
+			sftpUtil.logout();
+			e.printStackTrace();
+			logger.error(">>>>>>上传文件异常为：" , e );
+
 		}
 		return resultInfo;
 	}
 
-	public boolean sysUploadImg(MultipartFile[] files){
-		boolean flag = false;
-		try {
-//			String fileName =  files.getOriginalFilename(); // 获取上传文件的原名
-//			SFTPUtil sftpUtil = new SFTPUtil();
-//			sftpUtil.login(files,fileName);
-//			flag = true;
-		}catch(Exception e){
-			logger.error(">>>>>>上传文件异常为：" , e );
+	/**
+	 * 上传图片至SFTP服务器
+	 * @param file 图片
+	 * @param SubAcctNo 平台理财专属子账户
+	 * @param EacctNo E账户主账户
+	 * @param request
+	 * @return ResultInfo
+	 */
+	public ResultInfo UploadImg(MultipartFile[] file,String SubAcctNo,String EacctNo, HttpServletRequest request){
+		logger.info(">>>>>>>>开始上传文件到sftp服务器");
+		ResultInfo resultInfo = new ResultInfo();
+		if (file == null && file.length == 0) {
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("文件为空");
+			logger.error(">>>>>>>>>>文件为空");
+			return resultInfo;
 		}
-		return flag;
+		boolean flag = false;
+		logger.info(">>>>>>>>>>文件是 :" + file);
+		SFTPUtil sftpUtil = new SFTPUtil();
+		try {
+			/**
+			 * 上传图片至sftp服务器共四步：
+			 *  第一：将图片上传至本地服务器
+			 *  第二：将本地服务器上的图片进行加密并压缩，以及生成索引文件
+			 *  第三：将压缩包和索引文件上传至sftp
+			 *  第四：将本地服务器上的图片删除
+			 */
+			//第一步
+			String oriPath = request.getSession().getServletContext().getRealPath("/upload");
+			String zipPath = request.getSession().getServletContext().getRealPath("/shzip");
+			logger.info(">>>>>>>>>根目录为：" + oriPath);
+			File savePath = new File(oriPath);
+			if(!savePath.exists()){
+				savePath.mkdir();
+			}
+			File uploadPath = new File(zipPath);
+			if(!uploadPath.exists()){
+				uploadPath.mkdir();
+			}
+			for (int i = 0 ; i < file.length ; i++){
+				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
+				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
+				FileInputStream in = (FileInputStream) file[i].getInputStream();
+				int r = 0;
+				while((r=in.read()) != 1){
+					out.write(r);
+				}
+				out.flush();
+				out.close();
+				in.close();
+			}
+			logger.info(">>>>>>>>>>第一步：上传图片至本地服务器成功");
+			//第二步
+			//拼接索引文件名
+			String random = StringUtil.getStringRandom(4);
+			String date = simple.format(new Date());
+			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
+			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
+			//将上传的文件加密并压缩成zip
+			//logger.info(">>>>>>>>>>加密的目录为：" + oriPath +"--"+ zipPath +"--"+ indexName);
+			EncryDecryUtils.makeZip(oriPath,zipPath,indexFile+".zip");
+			logger.info(">>>>>>>>>>压缩文件成功");
+			//拼接索引文件内容
+			String content = date + "|" + indexFile + "|2|YFY|yfyBalFinancing|" + 2 + "\r\n"
+					+ "000001|" + date + "_"+SubAcctNo+"_000001|JPG|"+SubAcctNo+"|P0001|BS001|"+ "\r\n"
+					+ "000002|" + date + "_"+SubAcctNo+"_000002|JPG|"+SubAcctNo+"|P0002|BS001|";
+			//写入内容至txt文本
+			boolean re = StringUtil.writeToTxt(zipPath+"/"+indexFile,content);
+			if(!re){
+				logger.error(">>>>>>>>>>写入内容至txt文本失败");
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("上传失败");
+				return resultInfo;
+			}
+			logger.info(">>>>>>>>>>第二步：压缩文件和生成索引文件成功");
+			//第三步
+			flag = sftpUtil.login(zipPath);
+			if(!flag){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("上传失败");
+				logger.info(">>>>>>>>>>测试上传图片失败");
+				return resultInfo;
+			}
+			logger.info(">>>>>>>>>>第三步：上传文件至sftp服务器成功");
+			//第四步
+			String[] paths = new String[2];
+			paths[0] = oriPath;
+			paths[1] = zipPath;
+			for (int i = 0 ; i < paths.length ; i++){
+				File files = new File(paths[i]);
+				int result = StringUtil.deleteFile(files);
+				if(result == 1000){
+					logger.info(">>>>>>>>>>第四步：删除本地服务文件成功");
+				}else{
+					logger.info(">>>>>>>>>>文件不存在");
+				}
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("上传成功");
+			logger.info(">>>>>>>>>>测试上传图片成功");
+			//关闭sftp服务器
+			sftpUtil.logout();
+
+		}catch(Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("上传失败");
+			//关闭sftp服务器
+			sftpUtil.logout();
+			e.printStackTrace();
+			logger.error(">>>>>>上传文件异常为：" , e );
+
+		}
+		return resultInfo;
 	}
 
 

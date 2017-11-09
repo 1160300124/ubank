@@ -2,12 +2,16 @@ package com.ulaiber.web.utils;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.qiniu.util.Auth;
 import com.ulaiber.web.SHSecondAccount.EncryDecryUtils;
 import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
 import com.ulaiber.web.SHSecondAccount.SHWithdraw;
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
@@ -15,11 +19,14 @@ import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class Test {
 	public static final String priKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKh7bxbe5dhwuZzNkeDXrpHx7o5k+uIWrbY1+8c6Oqgq2AfajnK5v10OfQW85xNUn/4TzoRcCOCaK2LZO4QJoQmgs41x45jZNvI/f8EGcJvt2oCs3S2Da98+v6VVfDXoSfgeHlNRcDSYlZF2E31KQLtdTGva9IeECx2CpPIkbVeXAgMBAAECgYA0QlUq2uigQhbQtFLTUxMq4cgFEv1es3oeUpBOM5mOH/vyM7CLlWHuE1hkNzvVmyIlRS+BjqqSQD/E4Wy8f+AbAznky5F8q5Afe5ZKxi+n2M4ZMgh9uryVMcAHCXu1RnOrtsnGjJvp23ku4wZtWCHLNAuQfI9zj6ncq4v50RKKQQJBAN8tSbcT37Mq3Y50zVnnmGxNEgUZKJXwPw/KnO6EeR/Nfpmzy40GQU8y+GGoq5cVY5NDOqYVi6nh21mLXQij9AsCQQDBQt0zU8zurSNaoRYsjhNrHJHQjBt0WuIxtluZz44CTbNQw5/3kA1jVvt1EXOE1hF+l2QVIuLgvgIeHDwvenYlAkAeiusgtAaUVZR2r4N+/1P71lxV+Eh2pKdsuNTbS6Pr90qRLGr6BNYhSZ92dgftqE61U6kOG7q+aBuF2K3FxfJbAkA1oCES4fjmbYJ23mXxvQakXQwU6xufIKzNEIXAWzhTaU4NZgrYPc+JNhSWOl5siJ3YG5f4yXJc3DxoMHt+zSNFAkEA25eGORpWtXERhGXHZR8f3nWIHTAF+EM1O8T7YXp+y7sWs8YvtNI3ZtzjzncHWk4YdScNqkXC1UJz2hokLUR7Aw==";
 	public static String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoe28W3uXYcLmczZHg166R8e6OZPriFq22NfvHOjqoKtgH2o5yub9dDn0FvOcTVJ/+E86EXAjgmiti2TuECaEJoLONceOY2TbyP3/BBnCb7dqArN0tg2vfPr+lVXw16En4Hh5TUXA0mJWRdhN9SkC7XUxr2vSHhAsdgqTyJG1XlwIDAQAB";
-
+	private static final SimpleDateFormat simple = new SimpleDateFormat("yyyyMMdd");
 
 	public static void main(String[] args) {
 //		UUID uuid = UUID.randomUUID();
@@ -529,24 +536,25 @@ public class Test {
 	}
 
 	@org.junit.Test
-	public void test2(){
-		try {
+	public void test2() throws IOException {
+//		try {
 			String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
 			//加密
 			EncryDecryUtils.makeZip("/Users/emacs/Desktop/image",
 					"/Users/emacs/Desktop/image2",indexName);
-			//解密
-//			EncryDecryUtils.unZip(
-//					"D:\\Users\\liao_qping\\Desktop\\temp\\IMGDOC0001_CPH_20170831_1342.zip",
-//					"D:\\Users\\liao_qping\\Desktop\\temp\\aaa");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//			//解密
+////			EncryDecryUtils.unZip(
+////					"D:\\Users\\liao_qping\\Desktop\\temp\\IMGDOC0001_CPH_20170831_1342.zip",
+////					"D:\\Users\\liao_qping\\Desktop\\temp\\aaa");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 //		System.out.println("运行完毕");
 		//创建文件
-//		String name = "/Users/emacs/Desktop/test.txt";
+//		String filePath = "/Users/emacs/Desktop/test";
 //		String content = "20171107_YFY_yyyy_ddddd";
-//		File file = new File(name);
+//		StringUtil.writeToTxt(filePath,content);
+//		File file = new File(name+".txt");
 //		try {
 //			if(!file.exists()){
 //				file.createNewFile();
@@ -558,54 +566,100 @@ public class Test {
 //			e.printStackTrace();
 //		}
 
+		//获取根目录
+//		String oriPath = "/Users/emacs/Desktop/image";
+//		String zipPath = "/Users/emacs/Desktop/image2";
+//		System.out.println(">>>>>>>>>根目录为：" + oriPath);
+//		File savePath = new File(oriPath);
+//		if(!savePath.exists()){
+//			savePath.mkdir();
+//		}
+//		for (int i = 0 ; i < file.length ; i++){
+//			InputStream in = file[i].getInputStream();
+//			OutputStream out = new FileOutputStream(oriPath + "\\" + file[i]);
+//			int r = 0;
+//			byte[] by = new byte[1024];
+//			while((r=in.read(by)) != 1){
+//				out.write(by,0,r);
+//			}
+//			out.flush();
+//			out.close();
+//			in.close();
+//		}
+//		String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
+//		//将上传的文件加密并压缩成zip
+//		System.out.println(">>>>>>>>>>加密的目录为：" + oriPath +"--"+ zipPath +"--"+ indexName);
+//		EncryDecryUtils.makeZip(oriPath,zipPath,indexName);
+//		//拼接索引文件名
+//		String random = StringUtil.getStringRandom(4);
+//		String date = simple.format(new Date());
+//		String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
+//		//拼接索引文件内容
+//		String content = date + "|" + indexFile + "|2|YFY|yfyBalFinancing|" + 2 + "\r\n"
+//				+ "000001|" + date + "_345324534253245_000001|JPG|345324534253245|P0001|BS001|"+ "\r\n"
+//				+ "000002|" + date + "_345324534253245_000002|JPG|345324534253245|P0002|BS001|";
+//		//写入内容至txt文本
+//		boolean re = StringUtil.writeToTxt(zipPath+"/"+indexFile,content);
+//		if(!re){
+//			System.out.println(">>>>>>>>>>写入内容至txt文本失败");
+//		}
+
+
+
 	}
 
-	public void writeToTxt(String fileName , String content) throws IOException {
-		String filein = content+"\r\n";//新写入的行，换行
-		String temp = "";
-		FileInputStream fis = null;
-		InputStreamReader isr = null;
-		BufferedReader br = null;
-		FileOutputStream fos = null;
-		PrintWriter pw = null;
-		try {
-			File file = new File(fileName);//文件路径(包括文件名称)
-			//将文件读入输入流
-			fis = new FileInputStream(file);
-			isr = new InputStreamReader(fis);
-			br = new BufferedReader(isr);
-			StringBuffer buffer = new StringBuffer();
-			//文件原有内容
-			for(int i=0;(temp =br.readLine())!=null;i++){
-				buffer.append(temp);
-			// 行与行之间的分隔符 相当于“\n”
-				buffer = buffer.append(System.getProperty("line.separator"));
+	@org.junit.Test
+	public void upload() throws IOException {
+//		String zipPath = "/Users/emacs/Desktop/image2";
+//		SFTPUtil sftp = new SFTPUtil();
+//		try {
+//			Map<String,Object> map =  sftp.connect();
+//			String directory = (String) map.get("directory");
+//			String zipDir = (String) map.get("zipDir");
+//			File file = new File(zipPath);
+//			File[] files =  file.listFiles();
+//			for (int i = 0; i < files.length; i++) {
+//				System.out.println(">>>>>>>>>>上传文件第"+i+"个文件:" + files[i]);
+//				File mul = files[i];
+//				String filename =  mul.getName(); // 获取上传文件的原名
+//				InputStream ins = new FileInputStream(mul);
+//				//InputStream ins = ;
+//				sftp.upload(directory,filename,ins);
+//			}
+//			sftp.logout();
+//		} catch (JSchException e) {
+//			e.printStackTrace();
+//		} catch (SftpException e) {
+//			e.printStackTrace();
+//		}
+
+		String path2 = "/Users/emacs/Desktop/image2";
+		String path1 = "/Users/emacs/Desktop/image";
+		try{
+			File file = new File(path1);
+			File[] files =  file.listFiles();
+			for (int i = 0 ; i < files.length ; i++){
+				System.out.println(">>>>>>>>>>上传文件第"+i+"个文件:" + files[i]);
+				//InputStream in = files[i].getInputStream();
+				File fi = files[i];
+				FileOutputStream  out = new FileOutputStream(path2 + "/" + fi.getName());
+				InputStream in = new FileInputStream(fi);
+				int r = 0;
+				while((r=in.read()) != -1){
+					out.write(r);
+				}
+				out.flush();
+				out.close();
+				in.close();
 			}
-			buffer.append(filein);
-			fos = new FileOutputStream(file);
-			pw = new PrintWriter(fos);
-			pw.write(buffer.toString().toCharArray());
-			pw.flush();
-		} catch (Exception e) {
+		}catch(Exception e){
 			e.printStackTrace();
-		}finally {
-			if (pw != null) {
-				pw.close();
-			}
-			if (fos != null) {
-				fos.close();
-			}
-			if (br != null) {
-				br.close();
-			}
-			if (isr != null) {
-				isr.close();
-			}
-			if (fis != null) {
-				fis.close();
-			}
 		}
+
+
 	}
+
+
 
 
 }

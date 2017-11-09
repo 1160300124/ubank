@@ -432,7 +432,8 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = "comQuery", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> comQuery(@Param("search") String search,@Param("pageSize") int pageSize,
-                                       @Param("pageNum") int pageNum ,@Param("groupNumber") String groupNumber,@Param("sysflag") String sysflag){
+                                       @Param("pageNum") int pageNum ,@Param("groupNumber") String groupNumber,
+                                       @Param("companyNumber") String companyNumber,@Param("sysflag") String sysflag){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
             if(pageSize <= 0){
