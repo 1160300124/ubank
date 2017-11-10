@@ -440,7 +440,7 @@ public class Test {
 	//上海银行二类户改绑测试
 	@org.junit.Test
 	public void queryBalance(){
-		String str = "623185009300012603";
+		String str = "623185009300012892";
 		SHQueryBalance.queryBalance(str);
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}
@@ -605,6 +605,10 @@ public class Test {
 //			System.out.println(">>>>>>>>>>写入内容至txt文本失败");
 //		}
 
+		String str = "2222";
+		String str2 = "xxxxxxxx";
+		String str3 = "yyyyyyyy";
+		//System.out.println(">>>>>>>>>>"+StringUtil.signHeader(str) + "\n"+StringUtil.signFooter(str,str2,str3));
 
 
 	}

@@ -82,7 +82,7 @@
 
 	<!--新增提现记录-->
 	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
-		INSERT INTO tbl_withdraw(SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,Purpose,Attach,MemoInfo,type)
-			VALUES (#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},#{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type})
+		INSERT INTO tbl_withdraw(SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,Purpose,Attach,MemoInfo,type,CreateDate,status)
+			VALUES (#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},#{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{status})
 	</insert>
 </mapper>

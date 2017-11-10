@@ -6,6 +6,7 @@ package com.ulaiber.web.utils;
 import java.io.*;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,10 @@ import sun.misc.BASE64Encoder;
 public class StringUtil {
 
 	private static final Logger logger = Logger.getLogger(StringUtil.class);
+
+	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd");
+
+	private static final SimpleDateFormat TIME = new SimpleDateFormat("HHmmss");
 	
 	// 简体中文的编码范围从B0A1（45217）一直到F7FE（63486）
     private static int BEGIN = 45217;
@@ -490,6 +495,7 @@ public class StringUtil {
 		String host = prop.getProperty("SH_host");
 		int port = Integer.parseInt(prop.getProperty("SH_port"));
 		String directory = prop.getProperty("SH_directory");
+		String resDir = prop.getProperty("SH_resDir");
 		map.put("privateKey",privateKey);
 		map.put("publicKey",publicKey);
 		map.put("postUrl",postUrl);
@@ -499,6 +505,7 @@ public class StringUtil {
 		map.put("host",host);
 		map.put("port",port);
 		map.put("directory",directory);
+		map.put("resDir",resDir);
 		return map;
 
 	}
@@ -557,6 +564,7 @@ public class StringUtil {
 	 * @return
 	 */
 	public static String jointSignature(Map<String,Object> map){
+		Map<String,String> ma = new HashMap<>();
 		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
 		//排序方法
 		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
@@ -565,15 +573,9 @@ public class StringUtil {
 				return (o1.getKey()).toString().compareTo(o2.getKey());
 			}
 		});
-		//排序后
-//		for (int i = 0; i < infoIds.size(); i++) {
-//			String id = infoIds.get(i).toString();
-//			System.out.println("排序前"+id);
-//		}
 		StringBuffer sb = new StringBuffer();
 		//排序后
 		for(Map.Entry<String, Object> m : infoIds){
-			//System.out.println("排序后"+m.getKey()+":"+ m.getValue());
 			if(!StringUtil.isEmpty(m.getValue())){
 				sb.append(m.getKey()+ "=" + m.getValue() + "&");
 			}
@@ -716,6 +718,44 @@ public class StringUtil {
 			}
 		}
 		return flag;
+	}
+
+	/**
+	 * 上海银行二类户请求报文--头部
+	 * @param str 接口编号
+	 * @return String
+	 */
+	public static String signHeader(String str,String random,String date,String time ){
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version='1.0' encoding='UTF-8'?>" +
+				"<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
+				"xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
+				"xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
+				"<"+str+"Rq>" +
+				"<CommonRqHdr>" +
+				"<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
+				"<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
+				"<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
+				"</CommonRqHdr>"
+		);
+		return sb.toString();
+	};
+
+	/**
+	 * 上海银行二类户请求报文头--尾部
+	 * @param str 接口编号
+	 * @param KoalB64Cert  经过Base64处理的商户证书代码
+	 * @param Signature  签名数据
+	 * @return
+	 */
+	public static String signFooter(String str,String KoalB64Cert,String Signature){
+		StringBuffer sb = new StringBuffer();
+		sb.append(
+				"<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert>" +
+				"<Signature>"+ Signature +"</Signature>" +
+				"</"+str+"Rq>" +
+				"</BOSFXII>");
+		return sb.toString();
 	}
 
 }

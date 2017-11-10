@@ -83,20 +83,23 @@ public class SHChangeBinding {
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接xml");
             String joint = StringUtil.jointXML(rqMap);
+            String interfaceNO = "YFY0002";  //接口编号
             //拼接xml
-            String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
-                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-                    "<YFY0002Rq>" +
-                    "<CommonRqHdr>" +
-                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" + joint+
-                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-                    "</YFY0002Rq>" +
-                    "</BOSFXII>";
+            String xml =
+//                    "<?xml version='1.0' encoding='UTF-8'?>" +
+//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
+//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
+//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
+//                    "<YFY0002Rq>" +
+//                    "<CommonRqHdr>" +
+//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
+//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
+//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
+//                    "</CommonRqHdr>"
+                    StringUtil.signHeader(interfaceNO,random,date,time)  + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
+//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
+//                    "</YFY0002Rq>" +
+//                    "</BOSFXII>";
            // System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
@@ -163,8 +166,6 @@ public class SHChangeBinding {
                 resultMap.put("status",shChangeCard.getStatusCode());
                 resultMap.put("SHChangeCard",shChangeCard);
                 resultInfo.setData(resultMap);
-                //System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-               // System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }
@@ -174,7 +175,6 @@ public class SHChangeBinding {
                 resultMap.put("status",shChangeCard.getStatusCode());
                 resultMap.put("SHChangeCard",shChangeCard);
                 resultInfo.setData(resultMap);
-                //System.out.println(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }

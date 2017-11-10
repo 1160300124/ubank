@@ -67,6 +67,7 @@ var RoleFun = {
             type : 'post',
             data : {
                 "groupNumber" : groupNum,
+                "companyNumber" : COMPANYNUMBER,
                 "sysflag" : SYSFLAG
             },
             success : function (data) {
@@ -346,6 +347,7 @@ var RoleFun = {
             async : false,
             data : {
                 "groupNumber" : GROUPNUMBER,
+                "companyNumber" : COMPANYNUMBER,
                 "sysflag" : SYSFLAG
             },
             success : function (data) {

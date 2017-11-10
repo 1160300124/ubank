@@ -118,7 +118,8 @@ var EmployeeFun = {
             dataType : 'json',
             type : 'post',
             data:  {
-                "groupNum" : groupNum
+                "groupNum" : groupNum,
+                companyNumber : COMPANYNUMBER
             },
             success : function (data) {
                 if(data.length <= 0){

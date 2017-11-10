@@ -71,6 +71,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
 		user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
+		//新增用户
 		int result = mapper.save(user);
 		if(result == 0){
 			return result;
@@ -88,10 +89,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 		//给注册用户分配公司和集团
 		int result2 = permissionDao.insertRoots(map);
 		//新增用户二类账户信息
-//		int result3 = mapper.insertSecondAccount(sa);
-//		if(result3 == 0){
-//			return result3;
-//		}
+		int result3 = mapper.insertSecondAccount(sa);
+		if(result3 == 0){
+			return result3;
+		}
 		int userid = (int) user.getId();
 		//新增用户绑定银行卡信息
 		Map<String,Object> paraMap = new HashMap<>();

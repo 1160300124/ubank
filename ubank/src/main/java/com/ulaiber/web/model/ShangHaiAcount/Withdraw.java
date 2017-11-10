@@ -23,6 +23,8 @@ public class Withdraw implements Serializable{
     private String RqUID;               //请求流水号
     private String StatusCode;          //返回结果码
     private String ServerStatusCode;    //返回结果信息
+    private String CreateDate;          //创建时间
+    private int status;                 //交易状态 0 处理中 1 成功 2 失败
 
     public long getId() {
         return id;
@@ -150,5 +152,21 @@ public class Withdraw implements Serializable{
 
     public void setServerStatusCode(String serverStatusCode) {
         ServerStatusCode = serverStatusCode;
+    }
+
+    public String getCreateDate() {
+        return CreateDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        CreateDate = createDate;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

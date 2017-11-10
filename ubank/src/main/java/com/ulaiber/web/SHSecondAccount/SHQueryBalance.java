@@ -56,7 +56,6 @@ public class SHQueryBalance {
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为'"+random+"'开始拼接待签名数据");
-            logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
             rqMap.put("ChannelId","YFY");
@@ -68,32 +67,30 @@ public class SHQueryBalance {
             rqMap.put("TranTime",time);
             String signDataStr = StringUtil.jointSignature(rqMap);
             //待签名的数据
-            //String signDataStr = "ChannelId=YFY&ClearDate="+date+"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+SubAcctNo+"&TranDate="+date+"&TranTime="+time+"";
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接查询xml");
             String joint = StringUtil.jointXML(rqMap);
+            String interfaceNO = "YFY0101";  //接口编号
             //拼接xml
-            String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
-                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-                    "<YFY0101Rq>" +
-                    "<CommonRqHdr>" +
-                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" + joint +
-                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-                    "</YFY0101Rq>" +
-                    "</BOSFXII>";
-            System.out.println(">>>>>>>>>>xml is :" + xml);
-            logger.info(">>>>>>>>>>拼接xml完毕");
+            String xml = StringUtil.signHeader(interfaceNO,random,date,time) + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
+//                    "<?xml version='1.0' encoding='UTF-8'?>" +
+//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
+//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
+//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
+//                    "<YFY0101Rq>" +
+//                    "<CommonRqHdr>" +
+//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
+//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
+//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
+//                    "</CommonRqHdr>"
+//                     + joint +
+//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
+//                    "</YFY0101Rq>" +
+//                    "</BOSFXII>";
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
-            //System.out.print(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ：" + result);
-           // logger.info(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ："+ result);
             logger.info(">>>>>>>>>>开始解析xml");
             SecondAcount sa = new SecondAcount();
             Map<String,Object> resultMap = new HashMap<>();
@@ -101,7 +98,7 @@ public class SHQueryBalance {
             Document document = DocumentHelper.parseText(result);
             Element root = document.getRootElement();
             String resultSign = "";
-            Iterator iter = root.elementIterator("YFY0101Rs"); // 获取根节点下的子节点BOSFXII
+            Iterator iter = root.elementIterator(""+interfaceNO+"Rs"); // 获取根节点下的子节点BOSFXII
             String workingBal = "";
             String avaifundShare = "";
             String fundShare = "";
@@ -160,8 +157,6 @@ public class SHQueryBalance {
                 resultMap.put("secondAccount",sa);
                 resultMap.put("status",sa.getStatusCode());
                 resultInfo.setData(resultMap);
-               // System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-               // System.out.println(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
                 logger.error(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
                 return resultInfo;

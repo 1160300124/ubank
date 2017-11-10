@@ -58,14 +58,6 @@ public class ShangHaiAccount {
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
-//            String CoopCustNo = (String) map.get("CoopCustNo");
-//            String ProductCd = (String) map.get("ProductCd");
-//            String CustName = (String) map.get("CustName");
-//            String IdNo = (String) map.get("IdNo");
-//            String MobllePhone = (String) map.get("MobllePhone");
-//            String BindCardNo = (String) map.get("BindCardNo");
-//            String ReservedPhone = (String) map.get("ReservedPhone");
-//            String Sign = (String) map.get("Sign");
             map.put("SPName","CBIB");
             map.put("RqUID",random);
             map.put("ClearDate",date);
@@ -74,30 +66,28 @@ public class ShangHaiAccount {
             map.put("ChannelId","YFY");
             String signDataStr = StringUtil.jointSignature(map);
             //待签名的数据
-//            String signDataStr = "BindCardNo="+BindCardNo+"&ChannelId=YFY&ClearDate="+date+"&CoopCustNo="+CoopCustNo
-//                    +"&CustName="+CustName+"&IdNo="+IdNo+"&MobllePhone="+MobllePhone+"&ProductCd="+ProductCd
-//                    +"&ReservedPhone="+ReservedPhone+"&RqUID="+random+"&SPName=CBIB&Sign="+Sign+"&TranDate="+date+"&TranTime="+time;
-            //System.out.print(">>>>>>>>> sign:" + signDataStr);
-            logger.debug(">>>>>>>>>>sign :" + signDataStr);
             logger.info(">>>>>>>>>获取Signature");
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接xml");
             String joint = StringUtil.jointXML(map);
+            String interfaceNO = "YFY0001";  //接口编号
             //拼接xml
-            String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
-                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-                    "<YFY0001Rq>" +
-                    "<CommonRqHdr>" +
-                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" + joint +
-                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-                    "</YFY0001Rq>" +
-                    "</BOSFXII>";
+            String xml =
+//                    "<?xml version='1.0' encoding='UTF-8'?>" +
+//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
+//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
+//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
+//                    "<YFY0001Rq>" +
+//                    "<CommonRqHdr>" +
+//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
+//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
+//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
+//                    "</CommonRqHdr>"
+                    StringUtil.signHeader(interfaceNO,random,date,time)  + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
+//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
+//                    "</YFY0001Rq>" +
+//                    "</BOSFXII>";
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();

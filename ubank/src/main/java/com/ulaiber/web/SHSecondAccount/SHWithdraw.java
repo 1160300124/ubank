@@ -74,31 +74,26 @@ public class SHWithdraw {
             rqMap.put("TranTime",time);
             String signDataStr = StringUtil.jointSignature(rqMap);
             //待签名的数据
-//            String signDataStr = "Amount="+wd.getAmount()+"&BindCardNo="+wd.getBindCardNo()+"&ChannelId=YFY&ClearDate="+date
-//                    +"&Currency="+wd.getCurrency()+"&ProductCd="+wd.getProductCd()+"&Purpose="+wd.getPurpose()
-//                    +"&RqUID="+random+"&SPName=CBIB&SubAcctNo="+wd.getSubAcctNo()+"&TheirRef="+wd.getTheirRef()+"&TranDate="+date+"&TranTime="+time;
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接查询xml");
             String joint = StringUtil.jointXML(rqMap);
-            String xml = "<?xml version='1.0' encoding='UTF-8'?>" +
-                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-                    "<YFY0021Rq>" +
-                    "<CommonRqHdr>" +
-                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-                    "</CommonRqHdr>" + joint+
-//                    "<SubAcctNo>"+ wd.getSubAcctNo() +"</SubAcctNo>" +
-//                    "<BindCardNo>"+wd.getBindCardNo()+"</BindCardNo><ProductCd>"+wd.getProductCd()+"</ProductCd>"+
-//                    "<Amount>"+wd.getAmount()+"</Amount><Currency>"+wd.getCurrency()+"</Currency>"+
-//                    "<TheirRef>"+wd.getTheirRef()+"</TheirRef><Purpose>"+wd.getPurpose()+"</Purpose>"+
-//                    "<Attach>"+wd.getAttach()+"</Attach><MemoInfo>"+wd.getMemoInfo()+"</MemoInfo>"+
-                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-                    "</YFY0021Rq>" +
-                    "</BOSFXII>";
+            String interfaceNO = "YFY0021";  //接口编号
+            String xml =
+//                    "<?xml version='1.0' encoding='UTF-8'?>" +
+//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
+//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
+//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
+//                    "<YFY0021Rq>" +
+//                    "<CommonRqHdr>" +
+//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
+//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
+//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
+//                    "</CommonRqHdr>"
+                    StringUtil.signHeader(interfaceNO,random,date,time) + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
+//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
+//                    "</YFY0021Rq>" +
+//                    "</BOSFXII>";
             System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>开始发送请求给上海银行");

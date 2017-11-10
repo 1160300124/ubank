@@ -262,19 +262,43 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> getAllCompany(String sysflag, String groupNumber) {
+    public List<Company> getAllCompany(String sysflag, String groupNumber, String companyNumber) {
         Map<String ,Object> map = new HashMap<String , Object>();
-        map.put("sysflag",sysflag);
-        map.put("groupNumber",groupNumber);
+        if(!"0".equals(sysflag)){
+            String[] comArr = companyNumber.split(",");
+            int arr[] = new int[comArr.length];
+            for (int i = 0 ; i < comArr.length ; i++){
+                arr[i] = Integer.parseInt(comArr[i]);
+            }
+            map.put("sysflag",sysflag);
+            map.put("groupNumber",groupNumber);
+            map.put("companyNumber",arr);
+        }else{
+            map.put("sysflag",sysflag);
+            map.put("groupNumber",groupNumber);
+            map.put("companyNumber",new int[0]);
+        }
         List<Company> list = permissionDao.getAllCompany(map);
         return list;
     }
 
     @Override
-    public List<Company> getAllCompanybyGroupNum(String sysflag,String groupNumber) {
+    public List<Company> getAllCompanybyGroupNum(String sysflag, String groupNumber, String companyNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
-        map.put("sysflag" , sysflag);
-        map.put("groupNumber" , groupNumber);
+        if(!"0".equals(sysflag)){
+            String[] comArr = companyNumber.split(",");
+            int arr[] = new int[comArr.length];
+            for (int i = 0 ; i < comArr.length ; i++){
+                arr[i] = Integer.parseInt(comArr[i]);
+            }
+            map.put("sysflag",sysflag);
+            map.put("groupNumber",groupNumber);
+            map.put("companyNumber",arr);
+        }else{
+            map.put("sysflag",sysflag);
+            map.put("groupNumber",groupNumber);
+            map.put("companyNumber",new int[0]);
+        }
      //   List<Company> list = permissionDao.getAllCompany(map);
         List<Company> list = rolesDao.getAllCompanybyGroupNum(map);
         return list;
@@ -572,8 +596,16 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> getComByGroup(String groupNum) {
-        List<Company> list = companyDao.getComByGroup(groupNum);
+    public List<Company> getComByGroup(String groupNum, String companyNumber) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        String[] comArr = companyNumber.split(",");
+        int arr[] = new int[comArr.length];
+        for (int i = 0 ; i < comArr.length ; i++){
+            arr[i] = Integer.parseInt(comArr[i]);
+        }
+        map.put("groupNum" , groupNum);
+        map.put("companyNumber" , arr);
+        List<Company> list = companyDao.getComByGroup(map);
         return list;
     }
 

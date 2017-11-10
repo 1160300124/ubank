@@ -29,6 +29,8 @@ import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.BankService;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ import java.util.Map;
 public class BankController extends BaseController {
 
 	private static Logger logger = Logger.getLogger(BankController.class);
+
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@Autowired
 	private BankService bankservice;
@@ -278,6 +282,8 @@ public class BankController extends BaseController {
 					logger.error(">>>>>>>>>>更新二类账户信息失败");
 					return resultInfo;
 				}
+				withd.setCreateDate(sdf.format(new Date()));
+				withd.setStatus(0);
 				//新增提现记录
 				int inResult = bankservice.insertWithdraw(withd);
 				if(inResult == 0){
@@ -300,5 +306,7 @@ public class BankController extends BaseController {
 
 		return resultInfo;
 	}
+
+
 
 }

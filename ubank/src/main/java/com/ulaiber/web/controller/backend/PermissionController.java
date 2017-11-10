@@ -479,10 +479,11 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getAllCom", method = RequestMethod.POST)
     @ResponseBody
-    public List<Company> getAllCom(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
+    public List<Company> getAllCom(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber
+                                                    ,@Param("companyNumber") String companyNumber){
         List<Company> list = new ArrayList<>();
         try {
-            list = permissionService.getAllCompany(sysflag,groupNumber);
+            list = permissionService.getAllCompany(sysflag,groupNumber,companyNumber);
         }catch (Exception e){
             logger.error(">>>>>>>>>>获取所有公司信息异常：" ,e);
         }
@@ -705,10 +706,11 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getComTree", method = RequestMethod.POST)
     @ResponseBody
-    public List<Map<String , Object>> getComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
+    public List<Map<String , Object>> getComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber,
+                                                 @Param("companyNumber") String companyNumber){
         List<Map<String ,Object>> list_one = new ArrayList<>();
         try {
-            List<Company> list = permissionService.getAllCompanybyGroupNum(sysflag,groupNumber);
+            List<Company> list = permissionService.getAllCompanybyGroupNum(sysflag,groupNumber,companyNumber);
             Map<String,Object> _map = new HashMap<String,Object>();
             for (int i = 0 ;i < list.size(); i++){
                 Company com = list.get(i);
@@ -739,10 +741,10 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "queryComTree", method = RequestMethod.POST)
     @ResponseBody
-    public List<Map<String , Object>> queryComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber){
+    public List<Map<String , Object>> queryComTree(@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber,@Param("companyNumber") String companyNumber){
         List<Map<String ,Object>> _list = new ArrayList<>();
         try {
-            List<Company> list = permissionService.getAllCompany(sysflag,groupNumber);
+            List<Company> list = permissionService.getAllCompany(sysflag,groupNumber, companyNumber);
             Map<String,Object> _map = new HashMap<String,Object>();
             for (int i = 0 ;i < list.size(); i++){
                 Company com = list.get(i);
@@ -1014,10 +1016,10 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getComByGroup", method = RequestMethod.POST)
     @ResponseBody
-    public List<Company> getComByGroup(@Param("groupNum") String groupNum){
+    public List<Company> getComByGroup(@Param("groupNum") String groupNum,@Param("companyNumber") String companyNumber){
         List<Company> list = new ArrayList<>();
         try {
-             list =  permissionService.getComByGroup(groupNum);
+             list =  permissionService.getComByGroup(groupNum,companyNumber);
         }catch (Exception e){
             logger.error(">>>>>>>>>>根据集团获取公司名异常：" ,e);
         }

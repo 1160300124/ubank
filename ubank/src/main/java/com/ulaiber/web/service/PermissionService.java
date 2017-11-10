@@ -55,7 +55,7 @@ public interface PermissionService {
 
     int updateCompany(Company company);  //更新银行信息表
 
-    List<Company> getAllCompany(String sysflag,String groupNumber);  // 获取所有公司信息
+    List<Company> getAllCompany(String sysflag, String groupNumber, String companyNumber);  // 获取所有公司信息
 
     List<Departments> getAllDept(); //获取所有部门信息
 
@@ -108,13 +108,13 @@ public interface PermissionService {
 
     int setRoleMenuByRoleId( String roleId, String menuId); // 根据角色id，删除对应的菜单
 
-    List<Company> getComByGroup(String groupNum); //根据集团获取公司名
+    List<Company> getComByGroup(String groupNum, String companyNumber); //根据集团获取公司名
 
     List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
 
     int editRoots(User user); //修改权限对应关系表
 
-    List<Company> getAllCompanybyGroupNum(String sysflag, String groupNumber);
+    List<Company> getAllCompanybyGroupNum(String sysflag, String groupNumber, String companyNumber);
 
     List<Departments> queryAllDept(String sysflag, String companyNumber); //根据当前角色所属公司编号，查询对应的部门
 

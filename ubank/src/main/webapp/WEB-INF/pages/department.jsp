@@ -168,6 +168,7 @@
                 type : 'post',
                 data:  {
                     "groupNumber" : GROUPNUMBER,
+                    "companyNumber" : COMPANYNUMBER,
                     "sysflag" : SYSFLAG
                 },
                 success : function (data) {
