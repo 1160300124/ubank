@@ -64,6 +64,11 @@ public class Attendance {
 	private String clockOnDevice;
 	
 	/**
+	 * 上班外勤卡备注
+	 */
+	private String clockOnRemark;
+	
+	/**
 	 * 下班打卡时间
 	 */
 	private String clockOffDateTime;
@@ -84,6 +89,11 @@ public class Attendance {
 	private String clockOffDevice;
 	
 	/**
+	 * 下班外勤卡备注
+	 */
+	private String clockOffRemark;
+	
+	/**
 	 * 补卡类型 0：全天补卡 1：上班补卡 2：下班补卡
 	 *
 	 */
@@ -93,6 +103,11 @@ public class Attendance {
 	 * 补卡审批状态 0：审批中  1：已通过  2：未通过  3:已取消
 	 */
 	private String patchClockStatus;
+	
+	/**
+	 * 销假打卡 0：销假打卡  1：不销假打卡
+	 */
+	private int revokeType;
 	
 	public long getRid() {
 		return rid;
@@ -220,6 +235,30 @@ public class Attendance {
 
 	public void setPatchClockStatus(String patchClockStatus) {
 		this.patchClockStatus = patchClockStatus;
+	}
+
+	public String getClockOnRemark() {
+		return clockOnRemark;
+	}
+
+	public void setClockOnRemark(String clockOnRemark) {
+		this.clockOnRemark = clockOnRemark;
+	}
+
+	public String getClockOffRemark() {
+		return clockOffRemark;
+	}
+
+	public void setClockOffRemark(String clockOffRemark) {
+		this.clockOffRemark = clockOffRemark;
+	}
+
+	public int getRevokeType() {
+		return revokeType;
+	}
+
+	public void setRevokeType(int revokeType) {
+		this.revokeType = revokeType;
 	}
 
 }

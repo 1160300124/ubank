@@ -340,4 +340,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return leaveDao.queryApplyStatus(id);
     }
 
+	@Override
+	public LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date) {
+		return leaveDao.getLeaveRecordByMobileAndDate(mobile, date);
+	}
+
+	@Override
+	public LeaveRecord getLeaveRecordByUserIdAndDate(long userId, String date) {
+		return leaveDao.getLeaveRecordByUserIdAndDate(userId, date);
+	}
+
 }

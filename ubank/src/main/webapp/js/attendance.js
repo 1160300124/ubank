@@ -144,6 +144,9 @@ $(function(){
 		} else if (clockStatus === "2"){
 			params.clockOffStatus = "2";
 		} else if (clockStatus === "3"){
+			params.clockOnStatus = "3";
+			params.clockOffStatus = "3";
+		} else if (clockStatus === "4"){
 			params.clockOnStatus = "";
 			params.clockOffStatus = "";
 		}
@@ -263,6 +266,8 @@ function clockOnStatusFormatter(value, row, index) {
 		return "正常";
 	} else if (value == 1 || row.clockOnStatus == 1){
 		return "迟到";
+	} else if (value == 3 || row.clockOnStatus == 3){
+		return "外勤";
 	}
 	return "-";
 }
@@ -272,6 +277,8 @@ function clockOffStatusFormatter(value, row, index) {
 		return "正常";
 	} else if (value == 2 || row.clockOffStatus == 2){
 		return "早退";
+	} else if (value == 3 || row.clockOffStatus == 3){
+		return "外勤";
 	}
 	return "-";
 }

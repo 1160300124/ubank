@@ -74,6 +74,9 @@ public class IConstants
     //在上班之前不能打下班卡
     public final static int QT_CANNOT_CLOCK_OFF_BEFORE_CLOCK_ON = 4004;
     
+    //没设置考勤规则返回码
+    public final static int QT_N0_ATTENDANCE_RULE = 4005;
+    
     //休息日
     public final static int QT_REST_DAY = 4004;
 
