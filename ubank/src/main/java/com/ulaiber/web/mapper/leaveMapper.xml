@@ -148,6 +148,18 @@
         </if>
 	</select>
 	
+	<!-- 查询用户指定日期是否有审批通过的请假记录 -->
+	<select id="getLeaveRecordByUserIdAndDate" resultMap="LeaveRecordMap">
+		select userId,leaveType,startDate,endDate,leaveTime from tbl_leave_record where userId=#{userId} and type='0' and status='1' and disable='0' 
+		and (locate(#{today},startDate) or startDate&lt;#{today} and endDate&gt;#{today})
+	</select>
+	
+	<!-- 查询用户指定日期是否有审批通过的请假记录 -->
+	<select id="getLeaveRecordByMobileAndDate" resultMap="LeaveRecordMap">
+		select userId,leaveType,startDate,endDate,leaveTime from tbl_leave_record r join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and r.type='0' 
+		and r.status='1' and r.disable='0' and (locate(#{today},startDate) or startDate&lt;#{today} and endDate&gt;#{today})
+	</select>
+	
     <!--根据审批状态获取申请记录状态-->
     <select id="queryApplyStatus" parameterType="int" resultType="com.ulaiber.web.model.LeaveRecord">
         select disable FROM tbl_leave_record where id = #{recordNo}

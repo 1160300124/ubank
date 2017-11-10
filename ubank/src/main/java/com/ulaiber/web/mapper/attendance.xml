@@ -18,12 +18,15 @@
     	<result column="clock_on_status" property="clockOnStatus" jdbcType="VARCHAR" />
     	<result column="clock_on_location" property="clockOnLocation" jdbcType="VARCHAR" />
     	<result column="clock_on_device" property="clockOnDevice" jdbcType="VARCHAR" />
+    	<result column="clock_on_remark" property="clockOnRemark" jdbcType="VARCHAR" />
     	<result column="clock_off_datetime" property="clockOffDateTime" jdbcType="VARCHAR" />
     	<result column="clock_off_status" property="clockOffStatus" jdbcType="VARCHAR" />
     	<result column="clock_off_location" property="clockOffLocation" jdbcType="VARCHAR" />
     	<result column="clock_off_device" property="clockOffDevice" jdbcType="VARCHAR" />
+    	<result column="clock_off_remark" property="clockOffRemark" jdbcType="VARCHAR" />
     	<result column="patchClock_type" property="patchClockType" jdbcType="VARCHAR" />
     	<result column="patchClock_status" property="patchClockStatus" jdbcType="VARCHAR" />
+    	<result column="revoke_type" property="revokeType" jdbcType="VARCHAR" />
     	<association column="dept_num" property="dept" javaType="com.ulaiber.web.model.Departments" resultMap="DepartmentMap"/>
     	<association column="company_num" property="company" javaType="com.ulaiber.web.model.Company" resultMap="CompanyMap"/>
    </resultMap>
@@ -48,9 +51,9 @@
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="Attendance" >
 		insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,
-		clock_off_datetime,clock_off_status,clock_off_location,clock_off_device,patchClock_type,patchClock_status) values(#{userId},#{userName},#{dept.dept_number},
-		#{company.companyNumber},#{clockDate},#{clockOnDateTime},#{clockOnStatus},#{clockOnLocation},#{clockOnDevice},#{clockOffDateTime},#{clockOffStatus},
-		#{clockOffLocation},#{clockOffDevice},#{patchClockType},#{patchClockStatus}) 
+		clock_on_remark,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device,clock_off_remark,patchClock_type,patchClock_status,revoke_type) values
+		(#{userId},#{userName},#{dept.dept_number},#{company.companyNumber},#{clockDate},#{clockOnDateTime},#{clockOnStatus},#{clockOnLocation},#{clockOnDevice},
+		#{clockOnRemark},#{clockOffDateTime},#{clockOffStatus},#{clockOffLocation},#{clockOffDevice},#{clockOffRemark},#{patchClockType},#{patchClockStatus},#{revokeType}) 
 	</insert>
 	
 	<sql id="byCond">
@@ -58,13 +61,16 @@
 		<if test="dept_num != null and dept_num != 0">
 			and r.dept_num = #{dept_num}
 		</if>
-		<if test="clock_on_status == '' and clock_on_status == ''">
+		<if test="clock_on_status == 3 and clock_off_status == 3">
+			and (clock_on_status = #{clock_on_status} or r.clock_off_status = #{clock_off_status})
+		</if>
+		<if test="clock_on_status == '' and clock_off_status == ''">
 			and (clock_on_status is null or clock_off_status is null)
 		</if>
-		<if test="clock_on_status != null and clock_on_status != ''">
+		<if test="clock_on_status != null and clock_on_status != '' and clock_on_status != 3">
 			and r.clock_on_status = #{clock_on_status}
 		</if>
-		<if test="clock_off_status != null and clock_off_status != ''">
+		<if test="clock_off_status != null and clock_off_status != '' and clock_off_status != 3">
 			and r.clock_off_status = #{clock_off_status}
 		</if>
 		<if test="user_name != null and user_name != ''">
@@ -88,25 +94,21 @@
 	</select>
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
-		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,
-		clock_off_device,patchClock_type,patchClock_status from tbl_attendance_records where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd}
-		order by rid
+		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_on_remark,clock_off_datetime,clock_off_status,
+		clock_off_location,clock_off_device,clock_off_remark,patchClock_type,patchClock_status,revoke_type from tbl_attendance_records 
+		where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">
-		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_off_datetime,r.clock_off_status,
-		r.clock_off_location,r.clock_off_device,r.patchClock_type,r.patchClock_status from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id
+		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_on_remark,
+		r.clock_off_datetime,r.clock_off_status,r.clock_off_location,r.clock_off_device,r.clock_off_remark,r.patchClock_type,r.patchClock_status,r.revoke_type
+		from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id
 		where u.mobile=#{mobile} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} and u.disabled='0' order by r.rid
-	</select>
-	
-	<select id="getLatestRecordByUserId" parameterType="Long" resultMap="AttendanceMap">
-		select user_id,user_name,clock_date,clock_time,clock_type,clock_status,clock_location,clock_device from tbl_attendance_records where user_id=#{userId}
-		order by clock_date desc limit 1
 	</select>
 	
 	<update id="updateClockOffInfo" parameterType="Attendance">
 		update tbl_attendance_records set clock_off_datetime=#{clockOffDateTime},clock_off_status = #{clockOffStatus},clock_off_location=#{clockOffLocation},
-		clock_off_device=#{clockOffDevice} where user_id=#{userId} and clock_date = #{clockDate}
+		clock_off_device=#{clockOffDevice},clock_off_remark=#{clockOffRemark} where user_id=#{userId} and clock_date = #{clockDate}
 	</update>
 	
 	<delete id="deleteRecordsByRids" parameterType="java.util.List">

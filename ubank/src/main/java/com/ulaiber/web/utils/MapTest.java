@@ -59,15 +59,17 @@ public class MapTest {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
         
-//        String apiUrl = "http://localhost:8080/ubank/api/v1/clock";
-//        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//        params.put("mobile", "15919477086");
-//        params.put("longitude", "113.944173");
-//        params.put("latitude", "22.538667");
-//        params.put("location", "深圳市优融网络科技有限公司M-10");
-//        params.put("device", "android-8.0土豪金版");
-//        String response = HttpsUtil.doPost1(apiUrl, params);
-//        System.out.println(response);
+        String apiUrl = "http://localhost:8080/ubank/api/v1/clock";
+        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+        params.put("mobile", "15919477086");
+        params.put("longitude", "113.944173");
+        params.put("latitude", "22.538667");
+//        params.put("isOutClock", true);
+//        params.put("remark", "出差啊啊啊");
+        params.put("location", "深圳市优融网络科技有限公司M-10");
+        params.put("device", "android-8.0土豪金版");
+        String response = HttpsUtil.doPost1(apiUrl, params);
+        System.out.println(response);
         
 //        String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
 //        Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
@@ -95,32 +97,32 @@ public class MapTest {
 //      String response2 = HttpsUtil.doPost(apiUrl2, params2);
 //      System.out.println(response2);
         
-		for (int i = 1; i<= 30; i++){
-			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(336,'黄国清',40025,20047,'2017-09-";
-			if (i < 10){
-				sql += "0" + i + "','2017-09-" + "0" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + "0" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			} else if (i > 10 && i < 13){
-				sql += i + "','2017-09-" + i + " 10:10',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			} else if (i > 13 && i < 16){
-				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 17:20',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			} else {
-				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			}
-			System.out.println(sql);
-		}
-		for (int i = 1; i<= 30; i++){
-			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(359,'焦敏',40025,20047,'2017-09-";
-			if (i < 10){
-				sql += "0" + i + "','2017-09-" + "0" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + "0" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			} else if (i > 10 && i < 13){
-				sql += i + "','2017-09-" + i + " 10:10',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			} else if (i > 13 && i < 16){
-				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 17:20',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			} else {
-				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
-			}
-			System.out.println(sql);
-		}
+//		for (int i = 1; i<= 30; i++){
+//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(336,'黄国清',40025,20047,'2017-09-";
+//			if (i < 10){
+//				sql += "0" + i + "','2017-09-" + "0" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + "0" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else if (i > 10 && i < 13){
+//				sql += i + "','2017-09-" + i + " 10:10',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else if (i > 13 && i < 16){
+//				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 17:20',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else {
+//				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			}
+//			System.out.println(sql);
+//		}
+//		for (int i = 1; i<= 30; i++){
+//			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(359,'焦敏',40025,20047,'2017-09-";
+//			if (i < 10){
+//				sql += "0" + i + "','2017-09-" + "0" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + "0" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else if (i > 10 && i < 13){
+//				sql += i + "','2017-09-" + i + " 10:10',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else if (i > 13 && i < 16){
+//				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 17:20',1,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			} else {
+//				sql += i + "','2017-09-" + i + " 09:10',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版','2017-09-" + i + " 20:00',0,'广东省深圳市南山区海王大厦','安卓10.0土豪版');";
+//			}
+//			System.out.println(sql);
+//		}
     }
 
     private static String getLonLat(String address){

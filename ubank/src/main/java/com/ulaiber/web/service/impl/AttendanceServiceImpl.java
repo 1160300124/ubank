@@ -21,10 +21,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AttendanceDao;
 import com.ulaiber.web.dao.AttendanceRuleDao;
+import com.ulaiber.web.dao.LeaveDao;
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.LeaveRecord;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.attendance.Attendance;
@@ -56,10 +58,13 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	
 	@Resource
 	private UserDao userDao;
+	
+	@Resource
+	private LeaveDao leaveDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public ResultInfo save(Attendance att, String device, String location, AttendanceRule rule) {
+	public ResultInfo save(Attendance att, String device, String location, boolean isOutClock, String remark, AttendanceRule rule) {
 		ResultInfo info = new ResultInfo();
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
@@ -85,33 +90,10 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 		}
 		
-		boolean isRestDay = false;
-		String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
-		//节假日
-		if (rule.getHolidayFlag() == 0){
-			Holiday holiday = ruleDao.getHolidaysByYear(today.split("-")[0]);
-			if (holiday != null){
-				List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
-				List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
-				if (holidays.contains(today)){
-					isRestDay = true;
-				} else {
-					if (rule.getWorkday().contains(workday) || workdays.contains(today)){
-						isRestDay = false;
-					} else {
-						isRestDay = true;
-					}
-				}
-			}
-		} else {
-			if (!rule.getWorkday().contains(workday)){
-				isRestDay = true;
-			} 
-		}
-		if (isRestDay){
-			logger.info("休息日不用打卡："+ today + "-" + workday);
+		if (isRestDay(today, rule)){
+			logger.info("休息日不用打卡："+ today);
 			info.setCode(IConstants.QT_REST_DAY);
-			info.setMessage("休息日不用打卡："+ today + "-" + workday);
+			info.setMessage("休息日不用打卡："+ today);
 			return info;
 		}
 		
@@ -143,6 +125,133 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		//新增，更新标志，默认失败
 		boolean flag = false;
+		//查询当天是否有审批通过的请假记录
+		LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(att.getUserId(), today);
+		if (leaveRecord != null){
+			String startDay = leaveRecord.getStartDate().split(" ")[0];
+			String endDay = leaveRecord.getEndDate().split(" ")[0];
+			if (startDay.compareTo(endDay) == 0 || startDay.compareTo(today) == 0 || endDay.compareTo(today) == 0){
+				if (rule.getRestFlag() == 0){
+					String restStartTime = today + " " + rule.getRestStartTime();
+					String restEndTime = today + " " + rule.getRestEndTime();
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+						if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+						if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+							clockOnTime = restEndTime;
+						}
+						if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+						if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+
+						}
+					}
+					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+
+						}
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+						if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+							clockOffTime = restStartTime;
+						}
+						if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+					}
+				} else {
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+						clockOnTime = leaveRecord.getEndDate();
+					}
+					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						clockOffTime = leaveRecord.getStartDate();
+					}
+				}
+
+			} else if (today.compareTo(startDay) > 0 && today.compareTo(endDay) > 0){
+				if (records == null || records.size() == 0){
+					//当前时间<最早上班打卡时间
+					if (datetime.compareTo(dateBegin) < 0){
+						logger.error("最早上班打卡时间为 " + rule.getClockOnStartTime() + ",请等待...");
+						info.setCode(IConstants.QT_CANNOT_CLOCK_ON);
+						info.setMessage("最早上班打卡时间为 " + rule.getClockOnStartTime() + ",请等待...");
+						return info;
+					}
+					//当前时间>最晚下班打卡时间
+					if (datetime.compareTo(dateEnd) > 0){
+						logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+						info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
+						info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+						return info;
+					}
+					//当前时间大于下班打卡时间或小于最晚下班打卡时间
+					if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
+						att.setClockOffDateTime(datetime);
+						att.setClockOffDevice(device);
+						att.setClockOffLocation(location);
+						att.setClockOffStatus(isOutClock ? "3" : "0");
+						att.setClockOffRemark(isOutClock ? remark : null);
+					}
+					//当前时间大于最早上班打卡时间且小于下班打卡时间----外勤打卡
+					else if (datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(clockOffTime) <= 0)
+					{
+						att.setClockOnDateTime(datetime);
+						att.setClockOnDevice(device);
+						att.setClockOnLocation(location);
+						att.setClockOnStatus(isOutClock ? "3" : "0");
+						att.setClockOnRemark(isOutClock ? remark : null);
+					}
+					
+					flag = dao.save(att) > 0;
+				} else {
+					//当前时间等于上次打卡时间
+					if (StringUtils.equals(datetime, records.get(0).getClockOnDateTime())
+							|| StringUtils.equals(datetime, records.get(0).getClockOffDateTime())){
+						logger.error("歇一会嘛，不要太频繁打卡。");
+						info.setCode(IConstants.QT_CANNOT_CLOCK_FREQUENTLY);
+						info.setMessage("歇一会嘛，不要太频繁打卡。");
+						return info;
+					}
+
+					att.setClockOffDateTime(datetime);
+					att.setClockOffDevice(device);
+					att.setClockOffLocation(location);
+					att.setClockOffStatus(isOutClock ? "3" : "0");
+					att.setClockOffRemark(isOutClock ? remark : null);
+					//当前时间晚于最晚下班打卡时间
+					if (datetime.compareTo(dateEnd) > 0){
+						logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+						info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
+						info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
+						return info;
+					}
+					if (datetime.compareTo(today + " " + rule.getClockOnTime()) < 0){
+						logger.error("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
+						info.setCode(IConstants.QT_CANNOT_CLOCK_OFF_BEFORE_CLOCK_ON);
+						info.setMessage("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
+						return info;
+					}
+					flag = dao.updateClockOffInfo(att);
+					if (flag){
+						info.setCode(IConstants.QT_CODE_OK);
+						att.setCompany(null);
+						att.setDept(null);
+						info.setData(att);
+					} else{
+						info.setCode(IConstants.QT_CODE_ERROR);
+						info.setMessage("新增或更新失败。");
+						logger.error("新增或更新失败。");
+					}
+					return info;
+
+				}
+
+			}
+		} 
+		
 		// clockOnStatus：0正常 ，1迟到     clockOffStatus： 0正常 ，2早退
 		if (records == null || records.size() == 0){
 			//当前时间<最早上班打卡时间
@@ -164,7 +273,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				att.setClockOffDateTime(datetime);
 				att.setClockOffDevice(device);
 				att.setClockOffLocation(location);
-				att.setClockOffStatus("0");
+				att.setClockOffStatus(isOutClock ? "3" : "0");
+				att.setClockOffRemark(isOutClock ? remark : null);
 			}
 			//当前时间大于最早上班打卡时间且小于上班打卡时间----正常打卡
 			else if (datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(clockOnTime) <= 0)
@@ -172,14 +282,16 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				att.setClockOnDateTime(datetime);
 				att.setClockOnDevice(device);
 				att.setClockOnLocation(location);
-				att.setClockOnStatus("0");
+				att.setClockOnStatus(isOutClock ? "3" : "0");
+				att.setClockOnRemark(isOutClock ? remark : null);
 			}
 			//当前时间大于上班打卡时间且小于下班打卡时间----迟到
 			else if (datetime.compareTo(clockOnTime) > 0 && datetime.compareTo(clockOffTime) < 0){
 				att.setClockOnDateTime(datetime);
 				att.setClockOnDevice(device);
 				att.setClockOnLocation(location);
-				att.setClockOnStatus("1");
+				att.setClockOnStatus(isOutClock ? "3" : "1");
+				att.setClockOnRemark(isOutClock ? remark : null);
 			} 
 			
 			flag = dao.save(att) > 0;
@@ -198,6 +310,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			att.setClockOffDevice(device);
 			att.setClockOffLocation(location);
 			att.setClockOffStatus("0");
+			att.setClockOffRemark(isOutClock ? remark : null);
 			//当前时间晚于最晚下班打卡时间
 			if (datetime.compareTo(dateEnd) > 0){
 				logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
@@ -216,11 +329,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 					: clockOnTime.compareTo(records.get(0).getClockOnDateTime()) > 0 ? clockOnTime : records.get(0).getClockOnDateTime();
 			//当前时间大于下班打卡时间&&小于最晚下班打卡时间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0 ){
-				att.setClockOffStatus("0");
+				att.setClockOffStatus(isOutClock ? "3" : "0");
 			}
 			//当前时间大于上次打卡时间小于下班打卡时间----早退
 			else if (datetime.compareTo(clockOffBegin) > 0 && datetime.compareTo(clockOffTime) < 0){
-				att.setClockOffStatus("2");
+				att.setClockOffStatus(isOutClock ? "3" : "2");
 			}
 			
 			flag = dao.updateClockOffInfo(att);
@@ -238,6 +351,34 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		}
 		
 		return info;
+	}
+	
+	@Override
+	public boolean isRestDay(String day, AttendanceRule rule){
+		boolean isRestDay = false;
+		String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(day) + "");
+		//节假日
+		if (rule.getHolidayFlag() == 0){
+			Holiday holiday = ruleDao.getHolidaysByYear(day.split("-")[0]);
+			if (holiday != null){
+				List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
+				List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
+				if (holidays.contains(day)){
+					isRestDay = true;
+				} else {
+					if (rule.getWorkday().contains(workday) || workdays.contains(day)){
+						isRestDay = false;
+					} else {
+						isRestDay = true;
+					}
+				}
+			}
+		} else {
+			if (!rule.getWorkday().contains(workday)){
+				isRestDay = true;
+			} 
+		}
+		return isRestDay;
 	}
 
 	@Override
@@ -281,9 +422,10 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				}
 			}
 			if (minDistance > distance){
-				logger.info("当前坐标离公司" + minDistance + "m，超过设置的" + distance + "m");
+				logger.info("当前坐标离公司" + minDistance + "m，距离打卡范围还有" + (minDistance - distance) + "m");
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("当前坐标离公司" + minDistance + "m，超过设置的" + distance + "m。");
+				retInfo.setMessage("当前坐标离公司" + minDistance + "m，距离打卡范围还有" + (minDistance - distance) + "m");
+				retInfo.setData(minDistance - distance);
 				return retInfo;
 			}
 			retInfo.setCode(IConstants.QT_CODE_OK);
@@ -311,12 +453,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		params.put("dateEnd", dateEnd);
 		params.put("mobile", mobile);
 		return dao.getRecordsByDateAndMobile(params);
-	}
-
-	@Override
-	public Attendance getLatestRecordByUserId(long userId) {
-		
-		return dao.getLatestRecordByUserId(userId);
 	}
 
 	@Override
@@ -475,32 +611,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			
 		} else if (days.size() >= 2) {
 			for (String day : days){
-				
-				boolean isRestDay = false;
-				String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(day) + "");
-				//节假日
-				if (rule.getHolidayFlag() == 0){
-					Holiday holiday = ruleDao.getHolidaysByYear(day.split("-")[0]);
-					if (holiday != null){
-						List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
-						List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
-						if (holidays.contains(day)){
-							isRestDay = true;
-						} else {
-							if (rule.getWorkday().contains(workday) || workdays.contains(day)){
-								isRestDay = false;
-							} else {
-								isRestDay = true;
-							}
-						}
-					}
-				} else {
-					if (!rule.getWorkday().contains(workday)){
-						isRestDay = true;
-					} 
-				}
-				
-				if (isRestDay){
+				if (isRestDay(day, rule)){
 					continue;
 				}
 				
@@ -704,7 +815,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	private boolean updatePatchClockStatus(User user, String clockDate, int patchClockType, String patchClockStatus) {
-		logger.info("--------------------" + clockDate + "-------" + patchClockType + "-----------" + patchClockStatus);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", user.getId());
 		params.put("dateBegin", clockDate);
