@@ -1,12 +1,14 @@
 package com.ulaiber.web.dao;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ulaiber.web.model.ApplyForVO;
 import com.ulaiber.web.model.LeaveRecord;
 import com.ulaiber.web.model.Remedy;
 import com.ulaiber.web.model.User;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 申请请假数据库持久层
@@ -48,6 +50,10 @@ public interface LeaveDao {
     Remedy getRemedyRecordByUserId(int recordNo); //根据记录Id查询补卡信息
     
     List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(Map<String, Object> params); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长
+    
+    LeaveRecord getLeaveRecordByUserIdAndDate(@Param("userId") long userId, @Param("today") String date); //查询用户指定日期是否有审批通过的请假记录
+    
+    LeaveRecord getLeaveRecordByMobileAndDate(@Param("mobile") String mobile, @Param("today") String date); //查询用户指定日期是否有审批通过的请假记录
 
     LeaveRecord queryApplyStatus(int recordNo); //根据审批状态获取申请记录状态
 }

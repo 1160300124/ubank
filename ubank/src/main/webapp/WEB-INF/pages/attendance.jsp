@@ -32,7 +32,8 @@
                    	  	 <option value="0">正常</option>
                    	  	 <option value="1">迟到</option>
                    	  	 <option value="2">早退</option>
-                   	  	 <option value="3">未打卡</option>
+                   	  	 <option value="3">外勤</option>
+                   	  	 <option value="4">未打卡</option> 
                    	  </select>
 	            </div>
 			</div>

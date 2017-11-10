@@ -48,13 +48,6 @@ public interface AttendanceDao {
 	List<Attendance> getRecordsByDateAndMobile(Map<String, Object> params);
 	
 	/**
-	 * 根据手机号获取用户的最近一次打卡记录
-	 * @param userId
-	 * @return
-	 */
-	Attendance getLatestRecordByUserId(long userId);
-	
-	/**
 	 * 更新打卡记录
 	 * @param record
 	 * @return

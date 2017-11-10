@@ -23,7 +23,15 @@ public interface AttendanceService {
 	 * @param attend
 	 * @return
 	 */
-	ResultInfo save(Attendance attend, String device, String location, AttendanceRule rule);
+	ResultInfo save(Attendance attend, String device, String location, boolean isOutClock, String remark, AttendanceRule rule);
+	
+	/**
+	 * 查询指定的day是否是休息肉
+	 * @param day yyyy-MM-dd
+	 * @param rule 考勤规则
+	 * @return boolean
+	 */
+	boolean isRestDay(String day, AttendanceRule rule);
 	
 	/**
 	 * 根据条件查询记录
@@ -61,13 +69,6 @@ public interface AttendanceService {
 	 */
 	List<Attendance> getRecordsByDateAndMobile(String dateBegin, String dateEnd, String mobile);
 	
-	/**
-	 * 根据userId获取用户的最近一次打卡记录
-	 * @param userId
-	 * @return
-	 */
-	Attendance getLatestRecordByUserId(long userId);
-
 	/**
 	 * 更新打卡记录
 	 * @param record

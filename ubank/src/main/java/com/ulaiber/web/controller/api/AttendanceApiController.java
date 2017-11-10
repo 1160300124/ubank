@@ -1,6 +1,5 @@
 package com.ulaiber.web.controller.api;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +20,14 @@ import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
-import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.LeaveRecord;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.attendance.Attendance;
 import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.AttendanceService;
+import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
 
@@ -54,6 +54,9 @@ public class AttendanceApiController extends BaseController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private LeaveService leaveService;
+	
 	@RequestMapping(value = "getRecordsForMonth", method = RequestMethod.GET)
 	@ResponseBody
 	public ResultInfo getRecordsForMonth(String mobile, String month, HttpServletRequest request, HttpServletResponse response){
@@ -69,7 +72,7 @@ public class AttendanceApiController extends BaseController {
 			AttendanceRule rule = ruleService.getRuleByMobile(mobile);
 			if (null == rule){
 				logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
-				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setCode(IConstants.QT_N0_ATTENDANCE_RULE);
 				info.setMessage("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
 				return info;
 			}
@@ -95,19 +98,21 @@ public class AttendanceApiController extends BaseController {
 	
 	@RequestMapping(value = "getClockInfo", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getClockInfo(String mobile, String date,HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo getClockInfo(String mobile, String date,HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo(IConstants.QT_CODE_OK, "获取打卡信息成功。");
 		Map<String, Object> data = new HashMap<String, Object>(); 
 		if (StringUtils.isEmpty(mobile)){
 			logger.error("手机号不能为空。");
-			data.put("message", "手机号不能为空。");
-			return data;
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("手机号不能为空。");
+			return info;
 		}
 		AttendanceRule rule = ruleService.getRuleByMobile(mobile);
 		if (null == rule){
 			logger.error("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
-			data.put("type", 5);
-			data.put("message", "用户 {" + mobile + "}没有设置考勤规则，请先设置。");
-			return data;
+			info.setCode(IConstants.QT_N0_ATTENDANCE_RULE);
+			info.setMessage("用户 {" + mobile + "}没有设置考勤规则，请先设置。");
+			return info;
 		}
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
@@ -146,43 +151,60 @@ public class AttendanceApiController extends BaseController {
 		}
 		
 		data.put("clockDate", today);
-		boolean isRestDay = false;
-		String workday = IConstants.WORK_DAY.get(DateTimeUtil.getWeekday(today) + "");
-		//节假日
-		if (rule.getHolidayFlag() == 0){
-			Holiday holiday = ruleService.getHolidaysByYear(today.split("-")[0]);
-			if (holiday != null){
-				List<String> holidays = Arrays.asList(holiday.getHoliday().split(","));
-				List<String> workdays = Arrays.asList(holiday.getWorkday().split(","));
-				if (holidays.contains(today)){
-					isRestDay = true;
-				} else {
-					if (rule.getWorkday().contains(workday) || workdays.contains(today)){
-						isRestDay = false;
+		boolean isRestDay = service.isRestDay(today, rule);
+		if (isRestDay){
+			data.put("isRestDay", isRestDay);
+			info.setData(data);
+			return info;
+		}
+//		
+		//请假信息
+		String leaveMsg = "";
+		LeaveRecord leaveRecord = leaveService.getLeaveRecordByMobileAndDate(mobile, today);
+		if (leaveRecord != null){
+			String start = leaveRecord.getStartDate().substring(leaveRecord.getStartDate().lastIndexOf("-") + 1).replace(" ", "日");
+			String end = leaveRecord.getEndDate().substring(leaveRecord.getEndDate().lastIndexOf("-") + 1).replace(" ", "日");
+			leaveMsg = "请假：" + start + "-" + end;
+		}
+		data.put("leaveMsg", leaveMsg);
+		
+		//date不为空, 查询指定日期的打卡信息 
+		if (StringUtils.isNotEmpty(date)){
+			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile);
+			Attendance record = records.size() == 0 ? null : records.get(0);
+			data.put("record", records.size() == 0 ? null : records.get(0));
+			if (leaveRecord != null){
+				String startDay = leaveRecord.getStartDate().split(" ")[0];
+				String endDay = leaveRecord.getEndDate().split(" ")[0];
+				if (startDay.compareTo(endDay) == 0 || startDay.compareTo(today) == 0 || endDay.compareTo(today) == 0){
+					if (record == null){
+						//请假当天没有打卡记录，则为请假
+						data.put("type", "5");
 					} else {
-						isRestDay = true;
+						if (record.getRevokeType() == 0){
+							//请假当天有打卡记录且为销假打卡
+							data.put("type", "6");
+						}
+					}
+				} else if (today.compareTo(startDay) > 0 && today.compareTo(endDay) > 0){
+					if (record == null){
+						//请假当天没有打卡记录，则为请假
+						data.put("type", "5");
+					} else {
+						if (record.getRevokeType() == 0){
+							//请假当天有打卡记录且为销假打卡
+							data.put("type", "6");
+						}
 					}
 				}
 			}
-		} else {
-			if (!rule.getWorkday().contains(workday)){
-				isRestDay = true;
-			} 
+			
+			
+			info.setData(data);
+			return info;
 		}
 		
-		if (isRestDay){
-			data.put("isRestDay", isRestDay);
-			return data;
-		}
-		
-		//date不为空, 查询指定日期的打卡信息
-		if (StringUtils.isNotEmpty(date)){
-			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile);
-			data.put("record", records.size() == 0 ? null : records.get(0));
-			return data;
-		}
-		
-		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡  5不能打卡
+		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡  5请假了不用打卡  6销假
 		int type = 0;
 		//查询当天的考勤记录
 		List<Attendance> records = service.getRecordsByDateAndMobile(today, today, mobile);
@@ -228,12 +250,13 @@ public class AttendanceApiController extends BaseController {
 		
 		data.put("type", type);
 		data.put("record", records.size() == 0 ? null : records.get(0));
-		return data;
+		info.setData(data);
+		return info;
 	}
 	
 	@RequestMapping(value = "clock", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo clock(String mobile, String longitude, String latitude, String device, String location,
+	public ResultInfo clock(String mobile, String longitude, String latitude, String device, String location, boolean isOutClock, String remark,
 			HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(longitude) || StringUtils.isEmpty(latitude)){
@@ -252,11 +275,14 @@ public class AttendanceApiController extends BaseController {
 				return info;
 			}
 			
-			//检查打卡的位置是否在设置范围内
-			ResultInfo result = service.refreshLocation(mobile, longitude, latitude, rule);
-			if (result.getCode() == IConstants.QT_CODE_ERROR){
-				logger.error("不在设置的打卡范围之内，请刷新位置。");
-				return result;
+			//是否外勤打卡 是则不再刷新位置
+			if (!isOutClock){
+				//检查打卡的位置是否在设置范围内
+				ResultInfo result = service.refreshLocation(mobile, longitude, latitude, rule);
+				if (result.getCode() == IConstants.QT_CODE_ERROR){
+					logger.error("不在设置的打卡范围之内，请刷新位置。");
+					return result;
+				}
 			}
 			User user = userService.findByMobile(mobile);
 			if (null == user){
@@ -277,7 +303,7 @@ public class AttendanceApiController extends BaseController {
 			dept.setDept_number(user.getDept_number());
 			att.setDept(dept);
 			
-			info = service.save(att, device, location, rule);
+			info = service.save(att, device, location, isOutClock, remark, rule);
 			if (info.getCode() == IConstants.QT_CODE_OK){
 				logger.info("用户  " + mobile + " 打卡成功。");
 				info.setMessage("用户  " + mobile + " 打卡成功。");
