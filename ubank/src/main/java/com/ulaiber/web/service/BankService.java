@@ -80,4 +80,20 @@ public interface BankService {
 	 * @return int
 	 */
 	int insertWithdraw(Withdraw withd);
+
+
+	/**
+	 * 根据二类账户查询账单
+	 * @param map
+	 * @return Withdraw
+	 */
+	List<Withdraw> queryWithdraw(Map<String, Object> map);
+
+	/**
+	 * 更新交易记录
+	 * @param rqUID 交易流水号
+	 * @param tStatus 交易状态
+	 * @return int
+	 */
+	int updateWithdraw(String rqUID, int tStatus);
 }

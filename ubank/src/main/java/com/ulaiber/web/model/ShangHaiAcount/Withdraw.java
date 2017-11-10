@@ -25,6 +25,7 @@ public class Withdraw implements Serializable{
     private String ServerStatusCode;    //返回结果信息
     private String CreateDate;          //创建时间
     private int status;                 //交易状态 0 处理中 1 成功 2 失败
+    private int trading;                //交易类型 0 提现
 
     public long getId() {
         return id;
@@ -168,5 +169,13 @@ public class Withdraw implements Serializable{
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getTrading() {
+        return trading;
+    }
+
+    public void setTrading(int trading) {
+        this.trading = trading;
     }
 }

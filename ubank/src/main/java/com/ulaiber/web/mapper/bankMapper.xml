@@ -82,7 +82,17 @@
 
 	<!--新增提现记录-->
 	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
-		INSERT INTO tbl_withdraw(SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,Purpose,Attach,MemoInfo,type,CreateDate,status)
-			VALUES (#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},#{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{status})
+		INSERT INTO tbl_withdraw(SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,Purpose,Attach,MemoInfo,type,CreateDate,status,trading)
+			VALUES (#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},#{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{status},#{trading})
 	</insert>
+
+	<!--根据二类账户查询账单-->
+	<select id="queryWithdraw" parameterType="Map" resultType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
+		SELECT * from tbl_withdraw where SubAcctNo = #{SubAcctNo} ORDER BY CreateDate DESC limit #{pageNum},#{pageSize}
+	</select>
+
+    <!--更新交易记录-->
+    <update id="updateWithdraw" parameterType="Map">
+        UPDATE tbl_withdraw SET status = ${status} WHERE RqUID = #{rqUID}
+    </update>
 </mapper>

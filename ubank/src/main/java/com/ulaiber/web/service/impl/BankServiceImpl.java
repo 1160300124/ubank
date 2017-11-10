@@ -123,5 +123,19 @@ public class BankServiceImpl extends BaseService implements BankService {
 		return mapper.insertWithdraw(withd);
 	}
 
+    @Override
+    public List<Withdraw> queryWithdraw(Map<String, Object> map) {
+        return mapper.queryWithdraw(map);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int updateWithdraw(String rqUID, int tStatus) {
+	    Map<String,Object> map = new HashMap<>();
+	    map.put("rqUID",rqUID);
+	    map.put("status",tStatus);
+        return mapper.updateWithdraw(map);
+    }
+
 
 }
