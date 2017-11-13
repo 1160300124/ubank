@@ -130,9 +130,9 @@ public class BankServiceImpl extends BaseService implements BankService {
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int updateWithdraw(String rqUID, int tStatus) {
+    public int updateWithdraw(String OrirqUID, int tStatus) {
 	    Map<String,Object> map = new HashMap<>();
-	    map.put("rqUID",rqUID);
+	    map.put("rqUID",OrirqUID);
 	    map.put("status",tStatus);
         return mapper.updateWithdraw(map);
     }

@@ -57,7 +57,7 @@
         left join tbl_roots e on a.user_id = e.userid
         LEFT JOIN tbl_company b on e.companyNumber = b.companyNumber
         left join tbl_departments c on e.dept_number = c.dept_number
-        left join tbl_roles f on a.role_id = f.role_id where a.disabled = '0'
+        left join tbl_roles f on a.role_id = f.role_id where a.disabled = '0' and g.disabled = 0
         <if test="search != null and search != ''">
             and  a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
         </if>

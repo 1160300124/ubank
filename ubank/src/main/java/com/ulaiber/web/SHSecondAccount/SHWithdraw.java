@@ -98,9 +98,7 @@ public class SHWithdraw {
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>开始发送请求给上海银行");
             SslTest st = new SslTest();
-            String result = st.postRequest(postUrl,xml, 10000);
-            System.out.print(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ：" + result);
-            logger.info(">>>>>>>>>>>>>>查询上海银行二类户余额结果为 ："+ result);
+            String result = st.postRequest(postUrl,xml, 20000);
             logger.info(">>>>>>>>>>开始解析xml");
             Withdraw withdraw = new Withdraw();
             Map<String,Object> resultMap = new HashMap<>();

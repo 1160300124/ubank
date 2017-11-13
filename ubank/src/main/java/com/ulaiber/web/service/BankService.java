@@ -95,5 +95,5 @@ public interface BankService {
 	 * @param tStatus 交易状态
 	 * @return int
 	 */
-	int updateWithdraw(String rqUID, int tStatus);
+	int updateWithdraw(String OrirqUID, int tStatus);
 }

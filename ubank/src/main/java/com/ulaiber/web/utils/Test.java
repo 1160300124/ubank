@@ -8,13 +8,10 @@ import java.util.*;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.qiniu.util.Auth;
-import com.ulaiber.web.SHSecondAccount.EncryDecryUtils;
-import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
-import com.ulaiber.web.SHSecondAccount.SHWithdraw;
+import com.ulaiber.web.SHSecondAccount.*;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import net.sf.json.JSONObject;
@@ -458,22 +455,37 @@ public class Test {
 	@org.junit.Test
 	public void withdraw() throws URISyntaxException {
 		Withdraw wd = new Withdraw();
-		wd.setSubAcctNo("623185009300012603");
+		wd.setSubAcctNo("623185009300012892");
 		wd.setProductCd("yfyBalFinancing");
 		wd.setType("0");
 		wd.setPurpose("测试测试");
 		wd.setTheirRef("提现");
-		wd.setAmount(10.0);
-		wd.setBindCardNo("6217007200047229499");
+		wd.setAmount(199.05);
+		wd.setBindCardNo("6217007299999999999");
 		wd.setCurrency("156");
-		//SHWithdraw.withdraw(wd);
-		JSONObject json = JSONObject.fromObject(wd);
-		System.out.println(">>>>>>>>>>>json："+ json.toString());
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/Withdraw",json.toString());
-		System.out.println("result is :"+result);
+		SHWithdraw.withdraw(wd);
+//		JSONObject json = JSONObject.fromObject(wd);
+//		System.out.println(">>>>>>>>>>>json："+ json.toString());
+//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/Withdraw",json.toString());
+//		System.out.println("result is :"+result);
 
 	}
 
+
+    //上海银行二类户交易状态查询
+	@org.junit.Test
+	public void trading() throws URISyntaxException {
+		//String str = "6s41S3hG2AZS27Md9F8z1rJ166rJr282r570";
+		//SHTradingStatus.tradingStatus(str);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("SubAcctNo","623185009300012892");
+		map.put("type","0");
+		map.put("pageNum","1");
+		map.put("pageSize","10");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
+		System.out.print(result);
+
+	}
 	@org.junit.Test
 	public void test(){
 		Map<String, Object> map = new HashMap<String, Object>();
