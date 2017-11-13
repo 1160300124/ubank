@@ -37,7 +37,7 @@ public interface LeaveDao {
 
     Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
 
-    int getUserTotalByDate(String date);  //根据日期查询用户
+    int getUserTotalByDate(Map<String, Object> map);  //根据日期查询用户
 
     List<User> getUserByDate(Map<String, Object> map);  //根据日期分页查询用户
 

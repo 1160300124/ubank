@@ -10,7 +10,7 @@
 <mapper namespace="com.ulaiber.web.dao.RolesDao">
 
     <!-- 获取所有角色信息-->
-    <select id="roleAllQuery" resultType="com.ulaiber.web.model.Roles">
+    <select id="roleAllQuery" parameterType="Map" resultType="com.ulaiber.web.model.Roles">
         SELECT  a.role_id,a.role_name,a.companyNumber,a.companyName,d.name as groupName FROM tbl_roles a
         left join tbl_group d on a.groupNumber = d.groupNumber
         where a.role_id &lt;&gt; 0
@@ -34,7 +34,7 @@
 
     <!--分页查询角色信息-->
     <select id="roleQuery" parameterType="Map" resultType="com.ulaiber.web.model.Roles">
-        SELECT  a.role_id,a.role_name,a.companyNumber,a.companyName,d.name as groupName FROM tbl_roles a
+        SELECT  a.role_id,a.role_name,a.companyNumber,a.companyName,d.name as groupName,a.groupNumber FROM tbl_roles a
         left join tbl_group d on a.groupNumber = d.groupNumber
         where a.role_id &lt;&gt; 0
         <if test="search != null and search != ''">
@@ -73,7 +73,7 @@
 
     <!--根据集团编号获取公司-->
     <!--获取所有公司信息-->
-    <select id="getAllCompanybyGroupNum" resultType="com.ulaiber.web.model.Company">
+    <select id="getAllCompanybyGroupNum" parameterType="Map" resultType="com.ulaiber.web.model.Company">
         select companyNumber,name from tbl_company where 1=1
           and group_num = #{groupNumber}
         <if test = 'sysflag == "1"'>
@@ -82,7 +82,6 @@
                 #{companyNumber}
             </foreach>
         </if>
-        and
     </select>
 
     <!--根据角色ID获取角色信息-->

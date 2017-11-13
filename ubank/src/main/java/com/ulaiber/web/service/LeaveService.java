@@ -46,9 +46,9 @@ public interface LeaveService {
 
     Map<String,Object> queryApplyRecordById(int id);  //根据申请记录ID获取申请记录
 
-    int getUserTotalByDate(String date);  //根据日期查询用户
+    int getUserTotalByDate(String date, String companyNumber);  //根据日期查询用户
 
-    List<User> getUserByDate(String date,int pageNum,int pageSize);  //根据日期分页查询用户
+    List<User> getUserByDate(String date, String companyNumber, int pageNum, int pageSize);  //根据日期分页查询用户
 
     int updateUser(String userId, String CID); //修改用户个推CID
 

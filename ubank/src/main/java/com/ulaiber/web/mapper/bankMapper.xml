@@ -82,17 +82,28 @@
 
 	<!--新增提现记录-->
 	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
-		INSERT INTO tbl_withdraw(SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,Purpose,Attach,MemoInfo,type,CreateDate,status,trading)
-			VALUES (#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},#{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{status},#{trading})
+		INSERT INTO tbl_withdraw(userid,SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,
+		    Purpose,Attach,MemoInfo,type,CreateDate,updateTime,status,trading)
+			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},
+			    #{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{updateTime},#{status},#{trading})
 	</insert>
 
 	<!--根据二类账户查询账单-->
-	<select id="queryWithdraw" parameterType="Map" resultType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
-		SELECT * from tbl_withdraw where SubAcctNo = #{SubAcctNo} ORDER BY CreateDate DESC limit #{pageNum},#{pageSize}
+	<select id="queryWithdraw" parameterType="Map" resultType="com.ulaiber.web.model.Bill">
+	select x.* from (
+		select a.SubAcctNo,a.amount,a.trading ,a.status as tradingStatus,a.updateTime,c.bankCardNo,d.name as bankName,a.RqUID from tbl_withdraw a
+			left join tbl_userToBank c on a.userid = c.userid
+			left join tbl_bindBank d on c.bankNo = d.bankNo
+			 	where a.SubAcctNo = #{SubAcctNo}
+			union all
+			select b.SubAcctNo,b.salaries as amount,b.trading  ,null as tradingStatus,b.CreateDate as updateTime,null as bankCardNo ,
+			 null as bankName,b.sid as RqUID from tbl_salaries_detail b
+				where b.SubAcctNo = #{SubAcctNo}
+		) x ORDER BY x.updateTime DESC limit #{pageNum},#{pageSize}
 	</select>
 
     <!--更新交易记录-->
     <update id="updateWithdraw" parameterType="Map">
-        UPDATE tbl_withdraw SET status = ${status} WHERE RqUID = #{rqUID}
+        UPDATE tbl_withdraw SET status = ${status},updateTime = #{updateTime} WHERE RqUID = #{rqUID}
     </update>
 </mapper>

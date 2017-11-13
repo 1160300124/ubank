@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.BankAccount;
+import com.ulaiber.web.model.Bill;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import org.apache.log4j.Logger;
@@ -124,16 +125,17 @@ public class BankServiceImpl extends BaseService implements BankService {
 	}
 
     @Override
-    public List<Withdraw> queryWithdraw(Map<String, Object> map) {
+    public List<Bill> queryWithdraw(Map<String, Object> map) {
         return mapper.queryWithdraw(map);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int updateWithdraw(String OrirqUID, int tStatus) {
+    public int updateWithdraw(String OrirqUID, int tStatus, String date) {
 	    Map<String,Object> map = new HashMap<>();
 	    map.put("rqUID",OrirqUID);
 	    map.put("status",tStatus);
+	    map.put("date",date);
         return mapper.updateWithdraw(map);
     }
 

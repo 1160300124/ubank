@@ -7,14 +7,15 @@ import javax.servlet.http.HttpServletResponse;
 import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
 import com.ulaiber.web.SHSecondAccount.SHTradingStatus;
 import com.ulaiber.web.SHSecondAccount.SHWithdraw;
-import com.ulaiber.web.model.BankAccount;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
-import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.StringUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Result;
 import org.apache.log4j.Logger;
@@ -27,8 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.service.BankService;
 
 import java.text.SimpleDateFormat;
@@ -284,6 +283,7 @@ public class BankController extends BaseController {
 					return resultInfo;
 				}
 				withd.setCreateDate(sdf.format(new Date()));
+				withd.setUpdateTime(sdf.format(new Date()));
 				withd.setStatus(0);
 				withd.setTrading(0);
 				//新增提现记录
@@ -332,7 +332,7 @@ public class BankController extends BaseController {
                 map.put("SubAcctNo",SubAcctNo);
                 map.put("pageNum",pageNum);
                 map.put("pageSize",pageSize);
-                List<Withdraw> wi = bankservice.queryWithdraw(map);
+                List<Bill> wi = bankservice.queryWithdraw(map);
                 if(wi.size() <= 0){
                     resultInfo.setCode(IConstants.QT_CODE_OK);
                     resultInfo.setMessage("暂无数据");
@@ -340,9 +340,9 @@ public class BankController extends BaseController {
                     return resultInfo;
                 }
                 for (int i = 0 ; i < wi.size() ; i++){
-                    Withdraw wid = wi.get(i);
+					Bill wid = wi.get(i);
                     //如果当前交易记录处于"处理中"，则请求银行的交易状态查询接口
-                    if(wid.getStatus() == 0){
+                    if(wid.getTradingStatus() == 0){
                         String RqUID = wid.getRqUID();
                         ResultInfo result = SHTradingStatus.tradingStatus(RqUID);
                         logger.info(">>>>>>>>>>上海银行二类户交易状态查询结果为：" + result);
@@ -369,8 +369,9 @@ public class BankController extends BaseController {
                         }else if("S".equals(TxnStatus)){
                             tStatus = 1;
                         }
+                        String date = sdf.format(new Date());  //当前时间
                         //更新交易记录
-                        int re = bankservice.updateWithdraw(OrirqUID,tStatus);
+                        int re = bankservice.updateWithdraw(OrirqUID,tStatus,date);
                         if(re == 0 ){
                             resultInfo.setCode(IConstants.QT_CODE_ERROR);
                             resultInfo.setMessage("查询账单失败");
@@ -378,15 +379,17 @@ public class BankController extends BaseController {
                             logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
                             return resultInfo;
                         }
-                        wid.setStatus(tStatus);
+                        wid.setTradingStatus(tStatus);
                     }else{
                         //如果当前查询的数据都为处理完的数据，则不进行接口查询
                         status = "0000";
                     }
                 }
+//				JSONArray json = JSONArray.fromObject(wi);
+//				System.out.println(">>>>>>>>>>>json："+ json.toString());
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("查询账单成功");
-                resMap.put("trading",wi);
+                resMap.put("tradingRecord",wi);
                 resMap.put("status",status);
                 resultInfo.setData(resMap);
                 logger.info(">>>>>>>>>>上海银行二类户交易状态查询成功，二类户账号为"+ SubAcctNo);
@@ -397,6 +400,25 @@ public class BankController extends BaseController {
             }
         }
 
+		return resultInfo;
+	}
+
+	/**
+	 * 二类户交易详情查询
+	 * @param SubAcctNo 二类户账号
+	 * @param trading 交易类型 0 提现 1 工资转入
+	 * @return resultInfo
+	 */
+	@RequestMapping(value = "TradingDetail", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo tradingDetail(String SubAcctNo,int trading){
+		logger.info(">>>>>>>>>>>开始查询交易详情");
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+
+		}catch(Exception e){
+			logger.error(">>>>>>>>>>>查询交易详情失败，二类户账号为："+ SubAcctNo);
+		}
 		return resultInfo;
 	}
 

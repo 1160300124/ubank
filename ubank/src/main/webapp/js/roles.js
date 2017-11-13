@@ -180,6 +180,7 @@ var RoleFun = {
                 {field : 'groupName', title : '所属集团', width: 130, align : 'left'},
                 {field : 'companyName', title : '所属公司', width: 130, align : 'left'},
                 {field : 'companyNumber', title : '公司编号', width: 130, align : 'left',visible : false},
+                {field : 'groupNumber', title : '集团编号', width: 130, align : 'left',visible : false},
                 {field : 'role_id', title : '角色编号', width: 130, align : 'left',visible : false}
 
             ],
@@ -311,6 +312,7 @@ var RoleFun = {
     //修改操作
     role_edit : function () {
         flag = 1;
+        debugger;
         $(".modal-title").html("修改");
         var row = $('#role_table').bootstrapTable('getSelections');
         if(row.length > 1){
@@ -322,8 +324,8 @@ var RoleFun = {
         }
         //this.role_queryAllCom();
         roleId = row[0].role_id;
-        $("input[name=role_name]").val(row[0].role_name);
 
+        $("input[name=role_name]").val(row[0].role_name);
         var num = row[0].companyNumber;
         var arr = [];
         if(num.indexOf(",") > 0){
@@ -333,7 +335,6 @@ var RoleFun = {
         }
         $("#role_modal").modal("show");
         $("#combotree").bootstrapCombotree("setValue",num);
-        debugger
         $("#role_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
 
 
@@ -455,7 +456,7 @@ var RoleFun = {
 };
 
 //select框监听事件
-$("#role_group").change(function(){
+$("#role_group").bind("change",function(){
     var groupNum = $(this).val();
     if(groupNum != ''){
         RoleFun.role_getComTree(groupNum);

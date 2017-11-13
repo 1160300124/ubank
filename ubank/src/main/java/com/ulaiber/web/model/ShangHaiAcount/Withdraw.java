@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 public class Withdraw implements Serializable{
     private long id;                    //ID
+    private long userId;                //用户ID
     private String SubAcctNo;           //平台理财专属子账户
     private String ProductCd;           //理财产品参数
     private String BindCardNo;          //银行卡号
@@ -24,6 +25,7 @@ public class Withdraw implements Serializable{
     private String StatusCode;          //返回结果码
     private String ServerStatusCode;    //返回结果信息
     private String CreateDate;          //创建时间
+    private String updateTime;          //更新时间
     private int status;                 //交易状态 0 处理中 1 成功 2 失败
     private int trading;                //交易类型 0 提现
 
@@ -33,6 +35,14 @@ public class Withdraw implements Serializable{
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getSubAcctNo() {
@@ -177,5 +187,13 @@ public class Withdraw implements Serializable{
 
     public void setTrading(int trading) {
         this.trading = trading;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
     }
 }

@@ -1,50 +1,80 @@
 package com.ulaiber.web.model;
 
-public class Bill {
+import java.io.Serializable;
+
+public class Bill implements Serializable{
 	
-	//单号
-	private String bill_num;
-	
-	//账单的操作类型，如工资转入，提现等
-	private String bill_type;
-	
-	//每次转入或提现的钱
-	private String bill_money;
-	
-	//账单时间
-	private String bill_date;
+	private String RqUID;		//交易流水号
+	private String SubAcctNo;	//平台理财专属子账户
+	private double amount;		//金额
+	private int trading;		//交易类型 0 提现 1 工资转入
+	private int tradingStatus;	//交易状态 0 处理中 1 成功 2 失败
+	private String CreateDate;	//创建时间
+	private String bankCardNo;	//银行卡号
+	private String bankName;	//银行名称
 
-	public String getBill_num() {
-		return bill_num;
+	public String getRqUID() {
+		return RqUID;
 	}
 
-	public void setBill_num(String bill_num) {
-		this.bill_num = bill_num;
+	public void setRqUID(String rqUID) {
+		RqUID = rqUID;
 	}
 
-	public String getBill_type() {
-		return bill_type;
+	public String getSubAcctNo() {
+		return SubAcctNo;
 	}
 
-	public void setBill_type(String bill_type) {
-		this.bill_type = bill_type;
+	public void setSubAcctNo(String subAcctNo) {
+		SubAcctNo = subAcctNo;
 	}
 
-	public String getBill_date() {
-		return bill_date;
+	public double getAmount() {
+		return amount;
 	}
 
-	public void setBill_date(String bill_date) {
-		this.bill_date = bill_date;
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
 
-	public String getBill_money() {
-		return bill_money;
+	public int getTrading() {
+		return trading;
 	}
 
-	public void setBill_money(String bill_money) {
-		this.bill_money = bill_money;
+	public void setTrading(int trading) {
+		this.trading = trading;
 	}
 
-	
+	public int getTradingStatus() {
+		return tradingStatus;
+	}
+
+	public void setTradingStatus(int tradingStatus) {
+		this.tradingStatus = tradingStatus;
+	}
+
+
+	public String getCreateDate() {
+		return CreateDate;
+	}
+
+	public void setCreateDate(String createDate) {
+		CreateDate = createDate;
+	}
+
+	public String getBankCardNo() {
+		return bankCardNo;
+	}
+
+	public void setBankCardNo(String bankCardNo) {
+		this.bankCardNo = bankCardNo;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
 }

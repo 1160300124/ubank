@@ -258,14 +258,18 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public int getUserTotalByDate(String date) {
-        return leaveDao.getUserTotalByDate(date);
+    public int getUserTotalByDate(String date, String companyNumber) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("date" , date);
+        map.put("companyNumber" , companyNumber);
+        return leaveDao.getUserTotalByDate(map);
     }
 
     @Override
-    public List<User> getUserByDate(String date,int pageNum,int pageSize) {
+    public List<User> getUserByDate(String date, String companyNumber, int pageNum, int pageSize) {
         Map<String,Object> map = new HashMap<>();
         map.put("date" , date);
+        map.put("companyNumber" , companyNumber);
         map.put("pageNum" , pageNum);
         map.put("pageSize" , pageSize);
         return leaveDao.getUserByDate(map);

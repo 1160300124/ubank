@@ -823,38 +823,82 @@ public class LeaveController extends BaseController {
      */
     @RequestMapping(value = "synchronizationData", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo synchronizationData(String date,int pageNum,int pageSize){
+    public ResultInfo synchronizationData(String date,String companyNumber,int pageNum,int pageSize){
         logger.info(">>>>>>>>>>>>>开始同步数据");
-        //根据日期查询用户总数
-        int total = leaveService.getUserTotalByDate(date);
         ResultInfo resultInfo = new ResultInfo();
-        if(total <= 0){
-            resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("暂时没有可更新数据");
-            logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
-            return resultInfo;
-        }
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
-        // true 表示数据已同步完成； false 表示还有数据需要同步；
-        boolean flag = false;
-        // 最新的日期
-        String lastDate = "";
-        //根据日期分页查询用户
-        List<User> userList = leaveService.getUserByDate(date,pageNum,pageSize);
-        //存放增加或修改的数据
-        List<SynchronizationData> list = new ArrayList<>();
-        //存放删除的数据
-        List<SynchronizationData> list2 = new ArrayList<>();
-        Map<String,Object> resultMap = new HashMap<>();
-        int pageTotal = userList.size();
-        //如果总数大于分页查询的总数，则表示还有数据
-        if((total - pageTotal) > 0){
-            if(userList.size() > 0){
+        try {
+            //根据日期查询用户总数
+            int total = leaveService.getUserTotalByDate(date,companyNumber);
+            if(total <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("暂时没有可更新数据");
+                logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
+                return resultInfo;
+            }
+            if(pageSize <= 0){
+                pageSize = 10;
+            }
+            if (pageNum < 0){
+                pageNum = 0;
+            }
+            // true 表示数据已同步完成； false 表示还有数据需要同步；
+            boolean flag = false;
+            // 最新的日期
+            String lastDate = "";
+            //根据日期分页查询用户
+            List<User> userList = leaveService.getUserByDate(date,companyNumber,pageNum,pageSize);
+            //存放增加或修改的数据
+            List<SynchronizationData> list = new ArrayList<>();
+            //存放删除的数据
+            List<SynchronizationData> list2 = new ArrayList<>();
+            Map<String,Object> resultMap = new HashMap<>();
+            int pageTotal = userList.size();
+            //如果总数大于分页查询的总数，则表示还有数据
+            if((total - pageTotal) > 0){
+                if(userList.size() > 0){
+                    // 获取最后那条记录的创建日期
+                    User us = userList.get(userList.size()-1);
+                    lastDate = us.getCreateTime();
+                    for (int i = 0 ; i < userList.size() ; i++){
+                        User user = userList.get(i);
+                        if(user.getDisabled().equals("0")){
+                            SynchronizationData async = new SynchronizationData();
+                            async.setId(userList.get(i).getId());
+                            async.setUsername(userList.get(i).getUserName());
+                            async.setDeptName(userList.get(i).getDept_name());
+                            async.setImage(userList.get(i).getImage());
+                            async.setDisabled(userList.get(i).getDisabled());
+                            list.add(async);
+                        }else{
+                            SynchronizationData async = new SynchronizationData();
+                            async.setId(userList.get(i).getId());
+                            async.setUsername(userList.get(i).getUserName());
+                            async.setDeptName(userList.get(i).getDept_name());
+                            async.setImage(userList.get(i).getImage());
+                            async.setDisabled(userList.get(i).getDisabled());
+                            list2.add(async);
+
+                        }
+                    }
+                    resultMap.put("NewAndUpdate" , list);
+                    resultMap.put("Delete" , list2);
+                    resultMap.put("LastDate",lastDate);
+                    resultMap.put("flag",flag);
+                    resultInfo.setCode(IConstants.QT_CODE_OK);
+                    resultInfo.setMessage("同步数据成功");
+                    resultInfo.setData(resultMap);
+                    logger.info(">>>>>>>>>>>>>同步数据成功");
+                    return resultInfo;
+                }else{
+                    flag = true;
+                    resultInfo.setCode(IConstants.QT_CODE_OK);
+                    resultInfo.setMessage("同步数据成功");
+                    logger.info(">>>>>>>>>>>>>同步数据成功");
+                    return resultInfo;
+                }
+
+            }else{
+                flag = true;
                 // 获取最后那条记录的创建日期
                 User us = userList.get(userList.size()-1);
                 lastDate = us.getCreateTime();
@@ -871,12 +915,7 @@ public class LeaveController extends BaseController {
                     }else{
                         SynchronizationData async = new SynchronizationData();
                         async.setId(userList.get(i).getId());
-                        async.setUsername(userList.get(i).getUserName());
-                        async.setDeptName(userList.get(i).getDept_name());
-                        async.setImage(userList.get(i).getImage());
-                        async.setDisabled(userList.get(i).getDisabled());
                         list2.add(async);
-
                     }
                 }
                 resultMap.put("NewAndUpdate" , list);
@@ -887,47 +926,12 @@ public class LeaveController extends BaseController {
                 resultInfo.setMessage("同步数据成功");
                 resultInfo.setData(resultMap);
                 logger.info(">>>>>>>>>>>>>同步数据成功");
-                return resultInfo;
-            }else{
-                flag = true;
-                resultInfo.setCode(IConstants.QT_CODE_OK);
-                resultInfo.setMessage("同步数据成功");
-                logger.info(">>>>>>>>>>>>>同步数据成功");
-                return resultInfo;
-            }
 
-        }else{
-            flag = true;
-            // 获取最后那条记录的创建日期
-            User us = userList.get(userList.size()-1);
-            lastDate = us.getCreateTime();
-            for (int i = 0 ; i < userList.size() ; i++){
-                User user = userList.get(i);
-                if(user.getDisabled().equals("0")){
-                    SynchronizationData async = new SynchronizationData();
-                    async.setId(userList.get(i).getId());
-                    async.setUsername(userList.get(i).getUserName());
-                    async.setDeptName(userList.get(i).getDept_name());
-                    async.setImage(userList.get(i).getImage());
-                    async.setDisabled(userList.get(i).getDisabled());
-                    list.add(async);
-                }else{
-                    SynchronizationData async = new SynchronizationData();
-                    async.setId(userList.get(i).getId());
-                    list2.add(async);
-                }
             }
-            resultMap.put("NewAndUpdate" , list);
-            resultMap.put("Delete" , list2);
-            resultMap.put("LastDate",lastDate);
-            resultMap.put("flag",flag);
-            resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("同步数据成功");
-            resultInfo.setData(resultMap);
-            logger.info(">>>>>>>>>>>>>同步数据成功");
-            return resultInfo;
-
+        }catch(Exception e){
+            logger.error(">>>>>>>>>>>通讯录数据同步失败：",e);
         }
+        return resultInfo;
     }
 
     /**
@@ -941,17 +945,22 @@ public class LeaveController extends BaseController {
     public ResultInfo getClinetID(String userId,String CID){
         logger.info(">>>>>>>>>>>开始插入个推CID");
         ResultInfo resultInfo = new ResultInfo();
-        //修改用户个推CID
-        int result = leaveService.updateUser(userId,CID);
-        if(result <= 0){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("更新用户个推CID失败");
-            logger.info(">>>>>>>>>>>>>>修改用户CID失败");
-            return resultInfo;
+        try {
+            //修改用户个推CID
+            int result = leaveService.updateUser(userId,CID);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("更新用户个推CID失败");
+                logger.info(">>>>>>>>>>>>>>修改用户CID失败");
+                return resultInfo;
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("更新用户个推CID成功");
+            logger.info(">>>>>>>>>>>>>>修改用户CID成功");
+        }catch(Exception e){
+            logger.error(">>>>>>>>>>获取用户个推CID失败：",e);
+
         }
-        resultInfo.setCode(IConstants.QT_CODE_OK);
-        resultInfo.setMessage("更新用户个推CID成功");
-        logger.info(">>>>>>>>>>>>>>修改用户CID成功");
         return resultInfo;
     }
 
@@ -967,59 +976,54 @@ public class LeaveController extends BaseController {
     public ResultInfo getApplyDetails(String type,int recordNo){
         logger.info(">>>>>>>>>>>开始查询申请记录详情");
         ResultInfo resultInfo = new ResultInfo();
-        if(type.equals("2")){  //报销记录
-            //根据申请记录ID，获取报销记录
-            List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
-            //拼接图片地址： 域名 + 图片名称
-            String url = "http://owgz2pijp.bkt.clouddn.com/";
-            for (int i = 0 ; i < reimList.size() ; i++){
-                Reimbursement re = reimList.get(i);
-                if(!StringUtil.isEmpty(re.getImages())){
-                    String[] img = re.getImages().split(",");
-                    String images = "";
-                    for (int j = 0 ; j < img.length ; j++){
-                        if(j > 0){
-                            images += "," + url + img[j];
-                        }else{
-                            images += url + img[j] ;
+        try {
+            if(type.equals("2")){  //报销记录
+                //根据申请记录ID，获取报销记录
+                List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
+                //拼接图片地址： 域名 + 图片名称
+                String url = "http://owgz2pijp.bkt.clouddn.com/";
+                for (int i = 0 ; i < reimList.size() ; i++){
+                    Reimbursement re = reimList.get(i);
+                    if(!StringUtil.isEmpty(re.getImages())){
+                        String[] img = re.getImages().split(",");
+                        String images = "";
+                        for (int j = 0 ; j < img.length ; j++){
+                            if(j > 0){
+                                images += "," + url + img[j];
+                            }else{
+                                images += url + img[j] ;
+                            }
                         }
+                        re.setImages(images);
                     }
-                    re.setImages(images);
-                }
 
-            }
-            if(reimList.size() <= 0){
+                }
+                if(reimList.size() <= 0){
+                    resultInfo.setCode(IConstants.QT_CODE_OK);
+                    resultInfo.setMessage("暂时没有报销记录");
+                    return resultInfo;
+                }
                 resultInfo.setCode(IConstants.QT_CODE_OK);
-                resultInfo.setMessage("暂时没有报销记录");
+                resultInfo.setMessage("查询成功");
+                resultInfo.setData(reimList);
+                return resultInfo;
+            }else if(type.equals("3")){ //工资发放审批记录
+                //根据申请记录ID，获取工资发放审批记录
+                List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
+                if(salaryList.size() <= 0){
+                    resultInfo.setCode(IConstants.QT_CODE_OK);
+                    resultInfo.setMessage("暂时没有工资发放记录");
+                    logger.info(">>>>>>>>>>>>>暂时没有工资发放记录");
+                    return resultInfo;
+                }
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("查询成功");
+                resultInfo.setData(salaryList);
+                logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
                 return resultInfo;
             }
-            resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("查询成功");
-            resultInfo.setData(reimList);
-            return resultInfo;
-        }else if(type.equals("3")){ //工资发放审批记录
-            //根据申请记录ID，获取工资发放审批记录
-            List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
-            if(salaryList.size() <= 0){
-                resultInfo.setCode(IConstants.QT_CODE_OK);
-                resultInfo.setMessage("暂时没有工资发放记录");
-                logger.info(">>>>>>>>>>>>>暂时没有工资发放记录");
-                return resultInfo;
-            }
-//            Map<String,Object> resultMap = new HashMap<>();
-//            double amount = 0;  //统计金额
-//            for (int i = 0 ; i < salaryList.size() ; i++){
-//                SalaryRecord sr = salaryList.get(i);
-//                amount += sr.getSalary();
-//             }
-//            resultMap.put("record",salaryList);
-//            resultMap.put("total" , salaryList.size());
-//            resultMap.put("totalAmount" , amount);
-            resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("查询成功");
-            resultInfo.setData(salaryList);
-            logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
-            return resultInfo;
+        }catch (Exception e){
+            logger.error(">>>>>>>>>>获取申请记录详情失败：",e);
         }
         return resultInfo;
     }
@@ -1032,24 +1036,28 @@ public class LeaveController extends BaseController {
     @ResponseBody
     public ResultInfo createToken(){
         logger.info(">>>>>>>>>>>>>>开始获取七牛云上传文件token");
-        //设置好账号的ACCESS_KEY和SECRET_KEY
-        String accessKey = "GsEHlVlmMBEt4Swq_G-A5FttePWwi1lKwodjomoB";
-        String secretKey = "y3aVnN1bDCxjWd7wuFUf-aUQ0ld-8VxjBqrJcoUg";
-        //要上传的空间
-        String bucket = "ubank-images1";
-        Auth auth = Auth.create(accessKey, secretKey);
-        String upToken = auth.uploadToken(bucket);
         ResultInfo re = new ResultInfo();
-        if(StringUtil.isEmpty(upToken)){
-            re.setCode(IConstants.QT_CODE_ERROR);
-            re.setMessage("获取七牛云token失败");
-            logger.info(">>>>>>>>>>>>获取七牛云token失败");
-            return re;
+        try {
+            //设置好账号的ACCESS_KEY和SECRET_KEY
+            String accessKey = "GsEHlVlmMBEt4Swq_G-A5FttePWwi1lKwodjomoB";
+            String secretKey = "y3aVnN1bDCxjWd7wuFUf-aUQ0ld-8VxjBqrJcoUg";
+            //要上传的空间
+            String bucket = "ubank-images1";
+            Auth auth = Auth.create(accessKey, secretKey);
+            String upToken = auth.uploadToken(bucket);
+            if(StringUtil.isEmpty(upToken)){
+                re.setCode(IConstants.QT_CODE_ERROR);
+                re.setMessage("获取七牛云token失败");
+                logger.info(">>>>>>>>>>>>获取七牛云token失败");
+                return re;
+            }
+            re.setCode(IConstants.QT_CODE_OK);
+            re.setMessage("获取七牛云token成功");
+            re.setData(upToken);
+            logger.info(">>>>>>>>>>>>>获取七牛云token成功");
+        }catch (Exception e){
+            logger.error(">>>>>>>>>>获取七牛云上传文件token：",e);
         }
-        re.setCode(IConstants.QT_CODE_OK);
-        re.setMessage("获取七牛云token成功");
-        re.setData(upToken);
-        logger.info(">>>>>>>>>>>>>获取七牛云token成功");
         return re;
     }
 
@@ -1063,28 +1071,33 @@ public class LeaveController extends BaseController {
     public ResultInfo addRemedy(Remedy remedy){
         logger.info(">>>>>>>>>>>开始新增补卡记录");
         ResultInfo resultInfo = new ResultInfo();
-        //新增补卡记录
-        int result = leaveService.insertRemedy(remedy);
-        if(result <= 0){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("新增失败");
-            logger.info(">>>>>>>>>>>>新增补卡记录失败");
-            return resultInfo;
+        try {
+            //新增补卡记录
+            int result = leaveService.insertRemedy(remedy);
+            if(result <= 0){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("新增失败");
+                logger.info(">>>>>>>>>>>>新增补卡记录失败");
+                return resultInfo;
+            }
+            //补卡
+            AttendancePatchClock apc =  new AttendancePatchClock();
+            long userId = Long.valueOf(remedy.getUserId());
+            apc.setUserId(userId);
+            apc.setPatchClockDate(remedy.getRemedyDate());
+            apc.setPatchClockType(Integer.parseInt(remedy.getType()));
+            apc.setPatchClockOnTime(remedy.getMorning());
+            apc.setPatchClockOffTime(remedy.getAfternoon());
+            apc.setPatchClockStatus("0");
+            boolean flag = attendanceService.patchClock(apc);
+            System.out.print(">>>>>>>>>>补卡结果：" + flag);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("新增成功");
+            logger.info(">>>>>>>>>>>>新增补卡记录成功");
+        }catch (Exception e){
+            logger.error(">>>>>>>>>>新增补卡记录：",e);
         }
-        //补卡
-        AttendancePatchClock apc =  new AttendancePatchClock();
-        long userId = Long.valueOf(remedy.getUserId());
-        apc.setUserId(userId);
-        apc.setPatchClockDate(remedy.getRemedyDate());
-        apc.setPatchClockType(Integer.parseInt(remedy.getType()));
-        apc.setPatchClockOnTime(remedy.getMorning());
-        apc.setPatchClockOffTime(remedy.getAfternoon());
-        apc.setPatchClockStatus("0");
-        boolean flag = attendanceService.patchClock(apc);
-        System.out.print(">>>>>>>>>>补卡结果：" + flag);
-        resultInfo.setCode(IConstants.QT_CODE_OK);
-        resultInfo.setMessage("新增成功");
-        logger.info(">>>>>>>>>>>>新增补卡记录成功");
+
         return resultInfo;
     }
 
