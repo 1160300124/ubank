@@ -80,6 +80,12 @@ public class IConstants
     //没设置考勤规则返回码
     public final static int QT_N0_ATTENDANCE_RULE = 4005;
     
+    //不在考勤范围返回码
+    public final static int QT_N0T_IN_BOUNDS = 4006;
+    
+    //在请假时间段内的返回码
+    public final static int QT_IN_LEAVE_TIME = 4007;
+    
     //休息日
     public final static int QT_REST_DAY = 4004;
 

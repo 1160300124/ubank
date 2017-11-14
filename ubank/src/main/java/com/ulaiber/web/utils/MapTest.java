@@ -66,6 +66,7 @@ public class MapTest {
         params.put("latitude", "22.538667");
 //        params.put("isOutClock", true);
 //        params.put("remark", "出差啊啊啊");
+//        params.put("revokeType", 0);
         params.put("location", "深圳市优融网络科技有限公司M-10");
         params.put("device", "android-8.0土豪金版");
         String response = HttpsUtil.doPost1(apiUrl, params);

@@ -409,7 +409,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				return retInfo;
 			}
 			JSONArray array = json.getJSONArray("results");
-			//打卡规则设置里设置的打卡距离
+			//打卡规则里设置的打卡距离
 			long distance = rule.getClockBounds();
 			//最小的距离
 			long minDistance = Long.parseLong(array.getJSONObject(0).getString("distance"));
@@ -423,9 +423,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 			if (minDistance > distance){
 				logger.info("当前坐标离公司" + minDistance + "m，距离打卡范围还有" + (minDistance - distance) + "m");
-				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setCode(IConstants.QT_N0T_IN_BOUNDS);
 				retInfo.setMessage("当前坐标离公司" + minDistance + "m，距离打卡范围还有" + (minDistance - distance) + "m");
-				retInfo.setData(minDistance - distance);
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("distance", minDistance - distance);
+				retInfo.setData(map);
 				return retInfo;
 			}
 			retInfo.setCode(IConstants.QT_CODE_OK);

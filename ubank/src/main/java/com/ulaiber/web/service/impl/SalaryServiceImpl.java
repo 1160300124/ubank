@@ -219,26 +219,29 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 				}
 				double cutPayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == map.get("totalTime") ? 0 : (Double)map.get("totalTime")), 1);
 				//请假类型. 0 年假，1 事假，2 病假，3 调休，4 婚假，5 产假 ，6 其他
-				if (StringUtils.equals(map.get("leaveType").toString(), "0")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[2]) / 100), 1);
-				}
-				else if (StringUtils.equals(map.get("leaveType").toString(), "1")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[0]) / 100), 1);
-				}
-				else if (StringUtils.equals(map.get("leaveType").toString(), "2")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[1]) / 100), 1);
-				}
-				else if (StringUtils.equals(map.get("leaveType").toString(), "3")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[3]) / 100), 1);
-				}
-				else if (StringUtils.equals(map.get("leaveType").toString(), "4")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[4]) / 100), 1);
-				}
-				else if (StringUtils.equals(map.get("leaveType").toString(), "5")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[5]) / 100), 1);
-				}
-				else if (StringUtils.equals(map.get("leaveType").toString(), "6")){
-					cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[6]) / 100), 1);
+				String leaveType = map.get("leaveType").toString();
+				switch(leaveType){
+					case "0" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[2]) / 100), 1);
+						break;
+					case "1" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[0]) / 100), 1);
+						break;
+					case "2" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[1]) / 100), 1);
+						break;
+					case "3" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[3]) / 100), 1);
+						break;
+					case "4" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[4]) / 100), 1);
+						break;
+					case "5" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[5]) / 100), 1);
+						break;
+					case "6" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[6]) / 100), 1);
+						break;
 				}
 				leaveCutPayment += cutPayment;
 				
