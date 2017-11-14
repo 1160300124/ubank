@@ -169,10 +169,10 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 				sb.append("  早退：" + leaveEarlyWorkdays);
 			}
 			if (noClockOnWorkdays.size() > 0){
-				sb.append("  上班未打卡：" + noClockOnWorkdays);
+				sb.append("  上班缺卡：" + noClockOnWorkdays);
 			}
 			if (noClockOffWorkdays.size() > 0){
-				sb.append("  下班未打卡：" + noClockOffWorkdays);
+				sb.append("  下班缺卡：" + noClockOffWorkdays);
 			}
 			if (noClockWorkdays.size() > 0){
 				sb.append("  旷工：" + noClockWorkdays);
