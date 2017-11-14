@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.Bill;
+import com.ulaiber.web.model.BillDetail;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 
@@ -106,4 +107,18 @@ public interface BankDao {
      * @return int
      */
     int updateWithdraw(Map<String, Object> map);
+
+    /**
+     * 根据流水号查询交易详情
+     * @param rqUID 流水号
+     * @return BillDetail
+     */
+    BillDetail queryWithdrawByRqUID(String rqUID);
+
+    /**
+     * 根据流水号查询工资转入详情
+     * @param rqUID 流水号
+     * @return BillDetail
+     */
+    BillDetail querySalariesByRqUID(String rqUID);
 }

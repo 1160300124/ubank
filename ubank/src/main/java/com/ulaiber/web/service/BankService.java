@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.Bill;
+import com.ulaiber.web.model.BillDetail;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 
@@ -92,10 +93,31 @@ public interface BankService {
 
 	/**
 	 * 更新交易记录
-	 * @param rqUID 交易流水号
+	 * @param OrirqUID 交易流水号
 	 * @param tStatus 交易状态
 	 * @param date
 	 * @return int
 	 */
 	int updateWithdraw(String OrirqUID, int tStatus, String date);
+
+	/**
+	 * 根据用户ID，获取用户CID
+	 * @param userId 用户ID
+	 * @return map
+	 */
+    Map<String,Object> queryCIDByUserid(int userId);
+
+	/**
+	 * 根据流水号查询交易详情
+	 * @param rqUID 流水号
+	 * @return BillDetail
+	 */
+	BillDetail queryWithdrawByRqUID(String rqUID);
+
+	/**
+	 * 根据流水号查询工资转入详情
+	 * @param rqUID
+	 * @return
+	 */
+	BillDetail querySalariesByRqUID(String rqUID);
 }

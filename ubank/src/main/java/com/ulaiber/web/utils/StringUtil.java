@@ -381,7 +381,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * 推送信息
+	 * 申请记录推送信息
 	 * @param map 用户信息
 	 * @param reason 备注
 	 * @param mark 记录类型: 0 请假记录， 1 加班记录 , 2 报销记录,3 工资发放记录,4 补卡记录
@@ -417,17 +417,62 @@ public class StringUtil {
 				if(!StringUtil.isEmpty(reason)){
 					str = reason;
 				}
-				String content = name + "你好，有一条请假申请需要您审批，原因是:"+ str;
+				String content = name + "先生/女士你好，有一条请假申请需要您审批，原因是:"+ str;
 				try {
 					//推送审批信息致第一个审批人
 					PushtoSingle.singlePush(cid,type,content,title);
 				} catch (Exception e) {
-					e.printStackTrace();
 					logger.error(">>>>>>>>>>向"+name+"推送消息异常",e);
 				}
 			}
 
 		}
+	}
+
+	/**
+	 * 交易信息推送
+	 * @param map 用户名和CID
+	 * @param mark 消息类型 0 提现，1 工资转入
+	 * @param status 交易状态 1 成功，2 失败
+	 */
+	public static void sendTradingMessage(Map<String,Object> map,String mark,int status){
+		String cid  = "";
+		String name = "";
+		try {
+			if(!StringUtil.isEmpty(map.get("CID"))){
+				cid = (String) map.get("CID");
+				if(!StringUtil.isEmpty(cid)){
+					name = (String) map.get("user_name");
+					int type = IConstants.TRADING;
+					String types = "";
+					String result = "";
+					switch (mark){
+						case "0":
+							types = "提现";
+							break;
+						case "1":
+							types = "工资转入";
+							break;
+					}
+					switch (status){
+						case 1:
+							result = "成功";
+							break;
+						case 2:
+							result = "失败";
+
+					}
+					//消息内容
+					String title = "您有一条"+ types +"记录";
+					String content = name + "先生/女士你好，您的"+types+"交易已处理"+result;
+					//推送审批信息致第一个审批人
+					PushtoSingle.singlePush(cid,type,content,title);
+				}
+			}
+		}catch(Exception e){
+			logger.error(">>>>>>>>>>向"+name+"推送交易消息异常",e);
+		}
+
 	}
 
 	/**
@@ -486,6 +531,7 @@ public class StringUtil {
 		} catch (IOException e) {
 			logger.error(">>>>>>>>加载config配置文件异常",e);
 		}
+
 		String privateKey = prop.getProperty("SH_privateKey");
 		String publicKey = prop.getProperty("SH_publicKey");
 		String postUrl = prop.getProperty("SH_postUrl");

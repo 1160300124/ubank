@@ -17,6 +17,7 @@ import com.ulaiber.web.utils.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -319,7 +320,7 @@ public class BankController extends BaseController {
 	 */
 	@RequestMapping(value = "TradingQuery", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo tradingQuery(String SubAcctNo,String type,int pageNum,int pageSize){
+	public ResultInfo tradingQuery(String SubAcctNo,int userId,String type,int pageNum,int pageSize){
 		logger.info(">>>>>>>>>>开始二类户交易状态查询");
 		ResultInfo resultInfo = new ResultInfo();
 		Map<String,Object> resMap = new HashMap<>();
@@ -339,6 +340,8 @@ public class BankController extends BaseController {
                     logger.info(">>>>>>>>>>类型为"+type+"的二类户交易状态查询结果为："+ wi.size());
                     return resultInfo;
                 }
+				//根据用户ID，获取用户CID
+				//Map<String,Object> userMap = bankservice.queryCIDByUserid(userId);
                 for (int i = 0 ; i < wi.size() ; i++){
 					Bill wid = wi.get(i);
                     //如果当前交易记录处于"处理中"，则请求银行的交易状态查询接口
@@ -369,6 +372,12 @@ public class BankController extends BaseController {
                         }else if("S".equals(TxnStatus)){
                             tStatus = 1;
                         }
+                        //如果处理成功或失败，则推送信息给用户
+                        //消息类型 0 提现，1 工资转入
+//                        String mark = String.valueOf(wid.getTrading());
+//                        if(tStatus != 0){
+//							StringUtil.sendTradingMessage(userMap,mark,tStatus);
+//						}
                         String date = sdf.format(new Date());  //当前时间
                         //更新交易记录
                         int re = bankservice.updateWithdraw(OrirqUID,tStatus,date);
@@ -411,13 +420,39 @@ public class BankController extends BaseController {
 	 */
 	@RequestMapping(value = "TradingDetail", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo tradingDetail(String SubAcctNo,int trading){
+	public ResultInfo tradingDetail(String SubAcctNo,String RqUID,int trading){
 		logger.info(">>>>>>>>>>>开始查询交易详情");
 		ResultInfo resultInfo = new ResultInfo();
 		try {
-
+			if(trading == 0){  //提现
+				//根据流水号查询交易详情
+				BillDetail bd = bankservice.queryWithdrawByRqUID(RqUID);
+				if(StringUtil.isEmpty(bd)){
+					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setMessage("暂无数据");
+					logger.error(">>>>>>>>>>查询提现详情失败，流水号为：" + RqUID);
+					return resultInfo;
+				}
+				resultInfo.setCode(IConstants.QT_CODE_OK);
+				resultInfo.setMessage("查询成功");
+				resultInfo.setData(bd);
+			}else{ //工资转入
+				//根据流水号查询工资转入详情
+				BillDetail billDet = bankservice.querySalariesByRqUID(RqUID);
+				if(StringUtil.isEmpty(billDet)){
+					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setMessage("暂无数据");
+					logger.error(">>>>>>>>>>查询工资转入详情失败，流水号为：" + RqUID);
+					return resultInfo;
+				}
+				resultInfo.setCode(IConstants.QT_CODE_OK);
+				resultInfo.setMessage("查询成功");
+				resultInfo.setData(billDet);
+			}
 		}catch(Exception e){
-			logger.error(">>>>>>>>>>>查询交易详情失败，二类户账号为："+ SubAcctNo);
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("查询失败");
+			logger.error(">>>>>>>>>>>查询交易详情失败，流水号为："+ RqUID,e);
 		}
 		return resultInfo;
 	}

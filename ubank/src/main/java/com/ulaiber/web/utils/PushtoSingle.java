@@ -90,7 +90,7 @@ public class PushtoSingle {
     }
 
     /**
-     * 透传信息模板.针对个人消息推送
+     * 透传信息模板.对个人消息推送
      * @return
      */
     public static TransmissionTemplate transmissionTemplateDemo(int type,String content,String title) {

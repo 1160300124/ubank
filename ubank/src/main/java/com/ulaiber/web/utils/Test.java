@@ -692,6 +692,17 @@ public class Test {
 
 
 
+	@org.junit.Test
+	public void tradingDetails(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("SubAcctNo","623185009300012892");
+		map.put("RqUID","0T28caj5678XYlhA73549258Szs497Z311yD");
+		map.put("trading",1);
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingDetail",map);
+		System.out.print(result);
+	}
+
+
 
 
 }

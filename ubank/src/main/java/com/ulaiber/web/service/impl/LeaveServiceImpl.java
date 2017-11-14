@@ -59,25 +59,6 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         String mark = "0";  //申请类型
         Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
         StringUtil.sendMessage(map2,reason,mark); //消息推送
-//        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
-//        String cid  = "";
-//        if(!StringUtil.isEmpty(map2.get("CID"))){
-//            cid = (String) map2.get("CID");
-//            if(!StringUtil.isEmpty(cid)){
-//                String name = (String) map2.get("user_name");
-//                int type = IConstants.PENGDING;
-//                //消息内容
-//                String title = "您有个请假申请待审批";
-//                String content = name + "你好，有一条请假申请需要您审批，原因是:"+ leaveRecord.getReason();
-//                try {
-//                    //推送审批信息致第一个审批人
-//                    PushtoSingle.singlePush(cid,type,content,title);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
         return result;
     }
 

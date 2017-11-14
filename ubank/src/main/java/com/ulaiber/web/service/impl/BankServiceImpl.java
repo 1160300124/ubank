@@ -6,9 +6,11 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ulaiber.web.dao.LeaveAuditDao;
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.BankAccount;
 import com.ulaiber.web.model.Bill;
+import com.ulaiber.web.model.BillDetail;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import org.apache.log4j.Logger;
@@ -31,6 +33,9 @@ public class BankServiceImpl extends BaseService implements BankService {
 
 	@Resource
 	private UserDao userDao;
+
+	@Resource
+	private LeaveAuditDao leaveAuditDao;
 	
 	@Override
 	public Bank getBankByBankNo(String bankNo) {
@@ -138,6 +143,21 @@ public class BankServiceImpl extends BaseService implements BankService {
 	    map.put("date",date);
         return mapper.updateWithdraw(map);
     }
+
+	@Override
+	public Map<String, Object> queryCIDByUserid(int userId) {
+		return leaveAuditDao.queryCIDByUserid(userId);
+	}
+
+	@Override
+	public BillDetail queryWithdrawByRqUID(String rqUID) {
+		return mapper.queryWithdrawByRqUID(rqUID);
+	}
+
+	@Override
+	public BillDetail querySalariesByRqUID(String rqUID) {
+		return mapper.querySalariesByRqUID(rqUID);
+	}
 
 
 }
