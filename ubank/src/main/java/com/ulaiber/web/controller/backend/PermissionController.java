@@ -686,6 +686,8 @@ public class PermissionController extends BaseController {
                         if(menus.getFather().equals(key) ){
                             _map4.put("id" , menus.getCode());
                             _map4.put("name" , menus.getName());
+                            _map3.put("isParent", false);//设置根节点为父节点
+                            _map3.put("open", true); //根节点展开
                             list_two.add(_map4);
                         }
                     }

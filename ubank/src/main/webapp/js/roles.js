@@ -131,8 +131,9 @@ var RoleFun = {
                         for (var i = 0 ; i < data.length ; i++){
                             ids.push(data[i].menuNumber);
                         }
+                        debugger
                         for (var j = 0 ; j < ids.length ; j++){
-                            treeObj.checkNode(treeObj.getNodeByParam("id",ids[j]),true);
+                            treeObj.checkNode(treeObj.getNodeByParam("id",ids[j]),null);
                         }
 
                     },
