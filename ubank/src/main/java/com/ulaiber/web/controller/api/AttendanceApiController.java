@@ -176,24 +176,24 @@ public class AttendanceApiController extends BaseController {
 			if (leaveRecord != null){
 				String startDay = leaveRecord.getStartDate().split(" ")[0];
 				String endDay = leaveRecord.getEndDate().split(" ")[0];
-				if (startDay.compareTo(endDay) == 0 || startDay.compareTo(today) == 0 || endDay.compareTo(today) == 0){
+				if (startDay.compareTo(endDay) == 0 || date.compareTo(startDay) == 0 || date.compareTo(endDay) == 0){
 					if (record == null){
 						//请假当天没有打卡记录，则为请假
-						data.put("type", "5");
+						data.put("type", 5);
 					} else {
-						if (record.getRevokeType() == 0){
+						if (StringUtils.equals(record.getRevokeType(), "1")){
 							//请假当天有打卡记录且为销假打卡
-							data.put("type", "6");
+							data.put("type", 6);
 						}
 					}
-				} else if (today.compareTo(startDay) > 0 && today.compareTo(endDay) > 0){
+				} else if (date.compareTo(startDay) > 0 && date.compareTo(endDay) > 0){
 					if (record == null){
 						//请假当天没有打卡记录，则为请假
-						data.put("type", "5");
+						data.put("type", 5);
 					} else {
-						if (record.getRevokeType() == 0){
+						if (StringUtils.equals(record.getRevokeType(), "1")){
 							//请假当天有打卡记录且为销假打卡
-							data.put("type", "6");
+							data.put("type", 6);
 						}
 					}
 				}
@@ -256,7 +256,7 @@ public class AttendanceApiController extends BaseController {
 	
 	@RequestMapping(value = "clock", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo clock(String mobile, String longitude, String latitude, String device, String location, boolean isOutClock, String remark,
+	public ResultInfo clock(String mobile, String longitude, String latitude, String device, String location, boolean isOutClock, String remark, String revokeType,
 			HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(longitude) || StringUtils.isEmpty(latitude)){
@@ -275,11 +275,40 @@ public class AttendanceApiController extends BaseController {
 				return info;
 			}
 			
+			String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
+			String today = datetime.split(" ")[0];
+			String clockOnTime = today + " " + rule.getClockOnTime();
+			String clockOffTime = today + " " + rule.getClockOffTime();
+			//0:不销假正常上班打卡  1:销假打卡
+			if (StringUtils.equals(revokeType, "0")){
+				LeaveRecord leaveRecord = leaveService.getLeaveRecordByMobileAndDate(mobile, today);
+				if (leaveRecord != null){
+					String startDay = leaveRecord.getStartDate().split(" ")[0];
+					String endDay = leaveRecord.getEndDate().split(" ")[0];
+					if (startDay.compareTo(endDay) == 0 || today.compareTo(startDay) == 0 || today.compareTo(endDay) == 0){
+						//请假开始时间<=上班时间,则为上午请假,打卡时间<=请假结束时间时提示时候销假打卡
+						//请假结束时间>=下班时间,则为下午请假,打卡时间>=请假开始时间时提示时候销假打卡
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && datetime.compareTo(leaveRecord.getEndDate()) <= 0
+								|| leaveRecord.getEndDate().compareTo(clockOffTime) >= 0 && datetime.compareTo(leaveRecord.getStartDate()) >= 0){
+							logger.info(mobile + "在请假的时间段内，要销假打卡吗？ ");
+							info.setCode(IConstants.QT_IN_LEAVE_TIME);
+							info.setMessage("在请假的时间段内，要销假打卡吗？");
+							return info;
+						}
+					} else if (today.compareTo(startDay) > 0 && today.compareTo(endDay) > 0){
+						logger.info(mobile + "在请假的时间段内，要销假打卡吗？ ");
+						info.setCode(IConstants.QT_IN_LEAVE_TIME);
+						info.setMessage("在请假的时间段内，要销假打卡吗？");
+						return info;
+					}
+				}
+			}
+			
 			//是否外勤打卡 是则不再刷新位置
 			if (!isOutClock){
 				//检查打卡的位置是否在设置范围内
 				ResultInfo result = service.refreshLocation(mobile, longitude, latitude, rule);
-				if (result.getCode() == IConstants.QT_CODE_ERROR){
+				if (result.getCode() == IConstants.QT_N0T_IN_BOUNDS){
 					logger.error("不在设置的打卡范围之内，请刷新位置。");
 					return result;
 				}
@@ -302,7 +331,7 @@ public class AttendanceApiController extends BaseController {
 			Departments dept = new Departments();
 			dept.setDept_number(user.getDept_number());
 			att.setDept(dept);
-			
+			att.setRevokeType(StringUtils.isEmpty(revokeType) ? "0" : revokeType);
 			info = service.save(att, device, location, isOutClock, remark, rule);
 			if (info.getCode() == IConstants.QT_CODE_OK){
 				logger.info("用户  " + mobile + " 打卡成功。");

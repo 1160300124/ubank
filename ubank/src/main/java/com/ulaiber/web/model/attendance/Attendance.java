@@ -107,7 +107,7 @@ public class Attendance {
 	/**
 	 * 销假打卡 0：销假打卡  1：不销假打卡
 	 */
-	private int revokeType;
+	private String revokeType;
 	
 	public long getRid() {
 		return rid;
@@ -253,11 +253,11 @@ public class Attendance {
 		this.clockOffRemark = clockOffRemark;
 	}
 
-	public int getRevokeType() {
+	public String getRevokeType() {
 		return revokeType;
 	}
 
-	public void setRevokeType(int revokeType) {
+	public void setRevokeType(String revokeType) {
 		this.revokeType = revokeType;
 	}
 

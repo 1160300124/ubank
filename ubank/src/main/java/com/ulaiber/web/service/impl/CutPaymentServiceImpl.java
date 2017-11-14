@@ -18,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ulaiber.web.dao.AttendanceDao;
 import com.ulaiber.web.dao.AttendanceRuleDao;
 import com.ulaiber.web.dao.CutPaymentDao;
+import com.ulaiber.web.dao.LeaveDao;
 import com.ulaiber.web.dao.SalaryRuleDao;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
+import com.ulaiber.web.model.LeaveRecord;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.attendance.Attendance;
 import com.ulaiber.web.model.attendance.AttendanceRule;
@@ -63,6 +65,9 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 	
 	@Resource
 	private CutPaymentDao dao;
+	
+	@Resource
+	private LeaveDao leaveDao;
 	
 	@Override
 	public Map<String, Object> getCutPaymentMessage(String companyId, String salaryMonth) {
@@ -132,7 +137,7 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 					cut.setCompany(company);
 					cut.setCutDate(att.getClockDate());
 					cut.setCutType("2");
-					cut.setCutReason(att.getClockDate() + "：忘打卡" + forgetClockCount + "次");
+					cut.setCutReason(att.getClockDate() + "：缺卡" + forgetClockCount + "次");
 					double money = 0;
 					if (forgetClockCount > salaryRule.getAllowForgetClockCount()){
 						money = salaryRule.getForgetClockCutPayment();
@@ -204,6 +209,11 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				money =  MathUtil.formatDouble(MathUtil.mul(money, daySalaries) , 1);
 			}
 			for (String noClockDay : noClockWorkdays){
+				//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
+				LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(user.getId(), noClockDay);
+				if (leaveRecord != null){
+					continue;
+				}
 				CutPayment cut = new CutPayment();
 				cut.setUserId(user.getId());
 				cut.setUserName(user.getUserName());
