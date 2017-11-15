@@ -51,7 +51,7 @@ public class BanksController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("bank_index")
+    @RequestMapping(value = "bank_index", method = RequestMethod.GET)
     public String toBank_index(HttpServletRequest request, HttpServletResponse response){
         return "banks/bank_index";
     }
@@ -62,7 +62,7 @@ public class BanksController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("toBankLogin")
+    @RequestMapping(value = "toBankLogin", method = RequestMethod.GET)
     public String toBankLogin(HttpServletRequest request, HttpServletResponse response){
         return "banks/bankLogin";
     }
@@ -73,7 +73,7 @@ public class BanksController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("headquarters")
+    @RequestMapping(value = "headquarters", method = RequestMethod.GET)
     public String toHeadquarters(HttpServletRequest request, HttpServletResponse response){
         return "banks/headquarters";
     }
@@ -84,7 +84,7 @@ public class BanksController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("branch")
+    @RequestMapping(value = "branch", method = RequestMethod.GET)
     public String toBranch(HttpServletRequest request, HttpServletResponse response){
         return "banks/branch";
     }
@@ -95,7 +95,7 @@ public class BanksController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("branch_children")
+    @RequestMapping(value = "branch_children", method = RequestMethod.GET)
     public String toBranch_child(HttpServletRequest request, HttpServletResponse response){
         return "banks/branch_children";
     }
@@ -106,18 +106,18 @@ public class BanksController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("bankUser")
+    @RequestMapping(value = "bankUser", method = RequestMethod.GET)
     public String tobankUsers(HttpServletRequest request, HttpServletResponse response){
         return "banks/bankUsers";
     }
 
     /**
-     * 跳转银行用户页
+     *
      * @param request
      * @param response
      * @return
      */
-    @RequestMapping("expand")
+    @RequestMapping(value = "expand", method = RequestMethod.GET)
     public String toExpand(HttpServletRequest request, HttpServletResponse response){
         return "banks/expand";
     }
@@ -151,6 +151,21 @@ public class BanksController extends BaseController {
             resultInfo.setCode(IConstants.QT_NAME_OR_PWD_OEEOR);
             resultInfo.setMessage("mobile or password error.");
             return resultInfo;
+        }
+        String userName = bankUser.getName();
+        List<Menu> menu = banksRootService.getBankMenuByUser(userName);
+        String str = "";
+        for (int i = 0; i < menu.size() ; i++){
+            Menu me = menu.get(i);
+            String url = me.getUrl();
+            if(!StringUtil.isEmpty(url)){
+                url = url.substring(url.lastIndexOf("/") + 1,url.length());
+                if(i > 0){
+                    str += "," + url ;
+                }else{
+                    str += url ;
+                }
+            }
         }
         //放入session
         request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, bankUser);

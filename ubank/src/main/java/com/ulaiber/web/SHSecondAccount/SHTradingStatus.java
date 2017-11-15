@@ -81,9 +81,26 @@ public class SHTradingStatus {
             Map<String , Object> rsMap = new HashMap<>();
             while (iter.hasNext()){
                 Element recordEle = (Element) iter.next();
+                if(StringUtil.isEmpty(recordEle.elementTextTrim("OriRqUID"))){
+                    Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
+                    while (iters.hasNext()){
+                        Element recordEles = (Element) iters.next();
+                        //响应报文头信息
+                        rsMap.put("StatusCode",recordEles.elementTextTrim("StatusCode")); //返回结果码
+                        rsMap.put("ServerStatusCode",recordEles.elementTextTrim("ServerStatusCode"));   //返回结果信息
+                        rsMap.put("SPRsUID",recordEles.elementTextTrim("SPRsUID"));         // 主机流水号
+                        rsMap.put("RqUID",recordEles.elementTextTrim("RqUID"));  //请求流水号
+                    }
+                    resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                    resultInfo.setMessage((String) rsMap.get("ServerStatusCode"));
+                    resultMap.put("status",rsMap.get("StatusCode"));
+                    resultMap.put("tradingSta",rsMap);
+                    resultInfo.setData(resultMap);
+                    return resultInfo;
+                }
                 rsMap.put("ChannelId",recordEle.elementTextTrim("ChannelId"));    //渠道
                 rsMap.put("OriRqUID",recordEle.elementTextTrim("OriRqUID"));     //原交易流水号
-                rsMap.put("RespTxnNo",recordEle.elementTextTrim("RespTxnNo"));    //原交易流水号
+                rsMap.put("RespTxnNo",recordEle.elementTextTrim("RespTxnNo"));    //核心响应交易流水号
                 rsMap.put("Amt",recordEle.elementTextTrim("Amt"));          //交易金额
                 rsMap.put("TranDate",recordEle.elementTextTrim("TranDate"));     //交易日期
                 rsMap.put("TxnStatus",recordEle.elementTextTrim("TxnStatus"));    //交易状态

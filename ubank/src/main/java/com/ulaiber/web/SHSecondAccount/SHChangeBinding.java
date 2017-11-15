@@ -74,11 +74,6 @@ public class SHChangeBinding {
             rqMap.put("TranTime",time);
             String signDataStr = StringUtil.jointSignature(rqMap);
             //待签名的数据
-//            String signDataStr = "BindCardNo="+ shCard.getBindCardNo() +"&ChannelId=YFY&ClearDate="+date+"&CustName=" +
-//                    shCard.getCustName() + "&IdNo=" + shCard.getIdNo() +"&ModiType=" + shCard.getModiType() +"&NewCardNo="+
-//                    shCard.getNewCardNo() +"&NewReservedPhone="+shCard.getNewReservedPhone() +"&ProductCd="+shCard.getProductCd()+
-//                    "&ReservedPhone="+ shCard.getReservedPhone() +"&RqUID="+ random +
-//                    "&SPName=CBIB&SubAcctNo=" +shCard.getSubAcctNo()+"&TranDate="+date+"&TranTime="+time;
             //获取签名数据，其中signDataStr为待签名字符串
             Signature  =  signer.signData(signDataStr.getBytes("GBK"));
             logger.info(">>>>>>>>>>开始拼接xml");
@@ -105,8 +100,6 @@ public class SHChangeBinding {
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
-            //System.out.print(">>>>>>>>>>>>>>改绑请求结果为 ：" + result);
-           // logger.info(">>>>>>>>>>>>>>改绑请求结果为 ："+ result);
             logger.info(">>>>>>>>>>开始解析xml");
             Map<String,Object> resultMap = new HashMap<>();
             //解析XML
@@ -118,6 +111,18 @@ public class SHChangeBinding {
             Map<String , Object> rsMap = new HashMap<>();
             while(iter.hasNext()){
                 Element recordEle = (Element) iter.next();
+                if (StringUtil.isEmpty(recordEle.elementTextTrim("SubAcctNo"))){
+                    Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
+                    while (iters.hasNext()){
+                        Element recordEles = (Element) iters.next();
+                        //响应报文头信息
+                        shChangeCard.setStatusCode(recordEles.elementTextTrim("StatusCode"));  //返回结果码
+                        shChangeCard.setServerStatusCode(recordEles.elementTextTrim("ServerStatusCode")); //返回结果信息
+                        shChangeCard.setSPRsUID(recordEles.elementTextTrim("SPRsUID"));   // 主机流水号
+                        shChangeCard.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
+                    }
+
+                }
                 shChangeCard.setSubAcctNo(recordEle.elementTextTrim("SubAcctNo"));
                 shChangeCard.setProductCd(recordEle.elementTextTrim("ProductCd"));
                 shChangeCard.setCustName(recordEle.elementTextTrim("CustName"));

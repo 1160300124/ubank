@@ -804,4 +804,43 @@ public class StringUtil {
 		return sb.toString();
 	}
 
+	/**
+	 * 判断后台登录用户请求地址是否有指定页面的权限
+	 * @param url
+	 * @return
+	 */
+	public static boolean isURL(String url){
+		boolean flag = false;
+		String[] arr = IConstants.ALLMENU.split(",");
+		for (int i = 0 ; i < arr.length ; i++){
+			if(url.equals(arr[i])){
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+
+	}
+
+	/**
+	 * 读取txt文件的内容
+	 * @param file 想要读取的文件对象
+	 * @return 返回文件内容
+	 */
+	public static String txt2String(File file){
+		StringBuilder result = new StringBuilder();
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(file));//构造一个BufferedReader类来读取文件
+			String s = null;
+			while((s = br.readLine())!=null){//使用readLine方法，一次读一行
+				result.append(System.lineSeparator()+s);
+			}
+			br.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return result.toString();
+	}
+
+
 }

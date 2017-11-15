@@ -110,6 +110,23 @@ public class SHWithdraw {
             Map<String , Object> rsMap = new HashMap<>();
             while (iter.hasNext()){
                 Element recordEle = (Element) iter.next();
+                if(StringUtil.isEmpty(recordEle.elementTextTrim("SubAcctNo"))){
+                    Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
+                    while (iters.hasNext()){
+                        Element recordEles = (Element) iters.next();
+                        //响应报文头信息
+                        withdraw.setStatusCode(recordEles.elementTextTrim("StatusCode"));  //返回结果码
+                        withdraw.setServerStatusCode(recordEles.elementTextTrim("ServerStatusCode")); //返回结果信息
+                        withdraw.setSPRsUID(recordEles.elementTextTrim("SPRsUID"));   // 主机流水号
+                        withdraw.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
+                    }
+                    resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                    resultInfo.setMessage(withdraw.getServerStatusCode());
+                    resultMap.put("status",withdraw.getStatusCode());
+                    resultMap.put("withdraw",withdraw);
+                    resultInfo.setData(resultMap);
+                    return resultInfo;
+                }
                 withdraw.setBizDate(recordEle.elementTextTrim("BizDate"));          //交易日期
                 withdraw.setSubAcctNo(recordEle.elementTextTrim("SubAcctNo"));      //余额理财子帐号
                 withdraw.setBindCardNo(recordEle.elementTextTrim("BindCardNo"));    //银行卡号

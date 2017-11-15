@@ -61,16 +61,7 @@ public class SFTPUtil {
 
             sftp = (ChannelSftp) channel;
             log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
-            //String zipDir = (String) map.get("zipDir");
-//            for (int i = 0; i < files.length; i++) {
-//                log.info(">>>>>>>>>>上传文件第"+i+"个文件:" + files[i]);
-//                MultipartFile file = files[i];
-//                String filename =  file.getOriginalFilename(); // 获取上传文件的原名
-//              //  String sftpFileName = filename;
-//                InputStream ins = file.getInputStream();
-//                upload(directory,filename,ins);
-//                flag = true;
-//            }
+            //开始上传图片
             File file = new File(path);
             File[] files =  file.listFiles();
             for (int i = 0; i < files.length; i++) {
@@ -95,18 +86,15 @@ public class SFTPUtil {
         return flag;
     }
 
-    public  Map<String,Object> connect() throws JSchException {
-        Map<String,Object> map = new HashMap<>();
+    public void connect() throws JSchException {
         //加载配置文件
         Map<String,Object> configMap = StringUtil.loadConfig();
         String username = (String) configMap.get("username");
         String password = (String) configMap.get("password");
         int port = (int) configMap.get("port");
         String host = (String) configMap.get("host");
-//        String directory = (String) configMap.get("directory");
-//        String zipDir = (String) configMap.get("zipDir");
-        map.put("directory",configMap.get("directory"));
-        map.put("zipDir",configMap.get("zipDir"));
+        String directory = (String) configMap.get("directory");
+        String resDir = (String) configMap.get("resDir");
         JSch jsch = new JSch();
         log.info("sftp connect by host:{} username:{}");
 
@@ -128,7 +116,6 @@ public class SFTPUtil {
 
         sftp = (ChannelSftp) channel;
         log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
-        return map;
     }
 
     /**
@@ -168,6 +155,39 @@ public class SFTPUtil {
         sftp.put(input, sftpFileName);
         log.info("file:{} is upload successful" + sftpFileName);
 
+    }
+
+    /**
+     * 下载文件
+     * @param directory 下载目录
+     * @param downloadFile 下载的文件
+     * @param saveFile 存在本地的路径
+     * @param sftp
+     */
+    public void download(String directory, String downloadFile,String saveFile, ChannelSftp sftp) {
+        try {
+            sftp.cd(directory);
+            File file=new File(saveFile);
+            sftp.get(downloadFile, new FileOutputStream(file));
+        } catch (Exception e) {
+            log.error(">>>>>>>>>download failed :",e);
+        }
+    }
+
+    /**
+     * 删除文件
+     * @param directory 要删除文件所在目录
+     * @param deleteFile 要删除的文件
+     * @param sftp
+     */
+    public void delete(String directory, String deleteFile, ChannelSftp sftp) {
+        try {
+            sftp.cd(directory);
+            sftp.rm(deleteFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(">>>>>>>>>delete failed :",e);
+        }
     }
 
     public static void main(String[] args){

@@ -16,7 +16,11 @@ public class IConstants
 
 	//后台用户session常量名
 	public final static String UBANK_BACKEND_USERMENU = "USERMENU";
-    
+
+	public final static String ALLMENU = "salary,salaryConfig,salaryRule,cutPayment,group,company,department," +
+			"module,category,thirdUrl,employee,roles,banner,attendance,statistics,rule,leaveReport,reimReport," +
+			"headquarters,branch,branch_children,bankUser,expand";
+
     //成功
     public final static int QT_CODE_OK = 1000;
     

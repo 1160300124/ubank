@@ -105,6 +105,24 @@ public class ShangHaiAccount {
             Map<String , Object> rsMap = new HashMap<>();
             while (iter.hasNext()){
                 Element recordEle = (Element) iter.next();
+                if (StringUtil.isEmpty(recordEle.elementTextTrim("SubAcctNo"))){
+                    Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
+                    while (iters.hasNext()){
+                        Element recordEles = (Element) iters.next();
+                        //响应报文头信息
+                        secondAcount.setStatusCode(recordEles.elementTextTrim("StatusCode"));  //返回结果码
+                        secondAcount.setServerStatusCode(recordEles.elementTextTrim("ServerStatusCode")); //返回结果信息
+                        secondAcount.setSPRsUID(recordEles.elementTextTrim("SPRsUID"));   // 主机流水号
+                        secondAcount.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
+                    }
+                    resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                    resultInfo.setMessage(secondAcount.getServerStatusCode());
+                    resultMap.put("secondAcount",secondAcount);
+                    resultMap.put("status",secondAcount.getStatusCode());
+                    resultInfo.setData(resultMap);
+                    return resultInfo;
+
+                }
                 //响应报文信息
                 secondAcount.setCoopCustNo(recordEle.elementTextTrim("CoopCustNo"));//合作方客户账号
                 secondAcount.setProductCd(recordEle.elementTextTrim("ProductCd"));   //理财产品参数

@@ -8,6 +8,7 @@ import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
+import org.junit.Before;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,34 +37,35 @@ public class PermissionController extends BaseController {
     private UserService userService;
 
     //跳转集团管理页面
-    @RequestMapping("group")
+    @RequestMapping(value = "group", method = RequestMethod.GET)
     public String group(HttpServletRequest request){
         return "group";
     }
 
     //跳转公司管理页面
-    @RequestMapping("company")
+    @RequestMapping(value = "company", method = RequestMethod.GET)
     public String company(HttpServletRequest request){
         return "company";
     }
 
     //跳转部门管理页面
-    @RequestMapping("department")
+    @RequestMapping(value = "department", method = RequestMethod.GET)
     public String department(HttpServletRequest request){
         return "department";
     }
 
     //跳转员工管理页面
-    @RequestMapping("employee")
+    @RequestMapping(value = "employee", method = RequestMethod.GET)
     public String employee(HttpServletRequest request){
         return "employee";
     }
 
     //跳转角色管理页面
-    @RequestMapping("roles")
+    @RequestMapping(value = "roles", method = RequestMethod.GET)
     public String roles(HttpServletRequest request){
         return "roles";
     }
+
 
     /**
      * 新增集团

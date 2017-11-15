@@ -93,25 +93,25 @@ public class BackendLoginController extends BaseController {
 				retInfo.setMessage("mobile or password error.");
 				return retInfo;
 			}
-//			String userName = dbuser.getUserName();
-//			String sysflag = dbuser.getSysflag();
-//			List<Menu> menu = userService.getAllMenuByUser(userName,sysflag);
-//			String str = "";
-//			for (int i = 0; i < menu.size() ; i++){
-//				Menu me = menu.get(i);
-//				String url = me.getUrl();
-//				if(!StringUtil.isEmpty(url)){
-//					url = url.substring(url.lastIndexOf("/") + 1,url.length());
-//					if(i > 0){
-//						str += "," + url ;
-//					}else{
-//						str += url ;
-//					}
-//				}
-//			}
+			String userName = dbuser.getUserName();
+			String sysflag = dbuser.getSysflag();
+			List<Menu> menu = userService.getAllMenuByUser(userName,sysflag);
+			String str = "";
+			for (int i = 0; i < menu.size() ; i++){
+				Menu me = menu.get(i);
+				String url = me.getUrl();
+				if(!StringUtil.isEmpty(url)){
+					url = url.substring(url.lastIndexOf("/") + 1,url.length());
+					if(i > 0){
+						str += "," + url ;
+					}else{
+						str += url ;
+					}
+				}
+			}
 			//放入session
 			request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, dbuser);
-			//request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERMENU, str);
+			request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERMENU, str);
 			request.getSession().setAttribute("userName", dbuser.getUserName());
 			logger.info(dbuser.getUserName() + " login successed.");
 			

@@ -460,7 +460,7 @@ public class Test {
 		wd.setType("0");
 		wd.setPurpose("测试测试");
 		wd.setTheirRef("提现");
-		wd.setAmount(199.05);
+		wd.setAmount(999.99);
 		wd.setBindCardNo("6217007299999999999");
 		wd.setCurrency("156");
 		SHWithdraw.withdraw(wd);
@@ -692,6 +692,7 @@ public class Test {
 
 
 
+	//获取账单详情
 	@org.junit.Test
 	public void tradingDetails(){
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -700,6 +701,13 @@ public class Test {
 		map.put("trading",1);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingDetail",map);
 		System.out.print(result);
+	}
+
+	//读取文件
+	@org.junit.Test
+	public void readFile(){
+		File file = new File("/Users/emacs/Desktop/IMGDOC0001_YFY_20171109_s5oD.txt");
+		System.out.println("file content is ："+StringUtil.txt2String(file));
 	}
 
 

@@ -107,6 +107,23 @@ public class SHQueryBalance {
             Map<String , Object> rsMap = new HashMap<>();
             while(iter.hasNext()){
                 Element recordEle = (Element) iter.next();
+                if(StringUtil.isEmpty(recordEle.elementTextTrim("SubAcctNo"))){
+                    Iterator iters = recordEle.elementIterator("CommonRsHdr"); // 获取节点下的子节点CommonRsHdr
+                    while (iters.hasNext()){
+                        Element recordEles = (Element) iters.next();
+                        //响应报文头信息
+                        sa.setStatusCode(recordEles.elementTextTrim("StatusCode"));  //返回结果码
+                        sa.setServerStatusCode(recordEles.elementTextTrim("ServerStatusCode")); //返回结果信息
+                        sa.setSPRsUID(recordEles.elementTextTrim("SPRsUID"));   // 主机流水号
+                        sa.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
+                    }
+                    resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                    resultInfo.setMessage(sa.getServerStatusCode());
+                    resultMap.put("status",sa.getStatusCode());
+                    resultMap.put("secondAccount",sa);
+                    resultInfo.setData(resultMap);
+                    return resultInfo;
+                }
                 sa.setSubAcctNo(recordEle.elementTextTrim("SubAcctNo"));
                 avaiBal = recordEle.elementTextTrim("AvaiBal");
                 workingBal = recordEle.elementTextTrim("WorkingBal");
