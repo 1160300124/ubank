@@ -96,7 +96,7 @@ public interface AttendanceService {
 	 * @param rule
 	 * @return
 	 */
-	double getHoursByDateAndMobile(String startDateTime, String endDateTime, AttendanceRule rule);
+	double getHoursByDate(String startDateTime, String endDateTime, AttendanceRule rule);
 	
 	/**
 	 * 补卡

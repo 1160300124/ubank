@@ -294,19 +294,19 @@ public class UserController extends BaseController{
 			retInfo.setMessage("新密码与确认密码不一致");
 			return retInfo;
 		}
+		//验证邀请码
+		Company com = userService.validateCode(code);
+		if(StringUtil.isEmpty(com)){
+			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			retInfo.setMessage("邀请码不存在");
+			return retInfo;
+		}
 		String cap = captchaMap.get(mobile);
 		captchaMap.remove(mobile);
 		if (!StringUtils.equals(captcha, cap) && !StringUtils.equals(captcha, "12345")){
 			logger.error("captcha error.");
 			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
 			retInfo.setMessage("验证码错误");
-			return retInfo;
-		}
-		//验证邀请码
-		Company com = userService.validateCode(code);
-		if(StringUtil.isEmpty(com)){
-			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("邀请码不存在");
 			return retInfo;
 		}
 		//根据公司编号查询绑定的银行

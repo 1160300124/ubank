@@ -123,136 +123,113 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 		}
 		
-		//新增，更新标志，默认失败
-		boolean flag = false;
 		//查询当天是否有审批通过的请假记录
 		LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(att.getUserId(), today);
-		if (leaveRecord != null){
-			String startDay = leaveRecord.getStartDate().split(" ")[0];
-			String endDay = leaveRecord.getEndDate().split(" ")[0];
-			if (startDay.compareTo(endDay) == 0 || startDay.compareTo(today) == 0 || endDay.compareTo(today) == 0){
-				if (rule.getRestFlag() == 0){
-					String restStartTime = today + " " + rule.getRestStartTime();
-					String restEndTime = today + " " + rule.getRestEndTime();
-					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
-						if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
-							clockOnTime = leaveRecord.getEndDate();
+		
+		//0:不销假打卡(上班和下班时间根据请假时间有变动)  1:销假打卡(走正常打卡流程)
+		if (StringUtils.equals(att.getRevokeType(), "0")){
+			if (leaveRecord != null){
+				String startDay = leaveRecord.getStartDate().split(" ")[0];
+				String endDay = leaveRecord.getEndDate().split(" ")[0];
+				if (startDay.compareTo(endDay) == 0 || startDay.compareTo(today) == 0 || endDay.compareTo(today) == 0){
+					if (rule.getRestFlag() == 0){
+						String restStartTime = today + " " + rule.getRestStartTime();
+						String restEndTime = today + " " + rule.getRestEndTime();
+						//上午请假
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+							if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+								clockOnTime = restEndTime;
+							}
+							if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
 						}
-						if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
-							clockOnTime = restEndTime;
+						//下午请假
+						if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+							if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+								clockOffTime = restStartTime;
+							}
+							if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
 						}
-						if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+					} else {
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
 							clockOnTime = leaveRecord.getEndDate();
 						}
 						if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
-
-						}
-					}
-					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
-						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
-
-						}
-						if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
-							clockOffTime = leaveRecord.getStartDate();
-						}
-						if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
-							clockOffTime = restStartTime;
-						}
-						if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
 							clockOffTime = leaveRecord.getStartDate();
 						}
 					}
-				} else {
-					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
-						clockOnTime = leaveRecord.getEndDate();
-					}
-					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
-						clockOffTime = leaveRecord.getStartDate();
-					}
-				}
-
-			} else if (today.compareTo(startDay) > 0 && today.compareTo(endDay) > 0){
-				if (records == null || records.size() == 0){
-					//当前时间<最早上班打卡时间
-					if (datetime.compareTo(dateBegin) < 0){
-						logger.error("最早上班打卡时间为 " + rule.getClockOnStartTime() + ",请等待...");
-						info.setCode(IConstants.QT_CANNOT_CLOCK_ON);
-						info.setMessage("最早上班打卡时间为 " + rule.getClockOnStartTime() + ",请等待...");
-						return info;
-					}
-					//当前时间>最晚下班打卡时间
-					if (datetime.compareTo(dateEnd) > 0){
-						logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
-						info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
-						info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
-						return info;
-					}
-					//当前时间大于下班打卡时间或小于最晚下班打卡时间
-					if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
-						att.setClockOffDateTime(datetime);
-						att.setClockOffDevice(device);
-						att.setClockOffLocation(location);
-						att.setClockOffStatus(isOutClock ? "3" : "0");
-						att.setClockOffRemark(isOutClock ? remark : null);
-					}
-					//当前时间大于最早上班打卡时间且小于下班打卡时间----外勤打卡
-					else if (datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(clockOffTime) <= 0)
-					{
-						att.setClockOnDateTime(datetime);
-						att.setClockOnDevice(device);
-						att.setClockOnLocation(location);
-						att.setClockOnStatus(isOutClock ? "3" : "0");
-						att.setClockOnRemark(isOutClock ? remark : null);
-					}
-					
-					flag = dao.save(att) > 0;
-				} else {
-					//当前时间等于上次打卡时间
-					if (StringUtils.equals(datetime, records.get(0).getClockOnDateTime())
-							|| StringUtils.equals(datetime, records.get(0).getClockOffDateTime())){
-						logger.error("歇一会嘛，不要太频繁打卡。");
-						info.setCode(IConstants.QT_CANNOT_CLOCK_FREQUENTLY);
-						info.setMessage("歇一会嘛，不要太频繁打卡。");
-						return info;
-					}
-
-					att.setClockOffDateTime(datetime);
-					att.setClockOffDevice(device);
-					att.setClockOffLocation(location);
-					att.setClockOffStatus(isOutClock ? "3" : "0");
-					att.setClockOffRemark(isOutClock ? remark : null);
-					//当前时间晚于最晚下班打卡时间
-					if (datetime.compareTo(dateEnd) > 0){
-						logger.error("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
-						info.setCode(IConstants.QT_CANNOT_CLOCK_OFF);
-						info.setMessage("最晚下班打卡时间为 " + rule.getClockOffEndTime() + ",您已经错过下班打卡时间。");
-						return info;
-					}
-					if (datetime.compareTo(today + " " + rule.getClockOnTime()) < 0){
-						logger.error("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
-						info.setCode(IConstants.QT_CANNOT_CLOCK_OFF_BEFORE_CLOCK_ON);
-						info.setMessage("上班时间为 " + rule.getClockOnTime() + ",请上班后再来打卡。");
-						return info;
-					}
-					flag = dao.updateClockOffInfo(att);
-					if (flag){
-						info.setCode(IConstants.QT_CODE_OK);
-						att.setCompany(null);
-						att.setDept(null);
-						info.setData(att);
-					} else{
-						info.setCode(IConstants.QT_CODE_ERROR);
-						info.setMessage("新增或更新失败。");
-						logger.error("新增或更新失败。");
-					}
-					return info;
-
-				}
-
+				} 
 			}
-		} 
+		}
 		
-		// clockOnStatus：0正常 ，1迟到     clockOffStatus： 0正常 ，2早退
+		//销假打卡时算出销假额时长
+		if(StringUtils.equals(att.getRevokeType(), "1")){
+			double revokeTime = 0;
+			if (leaveRecord != null){
+				if (leaveRecord.getStartDate().contains(today) && leaveRecord.getEndDate().contains(today)){
+					revokeTime = getHoursByDate(leaveRecord.getStartDate(), leaveRecord.getEndDate(), rule);
+				} 
+				else if (leaveRecord.getStartDate().contains(today)){
+					revokeTime = getHoursByDate(leaveRecord.getStartDate(), clockOffTime, rule);
+				} 
+				else if (leaveRecord.getEndDate().contains(today)){
+					revokeTime = getHoursByDate(clockOnTime, leaveRecord.getEndDate(), rule);
+				}
+				else if (today.compareTo(leaveRecord.getStartDate()) > 0 && today.compareTo(leaveRecord.getEndDate()) < 0){
+					revokeTime = getHoursByDate(clockOnTime, clockOffTime, rule);
+				}
+			}
+			if (records == null || records.size() == 0){
+				if (revokeTime > 0){
+					leaveDao.updateRealLeaveTime(att.getUserId(), revokeTime, today);
+				}
+			} else {
+				//数据库的打卡记录部位销假打卡时，避免同一天重复计算销假时长
+				if (!StringUtils.equals(records.get(0).getRevokeType(), "1")){
+					if (revokeTime > 0){
+						leaveDao.updateRealLeaveTime(att.getUserId(), revokeTime, today);
+					}
+				}
+			}
+				
+		}
+		
+		return clock(att, device, location, isOutClock, remark, records, datetime, today, clockOnTime, clockOffTime, dateBegin, dateEnd, rule);
+		
+	}
+	
+	/**
+	 * 打卡
+	 * @param att  要保存的考勤记录对象
+	 * @param device 打卡设备号
+	 * @param location  打卡位置
+	 * @param isOutClock 是否外勤卡
+	 * @param remark     外勤卡备注
+	 * @param records    数据库的打卡记录
+	 * @param datetime   打卡时间  yyyy-MM-dd HH:mm
+	 * @param today      当天时间 yyyy-MM-dd
+	 * @param clockOnTime 上班时间
+	 * @param clockOffTime 下班时间
+	 * @param dateBegin  最早上班时间
+	 * @param dateEnd    最晚下班时间
+	 * @param rule       考勤规则
+	 * @return ResultInfo
+	 */
+	private ResultInfo clock(Attendance att, String device, String location, boolean isOutClock, String remark, List<Attendance> records, String datetime,
+			String today, String clockOnTime, String clockOffTime, String dateBegin, String dateEnd, AttendanceRule rule){
+		ResultInfo info = new ResultInfo();
+		//新增，更新标志，默认失败
+		boolean flag = false;
+		// clockOnStatus：0正常  1迟到  3外勤   clockOffStatus： 0正常  2早退  3外勤
 		if (records == null || records.size() == 0){
 			//当前时间<最早上班打卡时间
 			if (datetime.compareTo(dateBegin) < 0){
@@ -297,13 +274,16 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			flag = dao.save(att) > 0;
 			
 		} else {
-			//当前时间等于上次打卡时间
-			if (StringUtils.equals(datetime, records.get(0).getClockOnDateTime())
-					|| StringUtils.equals(datetime, records.get(0).getClockOffDateTime())){
-				logger.error("歇一会嘛，不要太频繁打卡。");
-				info.setCode(IConstants.QT_CANNOT_CLOCK_FREQUENTLY);
-				info.setMessage("歇一会嘛，不要太频繁打卡。");
-				return info;
+			//外勤打卡过滤掉频繁打卡限制
+			if (!isOutClock){
+				//当前时间等于上次打卡时间
+				if (StringUtils.equals(datetime, records.get(0).getClockOnDateTime())
+						|| StringUtils.equals(datetime, records.get(0).getClockOffDateTime())){
+					logger.error("歇一会嘛，不要太频繁打卡。");
+					info.setCode(IConstants.QT_CANNOT_CLOCK_FREQUENTLY);
+					info.setMessage("歇一会嘛，不要太频繁打卡。");
+					return info;
+				}
 			}
 			
 			att.setClockOffDateTime(datetime);
@@ -337,7 +317,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 			
 			flag = dao.updateClockOffInfo(att);
-		} 
+		}
 		
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
@@ -349,7 +329,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			info.setMessage("新增或更新失败。");
 			logger.error("新增或更新失败。");
 		}
-		
 		return info;
 	}
 	
@@ -566,7 +545,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public double getHoursByDateAndMobile(String startDateTime, String endDateTime, AttendanceRule rule) {
+	public double getHoursByDate(String startDateTime, String endDateTime, AttendanceRule rule) {
 		//开始日期  yyyy-MM-dd
 		String startDate = startDateTime.split(" ")[0];
 		//结束日期  yyyy-MM-dd
