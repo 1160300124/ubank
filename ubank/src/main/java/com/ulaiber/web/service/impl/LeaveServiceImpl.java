@@ -44,10 +44,6 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return result;
     }
     
-    public boolean updateLeaveRecord(){
-    	return false;
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int saveAditor(LeaveRecord leaveRecord) {
