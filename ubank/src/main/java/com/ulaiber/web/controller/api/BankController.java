@@ -287,6 +287,7 @@ public class BankController extends BaseController {
 				withd.setUpdateTime(sdf.format(new Date()));
 				withd.setStatus(0);
 				withd.setTrading(0);
+				withd.setUserId(wid.getUserId());
 				//新增提现记录
 				int inResult = bankservice.insertWithdraw(withd);
 				if(inResult == 0){
@@ -364,21 +365,21 @@ public class BankController extends BaseController {
                         String TxnStatus = (String) tradingMap.get("TxnStatus");
                         String OrirqUID = (String) tradingMap.get("OriRqUID");
                         logger.info(">>>>>>>>>>原交易流水号为：" + OrirqUID + ",传入的交易流水号为：" + RqUID);
-                        int tStatus = 0;
-                        if("I".equals(TxnStatus)){
-                            tStatus = 0;
-                        }else if("F".equals(TxnStatus)){
-                            tStatus = 2;
-                        }else if("S".equals(TxnStatus)){
-                            tStatus = 1;
-                        }
-                        //如果处理成功或失败，则推送信息给用户
+						int tStatus = 0;
+						if("I".equals(TxnStatus)){
+							tStatus = 0;
+						}else if("F".equals(TxnStatus)){
+							tStatus = 2;
+						}else if("S".equals(TxnStatus)){
+							tStatus = 1;
+						}
+						//如果处理成功或失败，则推送信息给用户
                         //消息类型 0 提现，1 工资转入
 //                        String mark = String.valueOf(wid.getTrading());
 //                        if(tStatus != 0){
 //							StringUtil.sendTradingMessage(userMap,mark,tStatus);
 //						}
-                        String date = sdf.format(new Date());  //当前时间
+						String date = (String) tradingMap.get("TranDate"); //处理时间
                         //更新交易记录
                         int re = bankservice.updateWithdraw(OrirqUID,tStatus,date);
                         if(re == 0 ){

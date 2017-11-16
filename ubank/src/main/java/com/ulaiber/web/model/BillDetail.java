@@ -16,6 +16,7 @@ public class BillDetail implements Serializable{
     private String updateTime;  //更新时间
     private String BindCardNo;  //绑定银行卡
     private String username;    //用户名
+    private String icon;        //图标
 
     public String getRqUID() {
         return RqUID;
@@ -79,5 +80,13 @@ public class BillDetail implements Serializable{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

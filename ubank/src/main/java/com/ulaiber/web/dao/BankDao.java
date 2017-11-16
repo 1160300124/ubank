@@ -121,4 +121,11 @@ public interface BankDao {
      * @return BillDetail
      */
     BillDetail querySalariesByRqUID(String rqUID);
+
+    /**
+     * 根据二类户账号获取CID
+     * @param subAcctNo 二类户账号
+     * @return Map
+     */
+    Map<String,Object> queryCIdbySub(String subAcctNo);
 }

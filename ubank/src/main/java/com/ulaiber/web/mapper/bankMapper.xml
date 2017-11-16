@@ -92,12 +92,13 @@
 	<select id="queryWithdraw" parameterType="Map" resultType="com.ulaiber.web.model.Bill">
 		select x.* from (
 			select a.SubAcctNo,a.amount,a.trading ,a.status as tradingStatus,a.CreateDate,a.updateTime,c.bankCardNo,d.name as bankName,a.RqUID from tbl_withdraw a
-			left join tbl_userToBank c on a.userid = c.userid
-			left join tbl_bindBank d on c.bankNo = d.bankNo
-			 where a.SubAcctNo = #{SubAcctNo}
+			    left join tbl_userToBank c on a.userid = c.userid
+			    left join tbl_bindBank d on c.bankNo = d.bankNo
+			    where a.SubAcctNo = #{SubAcctNo}
 			union all
-			select b.SubAcctNo,b.salaries as amount,b.trading  ,null as tradingStatus,b.CreateDate,b.updateTime,null as bankCardNo , null as bankName,b.sid as RqUID from tbl_salaries_detail b
-			where b.SubAcctNo = #{SubAcctNo}
+			select b.SubAcctNo,b.salaries as amount,b.trading ,b.status as tradingStatus,b.CreateDate,b.updateTime,null as bankCardNo ,
+			    null as bankName,b.sid as RqUID from tbl_salaries_detail b
+			    where b.SubAcctNo = #{SubAcctNo}
 		) x ORDER BY x.updateTime DESC limit #{pageNum},#{pageSize}
 	</select>
 
@@ -108,14 +109,24 @@
 
 	<!--根据流水号查询交易详情-->
 	<select id="queryWithdrawByRqUID" parameterType="String" resultType="com.ulaiber.web.model.BillDetail">
-		select b.user_name,a.RqUID,a.Amount,a.BindCardNo,a.CreateDate,a.updateTime,a.MemoInfo as remark,
-			  a.status as tradingStatus from tbl_withdraw a
-			left join tbl_users b on a.userid = b.user_id where a.RqUID = #{rqUID}
+		select b.user_name as username,a.RqUID,a.Amount,a.BindCardNo,a.CreateDate,a.updateTime,a.TheirRef as remark,
+			 a.status as tradingStatus ,d.icon from tbl_withdraw a
+			left join tbl_users b on a.userid = b.user_id
+			left join tbl_userToBank c on a.userid = c.userid
+			left join tbl_bindBank d on c.bankNo = d.bankNo
+			where c.disabled = 0 and  a.RqUID =  #{rqUID}
 	</select>
 
 	<!--根据流水号查询工资转入详情-->
 	<select id="querySalariesByRqUID" parameterType="String" resultType="com.ulaiber.web.model.BillDetail">
-		select a.sid as RqUID,a.userName as username,a.CreateDate ,a.updateTime,b.status as tradingStatus from tbl_salaries_detail a
+		select a.sid as RqUID,a.userName as username,a.CreateDate ,a.updateTime,a.status as tradingStatus from tbl_salaries_detail a
  			left join tbl_salaries b on a.sid = b.sid where  a.sid = #{rqUID}
+	</select>
+
+	<!--根据二类户账号获取CID-->
+	<select id="queryCIdbySub" parameterType="String" resultType="Map">
+		select b.CID,b.user_name from tbl_secondAccount a
+			left join tbl_users b on a.userid = b.user_id
+			where a.SubAcctNo = #{subAcctNo}
 	</select>
 </mapper>

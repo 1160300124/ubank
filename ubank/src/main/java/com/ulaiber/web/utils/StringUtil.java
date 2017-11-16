@@ -476,6 +476,32 @@ public class StringUtil {
 	}
 
 	/**
+	 * 图片校验失败后信息推送
+	 * @param map 用户名和CID
+	 */
+	public static void sendPictureMsg(Map<String,Object> map){
+		String cid  = "";
+		String name = "";
+		try {
+			if(!StringUtil.isEmpty(map.get("CID"))){
+				cid = (String) map.get("CID");
+				if(!StringUtil.isEmpty(cid)){
+					name = (String) map.get("user_name");
+					int type = IConstants.PICTURE;
+					//消息内容
+					String title = "个人证件上传反馈";
+					String content = name + "先生/女士你好，您在优发展银行APP上传的个人身份证照片不合格，为了不影响APP的正常使用，请尽快重新上传，谢谢合作";
+					//推送审批信息致第一个审批人
+					PushtoSingle.singlePush(cid,type,content,title);
+				}
+			}
+		}catch(Exception e){
+			logger.error(">>>>>>>>>>向"+name+"推送交易消息异常",e);
+		}
+
+	}
+
+	/**
 	 * 生成随机数字和字母
 	 * @param length 随机数长度
 	 * @return String
@@ -542,6 +568,8 @@ public class StringUtil {
 		int port = Integer.parseInt(prop.getProperty("SH_port"));
 		String directory = prop.getProperty("SH_directory");
 		String resDir = prop.getProperty("SH_resDir");
+		String downloadDir = prop.getProperty("SH_download");
+		String backup = prop.getProperty("SH_backup");
 		map.put("privateKey",privateKey);
 		map.put("publicKey",publicKey);
 		map.put("postUrl",postUrl);
@@ -552,6 +580,8 @@ public class StringUtil {
 		map.put("port",port);
 		map.put("directory",directory);
 		map.put("resDir",resDir);
+		map.put("downloadDir",downloadDir);
+		map.put("backup",backup);
 		return map;
 
 	}
@@ -679,7 +709,7 @@ public class StringUtil {
 
 
 	/**
-	 * 递归删除目录中的文件
+	 * 递归删除目录中的文件并删除目录
 	 * @param file
 	 * @return
 	 */
@@ -704,6 +734,39 @@ public class StringUtil {
 			logger.error(">>>>>>>>>>文件夹不存在！");
 			return IConstants.QT_CODE_EMPTY;
 		}
+	}
+
+	/**
+	 * 删除指定文件夹下所有文件
+	 * @param path 文件夹路径
+	 * @return
+	 */
+	public static boolean delAllFile(String path) {
+		boolean flag = false;
+		File file = new File(path);
+		if (!file.exists()) {
+			return flag;
+		}
+		if (!file.isDirectory()) {
+			return flag;
+		}
+		String[] tempList = file.list();
+		File temp = null;
+		for (int i = 0; i < tempList.length; i++) {
+			if (path.endsWith(File.separator)) {
+				temp = new File(path + tempList[i]);
+			} else {
+				temp = new File(path + File.separator + tempList[i]);
+			}
+			if (temp.isFile()) {
+				temp.delete();
+			}
+			if (temp.isDirectory()) {
+				delAllFile(path + "/" + tempList[i]);// 先删除文件夹里面的文件
+				flag = true;
+			}
+		}
+		return flag;
 	}
 
 	/**
@@ -841,6 +904,28 @@ public class StringUtil {
 		}
 		return result.toString();
 	}
+
+
+	/**
+	 * 复制文件
+	 * @param oldPath 旧文件
+	 * @param newPath 新文件
+	 * @throws IOException
+	 */
+	public static void copyFile(String oldPath, String newPath) throws IOException {
+		File oldFile = new File(oldPath);
+		File newFile = new File(newPath);
+		FileInputStream in = new FileInputStream(oldFile);
+		FileOutputStream out = new FileOutputStream(newFile);;
+		byte[] buffer = new byte[2097152];
+		while((in.read(buffer)) != -1){
+			out.write(buffer);
+		}
+		in.close();
+		out.close();
+
+	}
+
 
 
 }

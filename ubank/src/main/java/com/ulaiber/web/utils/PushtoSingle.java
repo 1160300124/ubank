@@ -32,7 +32,7 @@ public class PushtoSingle {
     /**
      *
      * @param CID 个人用户clientid
-     * @param type 待审批和已审批标识
+     * @param type //推送待审批的记录 0，推送已审批的记录 1 ，推送交易信息 2，推送个人身份证上传反馈 3
      * @throws Exception
      */
     public static void singlePush(String CID,int type,String content,String title) throws Exception {

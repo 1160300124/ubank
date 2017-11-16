@@ -159,5 +159,10 @@ public class BankServiceImpl extends BaseService implements BankService {
 		return mapper.querySalariesByRqUID(rqUID);
 	}
 
+    @Override
+    public Map<String, Object> queryCIdbySub(String subAcctNo) {
+        return mapper.queryCIdbySub(subAcctNo);
+    }
+
 
 }

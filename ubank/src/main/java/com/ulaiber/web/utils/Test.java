@@ -14,6 +14,7 @@ import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
+import com.ulaiber.web.quartz.ReadFile;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -460,7 +461,8 @@ public class Test {
 		wd.setType("0");
 		wd.setPurpose("测试测试");
 		wd.setTheirRef("提现");
-		wd.setAmount(999.99);
+		wd.setMemoInfo("备注备注");
+		wd.setAmount(9.99);
 		wd.setBindCardNo("6217007299999999999");
 		wd.setCurrency("156");
 		SHWithdraw.withdraw(wd);
@@ -475,15 +477,15 @@ public class Test {
     //上海银行二类户交易状态查询
 	@org.junit.Test
 	public void trading() throws URISyntaxException {
-		//String str = "6s41S3hG2AZS27Md9F8z1rJ166rJr282r570";
-		//SHTradingStatus.tradingStatus(str);
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("SubAcctNo","623185009300012892");
-		map.put("type","0");
-		map.put("pageNum","1");
-		map.put("pageSize","10");
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
-		System.out.print(result);
+		String str = "0T28caj5678XYlhA73549258Szs497Z311yD";
+		SHTradingStatus.tradingStatus(str);
+//		Map<String,Object> map = new HashMap<String,Object>();
+//		map.put("SubAcctNo","623185009300012892");
+//		map.put("type","0");
+//		map.put("pageNum","1");
+//		map.put("pageSize","10");
+//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
+//		System.out.print(result);
 
 	}
 	@org.junit.Test
@@ -617,11 +619,6 @@ public class Test {
 //			System.out.println(">>>>>>>>>>写入内容至txt文本失败");
 //		}
 
-		String str = "2222";
-		String str2 = "xxxxxxxx";
-		String str3 = "yyyyyyyy";
-		//System.out.println(">>>>>>>>>>"+StringUtil.signHeader(str) + "\n"+StringUtil.signFooter(str,str2,str3));
-
 
 	}
 
@@ -706,8 +703,56 @@ public class Test {
 	//读取文件
 	@org.junit.Test
 	public void readFile(){
-		File file = new File("/Users/emacs/Desktop/IMGDOC0001_YFY_20171109_s5oD.txt");
-		System.out.println("file content is ："+StringUtil.txt2String(file));
+		File file = new File("/Users/emacs/Desktop/RES_IMGDOC0001_TJS_20171101_0001.txt");
+		String content = StringUtil.txt2String(file);
+		System.out.println("file content is ："+content);
+		String[] arr = content.split("\n");
+		for (int i = 2 ; i < arr.length; i++){
+			if(!StringUtil.isEmpty(arr[i])){
+				//获取第一条记录的状态：S 表示处理成功  F 表示处理部分失败 E 文件或压缩包校验失败
+				//System.out.println(arr[i]);
+				String[] strs = arr[i].split("\\|");
+				String SubAcctNo = strs[3]; //二类户账号
+				String status = strs[6];  //校验状态
+				String descriptions = strs[7]; //处理后的描述
+				//如果校验失败，则给用户推送信息
+//			if(!"S".equals(status)){
+//				//根据二类户账号获取CID
+//				Map<String,Object> map = new HashMap<>();
+//				StringUtil.sendPictureMsg(map);
+//			}
+			}
+
+		}
+		//复制文件
+		String downloadDir = "/Users/emacs/Desktop/image";
+		String backupDir = "/Users/emacs/Desktop/image2";
+//		File downloadFile = new File(downloadDir);
+//		File[] dFile = downloadFile.listFiles();
+//		for (int i = 0 ; i < dFile.length ; i++){
+//			String oldFile = dFile[i].getPath() ;
+//			System.out.println(">>>>>>>>>>第"+(i+1)+"个文件路径为--" + oldFile);
+//			try {
+//				StringUtil.copyFile(oldFile,backupDir+"/"+ dFile[i].getName());
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		//删除目录
+		StringUtil.delAllFile(backupDir);
+	}
+
+	//测试读取文件并解析
+	@org.junit.Test
+	public void read(){
+//		ReadFile re = new ReadFile();
+//		re.readFile();
+		SFTPUtil sftpUtil = new SFTPUtil();
+		try {
+			sftpUtil.connect();
+		} catch (JSchException e) {
+			e.printStackTrace();
+		}
 	}
 
 

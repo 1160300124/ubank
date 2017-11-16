@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -86,7 +87,12 @@ public class SFTPUtil {
         return flag;
     }
 
-    public void connect() throws JSchException {
+    /**
+     * 连接sftp
+     * @throws JSchException
+     */
+    public Map<String,Object> connect() throws JSchException {
+        Map<String,Object> resultMap = new HashMap<>();
         //加载配置文件
         Map<String,Object> configMap = StringUtil.loadConfig();
         String username = (String) configMap.get("username");
@@ -95,6 +101,11 @@ public class SFTPUtil {
         String host = (String) configMap.get("host");
         String directory = (String) configMap.get("directory");
         String resDir = (String) configMap.get("resDir");
+        String downloadDir = (String) configMap.get("downloadDir");
+        String backup = (String) configMap.get("backup");
+        resultMap.put("resDir",resDir);
+        resultMap.put("downloadDir",downloadDir);
+        resultMap.put("backupDir",backup);
         JSch jsch = new JSch();
         log.info("sftp connect by host:{} username:{}");
 
@@ -116,6 +127,9 @@ public class SFTPUtil {
 
         sftp = (ChannelSftp) channel;
         log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
+        download(resDir,sftp);
+        log.info(">>>>>>>>>>下载成功");
+        return resultMap;
     }
 
     /**
@@ -160,15 +174,33 @@ public class SFTPUtil {
     /**
      * 下载文件
      * @param directory 下载目录
-     * @param downloadFile 下载的文件
-     * @param saveFile 存在本地的路径
-     * @param sftp
+
      */
-    public void download(String directory, String downloadFile,String saveFile, ChannelSftp sftp) {
+    public void download(String directory,ChannelSftp sftp) {
+        //     * @param downloadFile 下载的文件
+//     * @param saveFile 存在本地的路径
         try {
             sftp.cd(directory);
-            File file=new File(saveFile);
-            sftp.get(downloadFile, new FileOutputStream(file));
+            System.out.println("path "+sftp.pwd());
+            List<String> list = sftp.ls(directory);
+            String savepath = "/Users/emacs/Desktop/test1/RES_IMGDOC0001_TJS_20171101_0001.txt";
+            String fis = "/var/ftp/testmulu/ftpuser/resFile/RES_IMGDOC0001_TJS_20171101_0001.txt";
+            InputStream is = sftp.get(directory);
+            System.out.println(is);
+//            File fi =new File(savepath);
+//            sftp.get(fis, new FileOutputStream(fi));
+//            for (int i = 0 ; i < list.size() ; i++){
+//                String fis = list.get(i);
+//                //String downloadFile = paths + "/" + fis.getName();
+//            }
+//            File file = new File(directory);
+//            File[] files =  file.listFiles();
+//            for (int i = 0; i < files.length; i++) {
+//                log.info(">>>>>>>>>>下载文件第"+i+"个文件:" + files[i]);
+//                String paths = files[i].getPath();
+//                String downloadFile = files[i].getPath() + "/" + files[i].getName();
+//                sftp.get(downloadFile, new FileOutputStream(fi));
+//            }
         } catch (Exception e) {
             log.error(">>>>>>>>>download failed :",e);
         }
@@ -178,9 +210,8 @@ public class SFTPUtil {
      * 删除文件
      * @param directory 要删除文件所在目录
      * @param deleteFile 要删除的文件
-     * @param sftp
      */
-    public void delete(String directory, String deleteFile, ChannelSftp sftp) {
+    public void delete(String directory, String deleteFile) {
         try {
             sftp.cd(directory);
             sftp.rm(deleteFile);
