@@ -8,6 +8,8 @@ import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.utils.PushtoSingle;
 import com.ulaiber.web.utils.StringUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +36,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int saveLeaveRecord(LeaveRecord leaveRecord) {
+    	//初始请假时长和实际请假时长一致，待有销假时实际请假时长=请假时长-销假时长
+    	if (StringUtils.equals(leaveRecord.getType(), "0")){
+    		leaveRecord.setRealLeaveTime(leaveRecord.getLeaveTime());
+    	}
         int result = leaveDao.saveLeaveRecord(leaveRecord);
         return result;
     }
-
+    
     @Override
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int saveAditor(LeaveRecord leaveRecord) {

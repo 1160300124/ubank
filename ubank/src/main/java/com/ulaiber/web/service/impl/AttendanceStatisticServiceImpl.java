@@ -19,9 +19,11 @@ import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AttendanceDao;
 import com.ulaiber.web.dao.AttendanceRuleDao;
 import com.ulaiber.web.dao.AttendanceStatisticDao;
+import com.ulaiber.web.dao.LeaveDao;
 import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.Holiday;
+import com.ulaiber.web.model.LeaveRecord;
 import com.ulaiber.web.model.attendance.Attendance;
 import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.model.attendance.AttendanceStatistic;
@@ -51,6 +53,9 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 	
 	@Resource
 	private AttendanceDao attDao;
+	
+	@Resource
+	private LeaveDao leaveDao;
 	
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
@@ -152,13 +157,24 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			statistic.setLeaveEarlyCount(leaveEarlyCount);
 			statistic.setNoClockOnCount(noClockOnWorkdays.size());
 			statistic.setNoClockOffCount(noClockOffWorkdays.size());
-			noClockWorkdays.addAll(ObjUtil.getDiffrent(workdays, realWorkdays));
+			List<String> days = ObjUtil.getDiffrent(workdays, realWorkdays);
+			List<String> leaveDays = new ArrayList<String>();
+			for (String day : days){
+				//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
+				LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate((Long)user.get("user_id"), day);
+				if (leaveRecord == null){
+					noClockWorkdays.add(day);
+					continue;
+				}
+				leaveDays.add(day);
+			}
 			statistic.setNoClockCount(noClockWorkdays.size());
 			
 			Collections.sort(laterWorkdays);
 			Collections.sort(leaveEarlyWorkdays);
 			Collections.sort(noClockOnWorkdays);
 			Collections.sort(noClockOffWorkdays);
+			Collections.sort(leaveDays);
 			Collections.sort(noClockWorkdays);
 			
 			StringBuffer sb = new StringBuffer();
@@ -173,6 +189,9 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			}
 			if (noClockOffWorkdays.size() > 0){
 				sb.append("  下班缺卡：" + noClockOffWorkdays);
+			}
+			if (leaveDays.size() > 0){
+				sb.append("  请假：" + leaveDays);
 			}
 			if (noClockWorkdays.size() > 0){
 				sb.append("  旷工：" + noClockWorkdays);

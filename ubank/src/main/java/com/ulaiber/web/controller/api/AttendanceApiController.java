@@ -280,12 +280,17 @@ public class AttendanceApiController extends BaseController {
 			String clockOnTime = today + " " + rule.getClockOnTime();
 			String clockOffTime = today + " " + rule.getClockOffTime();
 			//0:不销假正常上班打卡  1:销假打卡
-			if (StringUtils.equals(revokeType, "0")){
+			if (StringUtils.isEmpty(revokeType)){
 				LeaveRecord leaveRecord = leaveService.getLeaveRecordByMobileAndDate(mobile, today);
 				if (leaveRecord != null){
-					String startDay = leaveRecord.getStartDate().split(" ")[0];
-					String endDay = leaveRecord.getEndDate().split(" ")[0];
-					if (startDay.compareTo(endDay) == 0 || today.compareTo(startDay) == 0 || today.compareTo(endDay) == 0){
+					//请假开始时间和结束时间在同一天
+					if (leaveRecord.getStartDate().contains(today) && leaveRecord.getEndDate().contains(today)){
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							logger.info(mobile + "今天请假了，要销假打卡吗？ ");
+							info.setCode(IConstants.QT_IN_LEAVE_WHOLE_DAY);
+							info.setMessage("今天请假了，要销假打卡吗？");
+							return info;
+						}
 						//请假开始时间<=上班时间,则为上午请假,打卡时间<=请假结束时间时提示时候销假打卡
 						//请假结束时间>=下班时间,则为下午请假,打卡时间>=请假开始时间时提示时候销假打卡
 						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && datetime.compareTo(leaveRecord.getEndDate()) <= 0
@@ -295,10 +300,37 @@ public class AttendanceApiController extends BaseController {
 							info.setMessage("在请假的时间段内，要销假打卡吗？");
 							return info;
 						}
-					} else if (today.compareTo(startDay) > 0 && today.compareTo(endDay) > 0){
-						logger.info(mobile + "在请假的时间段内，要销假打卡吗？ ");
-						info.setCode(IConstants.QT_IN_LEAVE_TIME);
-						info.setMessage("在请假的时间段内，要销假打卡吗？");
+					} 
+					else if (leaveRecord.getStartDate().contains(today)){
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							logger.info(mobile + "今天请假了，要销假打卡吗？ ");
+							info.setCode(IConstants.QT_IN_LEAVE_WHOLE_DAY);
+							info.setMessage("今天请假了，要销假打卡吗？");
+							return info;
+						} else if (datetime.compareTo(leaveRecord.getStartDate()) >= 0){
+							logger.info(mobile + "在请假的时间段内，要销假打卡吗？ ");
+							info.setCode(IConstants.QT_IN_LEAVE_TIME);
+							info.setMessage("在请假的时间段内，要销假打卡吗？");
+							return info;
+						}
+					} 
+					else if (leaveRecord.getEndDate().contains(today)){
+						if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							logger.info(mobile + "今天请假了，要销假打卡吗？ ");
+							info.setCode(IConstants.QT_IN_LEAVE_WHOLE_DAY);
+							info.setMessage("今天请假了，要销假打卡吗？");
+							return info;
+						} else if (datetime.compareTo(leaveRecord.getEndDate()) <= 0){
+							logger.info(mobile + "在请假的时间段内，要销假打卡吗？ ");
+							info.setCode(IConstants.QT_IN_LEAVE_TIME);
+							info.setMessage("在请假的时间段内，要销假打卡吗？");
+							return info;
+						}
+					}
+					else if (today.compareTo(leaveRecord.getStartDate()) > 0 && today.compareTo(leaveRecord.getEndDate()) < 0){
+						logger.info(mobile + "今天请假了，要销假打卡吗？ ");
+						info.setCode(IConstants.QT_IN_LEAVE_WHOLE_DAY);
+						info.setMessage("今天请假了，要销假打卡吗？");
 						return info;
 					}
 				}
@@ -331,7 +363,7 @@ public class AttendanceApiController extends BaseController {
 			Departments dept = new Departments();
 			dept.setDept_number(user.getDept_number());
 			att.setDept(dept);
-			att.setRevokeType(StringUtils.isEmpty(revokeType) ? "0" : revokeType);
+			att.setRevokeType(revokeType);
 			info = service.save(att, device, location, isOutClock, remark, rule);
 			if (info.getCode() == IConstants.QT_CODE_OK){
 				logger.info("用户  " + mobile + " 打卡成功。");
@@ -416,7 +448,7 @@ public class AttendanceApiController extends BaseController {
 				return info;
 			}
 		}
-		double hours = service.getHoursByDateAndMobile(startDateTime, endDateTime, rule);
+		double hours = service.getHoursByDate(startDateTime, endDateTime, rule);
 		info.setCode(IConstants.QT_CODE_OK);
 		info.setData(hours);
 		logger.debug("getHoursByDateAndMobile end...");

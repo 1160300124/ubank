@@ -13,6 +13,7 @@ public class LeaveRecord implements Serializable{
     private String startDate;
     private String endDate;
     private float leaveTime;
+    private float realLeaveTime; //实际请假时长,如请假的时间段内有销假,则为请假时长(leaveTime)-销假时长
     private String auditor;
     private String reason;
     private String disable;
@@ -69,7 +70,15 @@ public class LeaveRecord implements Serializable{
         this.leaveTime = leaveTime;
     }
 
-    public String getAuditor() {
+    public float getRealLeaveTime() {
+		return realLeaveTime;
+	}
+
+	public void setRealLeaveTime(float realLeaveTime) {
+		this.realLeaveTime = realLeaveTime;
+	}
+
+	public String getAuditor() {
         return auditor;
     }
 
