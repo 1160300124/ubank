@@ -86,6 +86,9 @@ public class IConstants
     //在请假时间段内的返回码
     public final static int QT_IN_LEAVE_TIME = 4007;
     
+    //在请全天假的返回码
+    public final static int QT_IN_LEAVE_WHOLE_DAY = 4008;
+    
     //休息日
     public final static int QT_REST_DAY = 4004;
 

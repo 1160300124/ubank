@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
