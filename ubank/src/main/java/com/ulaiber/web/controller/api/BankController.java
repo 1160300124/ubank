@@ -347,49 +347,52 @@ public class BankController extends BaseController {
 					Bill wid = wi.get(i);
                     //如果当前交易记录处于"处理中"，则请求银行的交易状态查询接口
                     if(wid.getTradingStatus() == 0){
-                        String RqUID = wid.getRqUID();
-                        ResultInfo result = SHTradingStatus.tradingStatus(RqUID);
-                        logger.info(">>>>>>>>>>上海银行二类户交易状态查询结果为：" + result);
-                        Map<String,Object> resultMap = (Map<String, Object>) result.getData();
-                        logger.info(">>>>>>>>>resultMap is :" + resultMap);
-                        Map<String,Object> tradingMap = (Map<String, Object>) resultMap.get("tradingSta");
-                        status = (String) resultMap.get("status");
-                        if(!"0000".equals(status)){
-                            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                            resultInfo.setMessage("查询账单失败");
-                            resultInfo.setData(status);
-                            logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
-                            return resultInfo;
-                        }
-                        //交易状态. I 处理中,F 交易失败,S 交易成功
-                        String TxnStatus = (String) tradingMap.get("TxnStatus");
-                        String OrirqUID = (String) tradingMap.get("OriRqUID");
-                        logger.info(">>>>>>>>>>原交易流水号为：" + OrirqUID + ",传入的交易流水号为：" + RqUID);
-						int tStatus = 0;
-						if("I".equals(TxnStatus)){
-							tStatus = 0;
-						}else if("F".equals(TxnStatus)){
-							tStatus = 2;
-						}else if("S".equals(TxnStatus)){
-							tStatus = 1;
-						}
-						//如果处理成功或失败，则推送信息给用户
-                        //消息类型 0 提现，1 工资转入
+                    	if(wid.getTrading() == 0){
+							String RqUID = wid.getRqUID();
+							ResultInfo result = SHTradingStatus.tradingStatus(RqUID);
+							logger.info(">>>>>>>>>>上海银行二类户交易状态查询结果为：" + result);
+							Map<String,Object> resultMap = (Map<String, Object>) result.getData();
+							logger.info(">>>>>>>>>resultMap is :" + resultMap);
+							Map<String,Object> tradingMap = (Map<String, Object>) resultMap.get("tradingSta");
+							status = (String) resultMap.get("status");
+							if(!"0000".equals(status)){
+								resultInfo.setCode(IConstants.QT_CODE_ERROR);
+								resultInfo.setMessage((String) tradingMap.get("ServerStatusCode"));
+								resultInfo.setData(status);
+								logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
+								return resultInfo;
+							}
+							//交易状态. I 处理中,F 交易失败,S 交易成功
+							String TxnStatus = (String) tradingMap.get("TxnStatus");
+							String OrirqUID = (String) tradingMap.get("OriRqUID");
+							logger.info(">>>>>>>>>>原交易流水号为：" + OrirqUID + ",传入的交易流水号为：" + RqUID);
+							int tStatus = 0;
+							if("I".equals(TxnStatus)){
+								tStatus = 0;
+							}else if("F".equals(TxnStatus)){
+								tStatus = 2;
+							}else if("S".equals(TxnStatus)){
+								tStatus = 1;
+							}
+							//如果处理成功或失败，则推送信息给用户
+							//消息类型 0 提现，1 工资转入
 //                        String mark = String.valueOf(wid.getTrading());
 //                        if(tStatus != 0){
 //							StringUtil.sendTradingMessage(userMap,mark,tStatus);
 //						}
-						String date = (String) tradingMap.get("TranDate"); //处理时间
-                        //更新交易记录
-                        int re = bankservice.updateWithdraw(OrirqUID,tStatus,date);
-                        if(re == 0 ){
-                            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                            resultInfo.setMessage("查询账单失败");
-                            resultInfo.setData(status);
-                            logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
-                            return resultInfo;
-                        }
-                        wid.setTradingStatus(tStatus);
+							String date = (String) tradingMap.get("TranDate"); //处理时间
+							//更新交易记录
+							int re = bankservice.updateWithdraw(OrirqUID,tStatus,date);
+							if(re == 0 ){
+								resultInfo.setCode(IConstants.QT_CODE_ERROR);
+								resultInfo.setMessage("查询账单失败");
+								resultInfo.setData(status);
+								logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
+								return resultInfo;
+							}
+							wid.setTradingStatus(tStatus);
+						}
+
                     }else{
                         //如果当前查询的数据都为处理完的数据，则不进行接口查询
                         status = "0000";

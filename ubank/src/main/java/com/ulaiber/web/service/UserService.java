@@ -173,4 +173,15 @@ public interface UserService {
 	 * @return SecondAccountAO
 	 */
 	SecondAccountAO getSecondAccountByMobile(String mobile);
+
+	/**
+	 * 激活后，新增二类户信息
+	 * @param sa 二类户信息
+	 * @param bankNo 银行编号
+	 * @param bankCardNo 银行卡号
+	 * @param type 银行类型
+	 * @param userid 用户ID
+	 * @return int
+	 */
+    int addAccInfo(SecondAcount sa, long bankNo, String bankCardNo, int type, int userid);
 }

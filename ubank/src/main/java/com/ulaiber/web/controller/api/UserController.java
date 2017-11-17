@@ -61,7 +61,7 @@ public class UserController extends BaseController{
 	private PermissionService permissionService;
 	
 	/**
-	 * 注册激活钱包
+	 * 注册并激活钱包
 	 * @param request
 	 * @param response
 	 * @param code 邀请码
@@ -95,54 +95,52 @@ public class UserController extends BaseController{
 			}
 			// 0 上海银行二类户
 			if(bank.getType() == 0){
-				//开通上海银行二类账户
-				Map<String,Object> param = new HashMap<>();
-				param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
-				param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
-				param.put("CustName" , user.getUserName());				//姓名
-				param.put("IdNo" , user.getCardNo());					//身份证号
-				param.put("MobllePhone" , user.getMobile());			//手机号
-				param.put("BindCardNo" , user.getBankCardNo());				//绑定银行卡号
-				param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
-				param.put("Sign" , "N");								//是否开通余额理财功能
+
 				//注册二类户
-				ResultInfo ri = ShangHaiAccount.register(param);
-				logger.info(">>>>>>>>>> 注册结果为：" + ri);
-				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-				logger.info(">>>>>>>>>resultMap is :" + resultMap);
-				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
-				status = (String) resultMap.get("status");
-				if(!"0000".equals(status)){
-					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage(sa.getServerStatusCode());
-					retInfo.setData(status);
-					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
-					return retInfo;
+				ResultInfo info = reigsterAcc(user,file,request);
+//				ResultInfo ri = ShangHaiAccount.register(param);
+//				logger.info(">>>>>>>>>> 注册结果为：" + ri);
+//				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
+//				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+//				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
+//				status = (String) resultMap.get("status");
+//				if(!"0000".equals(status)){
+//					retInfo.setCode(IConstants.QT_CODE_ERROR);
+//					retInfo.setMessage(sa.getServerStatusCode());
+//					retInfo.setData(status);
+//					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+//					return retInfo;
+//				}
+//				String SubAcctNo = sa.getSubAcctNo();
+//				String EacctNo = sa.getEacctNo();
+//				//上传图片到sftp服务器上
+//				ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
+//				if(uploadResult.getCode() != 1000){
+//					retInfo.setCode(IConstants.QT_CODE_ERROR);
+//					retInfo.setMessage("上传图片失败");
+//					logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
+//					return retInfo;
+//				}
+				if(info.getCode() == 1000){
+					Map<String,Object> map = (Map<String, Object>) info.getData();
+					SecondAcount sa = (SecondAcount) map.get("sa");
+					status = (String) map.get("status");
+					//新增用户权限层级信息
+					user.setBank(bank);
+					sa.setCreateDate(SDF.format(new Date()));
+					long bankNo = Long.parseLong(bank.getBankNo());
+					String bankCardNo = user.getBankCardNo();
+					int type = bank.getType();
+					int save = userService.save(user,code,sa,bankNo,bankCardNo,type);
+					if(save == 0){
+						retInfo.setCode(IConstants.QT_CODE_ERROR);
+						retInfo.setMessage("注册失败");
+						retInfo.setData(status);
+						logger.error(">>>>>>>>>>插入用户信息异常");
+						return retInfo;
+					}
 				}
-				String SubAcctNo = sa.getSubAcctNo();
-				String EacctNo = sa.getEacctNo();
-				//上传图片到sftp服务器上
-				ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
-				if(uploadResult.getCode() != 1000){
-					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage("上传图片失败");
-					logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
-					return retInfo;
-				}
-				//新增用户权限层级信息
-				user.setBank(bank);
-				sa.setCreateDate(SDF.format(new Date()));
-				long bankNo = Long.parseLong(bank.getBankNo());
-				String bankCardNo = user.getBankCardNo();
-				int type = bank.getType();
-				int save = userService.save(user,code,sa,bankNo,bankCardNo,type);
-				if(save == 0){
-					retInfo.setCode(IConstants.QT_CODE_ERROR);
-					retInfo.setMessage("注册失败");
-					retInfo.setData(status);
-					logger.error(">>>>>>>>>>插入用户信息异常");
-					return retInfo;
-				}
+
 			}
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("注册成功");
@@ -150,12 +148,118 @@ public class UserController extends BaseController{
 				logger.info(">>>>>>>>>>"+user.getMobile() + " 注册成功.");
 		}catch(Exception e){
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("系统异常");
+			retInfo.setMessage("注册失败");
 			logger.error(">>>>>>>>>>注册失败,原因为：" ,e);
 		}
 		logger.debug("register end...");
 		return retInfo;
 	}
+
+	/**
+	 * 注册二类户
+	 * @param user 用户信息
+	 * @param file 图片
+	 * @param request
+	 * @return ResultInfo
+	 */
+	public ResultInfo reigsterAcc(User user,MultipartFile[] file,HttpServletRequest request){
+		ResultInfo retInfo = new ResultInfo();
+		try {
+			//开通上海银行二类账户
+			Map<String,Object> param = new HashMap<>();
+			param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
+			param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+			param.put("CustName" , user.getUserName());				//姓名
+			param.put("IdNo" , user.getCardNo());					//身份证号
+			param.put("MobllePhone" , user.getMobile());			//手机号
+			param.put("BindCardNo" , user.getBankCardNo());			//绑定银行卡号
+			param.put("ReservedPhone" , user.getReserve_mobile());	//银行卡预留手机号
+			param.put("Sign" , "N");								//是否开通余额理财功能
+			String status = "";
+			ResultInfo ri = ShangHaiAccount.register(param);
+			logger.info(">>>>>>>>>> 注册结果为：" + ri);
+			Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
+			logger.info(">>>>>>>>>resultMap is :" + resultMap);
+			SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
+			status = (String) resultMap.get("status");
+			if(!"0000".equals(status)){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage(sa.getServerStatusCode());
+				retInfo.setData(status);
+				logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+				return retInfo;
+			}
+			String SubAcctNo = sa.getSubAcctNo();
+			String EacctNo = sa.getEacctNo();
+			//上传图片到sftp服务器上
+			ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
+			if(uploadResult.getCode() != 1000){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("上传图片失败");
+				logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
+				return retInfo;
+			}
+			retInfo.setCode(IConstants.QT_CODE_OK);
+			retInfo.setMessage("注册成功");
+			Map<String ,Object> map = new HashMap<>();
+			map.put("sa",sa);
+			map.put("status",status);
+			retInfo.setData(map);
+		}catch (Exception e){
+			logger.error(">>>>>>>>>>注册上海二类账户失败");
+		}
+		return retInfo;
+	}
+
+	/**
+	 * 激活钱包
+	 * @param user 用户信息
+	 * @param file 图片
+	 * @param bank 银行卡信息
+	 * @param request
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "Activation", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo activation(User user,int userId,MultipartFile[] file,Bank bank,HttpServletRequest request){
+		logger.info(">>>>>>>>>>开始激活钱包操作");
+		ResultInfo resultInfo = new ResultInfo();
+		String status = "";
+		try {
+			//注册二类户
+			ResultInfo info = reigsterAcc(user,file,request);
+			//新增数据库信息
+			if(info.getCode() != 1000){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("激活失败");
+				logger.error(">>>>>>>>>>激活钱包失败");
+			}
+			Map<String,Object> map = (Map<String, Object>) info.getData();
+			SecondAcount sa = (SecondAcount) map.get("sa");
+			status = (String) map.get("status");
+			//SecondAcount sa = (SecondAcount) info.getData();
+			long bankNo = Long.parseLong(bank.getBankNo());
+			String bankCardNo = user.getBankCardNo();
+			int type = bank.getType();
+			int userid = userId;
+			int result = userService.addAccInfo(sa,bankNo,bankCardNo,type,userid);
+			if(result <= 0){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("激活失败");
+				logger.error(">>>>>>>>>>插入用户信息异常");
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("激活成功");
+			resultInfo.setData(status);
+			logger.error(">>>>>>>>>>激活成功");
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("激活失败");
+			logger.error(">>>>>>>>>>"+user.getUserName()+"激活钱包失败",e);
+		}
+		return resultInfo;
+	}
+
 	
 	/**
 	 * 获取所有用户
@@ -319,7 +423,7 @@ public class UserController extends BaseController{
 		switch (bank.getType()){
 			case 0:
 				//上海银行图片压缩大小
-				retInfo.setData(300);
+				retInfo.setData(IConstants.SH_size);
 				break;
 		}
 		retInfo.setCode(IConstants.QT_CODE_OK);
@@ -500,112 +604,8 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping(value = "fileUpload", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file, HttpServletRequest request){
-		logger.info(">>>>>>>>开始上传文件到sftp服务器");
-		ResultInfo resultInfo = new ResultInfo();
-		if (file == null && file.length == 0) {
-			resultInfo.setCode(IConstants.QT_CODE_ERROR);
-			resultInfo.setMessage("文件为空");
-			logger.error(">>>>>>>>>>文件为空");
-			return resultInfo;
-		}
-		boolean flag = false;
-		logger.info(">>>>>>>>>>文件是 :" + file);
-		SFTPUtil sftpUtil = new SFTPUtil();
-		try {
-			/**
-			 * 上传图片至sftp服务器共四步：
-			 *  第一：将图片上传至本地服务器
-			 *  第二：将本地服务器上的图片进行加密并压缩，以及生成索引文件
-			 *  第三：将压缩包和索引文件上传至sftp
-			 *  第四：将本地服务器上的图片删除
-			 */
-			//第一步
-			String oriPath = request.getSession().getServletContext().getRealPath("/upload");
-			String zipPath = request.getSession().getServletContext().getRealPath("/shzip");
-			logger.info(">>>>>>>>>根目录为：" + oriPath);
-			File savePath = new File(oriPath);
-			if(!savePath.exists()){
-				savePath.mkdir();
-			}
-			File uploadPath = new File(zipPath);
-			if(!uploadPath.exists()){
-				uploadPath.mkdir();
-			}
-			for (int i = 0 ; i < file.length ; i++){
-				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
-				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
-				InputStream in = file[i].getInputStream();
-				int r = 0;
-				while((r=in.read()) != -1){
-					out.write(r);
-				}
-				out.flush();
-				out.close();
-				in.close();
-			}
-			logger.info(">>>>>>>>>>第一步：上传图片至本地服务器成功");
-			//第二步
-			//拼接索引文件名
-			String random = StringUtil.getFixLenthString(4);
-			String date = simple.format(new Date());
-			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
-			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
-			//将上传的文件加密并压缩成zip
-			//logger.info(">>>>>>>>>>加密的目录为：" + oriPath +"--"+ zipPath +"--"+ indexName);
-			EncryDecryUtils.makeZip(oriPath,zipPath,indexFile+".zip");
-			logger.info(">>>>>>>>>>压缩文件成功");
-			//param : file,request,E账号,,,,
-			//拼接索引文件内容
-			String content = date + "|" + indexFile + "|2|YFY|yfyBalFinancing|" + 2 + "\r\n"
-					+ "000001|" + date + "_345324534253245_000001|JPG|345324534253245|P0001|BS001|"+ "\r\n"
-					+ "000002|" + date + "_345324534253245_000002|JPG|345324534253245|P0002|BS001|";
-			//写入内容至txt文本
-			boolean re = StringUtil.writeToTxt(zipPath+"/"+indexFile,content);
-			if(!re){
-				logger.error(">>>>>>>>>>写入内容至txt文本失败");
-				resultInfo.setCode(IConstants.QT_CODE_ERROR);
-				resultInfo.setMessage("上传失败");
-				return resultInfo;
-			}
-			logger.info(">>>>>>>>>>第二步：压缩文件和生成索引文件成功");
-			//第三步
-			flag = sftpUtil.login(zipPath);
-			if(!flag){
-				resultInfo.setCode(IConstants.QT_CODE_ERROR);
-				resultInfo.setMessage("上传失败");
-				logger.info(">>>>>>>>>>测试上传图片失败");
-				return resultInfo;
-			}
-			logger.info(">>>>>>>>>>第三步：上传文件至sftp服务器成功");
-			//第四步
-			String[] paths = new String[2];
-			paths[0] = oriPath;
-			paths[1] = zipPath;
-			for (int i = 0 ; i < paths.length ; i++){
-				File files = new File(paths[i]);
-				int result = StringUtil.deleteFile(files);
-				if(result == 1000){
-					logger.info(">>>>>>>>>>第四步：删除本地服务文件成功");
-				}else{
-					logger.info(">>>>>>>>>>文件不存在");
-				}
-			}
-			resultInfo.setCode(IConstants.QT_CODE_OK);
-			resultInfo.setMessage("上传成功");
-			logger.info(">>>>>>>>>>测试上传图片成功");
-			//关闭sftp服务器
-			sftpUtil.logout();
-
-		}catch(Exception e){
-			resultInfo.setCode(IConstants.QT_CODE_ERROR);
-			resultInfo.setMessage("上传失败");
-			//关闭sftp服务器
-			sftpUtil.logout();
-			e.printStackTrace();
-			logger.error(">>>>>>上传文件异常为：" , e );
-
-		}
+	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file,String SubAcctNo,String EacctNo, HttpServletRequest request){
+		ResultInfo resultInfo = UploadImg(file,SubAcctNo,EacctNo,request);
 		return resultInfo;
 	}
 

@@ -23,6 +23,7 @@ public class SecondAccountAO implements Serializable {
     private double EarningsYesterday;   //昨日收益
     private String ProductCd;            //理财产品参数
     private String ModiType;            //修改类型  00:换卡 01:修改绑定卡手机号
+    private int size;                   //上传银行图片压缩大小
 
     public String getCustName() {
         return CustName;
@@ -142,5 +143,13 @@ public class SecondAccountAO implements Serializable {
 
     public void setModiType(String modiType) {
         ModiType = modiType;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }

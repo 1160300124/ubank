@@ -22,6 +22,9 @@ import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.UUIDGenerator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 登录控制器
  * 
@@ -81,6 +84,15 @@ public class LoginController extends BaseController{
 				logger.info(mobile + ">>>>>>>>>>二类户secondAccount数据为：" + secondAccount);
 				User tempUser = new User();
 				if(!StringUtil.isEmpty(secondAccount)){
+					String type = secondAccount.getType(); //银行类型
+					int size = 0;
+					switch (type){
+						case "0":
+							//上海银行图片压缩大小
+							size = IConstants.SH_size;
+							break;
+					}
+					secondAccount.setSize(size);
 					tempUser.setBankCardNo(secondAccount.getBankCardNo());
 //					tempUser.setBankNo(String.valueOf(secondAccount.getBankNo()));
 //					tempUser.setBankName(secondAccount.getBankName());

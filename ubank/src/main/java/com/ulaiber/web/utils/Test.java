@@ -477,17 +477,30 @@ public class Test {
     //上海银行二类户交易状态查询
 	@org.junit.Test
 	public void trading() throws URISyntaxException {
-		String str = "0T28caj5678XYlhA73549258Szs497Z311yD";
-		SHTradingStatus.tradingStatus(str);
-//		Map<String,Object> map = new HashMap<String,Object>();
-//		map.put("SubAcctNo","623185009300012892");
-//		map.put("type","0");
-//		map.put("pageNum","1");
-//		map.put("pageSize","10");
-//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
-//		System.out.print(result);
+//		String str = "0T28caj5678XYlhA73549258Szs497Z311yD";
+//		SHTradingStatus.tradingStatus(str);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("SubAcctNo","623185009300012892");
+		map.put("type","0");
+		map.put("userId",482);
+		map.put("pageNum","1");
+		map.put("pageSize","20");
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
+		System.out.print(result);
 
 	}
+
+	//获取账单详情
+	@org.junit.Test
+	public void tradingDetails(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("SubAcctNo","623185009300012892");
+		map.put("RqUID","40");
+		map.put("trading",1);
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingDetail",map);
+		System.out.print(result);
+	}
+
 	@org.junit.Test
 	public void test(){
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -689,16 +702,7 @@ public class Test {
 
 
 
-	//获取账单详情
-	@org.junit.Test
-	public void tradingDetails(){
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("SubAcctNo","623185009300012892");
-		map.put("RqUID","0T28caj5678XYlhA73549258Szs497Z311yD");
-		map.put("trading",1);
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingDetail",map);
-		System.out.print(result);
-	}
+
 
 	//读取文件
 	@org.junit.Test
@@ -745,14 +749,14 @@ public class Test {
 	//测试读取文件并解析
 	@org.junit.Test
 	public void read(){
-//		ReadFile re = new ReadFile();
-//		re.readFile();
-		SFTPUtil sftpUtil = new SFTPUtil();
-		try {
-			sftpUtil.connect();
-		} catch (JSchException e) {
-			e.printStackTrace();
-		}
+		ReadFile re = new ReadFile();
+		re.readFile();
+//		SFTPUtil sftpUtil = new SFTPUtil();
+//		try {
+//			sftpUtil.connect();
+//		} catch (JSchException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 

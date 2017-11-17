@@ -91,20 +91,22 @@
 	<!--根据二类账户查询账单-->
 	<select id="queryWithdraw" parameterType="Map" resultType="com.ulaiber.web.model.Bill">
 		select x.* from (
-			select a.SubAcctNo,a.amount,a.trading ,a.status as tradingStatus,a.CreateDate,a.updateTime,c.bankCardNo,d.name as bankName,a.RqUID from tbl_withdraw a
+			select a.SubAcctNo,a.amount,a.trading ,a.status as tradingStatus,a.CreateDate,a.updateTime,
+				c.bankCardNo,d.name as bankName,a.RqUID,a.sortTime  from tbl_withdraw a
 			    left join tbl_userToBank c on a.userid = c.userid
 			    left join tbl_bindBank d on c.bankNo = d.bankNo
 			    where a.SubAcctNo = #{SubAcctNo}
 			union all
 			select b.SubAcctNo,b.salaries as amount,b.trading ,b.status as tradingStatus,b.CreateDate,b.updateTime,null as bankCardNo ,
-			    null as bankName,b.sid as RqUID from tbl_salaries_detail b
+			    null as bankName,b.did as RqUID,null as sortTime from tbl_salaries_detail b
 			    where b.SubAcctNo = #{SubAcctNo}
-		) x ORDER BY x.updateTime DESC limit #{pageNum},#{pageSize}
+		) x ORDER BY x.sortTime DESC limit #{pageNum},#{pageSize}
 	</select>
 
     <!--更新交易记录-->
     <update id="updateWithdraw" parameterType="Map">
-        UPDATE tbl_withdraw SET status = ${status},updateTime = #{updateTime} WHERE RqUID = #{rqUID}
+        UPDATE tbl_withdraw SET status = ${status},updateTime = #{date},sortTime = #{sortTime}
+         	WHERE RqUID = #{rqUID}
     </update>
 
 	<!--根据流水号查询交易详情-->
@@ -119,8 +121,8 @@
 
 	<!--根据流水号查询工资转入详情-->
 	<select id="querySalariesByRqUID" parameterType="String" resultType="com.ulaiber.web.model.BillDetail">
-		select a.sid as RqUID,a.userName as username,a.CreateDate ,a.updateTime,a.status as tradingStatus from tbl_salaries_detail a
- 			left join tbl_salaries b on a.sid = b.sid where  a.sid = #{rqUID}
+		select a.did as RqUID,a.userName as username,a.CreateDate ,a.updateTime,a.status as tradingStatus from tbl_salaries_detail a
+ 			left join tbl_salaries b on a.sid = b.sid where  a.did = #{rqUID}
 	</select>
 
 	<!--根据二类户账号获取CID-->

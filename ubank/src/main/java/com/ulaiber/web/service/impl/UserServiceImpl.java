@@ -107,6 +107,28 @@ public class UserServiceImpl extends BaseService implements UserService {
 		return result4;
 	}
 
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public int addAccInfo(SecondAcount sa, long bankNo, String bankCardNo, int type, int userid) {
+		//新增用户二类账户信息
+		int result3 = mapper.insertSecondAccount(sa);
+		if(result3 == 0){
+			return result3;
+		}
+		//新增用户绑定银行卡信息
+		Map<String,Object> paraMap = new HashMap<>();
+		paraMap.put("userid",userid);
+		paraMap.put("bankNo",bankNo);
+		paraMap.put("bankCardNo",bankCardNo);
+		paraMap.put("type",type);
+		int result4 = mapper.insertUserToBank(paraMap);
+		if(result4 == 0){
+			return result4;
+		}
+		return result4;
+	}
+
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
@@ -292,4 +314,6 @@ public class UserServiceImpl extends BaseService implements UserService {
     public SecondAccountAO getSecondAccountByMobile(String mobile) {
         return mapper.getSecondAccountByMobile(mobile);
     }
+
+
 }

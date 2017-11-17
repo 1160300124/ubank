@@ -7,10 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * 上传图片到SFTP服务器
@@ -127,8 +124,8 @@ public class SFTPUtil {
 
         sftp = (ChannelSftp) channel;
         log.info(String.format("sftp server host:[%s] port:[%s] is connect successfull", host, port));
-        download(resDir,sftp);
-        log.info(">>>>>>>>>>下载成功");
+        log.info(">>>>>>>>>>开始下载文件到本地临时目录");
+        download(resDir,downloadDir);
         return resultMap;
     }
 
@@ -174,50 +171,57 @@ public class SFTPUtil {
     /**
      * 下载文件
      * @param directory 下载目录
-
+     * @param savepath 保存
      */
-    public void download(String directory,ChannelSftp sftp) {
-        //     * @param downloadFile 下载的文件
-//     * @param saveFile 存在本地的路径
+    public void download(String directory,String savepath) {
         try {
             sftp.cd(directory);
-            System.out.println("path "+sftp.pwd());
-            List<String> list = sftp.ls(directory);
-            String savepath = "/Users/emacs/Desktop/test1/RES_IMGDOC0001_TJS_20171101_0001.txt";
-            String fis = "/var/ftp/testmulu/ftpuser/resFile/RES_IMGDOC0001_TJS_20171101_0001.txt";
-            InputStream is = sftp.get(directory);
-            System.out.println(is);
-//            File fi =new File(savepath);
-//            sftp.get(fis, new FileOutputStream(fi));
-//            for (int i = 0 ; i < list.size() ; i++){
-//                String fis = list.get(i);
-//                //String downloadFile = paths + "/" + fis.getName();
-//            }
-//            File file = new File(directory);
-//            File[] files =  file.listFiles();
-//            for (int i = 0; i < files.length; i++) {
-//                log.info(">>>>>>>>>>下载文件第"+i+"个文件:" + files[i]);
-//                String paths = files[i].getPath();
-//                String downloadFile = files[i].getPath() + "/" + files[i].getName();
-//                sftp.get(downloadFile, new FileOutputStream(fi));
-//            }
+            Vector v = sftp.ls("*.txt");
+            //String savepath = "/Users/emacs/Desktop/test1";
+            if(v.size() > 0){
+                for(int i=0;i<v.size();i++){
+                    //截取需要下载的文件名
+                    String str  = String.valueOf(v.get(i));
+                    int index = str.indexOf("RES");
+                    str = str.substring(index,str.length());
+                    File file = new File(savepath + "/"+ str);
+                    sftp.get(str, new FileOutputStream(file));
+                }
+                log.info(">>>>>>>>>>下载成功");
+            }else{
+                log.info(">>>>>>>>>>暂无回盘文件");
+            }
         } catch (Exception e) {
-            log.error(">>>>>>>>>download failed :",e);
+            e.printStackTrace();
+            log.error(">>>>>>>>>下载回盘文件失败 :",e);
         }
     }
+
+
 
     /**
      * 删除文件
      * @param directory 要删除文件所在目录
-     * @param deleteFile 要删除的文件
      */
-    public void delete(String directory, String deleteFile) {
+    public void delete(String directory) {
         try {
             sftp.cd(directory);
-            sftp.rm(deleteFile);
+            Vector v = sftp.ls("*.txt");
+            if(v.size() > 0){
+                for(int i=0;i<v.size();i++){
+                    //截取需要删除的文件名
+                    String deleteFile  = String.valueOf(v.get(i));
+                    int index = deleteFile.indexOf("RES");
+                    deleteFile = deleteFile.substring(index,deleteFile.length());
+                    sftp.rm(deleteFile);
+                }
+                log.info(">>>>>>>>>>删除成功");
+            }else{
+                log.info(">>>>>>>>>>暂无回盘文件");
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(">>>>>>>>>delete failed :",e);
+            log.error(">>>>>>>>>删除回盘文件失败 :",e);
         }
     }
 

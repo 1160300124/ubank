@@ -11,6 +11,7 @@ public class Bill implements Serializable{
 	private int tradingStatus;	//交易状态 0 处理中 1 成功 2 失败
 	private String CreateDate;	//创建时间
 	private String updateTime;	//更新时间
+	private String sortTime;	//排序时间
 	private String bankCardNo;	//银行卡号
 	private String bankName;	//银行名称
 
@@ -87,5 +88,11 @@ public class Bill implements Serializable{
 		this.bankName = bankName;
 	}
 
+	public String getSortTime() {
+		return sortTime;
+	}
 
+	public void setSortTime(String sortTime) {
+		this.sortTime = sortTime;
+	}
 }

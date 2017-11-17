@@ -26,17 +26,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-1 control-label" for="start_date">提交日期</label>
+                <label class="col-sm-1 control-label" for="date_range">提交日期</label>
                 <div class="col-sm-2" >
-                    <div class="input-group date" id="">
-                        <input class="form-control" id="leaveDate1" type="text" name="startDate" />
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                    </div>
-                </div>
-                <label class="col-md-1" for="start_date">——</label>
-                <div class="col-sm-2" >
-                    <div class="input-group date" id="">
-                        <input class="form-control" id="leaveDate2" type="text"  name="endDate"/>
+                    <div class="input-group date time-picker" id="datetimepicker_start">
+                        <input class="form-control" id="date_range" type="text" placeholder="请选择日期"/>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                     </div>
                 </div>
@@ -70,30 +63,28 @@
         <table id="leave_table" > </table>
     </div>
 </div>
-<script src="<%=request.getContextPath()%>/js/jquery/jquery.tabletojson.js" type="text/javascript"></script>
 <script type="text/javascript">
 
+    var startDate = moment();
+    var endDate = moment();
     $(function () {
-        $('#leaveDate1').datetimepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            pickDate: true,
-            pickTime: true,
-            autoclose: 1,
-            todayBtn:  1,
-            todayHighlight: 1,
-            minView: "month"
-        });
-
-        $('#leaveDate2').datetimepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            pickDate: true,
-            pickTime: true,
-            autoclose: 1,
-            todayBtn:  1,
-            todayHighlight: 1,
-            minView: "month"
+        $('#date_range').daterangepicker({
+            startDate: startDate,
+            endDate: endDate,
+            locale: {
+                format: 'YYYY/MM/DD',
+                applyLabel: '选取',
+                cancelLabel: '取消',
+                customRangeLabel: '自定义'
+            },
+            ranges: {
+                '今天': [moment(), moment()],
+                '本周': [moment().startOf('week'), moment().endOf('week')],
+                '本月': [moment().startOf('month'), moment().endOf('month')],
+            }
+        }, function(start, end, label) {
+            startDate = start;
+            endDate = end;
         });
 
         LeaveFun.leave_queryGroup();
@@ -107,8 +98,6 @@
     var companyNum = $("#leave_company").val();
     var deptNum = $("#leave_dept").val();
     var username = $("input[name=username]").val();
-    var startDate = $("input[name=startDate]").val();
-    var endDate = $("input[name=endDate]").val();
     var leave_status = $("#leave_status").val();
     var leave_result = $("#leave_result").val();
 
@@ -190,8 +179,8 @@
                 companyNum : companyNum,
                 deptNum : deptNum,
                 username : username,
-                startDate : startDate,
-                endDate : endDate,
+                startDate : startDate.format('YYYY-MM-DD'),
+                endDate : endDate.format('YYYY-MM-DD'),
                 status : leave_status,
                 result : leave_result
 
@@ -284,7 +273,7 @@
     function exportExcel() {
         var table = $('#leave_table').tableToJSON();
         var fileName = 'LeaveAndOvertimeReportExcel';
-       // var json = JSON.stringify(table);
+        // var json = JSON.stringify(table);
         var json = "";
         var nodes = $("#leave_table thead tr").children().children('div .th-inner');
         var header = "";
@@ -295,7 +284,7 @@
         //调用post函数
 
         post('exportExcel',{fileName : fileName,header : header,json : json,sysflag : SYSFLAG,groupNum : groupNum,groupNumber : GROUPNUMBER,
-            companyNumber : COMPANYNUMBER, companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate,endDate : endDate,
+            companyNumber : COMPANYNUMBER, companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate.format('YYYY-MM-DD'),endDate : endDate.format('YYYY-MM-DD'),
             status : leave_status,result : leave_result});
     }
 

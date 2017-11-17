@@ -53,7 +53,7 @@
 	<!--每天早上6点  -->
 	<bean id="readFileTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="readfile" />
-		<property name="cronExpression" value="0 0 1 * * ?" />
+		<property name="cronExpression" value="0 30 * * * ?" />
 	</bean>
 
 	<!---->

@@ -5,8 +5,12 @@ import com.ulaiber.web.service.BankService;
 import com.ulaiber.web.utils.SFTPUtil;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.log4j.Logger;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import javax.annotation.Resource;
@@ -46,26 +50,13 @@ public class ReadFile extends QuartzJobBean {
          */
         SFTPUtil sftpUtil = new SFTPUtil();
         try {
-            //1.连接SFTP
+            //1.连接SFTP，将回盘目录中所有文件下载到本地临时目录
             Map<String,Object> map = sftpUtil.connect();
             String resDir = (String) map.get("resDir");
             String downloadDir = (String) map.get("downloadDir");
             String backupDir = (String) map.get("backupDir");
-            //2.将回盘目录中所有文件下载到本地临时目录
             logger.info(">>>>>>>>>>开始下载文件到本地临时目录");
-            File file = new File(resDir);
-            File[] files = file.listFiles();
-            if(files.length <= 0){
-                //关闭sftp
-                sftpUtil.logout();
-                return flag;
-            }
-            for (int i = 0 ; i < files.length ; i++){
-                //文件路径
-                String path = files[i].getPath();
-                logger.info(">>>>>>>>>开始下载第"+(i+1)+"个文件,文件路径为：" + path);
-               // sftpUtil.download(resDir,path + "/" + files[i].getName(),downloadDir);
-            }
+
             //3.遍历临时目录中的文件，解析目录中的文件内容
             logger.info(">>>>>>>>>>开始解析文件内容");
             File tempFile = new File(downloadDir);
@@ -108,14 +99,10 @@ public class ReadFile extends QuartzJobBean {
             StringUtil.delAllFile(downloadDir);
             //7.删除sftp服务器上回盘目录中的文件
             logger.info(">>>>>>>>>>开始删除sftp服务器上回盘文件");
-            for (int i = 0 ; i < files.length ; i++){
-                //文件路径
-                String path = files[i].getPath();
-                logger.info(">>>>>>>>>开始删除回盘文件的第"+(i+1)+"个文件,文件路径为：" + path);
-                sftpUtil.delete(resDir,path + "/" +files[i].getName());
-            }
+            sftpUtil.delete(resDir);
             flag = true;
             logger.info(">>>>>>>>>>解析文件完成，关闭sftp连接");
+            //关闭sftp
             sftpUtil.logout();
         }catch(Exception e){
             //关闭sftp
@@ -123,11 +110,19 @@ public class ReadFile extends QuartzJobBean {
             logger.error(">>>>>>>>>>"+sdf.format(new Date())+"读取回盘文件失败，原因是：",e);
         }
         return flag;
-
     }
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        readFile();
+    }
 
+    @SuppressWarnings("unused")
+    private ApplicationContext getApplicationContext(JobExecutionContext jobContext) throws SchedulerException {
+        ApplicationContext appCtx = (ApplicationContext) jobContext.getScheduler().getContext().get("applicationContext");
+        if (appCtx == null) {
+            throw new JobExecutionException("No application context available in scheduler context.");
+        }
+        return appCtx;
     }
 }

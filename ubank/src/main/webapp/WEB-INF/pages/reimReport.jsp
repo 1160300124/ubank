@@ -25,44 +25,39 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-1 control-label" for="start_date">提交日期</label>
-                <div class="col-sm-2" >
-                    <div class="input-group date" >
-                        <input class="form-control" id="reimDate1" type="text" name="startDate" />
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                <div class="form-group col-md-12">
+                    <label class="col-md-1 control-label" for="date_range">提交日期</label>
+                    <div class="col-sm-2" >
+                        <div class="input-group date time-picker" id="datetimepicker_start">
+                            <input class="form-control" id="date_range" type="text" placeholder="请选择日期"/>
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
                     </div>
-                </div>
-                <label class="col-md-1" for="start_date">——</label>
-                <div class="col-sm-2" >
-                    <div class="input-group date" >
-                        <input class="form-control" id="reimDate2" type="text"  name="endDate"/>
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                    </div>
-                </div>
-                <label class="col-md-1" for="start_date">审批状态</label>
-                <div class="col-sm-2">
-                    <select class="form-control" id="reim_status" name="status">
-                        <option value="">请选择</option>
-                        <option value="0">待审批</option>
-                        <option value="1">审批通过</option>
-                        <option value="2">驳回</option>
+                    <label class="col-md-1" for="start_date">审批状态</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" id="reim_status" name="status">
+                            <option value="">请选择</option>
+                            <option value="0">待审批</option>
+                            <option value="1">审批通过</option>
+                            <option value="2">驳回</option>
 
-                    </select>
+                        </select>
+                    </div>
+                    <label class="col-md-1" for="start_date">审批结果</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" id="reim_result" name="result">
+                            <option value="">请选择</option>
+                            <option value="1">审批通过</option>
+                            <option value="2">驳回</option>
+                        </select>
+                    </div>
+                    <button onclick="ReimFun.reset();" type="button" class="btn btn-default">
+                        <span class="fa icon-search" aria-hidden="true"></span>查询
+                    </button>
+                    <button onclick="reimExport()" type="button" class="btn btn-default">
+                        <span class="fa icon-cloud-download" aria-hidden="true"></span>导出
+                    </button>
                 </div>
-                <label class="col-md-1" for="start_date">审批结果</label>
-                <div class="col-sm-2">
-                    <select class="form-control" id="reim_result" name="result">
-                        <option value="">请选择</option>
-                        <option value="1">审批通过</option>
-                        <option value="2">驳回</option>
-                    </select>
-                </div>
-                <button onclick="ReimFun.reset();" type="button" class="btn btn-default">
-                    <span class="fa icon-search" aria-hidden="true"></span>查询
-                </button>
-                <button onclick="reimExport()" type="button" class="btn btn-default">
-                    <span class="fa icon-cloud-download" aria-hidden="true"></span>导出
-                </button>
             </div>
         </form>
 
@@ -88,28 +83,29 @@
 </div>
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.tabletojson.js" type="text/javascript"></script>
 <script type="text/javascript">
+    var startDate = moment();
+    var endDate = moment();
     $(function () {
-        $('#reimDate1').datetimepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            pickDate: true,
-            pickTime: true,
-            autoclose: 1,
-            todayBtn:  1,
-            todayHighlight: 1,
-            minView: "month"
+
+        $('#date_range').daterangepicker({
+            startDate: startDate,
+            endDate: endDate,
+            locale: {
+                format: 'YYYY/MM/DD',
+                applyLabel: '选取',
+                cancelLabel: '取消',
+                customRangeLabel: '自定义'
+            },
+            ranges: {
+                '今天': [moment(), moment()],
+                '本周': [moment().startOf('week'), moment().endOf('week')],
+                '本月': [moment().startOf('month'), moment().endOf('month')],
+            }
+        }, function(start, end, label) {
+            startDate = start;
+            endDate = end;
         });
 
-        $('#reimDate2').datetimepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            pickDate: true,
-            pickTime: true,
-            autoclose: 1,
-            todayBtn:  1,
-            todayHighlight: 1,
-            minView: "month"
-        });
 
         ReimFun.loadReimData();
 
@@ -119,8 +115,6 @@
     var companyNum = $("#reim_company").val();
     var deptNum = $("#reim_dept").val();
     var username = $("input[name=username]").val();
-    var startDate = $("input[name=startDate]").val();
-    var endDate = $("input[name=endDate]").val();
     var reim_status = $("#reim_status").val();
     var reim_result = $("#reim_result").val();
 
@@ -213,8 +207,8 @@
                 companyNum : companyNum,
                 deptNum : deptNum,
                 username : username,
-                startDate : startDate,
-                endDate : endDate,
+                startDate : startDate.format('YYYY-MM-DD'),
+                endDate : endDate.format('YYYY-MM-DD'),
                 status : reim_status,
                 result : reim_result
 
@@ -288,7 +282,7 @@
 //            companyNumber : COMPANYNUMBER, companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate,endDate : endDate,
 //            status : leave_status,result : leave_result});
         post('reimExportExcel',{fileName : fileName,header : header,json : json,sysflag : SYSFLAG,groupNum : groupNum,groupNumber : GROUPNUMBER,
-            companyNumber : COMPANYNUMBER,companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate,endDate : endDate,
+            companyNumber : COMPANYNUMBER,companyNum : companyNum,deptNum : deptNum,username : username,startDate : startDate.format('YYYY-MM-DD'),endDate : endDate.format('YYYY-MM-DD'),
             status : reim_status,result : reim_result});
     }
 

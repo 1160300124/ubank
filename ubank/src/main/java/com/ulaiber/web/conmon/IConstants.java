@@ -203,5 +203,8 @@ public class IConstants
 	//操作数据库失败
 	public static final int INSER_DB_ERROR = 1060;
 
+	//上海银行压缩包大小
+	public static final int SH_size = 300;
+
 
 }

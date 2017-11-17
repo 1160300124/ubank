@@ -1,5 +1,7 @@
 package com.ulaiber.web.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankServiceImpl extends BaseService implements BankService {
 
 	private static Logger logger = Logger.getLogger(BankServiceImpl.class);
+
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@Resource
 	private BankDao mapper;
@@ -141,6 +145,7 @@ public class BankServiceImpl extends BaseService implements BankService {
 	    map.put("rqUID",OrirqUID);
 	    map.put("status",tStatus);
 	    map.put("date",date);
+	    map.put("sortTime",sdf.format(new Date()));
         return mapper.updateWithdraw(map);
     }
 

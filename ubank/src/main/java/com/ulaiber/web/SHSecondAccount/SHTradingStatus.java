@@ -69,7 +69,7 @@ public class SHTradingStatus {
             String interfaceNO = "YFY0103";  //接口编号
             //拼接xml
             String xml = StringUtil.signHeader(interfaceNO,random,date,time) + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
-            logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
+            logger.info(">>>>>>>>>>流水号为"+RqUID+"开始发送请求给上海银行");
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 10000);
             logger.info(">>>>>>>>>>开始解析xml");
@@ -135,7 +135,7 @@ public class SHTradingStatus {
                 resultMap.put("status",rsMap.get("StatusCode"));
                 resultMap.put("tradingSta",rsMap);
                 resultInfo.setData(resultMap);
-                logger.error(">>>>>>>>>>验签失败,状态为："+verifyRet+"，返回结果为："+ rsMap.get("StatusCode") + ",信息为：" + rsMap.get("ServerStatusCode"));
+                logger.error(">>>>>>>>>>流水号为："+RqUID+"验签失败,状态为："+verifyRet+"，返回结果为："+ rsMap.get("StatusCode") + ",信息为：" + rsMap.get("ServerStatusCode"));
                 return resultInfo;
             }
             if(!"0000".equals(rsMap.get("StatusCode"))){
@@ -143,7 +143,7 @@ public class SHTradingStatus {
                 resultMap.put("status",rsMap.get("StatusCode"));
                 resultMap.put("tradingSta",rsMap);
                 resultInfo.setData(resultMap);
-                logger.error(">>>>>>>>>>验签失败,状态为：" +rsMap.get("StatusCode") + ",信息为：" + rsMap.get("ServerStatusCode"));
+                logger.error(">>>>>>>>>>流水号为："+RqUID+"验签失败,状态为：" +rsMap.get("StatusCode") + ",信息为：" + rsMap.get("ServerStatusCode"));
                 return resultInfo;
             }
             resultInfo.setMessage((String) rsMap.get("ServerStatusCode"));

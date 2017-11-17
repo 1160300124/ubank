@@ -554,34 +554,35 @@ public class StringUtil {
 		InputStream in = SysConf.class.getClassLoader().getResourceAsStream("config/config.properties");
 		try {
 			prop.load(in);
+			String privateKey = prop.getProperty("SH_privateKey");
+			String publicKey = prop.getProperty("SH_publicKey");
+			String postUrl = prop.getProperty("SH_postUrl");
+			String pwd = prop.getProperty("SH_pwd");
+			String username = prop.getProperty("SH_username");
+			String password = prop.getProperty("SH_password");
+			String host = prop.getProperty("SH_host");
+			int port = Integer.parseInt(prop.getProperty("SH_port"));
+			String directory = prop.getProperty("SH_directory");
+			String resDir = prop.getProperty("SH_resDir");
+			String downloadDir = prop.getProperty("SH_download");
+			String backup = prop.getProperty("SH_backup");
+			String SH_billFile = prop.getProperty("SH_billFile");
+			map.put("privateKey",privateKey);
+			map.put("publicKey",publicKey);
+			map.put("postUrl",postUrl);
+			map.put("pwd",pwd);
+			map.put("username",username);
+			map.put("password",password);
+			map.put("host",host);
+			map.put("port",port);
+			map.put("directory",directory);
+			map.put("resDir",resDir);
+			map.put("downloadDir",downloadDir);
+			map.put("backup",backup);
+			map.put("billFile",SH_billFile);
 		} catch (IOException e) {
 			logger.error(">>>>>>>>加载config配置文件异常",e);
 		}
-
-		String privateKey = prop.getProperty("SH_privateKey");
-		String publicKey = prop.getProperty("SH_publicKey");
-		String postUrl = prop.getProperty("SH_postUrl");
-		String pwd = prop.getProperty("SH_pwd");
-		String username = prop.getProperty("SH_username");
-		String password = prop.getProperty("SH_password");
-		String host = prop.getProperty("SH_host");
-		int port = Integer.parseInt(prop.getProperty("SH_port"));
-		String directory = prop.getProperty("SH_directory");
-		String resDir = prop.getProperty("SH_resDir");
-		String downloadDir = prop.getProperty("SH_download");
-		String backup = prop.getProperty("SH_backup");
-		map.put("privateKey",privateKey);
-		map.put("publicKey",publicKey);
-		map.put("postUrl",postUrl);
-		map.put("pwd",pwd);
-		map.put("username",username);
-		map.put("password",password);
-		map.put("host",host);
-		map.put("port",port);
-		map.put("directory",directory);
-		map.put("resDir",resDir);
-		map.put("downloadDir",downloadDir);
-		map.put("backup",backup);
 		return map;
 
 	}
