@@ -15,8 +15,8 @@
 
     <!--申请请假-->
     <insert id="saveLeaveRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,auditor,reason,createDate,status,disable,type)
-            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{auditor},#{reason},#{createDate},'0','0','0')
+        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,realLeaveTime,auditor,reason,createDate,status,disable,type)
+            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{realLeaveTime},#{auditor},#{reason},#{createDate},'0','0','0')
     </insert>
 
     <!--查询个人申请记录-->

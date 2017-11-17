@@ -37,9 +37,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int saveLeaveRecord(LeaveRecord leaveRecord) {
     	//初始请假时长和实际请假时长一致，待有销假时实际请假时长=请假时长-销假时长
-    	if (StringUtils.equals(leaveRecord.getType(), "0")){
-    		leaveRecord.setRealLeaveTime(leaveRecord.getLeaveTime());
-    	}
+    	leaveRecord.setRealLeaveTime(leaveRecord.getLeaveTime());
         int result = leaveDao.saveLeaveRecord(leaveRecord);
         return result;
     }
