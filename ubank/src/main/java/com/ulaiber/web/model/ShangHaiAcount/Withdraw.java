@@ -26,6 +26,7 @@ public class Withdraw implements Serializable{
     private String ServerStatusCode;    //返回结果信息
     private String CreateDate;          //创建时间
     private String updateTime;          //更新时间
+    private String sortTime;            //排序时间
     private int status;                 //交易状态 0 处理中 1 成功 2 失败
     private int trading;                //交易类型 0 提现
 
@@ -195,5 +196,13 @@ public class Withdraw implements Serializable{
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getSortTime() {
+        return sortTime;
+    }
+
+    public void setSortTime(String sortTime) {
+        this.sortTime = sortTime;
     }
 }

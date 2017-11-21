@@ -19,8 +19,8 @@
 	<bean id="schedulerFactoryBean" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="clearTempFolderTaskTrigger" />
 				<ref bean="readFileTrigger" />
+				<ref bean="clearTempFolderTaskTrigger" />
 			</list>
 
 		</property>
@@ -32,12 +32,11 @@
 	<!--每天凌晨1点定时清理临时目录  -->
 	<bean id="clearTempFolderTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="clearTempFolderTaskDetail" />
-		<property name="cronExpression" value="0 0 1 * * ?" />
+		<property name="cronExpression" value="0 0/2 * * * ?" />
 	</bean>
 
 
 	<bean id="clearTempFolderTaskDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-		<property name="name" value="exampleJob" />
 		<property name="jobClass" value="com.ulaiber.web.quartz.ClearTempFolderTask" />
 		<property name="applicationContextJobDataKey" value="applicationContext"/>  
 		<!-- 可以封装各种数据到JobExecutionContext里 -->
@@ -50,15 +49,14 @@
 	</bean>
 
 
-	<!--每天早上6点  -->
+	<!-- 定时解析上海银行回盘文件内容  -->
 	<bean id="readFileTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="readfile" />
-		<property name="cronExpression" value="0 30 * * * ?" />
+		<property name="cronExpression" value="0 0 6 * * ?" />
 	</bean>
 
 	<!---->
 	<bean id="readfile" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-		<property name="name" value="exampleJob" />
 		<property name="jobClass" value="com.ulaiber.web.quartz.ReadFile" />
 		<property name="applicationContextJobDataKey" value="applicationContext"/>
 		<!-- 可以封装各种数据到JobExecutionContext里 -->

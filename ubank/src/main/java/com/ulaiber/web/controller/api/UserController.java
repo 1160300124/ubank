@@ -206,6 +206,8 @@ public class UserController extends BaseController{
 			map.put("status",status);
 			retInfo.setData(map);
 		}catch (Exception e){
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("注册失败");
 			logger.error(">>>>>>>>>>注册上海二类账户失败");
 		}
 		return retInfo;
@@ -300,11 +302,20 @@ public class UserController extends BaseController{
 				logger.info(">>>>>>>>>>登录的用户ID是：" +userid);
 				SecondAccountAO secondAccount = userService.getSecondAccountByUserId(userid);
 				if(!StringUtil.isEmpty(secondAccount)){
+					String type = secondAccount.getType(); //银行类型
+					int size = 0;
+					switch (type){
+						case "0":
+							//上海银行图片压缩大小
+							size = IConstants.SH_size;
+							break;
+					}
+					secondAccount.setSize(size);
 					tempUser.setBankCardNo(secondAccount.getBankCardNo());
 //					tempUser.setBankNo(String.valueOf(secondAccount.getBankNo()));
 					tempUser.setSecondAccount(secondAccount);
 				}
-				logger.info(userid + ">>>>>>>>>>二类户secondAccount数据为：" + secondAccount);
+				logger.info(userid + ">>>>>>>>>>二类户数据为：" + secondAccount);
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("获取用户信息成功");
 				tempUser.setId(user.getId());
@@ -686,9 +697,14 @@ public class UserController extends BaseController{
 				return resultInfo;
 			}
 			logger.info(">>>>>>>>>>第二步：压缩文件和生成索引文件成功");
+			String[] paths = new String[2];
+			paths[0] = oriPath;
+			paths[1] = zipPath;
 			//第三步
 			flag = sftpUtil.login(zipPath);
 			if(!flag){
+				//如果上传失败，则删除本地文件
+				deleteFile(paths);
 				resultInfo.setCode(IConstants.QT_CODE_ERROR);
 				resultInfo.setMessage("上传失败");
 				logger.info(">>>>>>>>>>测试上传图片失败");
@@ -696,18 +712,7 @@ public class UserController extends BaseController{
 			}
 			logger.info(">>>>>>>>>>第三步：上传文件至sftp服务器成功");
 			//第四步
-			String[] paths = new String[2];
-			paths[0] = oriPath;
-			paths[1] = zipPath;
-			for (int i = 0 ; i < paths.length ; i++){
-				File files = new File(paths[i]);
-				int result = StringUtil.deleteFile(files);
-				if(result == 1000){
-					logger.info(">>>>>>>>>>第四步：删除本地服务文件成功");
-				}else{
-					logger.info(">>>>>>>>>>文件不存在");
-				}
-			}
+			deleteFile(paths);
 			resultInfo.setCode(IConstants.QT_CODE_OK);
 			resultInfo.setMessage("上传成功");
 			logger.info(">>>>>>>>>>测试上传图片成功");
@@ -724,6 +729,22 @@ public class UserController extends BaseController{
 
 		}
 		return resultInfo;
+	}
+
+	/**
+	 * 删除本地文件
+	 * @param paths
+	 */
+	public void deleteFile(String[] paths){
+		for (int i = 0 ; i < paths.length ; i++){
+			File files = new File(paths[i]);
+			int result = StringUtil.deleteFile(files);
+			if(result == 1000){
+				logger.info(">>>>>>>>>>第四步：删除本地服务文件成功");
+			}else{
+				logger.info(">>>>>>>>>>文件不存在");
+			}
+		}
 	}
 
 

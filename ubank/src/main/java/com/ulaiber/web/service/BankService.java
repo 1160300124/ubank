@@ -127,4 +127,11 @@ public interface BankService {
 	 * @return Map
 	 */
     Map<String,Object> queryCIdbySub(String subAcctNo);
+
+	/**
+	 * 更新二类户冻结状态
+	 * @param subAcctNo 二类户账号
+	 * @return int
+	 */
+	int updateAccFreeze(String subAcctNo);
 }

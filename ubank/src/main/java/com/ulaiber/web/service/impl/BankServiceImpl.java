@@ -169,5 +169,11 @@ public class BankServiceImpl extends BaseService implements BankService {
         return mapper.queryCIdbySub(subAcctNo);
     }
 
+    @Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int updateAccFreeze(String subAcctNo) {
+        return mapper.updateAccFreeze(subAcctNo);
+    }
+
 
 }

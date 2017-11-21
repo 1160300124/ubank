@@ -24,6 +24,7 @@ public class SecondAccountAO implements Serializable {
     private String ProductCd;            //理财产品参数
     private String ModiType;            //修改类型  00:换卡 01:修改绑定卡手机号
     private int size;                   //上传银行图片压缩大小
+    private String freeze;              //是否冻结 0 否 1 是
 
     public String getCustName() {
         return CustName;
@@ -151,5 +152,13 @@ public class SecondAccountAO implements Serializable {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public String getFreeze() {
+        return freeze;
+    }
+
+    public void setFreeze(String freeze) {
+        this.freeze = freeze;
     }
 }

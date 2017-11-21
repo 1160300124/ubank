@@ -478,8 +478,9 @@ public class StringUtil {
 	/**
 	 * 图片校验失败后信息推送
 	 * @param map 用户名和CID
+	 * @param flag 判断检验图片是否已成功
 	 */
-	public static void sendPictureMsg(Map<String,Object> map){
+	public static void sendPictureMsg(Map<String,Object> map,boolean flag){
 		String cid  = "";
 		String name = "";
 		try {
@@ -489,11 +490,20 @@ public class StringUtil {
 					name = (String) map.get("user_name");
 					int type = IConstants.PICTURE;
 					//消息内容
-					String title = "个人证件上传反馈";
-					String content = name + "先生/女士你好，您在优发展银行APP上传的个人身份证照片不合格，为了不影响APP的正常使用，请尽快重新上传，谢谢合作";
+					String title = "";
+					String content = "";
+					if(flag){
+						title = "优发展银行APP开户申请反馈";
+						content = name + "先生/女士你好,您在优发展银行APP的开户申请已成功,欢迎使用.";
+					}else{
+						title = "优发展银行APP开户申请反馈";
+						content = name + "先生/女士你好,您在优发展银行APP上传的个人身份证照片不合格,为了不影响APP的正常使用，请尽快重新上传,谢谢合作.";
+					}
 					//推送审批信息致第一个审批人
 					PushtoSingle.singlePush(cid,type,content,title);
 				}
+			}else{
+				logger.warn(">>>>>>>>>>图片检验失败，根据二类户查询用户为空");
 			}
 		}catch(Exception e){
 			logger.error(">>>>>>>>>>向"+name+"推送交易消息异常",e);

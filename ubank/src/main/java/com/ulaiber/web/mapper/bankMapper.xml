@@ -83,9 +83,9 @@
 	<!--新增提现记录-->
 	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
 		INSERT INTO tbl_withdraw(userid,SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,
-		    Purpose,Attach,MemoInfo,type,CreateDate,updateTime,status,trading)
+		    Purpose,Attach,MemoInfo,type,CreateDate,updateTime,status,trading,sortTime)
 			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},
-			    #{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{updateTime},#{status},#{trading})
+			    #{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{updateTime},#{status},#{trading},#{sortTime})
 	</insert>
 
 	<!--根据二类账户查询账单-->
@@ -131,4 +131,9 @@
 			left join tbl_users b on a.userid = b.user_id
 			where a.SubAcctNo = #{subAcctNo}
 	</select>
+
+	<!-- 更新二类户冻结状态-->
+	<update id="updateAccFreeze" parameterType="String">
+		UPDATE tbl_secondAccount SET freeze = '0' WHERE SubAcctNo = #{subAcctNo}
+	</update>
 </mapper>

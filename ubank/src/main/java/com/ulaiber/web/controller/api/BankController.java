@@ -285,6 +285,7 @@ public class BankController extends BaseController {
 				}
 				withd.setCreateDate(sdf.format(new Date()));
 				withd.setUpdateTime(sdf.format(new Date()));
+				withd.setSortTime(sdf.format(new Date()));
 				withd.setStatus(0);
 				withd.setTrading(0);
 				withd.setUserId(wid.getUserId());

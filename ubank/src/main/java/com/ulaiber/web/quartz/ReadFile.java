@@ -10,7 +10,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import javax.annotation.Resource;
@@ -30,10 +29,8 @@ public class ReadFile extends QuartzJobBean {
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @Resource
-    private BankService bankService;
 
-    public  boolean readFile(){
+    public  boolean readFile(JobExecutionContext jobContext){
         boolean flag = false;
         logger.info(">>>>>>>>>>"+sdf.format(new Date())+"开始读取回盘文件");
         /**
@@ -67,21 +64,30 @@ public class ReadFile extends QuartzJobBean {
             for (int j = 0 ; j < temporary.length ; j++){
                 String content = StringUtil.txt2String(temporary[j]);
                 String[] arr = content.split("\n");
+                String SubAcctNo = "";
+                boolean result = true;
                 for (int i = 2 ; i < arr.length; i++){
                     if(!StringUtil.isEmpty(arr[i])){
                         //获取第一条记录的状态：S 表示处理成功  F 表示处理部分失败 E 文件或压缩包校验失败
                         String[] strs = arr[i].split("\\|");
-                        String SubAcctNo = strs[3]; //二类户账号
+                        SubAcctNo = strs[3]; //二类户账号
                         String status = strs[6];  //校验状态
                         String descriptions = strs[7]; //处理后的描述
                         //4.如果校验失败，则推送消息给用户
                         if(!"S".equals(status)){
-                            //根据二类户账号获取CID
-                            Map<String,Object> paraMap = bankService.queryCIdbySub(SubAcctNo);
-                            StringUtil.sendPictureMsg(paraMap);
+                           result = false;
                         }
                     }
-
+                }
+                ApplicationContext  app = getApplicationContext(jobContext);
+                BankService bankService = app.getBean(BankService.class);
+                //根据二类户账号获取CID
+                Map<String,Object> paraMap = bankService.queryCIdbySub(SubAcctNo);
+                StringUtil.sendPictureMsg(paraMap,result);
+                //更新二类户冻结状态
+                int res = bankService.updateAccFreeze(SubAcctNo);
+                if(res <= 0){
+                    logger.error(">>>>>>>>>>定时任务-"+sdf.format(new Date())+"更新二类户冻结状态失败，二类户为：" + SubAcctNo);
                 }
             }
 
@@ -114,7 +120,7 @@ public class ReadFile extends QuartzJobBean {
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        readFile();
+        readFile(jobExecutionContext);
     }
 
     @SuppressWarnings("unused")

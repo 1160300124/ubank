@@ -37,6 +37,7 @@ public class SecondAcount implements Serializable {
     private double FundShare;           //基金份额(以基金公司为准，不含当日申购赎回的交易份额)
     private double AvaiFundShare;       //可用基金份额(当前实际可用的基金份额，含当日申购赎回的交易份额)
     private double EarningsYesterday;   //昨日收益
+    private String freeze;              //是否冻结 0 否 1 是
 
     public long getId() {
         return id;
@@ -276,5 +277,13 @@ public class SecondAcount implements Serializable {
 
     public void setEarningsYesterday(double earningsYesterday) {
         EarningsYesterday = earningsYesterday;
+    }
+
+    public String getFreeze() {
+        return freeze;
+    }
+
+    public void setFreeze(String freeze) {
+        this.freeze = freeze;
     }
 }

@@ -750,7 +750,7 @@ public class Test {
 	@org.junit.Test
 	public void read(){
 		ReadFile re = new ReadFile();
-		re.readFile();
+		//re.readFile();
 //		SFTPUtil sftpUtil = new SFTPUtil();
 //		try {
 //			sftpUtil.connect();
