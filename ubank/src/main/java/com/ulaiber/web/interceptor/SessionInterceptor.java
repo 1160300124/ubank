@@ -39,17 +39,16 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 			Object obj = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION);
 			//登录用户的权限菜单
 			Object userUrl = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERMENU);
-			String[] urlArr = userUrl.toString().split(",");
-			if (!ObjUtil.notEmpty(obj)  && !ObjUtil.notEmpty(userUrl)){
+			if (!ObjUtil.notEmpty(obj) && !ObjUtil.notEmpty(userUrl)){
 				boolean isAjaxRequest = isAjaxRequest(request);
 				if (isAjaxRequest) {
 					response.setCharacterEncoding("UTF-8");
 					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");
 				}
-			response.sendRedirect(request.getContextPath() + "/backend/tologin");
-			return false;
+				response.sendRedirect(request.getContextPath() + "/backend/tologin");
+				return false;
 			} else {
-
+				String[] urlArr = userUrl.toString().split(",");
 				//判断当前用户是否有该页面权限,如果没有，则跳转到首页
 				boolean isurl = StringUtil.isURL(currentUrl);
 				if (isurl){
@@ -72,8 +71,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 			Object obj = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERSESSION);
 			//登录用户的权限菜单
 			Object userUrl = request.getSession().getAttribute(IConstants.UBANK_BACKEND_USERMENU);
-			String[] urlArr = userUrl.toString().split(",");
-			if (!ObjUtil.notEmpty(obj)  && !ObjUtil.notEmpty(userUrl)){
+			if (!ObjUtil.notEmpty(obj) && !ObjUtil.notEmpty(userUrl)){
 				boolean isAjaxRequest = isAjaxRequest(request);
 				if (isAjaxRequest) {
 					response.setCharacterEncoding("UTF-8");
@@ -81,7 +79,8 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				}
 				response.sendRedirect(request.getContextPath() + "/backend_bank/toBankLogin");
 				return false;
-			}else {
+			} else {
+				String[] urlArr = userUrl.toString().split(",");
 				//判断当前用户是否有该页面权限,如果没有，则跳转到首页
 				boolean isurl = StringUtil.isURL(currentUrl);
 				if (isurl){
@@ -98,33 +97,32 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				}
 
 			}
-		}else if (uri.contains("/api/v1/")){
-//			//根据ticket和token获取用户
-//			String login_ticket = request.getHeader("login_ticket");
-//			String access_token = request.getHeader("access_token");
-//			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
-//				response.setCharacterEncoding("UTF-8");
-//				response.sendError(HttpStatus.UNAUTHORIZED.value());
-//				return false;
-//			}
-//
-//			User user = userService.getUserByTicketAndToken(login_ticket, access_token);
-//			if (null == user) {
-//				response.setCharacterEncoding("UTF-8");
-//				response.sendError(HttpStatus.UNAUTHORIZED.value());
-//				return false;
-//			}
-//			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
-//				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
-//					response.setCharacterEncoding("UTF-8");
-//					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
-//					return false;
-//				}
-//			}
+		} else if (uri.contains("/api/v1/")){
+			//根据ticket和token获取用户
+			String login_ticket = request.getHeader("login_ticket");
+			String access_token = request.getHeader("access_token");
+			if (!ObjUtil.notEmpty(login_ticket) || !ObjUtil.notEmpty(access_token)) {
+				response.setCharacterEncoding("UTF-8");
+				response.sendError(HttpStatus.UNAUTHORIZED.value());
+				return false;
+			}
+
+			User user = userService.getUserByTicketAndToken(login_ticket, access_token);
+			if (null == user) {
+				response.setCharacterEncoding("UTF-8");
+				response.sendError(HttpStatus.UNAUTHORIZED.value());
+				return false;
+			}
+			if (StringUtils.isNotEmpty(request.getParameter("mobile"))){
+				if (!StringUtils.equals(user.getMobile(), request.getParameter("mobile"))){
+					response.setCharacterEncoding("UTF-8");
+					response.sendError(HttpStatus.UNAUTHORIZED.value(), "手机号不正确。");
+					return false;
+				}
+			}
 
 		}
 
-		
 		return true;
 	}
 	

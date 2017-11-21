@@ -32,9 +32,8 @@
 	<!--每天凌晨1点定时清理临时目录  -->
 	<bean id="clearTempFolderTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="clearTempFolderTaskDetail" />
-		<property name="cronExpression" value="0 0/2 * * * ?" />
+		<property name="cronExpression" value="0 0 1 * * ?" />
 	</bean>
-
 
 	<bean id="clearTempFolderTaskDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 		<property name="jobClass" value="com.ulaiber.web.quartz.ClearTempFolderTask" />
@@ -47,7 +46,6 @@
 		</property>
 		<property name="durability" value="true" />  
 	</bean>
-
 
 	<!-- 定时解析上海银行回盘文件内容  -->
 	<bean id="readFileTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
@@ -62,6 +60,5 @@
 		<!-- 可以封装各种数据到JobExecutionContext里 -->
 		<property name="durability" value="true" />
 	</bean>
-
 
 </beans>
