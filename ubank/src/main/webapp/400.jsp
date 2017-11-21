@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>U钱包</title>
-<link href="../css/error.css" rel="stylesheet" type="text/css" />
+<link href="<%=request.getContextPath()%>/css/error.css" rel="stylesheet" type="text/css" />
 
 
 </head>

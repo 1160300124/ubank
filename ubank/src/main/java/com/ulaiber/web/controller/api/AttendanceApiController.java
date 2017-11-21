@@ -172,43 +172,24 @@ public class AttendanceApiController extends BaseController {
 		if (StringUtils.isNotEmpty(date)){
 			List<Attendance> records = service.getRecordsByDateAndMobile(date, date, mobile);
 			Attendance record = records.size() == 0 ? null : records.get(0);
-			data.put("record", records.size() == 0 ? null : records.get(0));
 			if (leaveRecord != null){
-				String startDay = leaveRecord.getStartDate().split(" ")[0];
-				String endDay = leaveRecord.getEndDate().split(" ")[0];
-				if (startDay.compareTo(endDay) == 0 || date.compareTo(startDay) == 0 || date.compareTo(endDay) == 0){
-					if (record == null){
-						//请假当天没有打卡记录，则为请假
-						data.put("type", 5);
-					} else {
-						if (StringUtils.equals(record.getRevokeType(), "1")){
-							//请假当天有打卡记录且为销假打卡
-							data.put("type", 6);
-						}
-					}
-				} else if (date.compareTo(startDay) > 0 && date.compareTo(endDay) > 0){
-					if (record == null){
-						//请假当天没有打卡记录，则为请假
-						data.put("type", 5);
-					} else {
-						if (StringUtils.equals(record.getRevokeType(), "1")){
-							//请假当天有打卡记录且为销假打卡
-							data.put("type", 6);
-						}
-					}
+				//请假当天没有打卡记录，则为请假
+				if (record == null){
+					data.put("type", 5);
+				} else {
+					data = message(leaveRecord, record, date, clockOnTime, clockOffTime, rule, data);
 				}
-			}
-			
-			
+			}			
+			data.put("record", records.size() == 0 ? null : records.get(0));
 			info.setData(data);
 			return info;
 		}
 		
-		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡  5请假了不用打卡  6销假
+		//0上班卡  1下班卡  2更新 打卡  3不能打上班卡  4不能打下班卡  5请假了  6不销假打卡  7请全天假销假打卡 8请半天销假打卡
 		int type = 0;
 		//查询当天的考勤记录
 		List<Attendance> records = service.getRecordsByDateAndMobile(today, today, mobile);
-		
+		Attendance record = records.size() == 0 ? null : records.get(0);
 		//是否开启弹性时间
 		if (rule.getFlexibleFlag() == 0){
 			if (records != null && records.size() > 0){
@@ -224,7 +205,49 @@ public class AttendanceApiController extends BaseController {
 			}
 		}
 		
-		if (null == records || records.size() == 0){
+		if (leaveRecord != null){
+			String startDay = leaveRecord.getStartDate().split(" ")[0];
+			String endDay = leaveRecord.getEndDate().split(" ")[0];
+			if (startDay.compareTo(endDay) == 0 || startDay.compareTo(today) == 0 || endDay.compareTo(today) == 0){
+				if (rule.getRestFlag() == 0){
+					String restStartTime = today + " " + rule.getRestStartTime();
+					String restEndTime = today + " " + rule.getRestEndTime();
+					//上午请假
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+						if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+						if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+							clockOnTime = restEndTime;
+						}
+						if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+					}
+					//下午请假
+					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+						if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+							clockOffTime = restStartTime;
+						}
+						if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+					}
+				} else {
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+						clockOnTime = leaveRecord.getEndDate();
+					}
+					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						clockOffTime = leaveRecord.getStartDate();
+					}
+				}
+			} 
+		}
+		
+		if (null == record){
 			//当前时间在下班时间和最晚下半时间之间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
 				type = 1;
@@ -248,10 +271,141 @@ public class AttendanceApiController extends BaseController {
 			type = 4;
 		}
 		
+		data.put("clockOnTime", clockOnTime.split(" ")[1]);
+		data.put("clockOffTime", clockOffTime.split(" ")[1]);
 		data.put("type", type);
-		data.put("record", records.size() == 0 ? null : records.get(0));
+		data.put("record", record);
 		info.setData(data);
 		return info;
+	}
+	
+	private Map<String, Object> message(LeaveRecord leaveRecord, Attendance record, String date, String clockOnTime, String clockOffTime, AttendanceRule rule, Map<String, Object> data){
+		//请假在同一天
+		if (leaveRecord.getStartDate().contains(date) && leaveRecord.getEndDate().contains(date)){
+			if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+				//全天请假,有打卡记录且为销假打卡
+				if (StringUtils.equals(record.getRevokeType(), "1")){
+					data.put("type", 7);
+				}
+			} else {
+				//请半天假,有打卡记录且为不销假打卡
+				if (StringUtils.equals(record.getRevokeType(), "0")){
+					data.put("type", 6);
+					//是否有休息时段
+					if (rule.getRestFlag() == 0){
+						String restStartTime = date + " " + rule.getRestStartTime();
+						String restEndTime = date + " " + rule.getRestEndTime();
+						//上午请假
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+							if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+								clockOnTime = restEndTime;
+							}
+							if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+						}
+						//下午请假
+						else if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+							if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+								clockOffTime = restStartTime;
+							}
+							if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+						}
+					} else {
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+						else if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+					}
+				}
+				//请半天假,有打卡记录且为销假打卡
+				else if (StringUtils.equals(record.getRevokeType(), "1")){
+					data.put("type", 8);
+				}
+			}
+			//请假开始时间为今天
+		} else if (leaveRecord.getStartDate().contains(date)){
+			//请半天假,有打卡记录且为不销假打卡
+			if (StringUtils.equals(record.getRevokeType(), "0")){
+				data.put("type", 6);
+				//是否有休息时段
+				if (rule.getRestFlag() == 0){
+					String restStartTime = date + " " + rule.getRestStartTime();
+					String restEndTime = date + " " + rule.getRestEndTime();
+					//上午请假
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+						if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+						if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+							clockOnTime = restEndTime;
+						}
+						if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+					}
+				} else {
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+						clockOnTime = leaveRecord.getEndDate();
+					}
+				}
+			}
+			//请半天假,有打卡记录且为销假打卡
+			else if (StringUtils.equals(record.getRevokeType(), "1")){
+				data.put("type", 8);
+			}
+			//请假结束时间为今天
+		} else if (leaveRecord.getEndDate().contains(date)){
+			//请半天假,有打卡记录且为不销假打卡
+			if (StringUtils.equals(record.getRevokeType(), "0")){
+				data.put("type", 6);
+				//是否有休息时段
+				if (rule.getRestFlag() == 0){
+					String restStartTime = date + " " + rule.getRestStartTime();
+					String restEndTime = date + " " + rule.getRestEndTime();
+					//下午请假
+					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+						if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+							clockOffTime = restStartTime;
+						}
+						if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+					}
+				} else {
+					if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						clockOffTime = leaveRecord.getStartDate();
+					}
+				}
+			}
+			//请半天假,有打卡记录且为销假打卡
+			else if (StringUtils.equals(record.getRevokeType(), "1")){
+				data.put("type", 8);
+			}
+			//今天在请假开始时间和结束时间之间
+		} else if (date.compareTo(leaveRecord.getStartDate()) > 0 && date.compareTo(leaveRecord.getEndDate()) < 0){
+			if (StringUtils.equals(record.getRevokeType(), "1")){
+				//请假当天有打卡记录且为销假打卡
+				data.put("type", 7);
+			}
+		}
+		
+		data.put("clockOnTime", clockOnTime.split(" ")[1]);
+		data.put("clockOffTime", clockOffTime.split(" ")[1]);
+		return data;
 	}
 	
 	@RequestMapping(value = "clock", method = RequestMethod.POST)
