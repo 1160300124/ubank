@@ -32,7 +32,7 @@
 	<!--每天凌晨1点定时清理临时目录  -->
 	<bean id="clearTempFolderTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="clearTempFolderTaskDetail" />
-		<property name="cronExpression" value="0 0/2 * * * ?" />
+		<property name="cronExpression" value="0 0 6 * * ?" />
 	</bean>
 
 
@@ -52,7 +52,7 @@
 	<!-- 定时解析上海银行回盘文件内容  -->
 	<bean id="readFileTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="readfile" />
-		<property name="cronExpression" value="0 0 6 * * ?" />
+		<property name="cronExpression" value="0 0 5 * * ?" />
 	</bean>
 
 	<!---->
