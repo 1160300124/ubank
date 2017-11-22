@@ -174,4 +174,11 @@ public interface UserDao {
      * @return int
      */
     int modifyReserveMobile(Map<String, Object> paramMap);
+
+    /**
+     * 修改密码
+     * @param map
+     * @return int
+     */
+    int modifyPwd(Map<String, Object> map);
 }

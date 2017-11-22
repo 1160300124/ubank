@@ -596,15 +596,22 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<Company> getComByGroup(String groupNum, String companyNumber) {
+    public List<Company> getComByGroup(String groupNum, String companyNumber, String sysflag) {
         Map<String,Object> map = new HashMap<String,Object>();
-        String[] comArr = companyNumber.split(",");
-        int arr[] = new int[comArr.length];
-        for (int i = 0 ; i < comArr.length ; i++){
-            arr[i] = Integer.parseInt(comArr[i]);
+        if(!sysflag.equals("0")){
+            String[] comArr = companyNumber.split(",");
+            int arr[] = new int[comArr.length];
+            for (int i = 0 ; i < comArr.length ; i++){
+                arr[i] = Integer.parseInt(comArr[i]);
+            }
+            map.put("groupNum",groupNum);
+            map.put("sysflag" , sysflag);
+            map.put("companyNumber" , arr);
+        }else{
+            map.put("groupNum",groupNum);
+            map.put("sysflag" , sysflag);
+            map.put("companyNumber" , new int[0]);
         }
-        map.put("groupNum" , groupNum);
-        map.put("companyNumber" , arr);
         List<Company> list = companyDao.getComByGroup(map);
         return list;
     }

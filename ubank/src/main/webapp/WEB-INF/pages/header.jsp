@@ -53,30 +53,59 @@
 		<i class="fl icon-user-one"></i>
 		<span class="fl username" >${userName }</span>
 		<i class="fl icon-arrows-bottom"></i>
-		<ul class="header-user-menu" onclick="return logout();">
-			<li>退出</li>
+		<ul class="header-user-menu" >
+			<li class="line" onclick="openModPwd()">修改密码</li>
+			<li class="line" onclick="logout()">退出</li>
 		</ul>
 	</div>
 	<span class="fr">${BACKENDUSER.com_name}</span>
+
+
+
+</div>
+<%--修改密码弹出框--%>
+<div id="modiPwd_modal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" >修改密码</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-inline base-form clearfix">
+					<form id="modiPwd_form" method="post" class="form-horizontal" >
+						<div class="form-group col-md-12">
+							<label class="col-md-3" for="exampleInputName2">旧密码</label>
+							<div class="col-md-9">
+								<input type="password" class="form-control" id="oldPwd" name=""   placeholder="请输入旧密码">
+							</div>
+						</div>
+						<div class="form-group col-md-12">
+							<label class="col-md-3" for="exampleInputName2">新密码</label>
+							<div class="col-md-9">
+								<input type="password" class="form-control" id="newPwd" name=""   placeholder="请输入新密码">
+							</div>
+						</div>
+						<div class="form-group col-md-12">
+							<label class="col-md-3" for="exampleInputName2">确认密码</label>
+							<div class="col-md-9">
+								<input type="password" class="form-control" id="confirmPwd" name=""  placeholder="请再次输入密码" >
+							</div>
+						</div>
+					</form>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" onclick="modifyPwd()" class="btn btn-primary">保存</button>
+			</div>
+		</div>
+	</div>
 </div>
 <!-- 公共导航菜单 -->
 <div class="nav">
-	<ul>
-		<%--<li>--%>
-		<%--<span class="first-menu">业务管理</span>--%>
-		<%--<ul class="second-menu">--%>
-		<%--<li><a href="<%=request.getContextPath()%>/backend/tomanager"><i class="icon-recond"></i>转账记录</a></li>--%>
-		<%--</ul>--%>
-
-		<%--</li>--%>
-		<%--<li>--%>
-		<%--<span class="first-menu">权限管理</span>--%>
-		<%--<ul class="second-menu">--%>
-		<%--<li><a href="#"><i class="icon-other"></i></a></li>--%>
-		<%--</ul>--%>
-
-		<%--</li>--%>
-	</ul>
+	<ul></ul>
 </div>
 
 
@@ -142,5 +171,67 @@
 
             }
         });
-    })
+    });
+
+    /**
+	 * 打开修改密码框
+	 */
+    function openModPwd() {
+        $("#modiPwd_modal").modal("show");
+    }
+
+    /**
+	 * 修改密码
+     */
+    function modifyPwd() {
+        var old = $("#oldPwd").val();
+        var newPwd = $("#newPwd").val();
+        var confirm = $("#confirmPwd").val();
+        var mobile = ${BACKENDUSER.mobile};
+        if(old == "" ){
+            Ewin.alert("旧密码不能为空");
+            return;
+        }
+        if( newPwd == "" ){
+            Ewin.alert("新密码不能为空");
+            return;
+        }
+        if( confirm == ""){
+            Ewin.alert("确认密码不能为空");
+            return;
+        }
+        if(newPwd != confirm){
+            Ewin.alert("密码不一致");
+            return;
+        }
+        if(!Validate.NumberAndLetter(newPwd) || !Validate.NumberAndLetter(confirm)){
+            Ewin.alert("密码格式为数字和字母");
+            return;
+        }
+        $.ajax({
+            url : "modifyPassword",
+			type : "POST",
+			dataType : "json",
+			data : {
+                "mobile" : $.trim(mobile),
+                "newPwd" : $.trim(newPwd),
+                "oldPwd" : $.trim(old)
+			},
+			success : function (data) {
+				if(data.code == 1010){
+                    Ewin.alert(data.message);
+				}else{
+                    Ewin.alert(data.message);
+                    $("#modiPwd_modal").modal("hide");
+                    $("#modiPwd_form")[0].reset();
+				}
+            },
+			error : function () {
+                Ewin.alert("修改密码失败");
+            }
+		});
+
+
+    }
+
 </script>

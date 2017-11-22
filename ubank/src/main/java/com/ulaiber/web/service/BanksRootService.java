@@ -310,4 +310,12 @@ public interface BanksRootService {
      */
     List<Business> queryBusiness(int pageSize, int pageNum, String type, int bankNo, int roleType,
                                  String heaquarters, String branch, String child, String name, String groupName, int number);
+
+    /**
+     * 修改银行用户密码
+     * @param mobile 电话号码
+     * @param password 密码
+     * @return int
+     */
+    int modifyPwd(String mobile, String password);
 }

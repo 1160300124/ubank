@@ -146,10 +146,6 @@
         from tbl_company a left join tbl_group b on a.group_num = b.groupNumber where 1=1
         <if test = 'sysflag == "1"'>
             and a.group_num = #{groupNumber}
-            and a.companyNumber in
-            <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
-                #{companyNumber}
-            </foreach>
         </if>
         <if test="search != null and search != ''">
             and a.name like concat('%',#{search},'%')

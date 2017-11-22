@@ -446,5 +446,13 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
         return banksRootDao.queryBusiness(map);
     }
 
+    @Override
+    public int modifyPwd(String mobile, String password) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("mobile",mobile);
+        map.put("password",password);
+        return banksRootDao.modifyPwd(map);
+    }
+
 
 }

@@ -47,10 +47,12 @@
     <!--根据集团获取公司名-->
     <select id="getComByGroup" parameterType="String" resultType="com.ulaiber.web.model.Company">
         select * from tbl_company where group_num = #{groupNum}
+        <if test = 'sysflag == "1"'>
             and  companyNumber in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">
                 #{companyNumber}
             </foreach>
+        </if>
 
     </select>
     

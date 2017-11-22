@@ -16,6 +16,11 @@
           WHERE a.disabled = 0 and a.mobile = #{mobile}
     </select>
 
+    <!--修改银行用户密码-->
+    <update id="modifyPwd" parameterType="Map">
+        UPDATE tbl_bank_users SET password = #{password} where mobile = #{mobile}
+    </update>
+
     <!--根据角色名获取银行管理页-->
     <select id="getBankMenuByUser" parameterType="String" resultType="com.ulaiber.web.model.Menu">
         SELECT a.id , a.NAME , a.url , a.CODE , a.father , a.icon , a.sorting

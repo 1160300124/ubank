@@ -151,3 +151,5 @@ a:active, a:hover, a:focus, a:visited {
 .check-form .base-right-btn,.check-form .toggle-form{display:block;}
 .icon-delete{position:relative;display: inline-block;width: 18px;height: 18px;border-radius: 9px;background-color:#000;cursor: pointer;}
 .icon-delete:after {content: '一';height: 18px;line-height: 18px;text-align: center;width: 18px;display: block;font-weight: 700;color: #fff;}
+
+.line{border-bottom: 1px solid #e5e5e5;}

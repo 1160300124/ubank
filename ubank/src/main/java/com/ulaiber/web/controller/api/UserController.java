@@ -93,55 +93,63 @@ public class UserController extends BaseController{
 				logger.error("register failed: mobile is already exists.");
 				return retInfo;
 			}
-			// 0 上海银行二类户
-			if(bank.getType() == 0){
-
-				//注册二类户
-				ResultInfo info = reigsterAcc(user,file,request);
-//				ResultInfo ri = ShangHaiAccount.register(param);
-//				logger.info(">>>>>>>>>> 注册结果为：" + ri);
-//				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-//				logger.info(">>>>>>>>>resultMap is :" + resultMap);
-//				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
-//				status = (String) resultMap.get("status");
-//				if(!"0000".equals(status)){
-//					retInfo.setCode(IConstants.QT_CODE_ERROR);
-//					retInfo.setMessage(sa.getServerStatusCode());
-//					retInfo.setData(status);
-//					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
-//					return retInfo;
-//				}
-//				String SubAcctNo = sa.getSubAcctNo();
-//				String EacctNo = sa.getEacctNo();
-//				//上传图片到sftp服务器上
-//				ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
-//				if(uploadResult.getCode() != 1000){
-//					retInfo.setCode(IConstants.QT_CODE_ERROR);
-//					retInfo.setMessage("上传图片失败");
-//					logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
-//					return retInfo;
-//				}
-				if(info.getCode() == 1000){
-					Map<String,Object> map = (Map<String, Object>) info.getData();
-					SecondAcount sa = (SecondAcount) map.get("sa");
-					status = (String) map.get("status");
-					//新增用户权限层级信息
-					user.setBank(bank);
-					sa.setCreateDate(SDF.format(new Date()));
-					long bankNo = Long.parseLong(bank.getBankNo());
-					String bankCardNo = user.getBankCardNo();
-					int type = bank.getType();
-					int save = userService.save(user,code,sa,bankNo,bankCardNo,type);
-					if(save == 0){
-						retInfo.setCode(IConstants.QT_CODE_ERROR);
-						retInfo.setMessage("注册失败");
-						retInfo.setData(status);
-						logger.error(">>>>>>>>>>插入用户信息异常");
-						return retInfo;
-					}
-				}
-
+			int save = userService.save(user,code);
+			if(save == 0){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("注册失败");
+				retInfo.setData(status);
+				logger.error(">>>>>>>>>>插入用户信息异常");
+				return retInfo;
 			}
+			// 0 上海银行二类户
+//			if(bank.getType() == 0){
+//
+//				//注册上海二类户
+//				//ResultInfo info = reigsterAcc(user,file,request);
+////				ResultInfo ri = ShangHaiAccount.register(param);
+////				logger.info(">>>>>>>>>> 注册结果为：" + ri);
+////				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
+////				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+////				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
+////				status = (String) resultMap.get("status");
+////				if(!"0000".equals(status)){
+////					retInfo.setCode(IConstants.QT_CODE_ERROR);
+////					retInfo.setMessage(sa.getServerStatusCode());
+////					retInfo.setData(status);
+////					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+////					return retInfo;
+////				}
+////				String SubAcctNo = sa.getSubAcctNo();
+////				String EacctNo = sa.getEacctNo();
+////				//上传图片到sftp服务器上
+////				ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
+////				if(uploadResult.getCode() != 1000){
+////					retInfo.setCode(IConstants.QT_CODE_ERROR);
+////					retInfo.setMessage("上传图片失败");
+////					logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
+////					return retInfo;
+////				}
+//				if(info.getCode() == 1000){
+//					Map<String,Object> map = (Map<String, Object>) info.getData();
+//					SecondAcount sa = (SecondAcount) map.get("sa");
+//					status = (String) map.get("status");
+//					//新增用户权限层级信息
+//					user.setBank(bank);
+//					sa.setCreateDate(SDF.format(new Date()));
+//					long bankNo = Long.parseLong(bank.getBankNo());
+//					String bankCardNo = user.getBankCardNo();
+//					int type = bank.getType();
+//					int save = userService.save(user,code);
+//					if(save == 0){
+//						retInfo.setCode(IConstants.QT_CODE_ERROR);
+//						retInfo.setMessage("注册失败");
+//						retInfo.setData(status);
+//						logger.error(">>>>>>>>>>插入用户信息异常");
+//						return retInfo;
+//					}
+//				}
+//
+//			}
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("注册成功");
 				retInfo.setData(status);
@@ -156,7 +164,61 @@ public class UserController extends BaseController{
 	}
 
 	/**
-	 * 注册二类户
+	 * 激活钱包
+	 * @param user 用户信息
+	 * @param file 图片
+	 * @param bank 银行卡信息
+	 * @param request
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "Activation", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo activation(User user,int userId,MultipartFile[] file,Bank bank,HttpServletRequest request){
+		logger.info(">>>>>>>>>>开始激活钱包操作");
+		ResultInfo resultInfo = new ResultInfo();
+		String status = "";
+		try {
+			if(bank.getType() == 0){
+				//注册上海银行二类户
+				ResultInfo info = reigsterAcc(user,file,request);
+				//新增数据库信息
+				if(info.getCode() != 1000){
+					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setMessage("激活失败");
+					logger.error(">>>>>>>>>>激活钱包失败");
+				}
+				Map<String,Object> map = (Map<String, Object>) info.getData();
+				SecondAcount sa = (SecondAcount) map.get("sa");
+				status = (String) map.get("status");
+				Map<String,Object> param = new HashMap<>();
+				param.put("sa",sa);
+				param.put("bankNo",Long.parseLong(bank.getBankNo()));
+				param.put("bankCardNo",user.getBankCardNo());
+				param.put("type",bank.getType());
+				param.put("userid",userId);
+				int result = userService.addAccInfo(param);
+				if(result <= 0){
+					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setMessage("激活失败");
+					logger.error(">>>>>>>>>>插入用户信息异常");
+				}
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("激活成功");
+			Map<String,Object> map = new HashMap<>();
+			map.put("status",status);
+			resultInfo.setData(map);
+			logger.error(">>>>>>>>>>激活成功");
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("激活失败");
+			logger.error(">>>>>>>>>>"+user.getUserName()+"激活钱包失败",e);
+		}
+		return resultInfo;
+	}
+
+	/**
+	 * 注册上海银行二类户
 	 * @param user 用户信息
 	 * @param file 图片
 	 * @param request
@@ -213,56 +275,7 @@ public class UserController extends BaseController{
 		return retInfo;
 	}
 
-	/**
-	 * 激活钱包
-	 * @param user 用户信息
-	 * @param file 图片
-	 * @param bank 银行卡信息
-	 * @param request
-	 * @return ResultInfo
-	 */
-	@RequestMapping(value = "Activation", method = RequestMethod.POST)
-	@ResponseBody
-	public ResultInfo activation(User user,int userId,MultipartFile[] file,Bank bank,HttpServletRequest request){
-		logger.info(">>>>>>>>>>开始激活钱包操作");
-		ResultInfo resultInfo = new ResultInfo();
-		String status = "";
-		try {
-			//注册二类户
-			ResultInfo info = reigsterAcc(user,file,request);
-			//新增数据库信息
-			if(info.getCode() != 1000){
-				resultInfo.setCode(IConstants.QT_CODE_ERROR);
-				resultInfo.setMessage("激活失败");
-				logger.error(">>>>>>>>>>激活钱包失败");
-			}
-			Map<String,Object> map = (Map<String, Object>) info.getData();
-			SecondAcount sa = (SecondAcount) map.get("sa");
-			status = (String) map.get("status");
-			//SecondAcount sa = (SecondAcount) info.getData();
-			long bankNo = Long.parseLong(bank.getBankNo());
-			String bankCardNo = user.getBankCardNo();
-			int type = bank.getType();
-			int userid = userId;
-			int result = userService.addAccInfo(sa,bankNo,bankCardNo,type,userid);
-			if(result <= 0){
-				resultInfo.setCode(IConstants.QT_CODE_ERROR);
-				resultInfo.setMessage("激活失败");
-				logger.error(">>>>>>>>>>插入用户信息异常");
-			}
-			resultInfo.setCode(IConstants.QT_CODE_OK);
-			resultInfo.setMessage("激活成功");
-			resultInfo.setData(status);
-			logger.error(">>>>>>>>>>激活成功");
-		}catch (Exception e){
-			resultInfo.setCode(IConstants.QT_CODE_ERROR);
-			resultInfo.setMessage("激活失败");
-			logger.error(">>>>>>>>>>"+user.getUserName()+"激活钱包失败",e);
-		}
-		return resultInfo;
-	}
 
-	
 	/**
 	 * 获取所有用户
 	 * @param request

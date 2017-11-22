@@ -108,7 +108,7 @@ public interface PermissionService {
 
     int setRoleMenuByRoleId( String roleId, String menuId); // 根据角色id，删除对应的菜单
 
-    List<Company> getComByGroup(String groupNum, String companyNumber); //根据集团获取公司名
+    List<Company> getComByGroup(String groupNum, String companyNumber, String sysflag); //根据集团获取公司名
 
     List<Departments> getDeptByCom(String comNum); //根据公司编号获取部门
 

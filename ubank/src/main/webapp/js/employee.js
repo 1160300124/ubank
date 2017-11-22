@@ -101,7 +101,10 @@ var EmployeeFun = {
     openAdd : function () {
         flag = 0;
         $(".modal-title").html("新增");
+        $("#emp_select").empty();
+        $("#emp_select_dept").empty();
         $("#employee_modal").modal("show");
+
     },
     //弹出框关闭监听事件
     emp_listening : function () {
@@ -119,7 +122,8 @@ var EmployeeFun = {
             type : 'post',
             data:  {
                 "groupNum" : groupNum,
-                companyNumber : COMPANYNUMBER
+                "companyNumber" : COMPANYNUMBER,
+                "sysflag" : SYSFLAG
             },
             success : function (data) {
                 if(data.length <= 0){
@@ -365,7 +369,7 @@ var EmployeeFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
-        this.emp_queryAllCom(); //加载公司信息
+        //this.emp_queryAllCom(); //加载公司信息
         this.emp_queryAllDept(); //加载部门信息
         $("input[name=id]").val(row[0].id);
         $("input[name=mobile]").val(row[0].mobile);
@@ -374,6 +378,8 @@ var EmployeeFun = {
         $("input[name=cardNo]").val(row[0].cardNo);
         $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
         $("#emp_select").find("option[value="+row[0].companyNumber+"]").prop("selected","selected");
+        var option = "<option value='"+row[0].companyNumber+"'>"+row[0].com_name+"</option>";
+        $("#emp_select").html(option);
         if(row[0].dept_number != ""){
             $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
         }
@@ -393,6 +399,7 @@ var EmployeeFun = {
             async : false,
             data : {
                 "groupNumber" : GROUPNUMBER,
+                companyNumber : COMPANYNUMBER,
                 "sysflag" : SYSFLAG
             },
             success : function (data) {

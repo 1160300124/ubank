@@ -1,6 +1,7 @@
 package com.ulaiber.web.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
@@ -9,13 +10,10 @@ public interface UserService {
 	
 	/**
 	 * 新增用户
-	 *  @param user User
-	 * @param sa
-     * @param bankNo
-     * @param bankCardNo @return boolean true/flase
-     * @param type
+     * @param user User
+     *
      */
-	int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo, int type);
+	int save(User user, String code);
 	
 	/**
 	 * 更新ticket和token
@@ -176,12 +174,16 @@ public interface UserService {
 
 	/**
 	 * 激活后，新增二类户信息
-	 * @param sa 二类户信息
-	 * @param bankNo 银行编号
-	 * @param bankCardNo 银行卡号
-	 * @param type 银行类型
-	 * @param userid 用户ID
+	 * @param param
 	 * @return int
 	 */
-    int addAccInfo(SecondAcount sa, long bankNo, String bankCardNo, int type, int userid);
+    int addAccInfo(Map<String,Object> param);
+
+	/**
+	 * 修改密码
+	 * @param mobile 电话号码
+	 * @param password 密码
+	 * @return int
+	 */
+	int modifyPwd(String mobile, String password);
 }

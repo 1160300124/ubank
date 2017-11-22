@@ -66,7 +66,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public int save(User user, String code, SecondAcount sa, long bankNo, String bankCardNo, int type) {
+	public int save(User user, String code) {
 		user.setRole_id(0);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
@@ -76,7 +76,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 		if(result == 0){
 			return result;
 		}
-		sa.setUserid(user.getId());
 		//根据邀请码获取公司信息
 		Company company =  permissionDao.getComAndGroupByCode(code);
 		if(StringUtil.isEmpty(company)){
@@ -88,30 +87,37 @@ public class UserServiceImpl extends BaseService implements UserService {
 		map.put("group_num" ,company.getGroup_num());
 		//给注册用户分配公司和集团
 		int result2 = permissionDao.insertRoots(map);
-		//新增用户二类账户信息
-		int result3 = mapper.insertSecondAccount(sa);
-		if(result3 == 0){
-			return result3;
-		}
-		int userid = (int) user.getId();
-		//新增用户绑定银行卡信息
-		Map<String,Object> paraMap = new HashMap<>();
-		paraMap.put("userid",userid);
-		paraMap.put("bankNo",bankNo);
-		paraMap.put("bankCardNo",bankCardNo);
-		paraMap.put("type",type);
-		int result4 = mapper.insertUserToBank(paraMap);
-		if(result4 == 0){
-			return result4;
-		}
-		return result4;
+//		//新增用户二类账户信息
+		//sa.setUserid(user.getId());
+//		int result3 = mapper.insertSecondAccount(sa);
+//		if(result3 == 0){
+//			return result3;
+//		}
+//		int userid = (int) user.getId();
+//		//新增用户绑定银行卡信息
+//		Map<String,Object> paraMap = new HashMap<>();
+//		paraMap.put("userid",userid);
+//		paraMap.put("bankNo",bankNo);
+//		paraMap.put("bankCardNo",bankCardNo);
+//		paraMap.put("type",type);
+//		int result4 = mapper.insertUserToBank(paraMap);
+//		if(result4 == 0){
+//			return result4;
+//		}
+		return result2;
 	}
 
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public int addAccInfo(SecondAcount sa, long bankNo, String bankCardNo, int type, int userid) {
+	public int addAccInfo(Map<String,Object> param) {
+		SecondAcount sa = (SecondAcount) param.get("sa");
+		long bankNo = (long) param.get("bankNo");
+		String bankCardNo = (String) param.get("bankCardNo");
+		int type = (int) param.get("type");
+		int userid = (int) param.get("userid");
 		//新增用户二类账户信息
+		sa.setUserid(userid);
 		int result3 = mapper.insertSecondAccount(sa);
 		if(result3 == 0){
 			return result3;
@@ -129,7 +135,16 @@ public class UserServiceImpl extends BaseService implements UserService {
 		return result4;
 	}
 
-	@Override
+    @Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int modifyPwd(String mobile, String password) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("mobile",mobile);
+		map.put("password",password);
+        return mapper.modifyPwd(map);
+    }
+
+    @Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
 

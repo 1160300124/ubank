@@ -339,4 +339,11 @@ public interface BanksRootDao {
      * @return Business
      */
     List<Business> queryBusiness(Map<String, Object> map);
+
+    /**
+     * 修改银行用户密码
+     * @param map
+     * @return int
+     */
+    int modifyPwd(Map<String, Object> map);
 }

@@ -149,7 +149,7 @@
 
 	<!--获取二类帐户信息-->
 	<select id="getSecondAccountByUserId" parameterType="int" resultType="com.ulaiber.web.model.SecondAccountAO">
-		SELECT a.*,b.bankNo,b.bankCardNo,d.name as bankName FROM tbl_secondAccount a
+		SELECT a.*,b.bankNo,b.bankCardNo,d.name as bankName,d.type  FROM tbl_secondAccount a
 		left join tbl_userToBank b on a.userid = b.userid
 		left join tbl_bindBank d on b.bankNo = d.bankNo
 			where b.disabled = 0 and a.userid = #{userid}
@@ -179,5 +179,10 @@
 	<!--根据用户ID修改银行卡预留电话-->
 	<update id="modifyReserveMobile" parameterType="Map">
 		update tbl_users set reserve_mobile = #{newReserveMobile} where user_id = #{userid}
+	</update>
+
+	<!--修改密码-->
+	<update id="modifyPwd" parameterType="Map">
+		UPDATE tbl_users SET  login_password = #{password} where mobile = #{mobile}
 	</update>
 </mapper>

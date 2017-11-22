@@ -14,15 +14,10 @@ import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.StringUtil;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -134,7 +129,9 @@ public class BankController extends BaseController {
 				if(!data.getStatusCode().equals("0000")){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage(data.getServerStatusCode());
-					resultInfo.setData(status);
+					Map<String,Object> param = new HashMap<>();
+					param.put("status",status);
+					resultInfo.setData(param);
 					logger.info(">>>>>>>>>>>>改绑失败");
 					return resultInfo;
 				}
@@ -161,7 +158,9 @@ public class BankController extends BaseController {
 					return resultInfo;
 				}
 				resultInfo.setCode(IConstants.QT_CODE_OK);
-				resultInfo.setData(status);
+				Map<String,Object> param = new HashMap<>();
+				param.put("status",status);
+				resultInfo.setData(param);
 				resultInfo.setMessage("改绑成功");
 				logger.info(">>>>>>>>>>>>改绑成功");
 			}
@@ -256,7 +255,9 @@ public class BankController extends BaseController {
 				if(!"0000".equals(status)){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage(withd.getServerStatusCode());
-					resultInfo.setData(status);
+					Map<String,Object> param = new HashMap<>();
+					param.put("status",status);
+					resultInfo.setData(param);
 					logger.info(">>>>>>>>>>上海银行二类户提现失败，银行卡号为"+withd.getBindCardNo());
 					return resultInfo;
 				}
@@ -299,7 +300,9 @@ public class BankController extends BaseController {
 				}
 				resultInfo.setCode(IConstants.QT_CODE_OK);
 				resultInfo.setMessage("提现成功");
-				resultInfo.setData(status);
+				Map<String,Object> param = new HashMap<>();
+				param.put("status",status);
+				resultInfo.setData(param);
 				logger.info(">>>>>>>>>>流水号为："+withd.getRqUID()+"的上海二类户提现成功");
 			}catch(Exception e){
 				resultInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -359,7 +362,9 @@ public class BankController extends BaseController {
 							if(!"0000".equals(status)){
 								resultInfo.setCode(IConstants.QT_CODE_ERROR);
 								resultInfo.setMessage((String) tradingMap.get("ServerStatusCode"));
-								resultInfo.setData(status);
+								Map<String,Object> param = new HashMap<>();
+								param.put("status",status);
+								resultInfo.setData(param);
 								logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
 								return resultInfo;
 							}
@@ -387,7 +392,9 @@ public class BankController extends BaseController {
 							if(re == 0 ){
 								resultInfo.setCode(IConstants.QT_CODE_ERROR);
 								resultInfo.setMessage("查询账单失败");
-								resultInfo.setData(status);
+								Map<String,Object> param = new HashMap<>();
+								param.put("status",status);
+								resultInfo.setData(param);
 								logger.info(">>>>>>>>>>上海银行二类户交易状态查询失败，二类户账号为"+ SubAcctNo);
 								return resultInfo;
 							}

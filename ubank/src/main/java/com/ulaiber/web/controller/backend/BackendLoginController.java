@@ -137,4 +137,45 @@ public class BackendLoginController extends BaseController {
 		return menu;
 	};
 
+	/**
+	 * 修改密码
+	 * @param mobile 电话号码
+	 * @param newPwd 新密码
+	 * @param oldPwd 旧密码
+	 * @return
+	 */
+	@RequestMapping(value = "modifyPassword")
+	@ResponseBody
+	public ResultInfo modifyPWD(@Param("mobile") String mobile,@Param("newPwd") String newPwd,@Param("oldPwd") String oldPwd){
+		logger.info(">>>>>>>>>>开始修改登录密码");
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+			//根据当前用户电话查询登录密码
+			User user = userService.findByMobile(mobile);
+			oldPwd = MD5Util.getEncryptedPwd(oldPwd);
+			if (!user.getLogin_password().equals(oldPwd)){
+				logger.error(">>>>>>>>>>旧密码错误");
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("旧密码错误");
+				return resultInfo;
+			}
+			//加密
+			String password = MD5Util.getEncryptedPwd(newPwd);
+			//修改密码
+			int result = userService.modifyPwd(mobile,password);
+			if(result <= 0){
+				logger.error(">>>>>>>>>>手机号为："+mobile+"的用户修改密码失败");
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("修改密码失败");
+				return resultInfo;
+			}
+			logger.error(">>>>>>>>>>手机号为："+mobile+"的用户修改密码成功");
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("修改密码成功");
+		}catch (Exception e){
+			logger.error(">>>>>>>>>>修改登录密码失败",e);
+		}
+		return resultInfo;
+	}
+
 }

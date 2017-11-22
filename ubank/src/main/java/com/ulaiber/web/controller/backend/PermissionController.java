@@ -1020,10 +1020,11 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "getComByGroup", method = RequestMethod.POST)
     @ResponseBody
-    public List<Company> getComByGroup(@Param("groupNum") String groupNum,@Param("companyNumber") String companyNumber){
+    public List<Company> getComByGroup(@Param("groupNum") String groupNum,@Param("companyNumber") String companyNumber,
+                                       @Param("sysflag") String sysflag){
         List<Company> list = new ArrayList<>();
         try {
-             list =  permissionService.getComByGroup(groupNum,companyNumber);
+             list =  permissionService.getComByGroup(groupNum,companyNumber,sysflag);
         }catch (Exception e){
             logger.error(">>>>>>>>>>根据集团获取公司名异常：" ,e);
         }

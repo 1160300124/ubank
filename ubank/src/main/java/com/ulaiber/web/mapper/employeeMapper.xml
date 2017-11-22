@@ -52,12 +52,12 @@
         select d.bankName ,e.companyNumber,a.role_id,a.mobile,a.cardNo,
         e.dept_number,a.user_id as id,a.user_name as userName,g.bankNo,g.bankCardNo,a.entryDate,a.leaveDate,
         b.name as com_name,c.name as dept_name,e.groupNumber , f.role_name from tbl_users a
-        left join tbl_userToBank g on a.user_id = g.userid
+        left join (select * from tbl_userToBank where disabled = 0) g on a.user_id = g.userid
         left join (select b.bankNo,b.name as bankName from tbl_banks a inner join tbl_bindBank b on a.type = b.type ) d on g.bankNo = d.bankNo
         left join tbl_roots e on a.user_id = e.userid
         LEFT JOIN tbl_company b on e.companyNumber = b.companyNumber
         left join tbl_departments c on e.dept_number = c.dept_number
-        left join tbl_roles f on a.role_id = f.role_id where a.disabled = '0' and g.disabled = 0
+        left join tbl_roles f on a.role_id = f.role_id where a.disabled = '0'
         <if test="search != null and search != ''">
             and  a.user_name like concat('%',#{search},'%') or a.cardNo like concat('%',#{search},'%')
         </if>
@@ -67,7 +67,7 @@
                  #{companyNumber}
             </foreach>
         </if>
-        ORDER BY a.user_id limit #{pageNum},#{pageSize}
+        ORDER BY a.user_id DESC limit #{pageNum},#{pageSize}
     </select>
 
     <!-- 根据员工编号删除对应的员工-->
