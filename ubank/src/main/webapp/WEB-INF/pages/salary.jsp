@@ -27,7 +27,7 @@
 			<th data-field="totalAmount">发放金额</th>
 			<th data-field="status" data-formatter="statusFormatter">发放状态</th>
 			<th data-field="approveNames">审批人</th>
-			<th data-field="operateName">操作人</th>
+			<th data-field="operateUserName">操作人</th>
 			<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 		</tr>
 		</thead>

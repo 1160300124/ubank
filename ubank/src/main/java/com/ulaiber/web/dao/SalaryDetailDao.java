@@ -40,14 +40,14 @@ public interface SalaryDetailDao {
 	 * @param sid
 	 * @return
 	 */
-	List<SalaryDetail> getDetailsBySid(long sid);
+	List<SalaryDetail> getDetailsBySid(String sid);
     
     /**
      * 根据工资流水id查询记录条数
      * @param sid
      * @return
      */
-    int getTotalBySid(long sid);
+    int getTotalBySid(String sid);
 
     /**
      * 根据id批量删除
@@ -55,7 +55,7 @@ public interface SalaryDetailDao {
      * @param sids
      * @return
      */
-    int batchDeleteSalaryDetails(List<Long> sids);
+    int batchDeleteSalaryDetails(List<String> sids);
     
     /**
      * 根据id和月份获取用户的工资详细

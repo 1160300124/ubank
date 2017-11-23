@@ -222,12 +222,32 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 	}
 	
 	@Override
+	public List<String> getWorkdaysForDate(AttendanceRule rule, String dateBegin, String dateEnd) {
+		//获取指定时间段的天数
+		List<String> days = DateTimeUtil.getDaysFromDate(dateBegin, dateEnd);
+			
+		return getWorkdays(rule, dateBegin, days);
+	}
+	
+	@Override
 	public List<String> getWorkdaysForMonth(long userId, String month) {
 		AttendanceRule rule = ruleDao.getRuleByUserId(userId);
 		if (null == rule){
 			logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
 			return null;
 		}
+		//指定月份为空则获取当前月份
+		if (StringUtils.isEmpty(month)){
+			month = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
+		}
+		//获取指定月份的天数
+		List<String> days = DateTimeUtil.getDaysFromMonth(month);
+			
+		return getWorkdays(rule, month, days);
+	}
+	
+	@Override
+	public List<String> getWorkdaysForMonth(AttendanceRule rule, String month) {
 		//指定月份为空则获取当前月份
 		if (StringUtils.isEmpty(month)){
 			month = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);

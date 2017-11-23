@@ -28,7 +28,7 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 	}
 
 	@Override
-	public List<SalaryDetail> getDetailsBySid(long sid, int limit, int offset, String orderby, String search) {
+	public List<SalaryDetail> getDetailsBySid(String sid, int limit, int offset, String orderby, String search) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("sid", sid);
 		params.put("limit", limit);
@@ -39,19 +39,19 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 	}
 	
 	@Override
-	public List<SalaryDetail> getDetailsBySid(long sid) {
+	public List<SalaryDetail> getDetailsBySid(String sid) {
 		return mapper.getDetailsBySid(sid);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean batchDeleteSalaryDetails(List<Long> sids) {
+	public boolean batchDeleteSalaryDetails(List<String> sids) {
 		
 		return mapper.batchDeleteSalaryDetails(sids) > 0;
 	}
 
 	@Override
-	public int getTotalBySid(long sid) {
+	public int getTotalBySid(String sid) {
 		return mapper.getTotalBySid(sid);
 	}
 

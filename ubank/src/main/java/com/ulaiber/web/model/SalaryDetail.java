@@ -10,12 +10,12 @@ public class SalaryDetail {
 	/**
 	 * 流水编号
 	 */
-	private long did;
+	private String did;
 	
 	/**
 	 * 工资流水号  对应salary的sid
 	 */
-	private long sid;
+	private String sid;
 	
 	/**
 	 * 收款人ID
@@ -31,6 +31,11 @@ public class SalaryDetail {
 	 * 身份证号
 	 */
 	private String cardNo;
+	
+	/**
+	 * 平台理财专属子账户
+	 */
+	private String subAcctNo;
 	
 	/**
 	 * 税前工资
@@ -113,28 +118,38 @@ public class SalaryDetail {
 	private double salaries;
 	
 	/**
-	 * 工资发放时间
+	 * 创建时间
 	 */
-	private String salaryDate;
+	private String createDate;
+	
+	/**
+	 * 更新时间
+	 */
+	private String updateTime;
 	
 	/**
 	 * 备注
 	 */
 	private String remark;
+	
+	/**
+	 * 状态 0待发放  1成功  2失败
+	 */
+	private String status;
 
-	public long getDid() {
+	public String getDid() {
 		return did;
 	}
 
-	public void setDid(long did) {
+	public void setDid(String did) {
 		this.did = did;
 	}
 
-	public long getSid() {
+	public String getSid() {
 		return sid;
 	}
 
-	public void setSid(long sid) {
+	public void setSid(String sid) {
 		this.sid = sid;
 	}
 
@@ -160,6 +175,14 @@ public class SalaryDetail {
 
 	public void setCardNo(String cardNo) {
 		this.cardNo = cardNo;
+	}
+
+	public String getSubAcctNo() {
+		return subAcctNo;
+	}
+
+	public void setSubAcctNo(String subAcctNo) {
+		this.subAcctNo = subAcctNo;
 	}
 
 	public double getPreTaxSalaries() {
@@ -290,12 +313,20 @@ public class SalaryDetail {
 		this.salaries = salaries;
 	}
 
-	public String getSalaryDate() {
-		return salaryDate;
+	public String getCreateDate() {
+		return createDate;
 	}
 
-	public void setSalaryDate(String salaryDate) {
-		this.salaryDate = salaryDate;
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}
 
 	public String getRemark() {
@@ -304,6 +335,14 @@ public class SalaryDetail {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }

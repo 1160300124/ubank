@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -47,6 +48,8 @@ import com.ulaiber.web.utils.ObjUtil;
  */
 @Service
 public class CutPaymentServiceImpl extends BaseService implements CutPaymentService {
+	
+	private static Logger logger = Logger.getLogger(CutPaymentServiceImpl.class);
 	
 	@Autowired
 	private UserService userService;
@@ -88,8 +91,14 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 		//获取公司的所有用户
 		List<User> users = userService.getUsersByComNum(companyId, null);
 		for (User user : users){
+			//考勤规则
+			AttendanceRule attRule = ruleDao.getRuleByUserId(user.getId());
+			if (null == attRule){
+				logger.error("用户 {" + user.getId() + "}没有设置考勤规则，请先设置。");
+				continue;
+			}
 			//应工作天数
-			List<String> workdays = statisticService.getWorkdaysForDate(user.getId(), DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
+			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
 			if (workdays == null){
 				continue;
 			}
@@ -105,8 +114,6 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 			double noClockCutAmount = 0;
 			//天工资
 			double daySalaries = MathUtil.div(user.getSalaries(), workdays.size());
-			//考勤规则
-			AttendanceRule attRule = ruleDao.getRuleByUserId(user.getId());
 			//实际工作天数
 			List<String> realWorkdays = new ArrayList<String>();
 			//忘打卡次数
@@ -209,6 +216,12 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				money =  MathUtil.formatDouble(MathUtil.mul(money, daySalaries) , 1);
 			}
 			for (String noClockDay : noClockWorkdays){
+				//在入职日期之前不算旷工或离职日期之后不算旷工
+				if (StringUtils.isNotEmpty(user.getEntryDate()) && noClockDay.compareTo(user.getEntryDate()) < 0 
+						|| StringUtils.isNotEmpty(user.getLeaveDate()) && noClockDay.compareTo(user.getLeaveDate()) > 0){
+					continue;
+				}
+				
 				//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
 				LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(user.getId(), noClockDay);
 				if (leaveRecord != null){
@@ -241,7 +254,6 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 			attCutMap.put("noClockCutPayment", MathUtil.formatDouble(noClockCutAmount, 1));
 			attCutMap.put("totalCutAmount", MathUtil.formatDouble(totalCutAmount, 1));
 			cutMap.put(user.getId(), attCutMap);
-			
 		}
 		
 		data.put("data", cutPayments);

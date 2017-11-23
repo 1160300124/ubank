@@ -33,8 +33,13 @@ public class SPDBUtil {
 	 */
 	private static Logger logger = Logger.getLogger(SPDBUtil.class);
 	
+	//BIsafe环境IP(阿里云内网IP)
 	private static String BISAFE_IP = "192.168.1.242";
+	
+	//签名服务端口
 	private static String BISAFE_SIGN_PORT = "4437";
+	
+	//HTTP服务端口
 	private static String BISAFE_HTTP_PORT = "5777";
 	
 	//单位编号
@@ -119,7 +124,7 @@ public class SPDBUtil {
 		head.append("<transCode>" + transCode + "</transCode>");
 		head.append("<signFlag>"  + signFlag  + "</signFlag>");
 		head.append("<masterID>"  + masterID  + "</masterID>");
-		head.append("<packetID>"  + packetID + "</packetID>");
+		head.append("<packetID>"  + packetID  + "</packetID>");
 		head.append("<timeStamp>" + timeStamp + "</timeStamp>");
 		head.append("</head>");
 

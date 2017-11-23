@@ -30,7 +30,6 @@ import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.Salary;
 import com.ulaiber.web.model.SalaryDetail;
 import com.ulaiber.web.model.User;
-import com.ulaiber.web.service.ManagerService;
 import com.ulaiber.web.service.SalaryDetailService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
@@ -57,9 +56,6 @@ public class ManagerController extends BaseController{
 	
 	@Autowired
 	private SalaryDetailService salaryDetailService;
-	
-	@Autowired
-	private ManagerService managerService;
 	
 	@RequestMapping("tomanager")
 	public String tomanager(HttpServletRequest request, HttpServletResponse response){
@@ -212,7 +208,7 @@ public class ManagerController extends BaseController{
 			info.setCode(IConstants.QT_GET_BALANCE_ERROR);
 			return info;
 		}
-    	sa.setOperateName(currentUser.getUserName());
+    	sa.setOperateUserName(currentUser.getUserName());
     	sa.setSalaryCreateTime(DateTimeUtil.date2Str(new Date()));
     	String bespearkDate = sa.getSalaryDate();
     	int totalNumber = sa.getTotalNumber();
@@ -242,10 +238,6 @@ public class ManagerController extends BaseController{
 //    			logger.info("getPayResult failed.");
 //    		}
     		
-			if (managerService.save(sa, details)){
-				info.setCode(IConstants.QT_CODE_OK);
-				logger.info("save salary and salary detail successed.");
-			}
 			payMap.remove(currentUser.getId() + "");
     	} else {
 			info.setCode(IConstants.QT_CODE_ERROR);

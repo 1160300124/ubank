@@ -254,8 +254,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				att.setClockOffRemark(isOutClock ? remark : null);
 			}
 			//当前时间大于最早上班打卡时间且小于上班打卡时间----正常打卡
-			else if (datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(clockOnTime) <= 0)
-			{
+			else if (datetime.compareTo(dateBegin) >= 0 && datetime.compareTo(clockOnTime) <= 0){
 				att.setClockOnDateTime(datetime);
 				att.setClockOnDevice(device);
 				att.setClockOnLocation(location);
@@ -321,9 +320,19 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		if (flag){
 			info.setCode(IConstants.QT_CODE_OK);
-			att.setCompany(null);
+			info.setMessage("新增或更新成功。");
+			Map<String, Object> data = new HashMap<String, Object>();
+			if (StringUtils.equals(att.getRevokeType(), "1")){
+				data.put("clockOnTime", rule.getClockOnTime());
+				data.put("clockOffTime", rule.getClockOffTime());
+			} else {
+				data.put("clockOnTime", "");
+				data.put("clockOffTime", "");
+			}
 			att.setDept(null);
-			info.setData(att);
+			att.setCompany(null);
+			data.put("record", att);
+			info.setData(data);
 		} else{
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("新增或更新失败。");

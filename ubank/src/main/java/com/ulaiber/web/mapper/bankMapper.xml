@@ -136,4 +136,9 @@
 	<update id="updateAccFreeze" parameterType="String">
 		UPDATE tbl_secondAccount SET freeze = '0' WHERE SubAcctNo = #{subAcctNo}
 	</update>
+	
+	<!-- 根据公司编号查询该公司下所有二类户 -->
+	<select id="getSubByCompanyNum" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		select s.userid,s.SubAcctNo from tbl_secondAccount s join tbl_roots r on s.userid=r.userid and r.companyNumber=#{companyNum} 
+	</select>
 </mapper>

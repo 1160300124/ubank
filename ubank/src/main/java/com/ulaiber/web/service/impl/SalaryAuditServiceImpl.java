@@ -69,18 +69,13 @@ public class SalaryAuditServiceImpl extends BaseService implements SalaryAuditSe
             logger.info(">>>>>>>>>>>>>插入审批人失败");
             return 0;
         }
-        String[] salaryArr = salaryAuditVO.getSalary().split(",");
-        List<SalaryRecord> paramList = new ArrayList<>();
-        for (int i = 0 ; i < salaryArr.length ; i++){
-            String[] salary = salaryArr[i].split(":");
-            SalaryRecord vo = new SalaryRecord();
-            vo.setRecordNo(leaveRecord.getId());
-            vo.setUsername(salary[0]);
-            vo.setSalary(Double.parseDouble(salary[1]));
-            paramList.add(vo);
-        }
+        SalaryRecord record = new SalaryRecord();
+        record.setRecordNo(leaveRecord.getId());
+        record.setSalaryId(salaryAuditVO.getSalaryId());
+        record.setTotalNumber(salaryAuditVO.getTotalNumber());
+        record.setTotalAmount(salaryAuditVO.getTotalAmount());
         //新增工资审批记录
-        int result3 = salaryAuditDao.insertSalaryRecord(paramList);
+        int result3 = salaryAuditDao.insertSalaryRecord(record);
         if(result3 <= 0){
             logger.info(">>>>>>>>>>>>插入工资审批记录失败");
         }
@@ -89,11 +84,11 @@ public class SalaryAuditServiceImpl extends BaseService implements SalaryAuditSe
         String mark = "0";  //申请类型
         Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
         StringUtil.sendMessage(map2,reason,mark); //消息推送
-        return result3;
+        return result2;
     }
 
     @Override
-    public List<SalaryRecord> querySalaryByRecordNo(int recordNo) {
+    public SalaryRecord querySalaryByRecordNo(int recordNo) {
         return salaryAuditDao.querySalaryByRecordNo(recordNo);
     }
 }

@@ -28,6 +28,8 @@ import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.SalaryDetailService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
+import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.SPDBUtil;
 
 /** 
  * 工资控制位
@@ -74,16 +76,39 @@ public class SalaryController extends BaseController {
 	@ResponseBody
 	public Map<String, Object> getSalaries(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> data = new HashMap<String, Object>();
-		List<Salary> rules = service.getSalaries(limit, offset, search);
 		int total = service.getTotalNum();
-		data.put("rows", rules);
+		List<Salary> list = service.getSalaries(limit, offset, search);	
+		for (Salary sa : list){
+			if (StringUtils.isNotEmpty(sa.getEntrustSeqNo())){
+				String oldStatus = sa.getStatus();
+				String newStatus = "";
+				if (!StringUtils.equals(oldStatus, "5")){
+					Map<String, Object> params = new HashMap<String, Object>();
+					params.put("seqNo", sa.getEntrustSeqNo());
+					params.put("beginDate", sa.getSalaryDate().replaceAll("-", ""));
+					params.put("endDate", DateTimeUtil.getMonthEnd(sa.getSalaryDate()).replaceAll("-", ""));
+				    newStatus = SPDBUtil.getPayResult(params);
+//				    newStatus = "5";
+					sa.setStatus(newStatus);
+					//if new status != old status 更新工资流水状态
+					if (!StringUtils.equals(oldStatus, newStatus)){
+						service.updateStatusBySeqNo(sa);
+					}
+				}
+				//状态转换
+				String status = StringUtils.isEmpty(newStatus) ? oldStatus : newStatus;
+				sa.setStatus(IConstants.TRANS_STATUS.get(status));
+			}
+		}
+		
+		data.put("rows", list);
 		data.put("total", total);
 		return data;
 	}
 	
 	@RequestMapping(value = "getSalaryDetails", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getSalaryDetails(Long sid, int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
+	public Map<String, Object> getSalaryDetails(String sid, int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
 		Map<String, Object> data = new HashMap<String, Object>();
 		if (sid == null){
 			return data;
@@ -97,7 +122,7 @@ public class SalaryController extends BaseController {
 	
 	@RequestMapping(value = "getSalaryDetailsBySid", method = RequestMethod.GET)
 	@ResponseBody
-	public ResultInfo getSalaryDetailsBySid(Long sid, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo getSalaryDetailsBySid(String sid, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		if (sid == null){
 			return info;
@@ -114,7 +139,8 @@ public class SalaryController extends BaseController {
 		ResultInfo info = new ResultInfo();
 		try {
 			User user = getUserFromSession(request);
-			salary.setOperateName(user.getUserName());
+			salary.setOperateUserId(user.getId());
+			salary.setOperateUserName(user.getUserName());
 			boolean flag = service.save(salary);
 			if (flag){
 				logger.info("保存成功。");
@@ -140,7 +166,8 @@ public class SalaryController extends BaseController {
 		ResultInfo info = new ResultInfo();
 		try {
 			User user = getUserFromSession(request);
-			salary.setOperateName(user.getUserName());
+			salary.setOperateUserId(user.getId());
+			salary.setOperateUserName(user.getUserName());
 			boolean flag = service.update(salary);
 			if (flag){
 				logger.info("保存成功。");
@@ -210,7 +237,7 @@ public class SalaryController extends BaseController {
 	
     @RequestMapping(value = "batchDelete", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo batchDelete(@RequestBody List<Long> sids, HttpServletRequest request, HttpServletResponse response){
+    public ResultInfo batchDelete(@RequestBody List<String> sids, HttpServletRequest request, HttpServletResponse response){
     	
     	ResultInfo info = new ResultInfo();
     	if (null == sids || sids.size() == 0){

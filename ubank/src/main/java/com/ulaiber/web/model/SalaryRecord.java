@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class SalaryRecord implements Serializable {
     private int id;
     private int recordNo;
-    private String username;
-    private double salary;
-    private double totalAmount;
+	private int totalNumber;    //工资总笔数
+    private double totalAmount; //工资总金额
+    private String salaryId;    //工资流水id
 
     public int getId() {
         return id;
@@ -25,31 +25,32 @@ public class SalaryRecord implements Serializable {
         return recordNo;
     }
 
-    public void setRecordNo(int recordNo) {
-        this.recordNo = recordNo;
-    }
+    public int getTotalNumber() {
+		return totalNumber;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setTotalNumber(int totalNumber) {
+		this.totalNumber = totalNumber;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setRecordNo(int recordNo) {
+		this.recordNo = recordNo;
+	}
 
-    public double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(double salary) {
-        this.salary = salary;
-    }
-
-    public double getTotalAmount() {
+	public double getTotalAmount() {
         return totalAmount;
     }
 
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
+
+	public String getSalaryId() {
+		return salaryId;
+	}
+
+	public void setSalaryId(String salaryId) {
+		this.salaryId = salaryId;
+	}
+    
 }

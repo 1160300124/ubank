@@ -10,11 +10,12 @@
 <mapper namespace="com.ulaiber.web.dao.SalaryDetailDao">
 
     <resultMap id="SalaryDetailMap" type="SalaryDetail" >
-    	<id column="did" property="did" jdbcType="BIGINT" />
-    	<result column="sid" property="sid" jdbcType="BIGINT" />
+    	<id column="did" property="did" jdbcType="VARCHAR" />
+    	<result column="sid" property="sid" jdbcType="VARCHAR" />
     	<result column="userId" property="userId" jdbcType="VARCHAR" />
     	<result column="userName" property="userName" jdbcType="VARCHAR" />
     	<result column="cardNo" property="cardNo" jdbcType="VARCHAR" />
+    	<result column="subAcctNo" property="subAcctNo" jdbcType="VARCHAR" />
     	<result column="pre_tax_salaries" property="preTaxSalaries" jdbcType="DOUBLE" />
     	<result column="bonuses" property="bonuses" jdbcType="DOUBLE" />
     	<result column="subsidies" property="subsidies" jdbcType="DOUBLE" />
@@ -31,35 +32,37 @@
     	<result column="personalIncomeTax" property="personalIncomeTax" jdbcType="DOUBLE" />
     	<result column="else_cut_payment" property="elseCutPayment" jdbcType="DOUBLE" />
     	<result column="salaries" property="salaries" jdbcType="DOUBLE" />
+    	<result column="createDate" property="createDate" jdbcType="VARCHAR" />
+    	<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
     	<result column="remark" property="remark" jdbcType="VARCHAR" />
    </resultMap>
    
-  	<!-- 批量插入-->
-    <insert id ="batchSave" parameterType="java.util.List" useGeneratedKeys="true">
-         insert into tbl_salaries_detail(sid, userId, userName, cardNo, pre_tax_salaries, bonuses, subsidies, attendance_cut_payment, 
-         later_cut_payment, leave_early_cut_payment,forget_clock_cut_payment, no_clock_cut_payment, askForLeave_cut_payment,
-         overtime_payment, socialInsurance, publicAccumulationFunds, taxThreshold, personalIncomeTax, else_cut_payment, salaries, remark) values
-         <foreach collection ="list" item="detail" index= "index" separator =",">
-             (#{detail.sid}, #{detail.userId}, #{detail.userName}, #{detail.cardNo}, #{detail.preTaxSalaries}, #{detail.bonuses}, #{detail.subsidies},
-             #{detail.totalCutPayment}, #{detail.laterCutPayment}, #{detail.leaveEarlyCutPayment}, #{detail.forgetClockCutPayment}, #{detail.noClockCutPayment}, 
-             #{detail.askForLeaveCutPayment}, #{detail.overtimePayment}, #{detail.socialInsurance}, #{detail.publicAccumulationFunds}, #{detail.taxThreshold},
-             #{detail.personalIncomeTax}, #{detail.elseCutPayment}, #{detail.salaries}, #{detail.remark})
-         </foreach >
-    </insert >
+ 	<!-- 批量插入-->
+   <insert id ="batchSave" parameterType="java.util.List" useGeneratedKeys="true">
+        insert into tbl_salaries_detail(did, sid, userId, userName, cardNo, subAcctNo, pre_tax_salaries, bonuses, subsidies, attendance_cut_payment, 
+        later_cut_payment, leave_early_cut_payment,forget_clock_cut_payment, no_clock_cut_payment, askForLeave_cut_payment,
+        overtime_payment, socialInsurance, publicAccumulationFunds, taxThreshold, personalIncomeTax, else_cut_payment, salaries, createDate, updateTime, remark, trading) values
+        <foreach collection ="list" item="detail" index= "index" separator =",">
+            (#{detail.did}, #{detail.sid}, #{detail.userId}, #{detail.userName}, #{detail.cardNo}, #{detail.subAcctNo}, #{detail.preTaxSalaries}, #{detail.bonuses}, #{detail.subsidies},
+            #{detail.totalCutPayment}, #{detail.laterCutPayment}, #{detail.leaveEarlyCutPayment}, #{detail.forgetClockCutPayment}, #{detail.noClockCutPayment}, 
+            #{detail.askForLeaveCutPayment}, #{detail.overtimePayment}, #{detail.socialInsurance}, #{detail.publicAccumulationFunds}, #{detail.taxThreshold},
+            #{detail.personalIncomeTax}, #{detail.elseCutPayment}, #{detail.salaries}, #{detail.createDate}, #{detail.updateTime}, #{detail.remark}, 1)
+        </foreach >
+   </insert >
     
-    <update id="batchUpdate"  parameterType="java.util.List">  
-         <foreach collection="list" item="detail" index="index" open="" close="" separator=";">  
-             update tbl_salaries_detail   
-             <set>  
-             	pre_tax_salaries=#{detail.preTaxSalaries}, bonuses=#{detail.bonuses}, subsidies=#{detail.subsidies}, attendance_cut_payment=#{detail.totalCutPayment},
-             	later_cut_payment=#{detail.laterCutPayment}, leave_early_cut_payment=#{detail.leaveEarlyCutPayment}, forget_clock_cut_payment=#{detail.forgetClockCutPayment},
-             	no_clock_cut_payment=#{detail.noClockCutPayment}, askForLeave_cut_payment=#{detail.askForLeaveCutPayment}, overtime_payment=#{detail.overtimePayment},
-             	socialInsurance=#{detail.socialInsurance}, publicAccumulationFunds=#{detail.publicAccumulationFunds}, taxThreshold=#{detail.taxThreshold},
-             	personalIncomeTax= #{detail.personalIncomeTax}, else_cut_payment=#{detail.elseCutPayment}, salaries=#{detail.salaries}, remark=#{detail.remark}
-             </set>  
-             where did=${detail.did}  
-        </foreach>  
-    </update>  
+   <update id="batchUpdate"  parameterType="java.util.List">  
+        <foreach collection="list" item="detail" index="index" open="" close="" separator=";">  
+            update tbl_salaries_detail   
+            <set>  
+            	pre_tax_salaries=#{detail.preTaxSalaries}, bonuses=#{detail.bonuses}, subsidies=#{detail.subsidies}, attendance_cut_payment=#{detail.totalCutPayment},
+            	later_cut_payment=#{detail.laterCutPayment}, leave_early_cut_payment=#{detail.leaveEarlyCutPayment}, forget_clock_cut_payment=#{detail.forgetClockCutPayment},
+            	no_clock_cut_payment=#{detail.noClockCutPayment}, askForLeave_cut_payment=#{detail.askForLeaveCutPayment}, overtime_payment=#{detail.overtimePayment},
+            	socialInsurance=#{detail.socialInsurance}, publicAccumulationFunds=#{detail.publicAccumulationFunds}, taxThreshold=#{detail.taxThreshold},
+            	personalIncomeTax= #{detail.personalIncomeTax}, else_cut_payment=#{detail.elseCutPayment}, salaries=#{detail.salaries}, remark=#{detail.remark}
+            </set>  
+            where did=${detail.did}  
+       </foreach>  
+   </update>  
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getDetailsBySid2" parameterType="Map" resultMap="SalaryDetailMap">
@@ -73,7 +76,7 @@
 		</if>
 	</select>
 	
-	<select id="getDetailsBySid" parameterType="Long" resultMap="SalaryDetailMap">
+	<select id="getDetailsBySid" parameterType="String" resultMap="SalaryDetailMap">
 		select * from tbl_salaries_detail where sid=#{sid}
 	</select>
 	
