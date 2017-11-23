@@ -248,11 +248,19 @@ public class AttendanceApiController extends BaseController {
 		}
 		
 		if (null == record){
+			//如果有请假 上下班时间会变化 重新put一下
+			data.put("clockOnTime", clockOnTime.split(" ")[1]);
+			data.put("clockOffTime", clockOffTime.split(" ")[1]);
 			//当前时间在下班时间和最晚下半时间之间
 			if (datetime.compareTo(clockOffTime) >= 0 && datetime.compareTo(dateEnd) <= 0){
 				type = 1;
 			}
 		} else {
+			//销假之后按正常的上下班时间算 ,不销假按请假时间来算上下班时间
+			if (!StringUtils.equals(record.getRevokeType(), "1")){
+				data.put("clockOnTime", clockOnTime.split(" ")[1]);
+				data.put("clockOffTime", clockOffTime.split(" ")[1]);
+			}
 			if (StringUtils.isEmpty(records.get(0).getClockOffDateTime())){
 				type = 1;
 			}
@@ -270,9 +278,7 @@ public class AttendanceApiController extends BaseController {
 		else if (datetime.compareTo(dateEnd) > 0){
 			type = 4;
 		}
-		
-		data.put("clockOnTime", clockOnTime.split(" ")[1]);
-		data.put("clockOffTime", clockOffTime.split(" ")[1]);
+
 		data.put("type", type);
 		data.put("record", record);
 		info.setData(data);

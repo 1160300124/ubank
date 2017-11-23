@@ -4,17 +4,10 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.ulaiber.web.model.attendance.LaterCutPayment;
 
 /**
  * 一组关于时间工具方法集合
@@ -36,9 +29,13 @@ public class DateTimeUtil {
 	 */
 	public static final String DATE_FORMAT_SIMPLEFULLTIME = "yyyyMMddHHmmss";
 	/**
-	 * 定义精确到毫秒的标准时间格式 eg：20010101100102123
+	 * 定义精确到毫秒的标准时间格式 eg：010101100102123
 	 */
 	public static final String DATE_FORMAT_SIMPLEALLTIME = "yyMMddHHmmssSSS";
+	/**
+	 * 定义精确到毫秒的标准时间格式 eg：20010101100102123
+	 */
+	public static final String DATE_FORMAT_ALLTIME = "yyyyMMddHHmmssSSS";
 	/**
 	 * 定义精确到日的标准时间格式 eg：2001-01-01
 	 */
@@ -51,8 +48,7 @@ public class DateTimeUtil {
 	 * 定义精确到分的标准时间格式 eg：2001-01-01 10:01
 	 */
 	public static final String DATE_FORMAT_MINUTETIME = "yyyy-MM-dd HH:mm";
-	
-	
+
 	/**
 	 * 给定Date对象，根据制定日期格式转换为日期字符串<br/>
 	 * 如果不写值，默认长格式<br/>
@@ -64,17 +60,17 @@ public class DateTimeUtil {
 	public static String date2Str(Date date, String... format) {
 		String result = null;
 		String formatStr = DATE_FORMAT_FULLTIME;
-		if (ObjUtil.notEmpty(format) && format.length>=1)
+		if (ObjUtil.notEmpty(format) && format.length >= 1)
 			formatStr = format[0];
 		try {
-				SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
-				result = sdf.format(date);
+			SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
+			result = sdf.format(date);
 		} catch (Exception ex) {
-				ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 给定日期字符串，根据指定格式转换为date对象<br/>
 	 * 如果不写格式，默认长格式yyyy-MM-dd HH:mm:ss
@@ -84,18 +80,18 @@ public class DateTimeUtil {
 	 */
 	public static Date str2Date(String dateStr, String... format) {
 		String formatStr = DATE_FORMAT_FULLTIME;
-		if (ObjUtil.notEmpty(format) && format.length>=1)
+		if (ObjUtil.notEmpty(format) && format.length >= 1)
 			formatStr = format[0];
 		Date date = null;
 		DateFormat df = new SimpleDateFormat(formatStr, Locale.CHINA);
 		try {
-				date = df.parse(dateStr);
+			date = df.parse(dateStr);
 		} catch (Exception ex) {
-				ex.printStackTrace();
+			ex.printStackTrace();
 		}
 		return date;
 	}
-	
+
 	/**
 	 * 返回指定日期的年份
 	 * @param date  Date 日期
@@ -172,7 +168,7 @@ public class DateTimeUtil {
 		calendar.setTime(date);
 		return calendar.getTimeInMillis();
 	}
-	
+
 	/**
 	 * 根据传入的时间加上或减去若干天得到时间
 	 * @param date  Date 日期
@@ -237,7 +233,7 @@ public class DateTimeUtil {
 	public static String getDayEnd(String strdate) {
 		return strdate + " 23:59:59";
 	}
-	
+
 	/**
 	 * 根据指定日期和天，小时，分钟数求日期
 	 * @param strdate  yyyy-MM-dd HH:mm
@@ -249,25 +245,25 @@ public class DateTimeUtil {
 	public static String getfutureTime(String strdate, int day, int hour, int minute){
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(str2Date(strdate, DATE_FORMAT_MINUTETIME));
-		calendar.add(calendar.DATE, day); //把日期往前减少一天，若想把日期向后推一天则将负数改为正数
-		calendar.add(calendar.HOUR, hour);
-		calendar.add(calendar.MINUTE, minute);
+		calendar.add(Calendar.DATE, day); //把日期往前减少一天，若想把日期向后推一天则将负数改为正数
+		calendar.add(Calendar.HOUR, hour);
+		calendar.add(Calendar.MINUTE, minute);
 		return date2Str(calendar.getTime(), DATE_FORMAT_MINUTETIME);
 	}
-	
+
 	/**
 	 * 查看指定日期是星期几
 	 * @param strdate  yyyy-MM-dd
 	 * @return
 	 */
 	public static int getWeekday(String strdate){
-        Calendar calendar = Calendar.getInstance();
-        Date date = str2Date(strdate, DATE_FORMAT_DAYTIME);
-        calendar.setTime(date);
-        calendar.add(Calendar.DAY_OF_WEEK, -1);
-        return calendar.get(Calendar.DAY_OF_WEEK);
+		Calendar calendar = Calendar.getInstance();
+		Date date = str2Date(strdate, DATE_FORMAT_DAYTIME);
+		calendar.setTime(date);
+		calendar.add(Calendar.DAY_OF_WEEK, -1);
+		return calendar.get(Calendar.DAY_OF_WEEK);
 	}
-	
+
 	/**
 	 * 获取指定月份的天数
 	 * @param month yyyy-MM
@@ -279,7 +275,7 @@ public class DateTimeUtil {
 		calendar.setTime(date);
 		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 	}
-	
+
 	/**
 	 * 获取指定时间段的天数
 	 * @param dateBegin  yyyy-MM-dd
@@ -296,7 +292,7 @@ public class DateTimeUtil {
 		long endTime = calendar.getTimeInMillis();
 		return Integer.parseInt((endTime - beginTime) / (1000 * 3600 * 24) + "") + 1;
 	}
-	
+
 	/**
 	 * 获取指定月份的所有天数集合
 	 * @param month yyyy-MM
@@ -305,7 +301,7 @@ public class DateTimeUtil {
 	public static List<String> getDaysFromMonth(String month){
 		String currentMonth = date2Str(new Date(), DATE_FORMAT_MONTHTIME);
 		String currentDay = "";
-		if (StringUtils.equals(currentMonth, month)){
+		if (currentMonth.equals(month)){
 			currentDay = date2Str(new Date(), DATE_FORMAT_DAYTIME);
 		}
 		List<String> days = new ArrayList<String>();
@@ -317,15 +313,15 @@ public class DateTimeUtil {
 			} else {
 				day = month + "-" + (i + 1);
 			}
-			
-			if (StringUtils.equals(currentDay, day)){
+
+			if (currentDay.equals(day)){
 				break;
 			}
 			days.add(day);
 		}
 		return days;
 	}
-	
+
 	/**
 	 * 获取指定时间段的所有天数集合
 	 * @param dateBegin  yyyy-MM-dd
@@ -341,7 +337,7 @@ public class DateTimeUtil {
 		String beginDay = dateBegin.substring(dateBegin.lastIndexOf("-") + 1, dateBegin.length());
 		String endMonth = dateEnd.substring(0, dateEnd.lastIndexOf("-"));
 		String endDay = dateEnd.substring(dateEnd.lastIndexOf("-") + 1, dateEnd.length());
-		if (StringUtils.equals(beginMonth, endMonth)){
+		if (beginMonth.equals(endMonth)){
 			for (int i = Integer.parseInt(beginDay); i <= Integer.parseInt(endDay); i++){
 				String day = "";
 				if (i < 10){
@@ -372,10 +368,10 @@ public class DateTimeUtil {
 				days.add(day);
 			}
 		}
-		
+
 		return days;
 	}
-	
+
 	/**
 	 * 获得时间段的分钟数
 	 * @param startStr yyyy-MM-dd HH:mm
@@ -390,7 +386,7 @@ public class DateTimeUtil {
 		long end = calendar.getTimeInMillis();
 		return Math.abs(Integer.parseInt((end - start) / (1000 * 60) + ""));
 	}
-	
+
 	/**
 	 * 获得时间段的小时数
 	 * @param startStr yyyy-MM-dd HH:mm
@@ -405,5 +401,5 @@ public class DateTimeUtil {
 		long end = calendar.getTimeInMillis();
 		return new BigDecimal(Math.abs((double)(end - start) / (1000 * 60 * 60))).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 	}
-	
+
 }

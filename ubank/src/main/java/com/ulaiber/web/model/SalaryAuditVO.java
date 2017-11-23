@@ -11,7 +11,10 @@ public class SalaryAuditVO implements Serializable{
     private String auditor; //审批人
     private String reason;  //备注
     private String salary;  //工资
-
+	private int totalNumber;    //工资总笔数
+    private double totalAmount; //工资总金额
+    private String salaryId;    //工资流水id
+    
     public String getUserId() {
         return userId;
     }
@@ -43,5 +46,29 @@ public class SalaryAuditVO implements Serializable{
     public void setSalary(String salary) {
         this.salary = salary;
     }
+
+	public int getTotalNumber() {
+		return totalNumber;
+	}
+
+	public void setTotalNumber(int totalNumber) {
+		this.totalNumber = totalNumber;
+	}
+
+	public double getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public String getSalaryId() {
+		return salaryId;
+	}
+
+	public void setSalaryId(String salaryId) {
+		this.salaryId = salaryId;
+	}
 
 }

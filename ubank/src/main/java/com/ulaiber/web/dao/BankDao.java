@@ -135,4 +135,11 @@ public interface BankDao {
      * @return int
      */
     int updateAccFreeze(String subAcctNo);
+    
+	/**
+	 * <!-- 根据公司编号查询该公司下所有二类户 -->
+	 * @param companyNum 公司编号
+	 * @return List<SecondAcount>
+	 */
+	List<SecondAcount> getSubByCompanyNum(String companyNum);
 }

@@ -61,7 +61,7 @@ public interface SalaryDao {
      * @param sids
      * @return
      */
-    int batchDeleteSalaries(List<Long> sids);
+    int batchDeleteSalaries(List<String> sids);
     
     /**
      * 获取用户的工资流水
@@ -69,5 +69,12 @@ public interface SalaryDao {
      * @return
      */
     List<Map<String, Object>> getSalariesByUserId(Map<String, Object> params);
+    
+    /**
+     * 根据流水号获取共计记录
+     * @param sid
+     * @return
+     */
+    Salary getSalaryBySid(String sid);
     
 }

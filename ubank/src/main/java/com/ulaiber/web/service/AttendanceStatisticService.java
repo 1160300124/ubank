@@ -3,6 +3,7 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
+import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.model.attendance.AttendanceStatistic;
 
 /** 
@@ -50,8 +51,20 @@ public interface AttendanceStatisticService {
 	List<String> getWorkdaysForDate(long userId, String dateBegin, String dateEnd);
 	
 	/**
+	 * 获取指定时间段的应工作天数  yyyy-MM-dd
+	 * @return
+	 */
+	List<String> getWorkdaysForDate(AttendanceRule rule, String dateBegin, String dateEnd);
+	
+	/**
 	 * 获取指定月份的应工作天数  yyyy-MM
 	 * @return
 	 */
 	List<String> getWorkdaysForMonth(long userId, String month);
+	
+	/**
+	 * 获取指定月份的应工作天数  yyyy-MM
+	 * @return
+	 */
+	List<String> getWorkdaysForMonth(AttendanceRule rule, String month);
 }

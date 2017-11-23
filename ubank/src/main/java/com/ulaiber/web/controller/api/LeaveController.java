@@ -1,24 +1,46 @@
 package com.ulaiber.web.controller.api;
 
-import com.qiniu.util.Auth;
-import com.ulaiber.web.conmon.IConstants;
-import com.ulaiber.web.controller.BaseController;
-import com.ulaiber.web.model.*;
-import com.ulaiber.web.model.attendance.AttendancePatchClock;
-import com.ulaiber.web.service.AttendanceService;
-import com.ulaiber.web.service.LeaveService;
-import com.ulaiber.web.service.ReimbursementService;
-import com.ulaiber.web.service.SalaryAuditService;
-import com.ulaiber.web.utils.StringUtil;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.qiniu.util.Auth;
+import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.controller.BaseController;
+import com.ulaiber.web.model.ApplyForVO;
+import com.ulaiber.web.model.AuditData;
+import com.ulaiber.web.model.AuditVO;
+import com.ulaiber.web.model.LeaveAudit;
+import com.ulaiber.web.model.LeaveRecord;
+import com.ulaiber.web.model.OvertimeVO;
+import com.ulaiber.web.model.Reimbursement;
+import com.ulaiber.web.model.Remedy;
+import com.ulaiber.web.model.RemindApplyVO;
+import com.ulaiber.web.model.RemindAuditVO;
+import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.SalaryRecord;
+import com.ulaiber.web.model.SynchronizationData;
+import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.WorkAuditRecordVO;
+import com.ulaiber.web.model.attendance.AttendancePatchClock;
+import com.ulaiber.web.service.AttendanceService;
+import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.service.ReimbursementService;
+import com.ulaiber.web.service.SalaryAuditService;
+import com.ulaiber.web.service.SalaryService;
+import com.ulaiber.web.utils.StringUtil;
 
 /**
  * 申请请假Controller
@@ -43,6 +65,9 @@ public class LeaveController extends BaseController {
 
     @Resource
     private AttendanceService attendanceService;
+    
+    @Autowired
+    private SalaryService salaryService;
 
     /**
      * 申请请假
@@ -166,17 +191,11 @@ public class LeaveController extends BaseController {
                 }
                 resultMap.put("reimAmount",amount);
             }else if(ls.getType().equals("3")){ //工资发放申请记录
-                SalaryRecord salaryRecord = new SalaryRecord();
                 //申请记录ID
                 int recordNo = ls.getId();
                 //根据申请记录ID，获取工资发放记录
-                List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
-                double amount = 0;  //统计金额
-                for (int j = 0 ; j < salaryList.size() ; j++){
-                    SalaryRecord sr = salaryList.get(j);
-                    amount += sr.getSalary();
-                }
-                resultMap.put("salaryAmount",amount);
+                SalaryRecord salary = salaryAuditService.querySalaryByRecordNo(recordNo);
+                resultMap.put("salaryAmount", null == salary ? 0 : salary.getTotalAmount());
             }else if(ls.getType().equals("4")){ //补卡记录
                 Remedy remedy = new Remedy();
                 remedy.setMorning(ls.getMorning());
@@ -518,17 +537,11 @@ public class LeaveController extends BaseController {
                         }
                         map.put("reimAmount",amount);
                     }else if(applyForVO.getType().equals("3")){ //工资发放申请记录
-                        SalaryRecord salaryRecord = new SalaryRecord();
                         //申请记录ID
                         int recordNo = applyForVO.getId();
                         //根据申请记录ID，获取工资发放记录
-                        List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
-                        double amount = 0;  //统计金额
-                        for (int j = 0 ; j < salaryList.size() ; j++){
-                            SalaryRecord sr = salaryList.get(j);
-                            amount += sr.getSalary();
-                        }
-                        map.put("salaryAmount",amount);
+                        SalaryRecord salary = salaryAuditService.querySalaryByRecordNo(recordNo);
+                        map.put("salaryAmount", null == salary ? 0 : salary.getTotalAmount());
                     }else if(applyForVO.getType().equals("4")){ //补卡记录
                         Remedy remedy = new Remedy();
                         remedy.setMorning(applyForVO.getMorning());
@@ -625,17 +638,11 @@ public class LeaveController extends BaseController {
                 }
                 map.put("reimAmount",amount);
             }else if(applyForVO.getType().equals("3")){ //工资发放申请记录
-                SalaryRecord salaryRecord = new SalaryRecord();
                 //申请记录ID
                 int recordNo = applyForVO.getId();
                 //根据申请记录ID，获取工资发放记录
-                List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
-                double amount = 0;  //统计金额
-                for (int j = 0 ; j < salaryList.size() ; j++){
-                    SalaryRecord sr = salaryList.get(j);
-                    amount += sr.getSalary();
-                }
-                map.put("salaryAmount",amount);
+                SalaryRecord salary = salaryAuditService.querySalaryByRecordNo(recordNo);
+                map.put("salaryAmount", null == salary ? 0 : salary.getTotalAmount());
             }else if(applyForVO.getType().equals("4")){ //补卡记录
                 Remedy remedy = new Remedy();
                 remedy.setMorning(applyForVO.getMorning());
@@ -745,6 +752,13 @@ public class LeaveController extends BaseController {
             resultInfo.setMessage("审批失败");
             logger.error(">>>>>>>>>>>>>审批失败");
             return resultInfo;
+        }
+        //当前为工资审批
+        if (auditData.getType().equals("3")){
+        	if (auditData.getStatus().equals("1")){
+        		SalaryRecord record = salaryAuditService.querySalaryByRecordNo(Integer.parseInt(auditData.getRecordNo()));
+        		salaryService.pay(record.getSalaryId());
+        	}
         }
         //当前为补卡审批才执行以下代码
         if(auditData.getType().equals("4")){
@@ -1009,8 +1023,8 @@ public class LeaveController extends BaseController {
                 return resultInfo;
             }else if(type.equals("3")){ //工资发放审批记录
                 //根据申请记录ID，获取工资发放审批记录
-                List<SalaryRecord> salaryList = salaryAuditService.querySalaryByRecordNo(recordNo);
-                if(salaryList.size() <= 0){
+                SalaryRecord salary = salaryAuditService.querySalaryByRecordNo(recordNo);
+                if(salary == null){
                     resultInfo.setCode(IConstants.QT_CODE_OK);
                     resultInfo.setMessage("暂时没有工资发放记录");
                     logger.info(">>>>>>>>>>>>>暂时没有工资发放记录");
@@ -1018,6 +1032,8 @@ public class LeaveController extends BaseController {
                 }
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("查询成功");
+                List<SalaryRecord> salaryList = new ArrayList<SalaryRecord>();
+                salaryList.add(salary);
                 resultInfo.setData(salaryList);
                 logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
                 return resultInfo;

@@ -24,28 +24,28 @@ public interface SalaryDetailService {
 	 * @param sid
 	 * @return
 	 */
-	List<SalaryDetail> getDetailsBySid(long sid, int limit, int offset, String orderby, String search);
+	List<SalaryDetail> getDetailsBySid(String sid, int limit, int offset, String orderby, String search);
 	
 	/**
 	 * 根据工资流水id查询流水详情
 	 * @param sid
 	 * @return
 	 */
-	List<SalaryDetail> getDetailsBySid(long sid);
+	List<SalaryDetail> getDetailsBySid(String sid);
 	
     /**
      * 根据工资流水id查询记录条数
      * @param sid
      * @return
      */
-    int getTotalBySid(long sid);
+    int getTotalBySid(String sid);
 	
 	/**
 	 * 根据id批量删除
 	 * @param sids
 	 * @return
 	 */
-	boolean batchDeleteSalaryDetails(List<Long> sids);
+	boolean batchDeleteSalaryDetails(List<String> sids);
 	
     /**
      * 根据id和月份获取用户的工资详细

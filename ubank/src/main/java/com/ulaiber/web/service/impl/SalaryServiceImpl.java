@@ -8,19 +8,26 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AttendanceRuleDao;
+import com.ulaiber.web.dao.BankDao;
 import com.ulaiber.web.dao.SalaryDao;
 import com.ulaiber.web.dao.SalaryDetailDao;
 import com.ulaiber.web.dao.SalaryRuleDao;
+import com.ulaiber.web.model.Payee;
+import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.Salary;
+import com.ulaiber.web.model.SalaryAuditVO;
 import com.ulaiber.web.model.SalaryDetail;
 import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.model.attendance.CutPayment;
 import com.ulaiber.web.model.attendance.SalaryRule;
@@ -28,10 +35,13 @@ import com.ulaiber.web.service.AttendanceStatisticService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.CutPaymentService;
 import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.service.SalaryAuditService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.MathUtil;
+import com.ulaiber.web.utils.SPDBUtil;
+import com.ulaiber.web.utils.UUIDGenerator;
 
 /** 
  * 工资业务实现类
@@ -47,7 +57,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	private static Logger logger = Logger.getLogger(SalaryServiceImpl.class);
 	
 	@Resource
-	private SalaryDao mapper;
+	private SalaryDao dao;
 	
 	@Resource
 	private SalaryDetailDao detailDao;
@@ -61,6 +71,9 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	@Resource
 	private AttendanceRuleDao attRuleDao;
 	
+	@Resource
+	private BankDao bankDao;
+	
 	@Autowired
 	private CutPaymentService cutService;
 	
@@ -69,6 +82,9 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	
 	@Autowired
 	private AttendanceStatisticService statisticService;
+	
+	@Autowired
+    private SalaryAuditService salaryAuditService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -80,13 +96,40 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		List<CutPayment> list = (List<CutPayment>)cutMap.get("data");
 		cutService.batchDelete(salary.getSalaryMonth(), list);
 		cutService.batchSave(list);
+		
+		//sid 17位时间戳+32位uuid
+		String sid = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_SIMPLEALLTIME);
+		SalaryAuditVO salaryAudit = new SalaryAuditVO(); 
+		salaryAudit.setAuditor(salary.getApproveIds());
+		salaryAudit.setUserId(salary.getOperateUserId() + "");
+		salaryAudit.setReason(salary.getSalaryMonth() + "工资发放。");
+		salaryAudit.setTotalNumber(salary.getTotalNumber());
+		salaryAudit.setTotalAmount(salary.getTotalAmount());
+		salaryAudit.setSalaryId(sid);
+		if (salaryAuditService.salaryAudit(salaryAudit) <= 0){
+			logger.info(salary.getSalaryMonth() + "工资发放申请失败。");
+			return false;
+		}
+		
+		salary.setSid(sid);
 		salary.setSalaryCreateTime(DateTimeUtil.date2Str(new Date()));
 		salary.setStatus("0");
 		salary.setTotalAmount(MathUtil.formatDouble(salary.getTotalAmount(), 1));
-		if (this.mapper.save(salary) > 0){
-			long sid = salary.getSid();
+		
+		//获取该公司的所有二类户信息 key为userId/value为二类户账号
+		Map<Long, String> map = new HashMap<Long, String>();
+		List<SecondAcount> accounts = bankDao.getSubByCompanyNum(salary.getCompanyId());
+		for (SecondAcount account : accounts){
+			map.put(account.getUserid(), account.getSubAcctNo());
+		}
+		
+		if (this.dao.save(salary) > 0){
 			for (SalaryDetail detail : salary.getDetails()){
+				detail.setDid(DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_ALLTIME) + UUIDGenerator.getUUID());
 				detail.setSid(sid);
+				detail.setCreateDate(DateTimeUtil.date2Str(new Date()));
+				detail.setUpdateTime(DateTimeUtil.date2Str(new Date()));
+				detail.setSubAcctNo(map.get(detail.getUserId()));
 			}
 			return detailDao.batchSave(salary.getDetails()) > 0;
 		}
@@ -97,7 +140,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(Salary salary) {
 		salary.setSalaryCreateTime(DateTimeUtil.date2Str(new Date()));
-		if (this.mapper.update(salary) > 0){
+		if (this.dao.update(salary) > 0){
 			
 			return detailDao.batchUpdate(salary.getDetails()) > 0;
 		}
@@ -106,7 +149,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 
 	@Override
 	public List<Salary> getAllSalaries() {
-		return this.mapper.getAllSalaries();
+		return this.dao.getAllSalaries();
 	}
 
 	@Override
@@ -116,26 +159,26 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		params.put("limit", limit);
 		params.put("offset", offset);
 		params.put("search", search);
-		return this.mapper.getSalaries(params);
+		return this.dao.getSalaries(params);
 	}
 
 	@Override
 	public int getTotalNum() {
 		
-		return this.mapper.getTotalNum();
+		return this.dao.getTotalNum();
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean updateStatusBySeqNo(Salary sa) {
 		
-		return this.mapper.updateStatusBySeqNo(sa) > 0;
+		return this.dao.updateStatusBySeqNo(sa) > 0;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean batchDeleteSalaries(List<Long> sids) {
-		if (this.mapper.batchDeleteSalaries(sids) > 0){
+	public boolean batchDeleteSalaries(List<String> sids) {
+		if (this.dao.batchDeleteSalaries(sids) > 0){
 			return detailDao.batchDeleteSalaryDetails(sids) > 0;
 		}
 		return false;
@@ -149,7 +192,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		params.put("limit", pageSize);
 		params.put("offset", offset);
 		params.put("userId", userId);
-		List<Map<String, Object>> list = this.mapper.getSalariesByUserId(params);
+		List<Map<String, Object>> list = this.dao.getSalariesByUserId(params);
 		
 		return list;
 	}
@@ -178,14 +221,14 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 		//获取公司用户
 		List<User> users = userService.getUsersByComNum(companyNum, null);
 		for (User user : users){
-			//应工作天数
-			List<String> workdays = statisticService.getWorkdaysForDate(user.getId(), DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
-			if (workdays == null){
-				continue;
-			}
 			AttendanceRule attRule = attRuleDao.getRuleByUserId(user.getId());
 			if (null == attRule){
 				logger.error("用户 {" + user.getId() + "}没有设置考勤规则，请先设置。");
+				continue;
+			}
+			//应工作天数
+			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
+			if (workdays == null){
 				continue;
 			}
 			String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
@@ -290,6 +333,65 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			personalIncomeTax = MathUtil.formatDouble(MathUtil.sub(MathUtil.formatDouble(MathUtil.mul(salary,  0.45), 1), 13505), 1);
 		}   
 		return personalIncomeTax < 0 ? 0 : personalIncomeTax;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public ResultInfo pay(String salaryId) {
+		ResultInfo info = new ResultInfo();
+		double amount = 0;
+    	//收款人集合
+		List<Payee> payees = new ArrayList<>();
+		List<SalaryDetail> details = detailDao.getDetailsBySid(salaryId);
+		for (SalaryDetail detail : details){
+			Payee payee = new Payee();
+			payee.setPayeeAcctNo(detail.getSubAcctNo());
+			payee.setPayeeName(detail.getUserName());
+			payee.setAmount(detail.getSalaries());
+			amount += detail.getSalaries();
+			payee.setNote(detail.getRemark());
+			payees.add(payee);
+		}
+		
+		//工资流水
+    	Salary salary = dao.getSalaryBySid(salaryId);
+    	if (salary.getTotalNumber() != details.size() || salary.getTotalAmount() != amount){
+			info.setMessage("工资总笔数或总金额不相符，请检查工资表！");
+			info.setCode(IConstants.QT_GET_BALANCE_ERROR);
+			return info;
+		}
+    	String bespearkDate = salary.getSalaryDate().replaceAll("-", "");
+    	int totalNumber = salary.getTotalNumber();
+    	double totalAmount = salary.getTotalAmount();
+    	Map<String, Object> params = new HashMap<String, Object>();
+    	params.put("elecChequeNo", salary.getSid());
+		params.put("bespeakDate", bespearkDate);
+		params.put("totalNumber", totalNumber);
+		params.put("totalAmount", totalAmount);
+		params.put("flag", "1");
+    	String entrustSeqNo = SPDBUtil.paySalaries(params, payees);
+    	if (StringUtils.isNotEmpty(entrustSeqNo)){
+    		salary.setEntrustSeqNo(entrustSeqNo);
+    		String status = SPDBUtil.getPayResult(entrustSeqNo);
+    		if (StringUtils.isNotEmpty(status)){
+    			salary.setStatus(status);
+    			boolean flag = dao.updateStatusBySeqNo(salary) > 0;
+    			if (flag){
+    				info.setCode(IConstants.QT_CODE_OK);
+    				logger.info("save salary and salary detail successed.");
+    			}
+    		} else {
+    			info.setCode(IConstants.QT_CODE_ERROR);
+    			info.setMessage("getPayResult failed.");
+    			logger.info("getPayResult failed.");
+    		}
+    		
+    	} else {
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("操作失败：代发工资失败！");
+    		logger.info("paySalaries failed.");
+    	}
+		return info;
 	}
 
 }

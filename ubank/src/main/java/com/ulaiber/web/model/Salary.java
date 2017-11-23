@@ -7,12 +7,17 @@ public class Salary {
 	/**
 	 * 流水编号
 	 */
-	private long sid;
+	private String sid;
+	
+	/**
+	 * 发工资人Id
+	 */
+	private long operateUserId;
 	
 	/**
 	 * 发工资人姓名
 	 */
-	private String operateName;
+	private String operateUserName;
 	
 	/**
 	 * 公司id
@@ -45,7 +50,7 @@ public class Salary {
 	private String salaryDate;
 	
 	/**
-	 * 生成时间
+	 * 工资单生成时间
 	 */
 	private String salaryCreateTime;
 	
@@ -87,20 +92,28 @@ public class Salary {
 	 */
 	List<SalaryDetail> details;
 
-	public long getSid() {
+	public String getSid() {
 		return sid;
 	}
 
-	public void setSid(long sid) {
+	public void setSid(String sid) {
 		this.sid = sid;
 	}
 
-	public String getOperateName() {
-		return operateName;
+	public long getOperateUserId() {
+		return operateUserId;
 	}
 
-	public void setOperateName(String operateName) {
-		this.operateName = operateName;
+	public void setOperateUserId(long operateUserId) {
+		this.operateUserId = operateUserId;
+	}
+
+	public String getOperateUserName() {
+		return operateUserName;
+	}
+
+	public void setOperateUserName(String operateUserName) {
+		this.operateUserName = operateUserName;
 	}
 
 	public String getCompanyId() {
