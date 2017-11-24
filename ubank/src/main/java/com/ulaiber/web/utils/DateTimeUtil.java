@@ -29,9 +29,9 @@ public class DateTimeUtil {
 	 */
 	public static final String DATE_FORMAT_SIMPLEFULLTIME = "yyyyMMddHHmmss";
 	/**
-	 * 定义精确到毫秒的标准时间格式 eg：010101100102123
+	 * 定义精确到毫秒的标准时间格式 eg：0101011001021234
 	 */
-	public static final String DATE_FORMAT_SIMPLEALLTIME = "yyMMddHHmmssSSS";
+	public static final String DATE_FORMAT_SIMPLEALLTIME = "yyMMddHHmmssSSSS";
 	/**
 	 * 定义精确到毫秒的标准时间格式 eg：20010101100102123
 	 */
