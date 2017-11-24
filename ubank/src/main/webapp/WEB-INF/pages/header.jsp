@@ -196,8 +196,16 @@
             Ewin.alert("新密码不能为空");
             return;
         }
+        if(newPwd.length < 6 || newPwd.length > 20){
+            Ewin.alert("密码长度为6~20之间");
+            return;
+        }
         if( confirm == ""){
             Ewin.alert("确认密码不能为空");
+            return;
+        }
+        if(confirm.length < 6 || confirm.length > 20){
+            Ewin.alert("密码长度为6~20之间");
             return;
         }
         if(newPwd != confirm){

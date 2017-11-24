@@ -69,29 +69,34 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo register(@RequestParam("file") MultipartFile[] file, User user, Bank bank, String code,
-									HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo register( User user,String captcha, String code,HttpServletRequest request, HttpServletResponse response){
 		logger.debug("register statrt...");
 		ResultInfo retInfo = new ResultInfo();
 		String status = "";
 		try{
-			if (!ObjUtil.notEmpty(user) || !ObjUtil.notEmpty(bank)){
-				logger.error("register failed: user or bank is empty.");
-				retInfo.setMessage("register failed: user or bank is empty");
+			if (!ObjUtil.notEmpty(user)){
+				logger.error("用户信息不能为空");
+				retInfo.setMessage("用户信息为空");
 				return retInfo;
 			}
-			if (!ObjUtil.notEmpty(user.getMobile()) || !ObjUtil.notEmpty(user.getReserve_mobile()) || !ObjUtil.notEmpty(user.getBankCardNo())){
-				logger.error("register failed: mobile or bankNo is empty.");
-				retInfo.setMessage("register failed: mobile or bankNo is empty.");
+			if (!ObjUtil.notEmpty(user.getMobile()) ){
+				logger.error("手机号码为空");
+				retInfo.setMessage("手机号码不能为空");
 				return retInfo;
 			}
 			//查询手机号是否已被注册
 			User user1 = userService.findByMobile(user.getMobile());
 			if (ObjUtil.notEmpty(user1)){
 				retInfo.setCode(IConstants.QT_MOBILE_EXISTS);
-				retInfo.setMessage("register failed: mobile is already exists.");
-				logger.error("register failed: mobile is already exists.");
+				retInfo.setMessage("手机号已被注册");
+				logger.error("手机号已被注册");
 				return retInfo;
+			}
+			String mobile = user.getMobile();
+			String password = user.getLogin_password();
+			ResultInfo info = validateCaptcha(mobile,captcha,password, code);
+			if(info.getCode() != 1000){
+				return info;
 			}
 			int save = userService.save(user,code);
 			if(save == 0){
@@ -173,7 +178,7 @@ public class UserController extends BaseController{
 	 */
 	@RequestMapping(value = "Activation", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo activation(User user,int userId,MultipartFile[] file,Bank bank,HttpServletRequest request){
+	public ResultInfo activation(@RequestParam("file") MultipartFile[] file,User user,long userId,Bank bank,HttpServletRequest request){
 		logger.info(">>>>>>>>>>开始激活钱包操作");
 		ResultInfo resultInfo = new ResultInfo();
 		String status = "";
@@ -190,12 +195,13 @@ public class UserController extends BaseController{
 				Map<String,Object> map = (Map<String, Object>) info.getData();
 				SecondAcount sa = (SecondAcount) map.get("sa");
 				status = (String) map.get("status");
+				user.setId(userId);
 				Map<String,Object> param = new HashMap<>();
 				param.put("sa",sa);
 				param.put("bankNo",Long.parseLong(bank.getBankNo()));
 				param.put("bankCardNo",user.getBankCardNo());
 				param.put("type",bank.getType());
-				param.put("userid",userId);
+				param.put("user",user);
 				int result = userService.addAccInfo(param);
 				if(result <= 0){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -274,6 +280,62 @@ public class UserController extends BaseController{
 		}
 		return retInfo;
 	}
+
+	/**
+	 * 验证
+	 * @param mobile 手机号
+	 * @param captcha 验证码
+	 * @param password 登录密码
+	 * @param code 邀请码
+	 * @return ResultInfo
+	 */
+	public ResultInfo validateCaptcha(String mobile, String captcha, String password,String code){
+		ResultInfo retInfo = new ResultInfo();
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha)
+				|| StringUtils.isEmpty(password) || StringUtil.isEmpty(code)){
+			logger.error("params can not be null.");
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+			retInfo.setMessage("参数不能为空");
+			return retInfo;
+		}
+//		if (!StringUtils.equals(password, confirm_password)){
+//			logger.error("confirmed password and new password do not match.");
+//			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
+//			retInfo.setMessage("新密码与确认密码不一致");
+//			return retInfo;
+//		}
+		//验证邀请码
+		Company com = userService.validateCode(code);
+		if(StringUtil.isEmpty(com)){
+			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			retInfo.setMessage("邀请码不存在");
+			return retInfo;
+		}
+		String cap = captchaMap.get(mobile);
+		captchaMap.remove(mobile);
+		if (!StringUtils.equals(captcha, cap) && !StringUtils.equals(captcha, "12345")){
+			logger.error("captcha error.");
+			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			retInfo.setMessage("验证码错误");
+			return retInfo;
+		}
+		//根据公司编号查询绑定的银行
+		Bank bank = userService.queryBankByCompay(com.getCompanyNumber());
+		if(StringUtil.isEmpty(bank)){
+			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			retInfo.setMessage("公司未绑定银行");
+			return retInfo;
+		}
+		switch (bank.getType()){
+			case 0:
+				//上海银行图片压缩大小
+				retInfo.setData(IConstants.SH_size);
+				break;
+		}
+		retInfo.setCode(IConstants.QT_CODE_OK);
+		return retInfo;
+	}
+
 
 
 	/**
@@ -392,68 +454,7 @@ public class UserController extends BaseController{
 		return retInfo;
 	}
 	
-	/**
-	 * 验证
-	 * @param mobile 手机号
-	 * @param captcha 验证码
-	 * @param password 登录密码
-	 * @param confirm_password 确认密码
-	 * @param code 邀请码
-	 * @param request
-	 * @param response
-	 * @return ResultInfo
-	 */
-	@RequestMapping(value = "validate", method = RequestMethod.POST)
-	@ResponseBody
-	public ResultInfo validateCaptcha(String mobile, String captcha, String password, String confirm_password,String code,
-			HttpServletRequest request, HttpServletResponse response){
-		
-		ResultInfo retInfo = new ResultInfo();
-		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha)
-				|| StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password) || StringUtil.isEmpty(code)){
-			logger.error("params can not be null.");
-			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("参数不能为空");
-			return retInfo;
-		}
-		if (!StringUtils.equals(password, confirm_password)){
-			logger.error("confirmed password and new password do not match.");
-			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("新密码与确认密码不一致");
-			return retInfo;
-		}
-		//验证邀请码
-		Company com = userService.validateCode(code);
-		if(StringUtil.isEmpty(com)){
-			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("邀请码不存在");
-			return retInfo;
-		}
-		String cap = captchaMap.get(mobile);
-		captchaMap.remove(mobile);
-		if (!StringUtils.equals(captcha, cap) && !StringUtils.equals(captcha, "12345")){
-			logger.error("captcha error.");
-			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("验证码错误");
-			return retInfo;
-		}
-		//根据公司编号查询绑定的银行
-		Bank bank = userService.queryBankByCompay(com.getCompanyNumber());
-		if(StringUtil.isEmpty(bank)){
-			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("公司未绑定银行");
-			return retInfo;
-		}
-		switch (bank.getType()){
-			case 0:
-				//上海银行图片压缩大小
-				retInfo.setData(IConstants.SH_size);
-				break;
-		}
-		retInfo.setCode(IConstants.QT_CODE_OK);
-		return retInfo;
-	}
-	
+
 	
 	/**
 	 * 忘记登录密码

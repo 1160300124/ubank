@@ -70,7 +70,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		user.setRole_id(0);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
-		user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
+		//user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
 		//新增用户
 		int result = mapper.save(user);
 		if(result == 0){
@@ -115,16 +115,22 @@ public class UserServiceImpl extends BaseService implements UserService {
 		long bankNo = (long) param.get("bankNo");
 		String bankCardNo = (String) param.get("bankCardNo");
 		int type = (int) param.get("type");
-		int userid = (int) param.get("userid");
+		User user = (User) param.get("user");
+		user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
+		//更新用户信息
+		int result = mapper.updateUserInfo(user);
+		if(result <= 0){
+			return result;
+		}
 		//新增用户二类账户信息
-		sa.setUserid(userid);
+		sa.setUserid(user.getId());
 		int result3 = mapper.insertSecondAccount(sa);
 		if(result3 == 0){
 			return result3;
 		}
 		//新增用户绑定银行卡信息
 		Map<String,Object> paraMap = new HashMap<>();
-		paraMap.put("userid",userid);
+		paraMap.put("userid",user.getId());
 		paraMap.put("bankNo",bankNo);
 		paraMap.put("bankCardNo",bankCardNo);
 		paraMap.put("type",type);

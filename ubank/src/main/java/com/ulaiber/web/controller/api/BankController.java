@@ -127,6 +127,15 @@ public class BankController extends BaseController {
 				status = (String) resultMap.get("status");
 				SHChangeCard data = (SHChangeCard) resultMap.get("SHChangeCard");
 				if(!data.getStatusCode().equals("0000")){
+					if("子账户余额不为零".contains(data.getServerStatusCode()) && "S72_0003".equals(status)){
+						resultInfo.setCode(IConstants.QT_CODE_ERROR);
+						resultInfo.setMessage("暂时无法改绑，余额和份额必须为零");
+						Map<String,Object> param = new HashMap<>();
+						param.put("status",status);
+						resultInfo.setData(param);
+						logger.info(">>>>>>>>>>>>"+status+"子账户余额不为零");
+						return resultInfo;
+					}
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage(data.getServerStatusCode());
 					Map<String,Object> param = new HashMap<>();
@@ -243,6 +252,8 @@ public class BankController extends BaseController {
 		ResultInfo resultInfo = new ResultInfo();
 		Map<String,Object> map = new HashMap<>();
 		String status = "";
+		//设置支付密码
+
 		if(wid.getType().equals("0")){
 			try{
 				//提现

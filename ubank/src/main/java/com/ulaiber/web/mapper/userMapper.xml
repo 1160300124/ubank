@@ -41,8 +41,10 @@
    </resultMap>
   
 	<insert id="save" parameterType="User"  useGeneratedKeys="true" keyProperty="id">
-		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, role_id, createTime,entryDate,disabled)
-		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{role_id}, #{createTime},#{createTime},'0')
+		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType,
+		 		cardNo, bankNo, bankCardNo, role_id, createTime,entryDate,disabled)
+		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile},
+		        	#{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{role_id}, #{createTime},#{createTime},'0')
 	</insert>
 	
 	<update id="update" parameterType="User">
@@ -68,6 +70,11 @@
 	<select id="getUserByTicketAndToken" parameterType="User" resultMap="UserMap">
 		select user_id,user_name,mobile from tbl_users where disabled = '0' and login_ticket=#{login_ticket} and access_token=#{access_token}
 	</select>
+
+	<!--更新用户信息-->
+	<update id="updateUserInfo" parameterType="com.ulaiber.web.model.User" >
+		UPDATE tbl_users SET pay_password = #{pay_password},reserve_mobile = #{reserve_mobile},user_name =#{user_name} where user_id = #{id}
+	</update>
 	
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getUserByMobile" parameterType="String" resultMap="UserMap">

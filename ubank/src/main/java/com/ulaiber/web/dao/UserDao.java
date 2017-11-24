@@ -181,4 +181,11 @@ public interface UserDao {
      * @return int
      */
     int modifyPwd(Map<String, Object> map);
+
+    /**
+     * 更新用户信息
+     * @param user 用户信息
+     * @return int
+     */
+    int updateUserInfo(User user);
 }
