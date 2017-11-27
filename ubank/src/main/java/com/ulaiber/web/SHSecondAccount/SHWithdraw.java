@@ -5,6 +5,7 @@ import com.koalii.svs.SvsVerify;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
+import com.ulaiber.web.utils.HttpsUtil;
 import com.ulaiber.web.utils.SslTest;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.log4j.Logger;
@@ -84,8 +85,10 @@ public class SHWithdraw {
             System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>开始发送请求给上海银行");
+            //发送请求
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 20000);
+            //String result = HttpsUtil.doPostSSL(postUrl,xml);
             logger.info(">>>>>>>>>>开始解析xml");
             Withdraw withdraw = new Withdraw();
             Map<String,Object> resultMap = new HashMap<>();

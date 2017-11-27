@@ -116,7 +116,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 		String bankCardNo = (String) param.get("bankCardNo");
 		int type = (int) param.get("type");
 		User user = (User) param.get("user");
-		user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
+		//user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
 		//更新用户信息
 		int result = mapper.updateUserInfo(user);
 		if(result <= 0){

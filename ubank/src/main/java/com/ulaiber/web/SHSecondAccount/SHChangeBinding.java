@@ -98,8 +98,10 @@ public class SHChangeBinding {
            // System.out.println(">>>>>>>>>>xml is :" + xml);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
+            //发送请求
             SslTest st = new SslTest();
-            String result = st.postRequest(postUrl,xml, 10000);
+            String result = st.postRequest(postUrl,xml, 20000);
+            //String result = HttpsUtil.doPostSSL(postUrl,xml);
             logger.info(">>>>>>>>>>开始解析xml");
             Map<String,Object> resultMap = new HashMap<>();
             //解析XML

@@ -40,6 +40,30 @@ public class SslTest {
         u.getOutputStream();
         return IOUtils.toString(u.getInputStream());
     }
+
+    /**
+     * 不过滤证书
+     * @param urlAddress 请求地址
+     * @param args 参数
+     * @param timeOut 请求时间
+     * @return String
+     * @throws Exception
+     */
+    public String doPostSSL(String urlAddress,String args,int timeOut)throws Exception{
+        URL url = new URL(urlAddress);
+        URLConnection u = url.openConnection();
+        u.setDoInput(true);
+        u.setDoOutput(true);
+        u.setConnectTimeout(timeOut);
+        u.setReadTimeout(timeOut);
+        u.setRequestProperty("Content-Type", "text/plain;charset=utf-8");
+        OutputStreamWriter osw = new OutputStreamWriter(u.getOutputStream(), "UTF-8");
+        osw.write(args);
+        osw.flush();
+        osw.close();
+        u.getOutputStream();
+        return IOUtils.toString(u.getInputStream());
+    }
     public static void main(String[] args) {
         try {
             SslTest st = new SslTest();

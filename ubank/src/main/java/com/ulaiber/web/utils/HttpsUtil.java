@@ -288,17 +288,8 @@ public class HttpsUtil {
      * @return
      */
     public static String doPost(String apiUrl, String str) throws URISyntaxException {
-//        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
-//                .setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String httpStr = null;
-//        URL newUrl = null;
-//        try {
-//            newUrl = new URL(apiUrl);
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        URI uri = new URI(newUrl.getProtocol(), newUrl.getHost(), newUrl.getPath(), newUrl.getQuery(), null);
         HttpPost httpPost = new HttpPost(apiUrl);
         httpPost.setHeader("Content-Type", "text/plain; charset=utf-8");
         //httpPost.setHeader("Content-Length", str.length() + "");
@@ -335,8 +326,9 @@ public class HttpsUtil {
         CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
         		.setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();  
         HttpPost httpPost = new HttpPost(apiUrl);
-        httpPost.setHeader("Accept", "application/json;charset=utf-8");
-        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        //httpPost.setHeader("Accept", "application/json;charset=utf-8");
+       // httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        httpPost.setHeader("Content-Type", "text/plain; charset=utf-8");
         CloseableHttpResponse response = null;  
         String httpStr = null;  
   
@@ -371,7 +363,52 @@ public class HttpsUtil {
             }  
         }  
         return httpStr;  
-    }  
+    }
+
+
+    /**
+     * 向银行发送请求
+     * 发https请求，参数为String
+     * @param apiUrl
+     * @param str
+     * @return String
+     */
+    public static String doPostSSL(String apiUrl, String str) throws URISyntaxException {
+        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
+                .setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();
+        HttpPost httpPost = new HttpPost(apiUrl);
+        CloseableHttpResponse response = null;
+        String httpStr = null;
+        httpPost.setHeader("Content-Type", "text/plain; charset=utf-8");
+        try {
+            httpPost.setConfig(requestConfig);
+            StringEntity stringEntity = new StringEntity(str,"GBK");//解决中文乱码问题
+            stringEntity.setContentEncoding("GBK");
+           // stringEntity.setContentType("application/xml");
+            httpPost.setEntity(stringEntity);
+            response = httpClient.execute(httpPost);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
+                return null;
+            }
+            HttpEntity entity = response.getEntity();
+            if (entity == null) {
+                return null;
+            }
+            httpStr = EntityUtils.toString(entity, "GBK");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (response != null) {
+                try {
+                    EntityUtils.consume(response.getEntity());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return httpStr;
+    }
   
     /** 
      * 发送 SSL POST 请求（HTTPS），JSON形式 

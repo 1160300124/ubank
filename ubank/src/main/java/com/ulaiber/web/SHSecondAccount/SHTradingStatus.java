@@ -4,6 +4,7 @@ import com.koalii.svs.SvsSign;
 import com.koalii.svs.SvsVerify;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.utils.HttpsUtil;
 import com.ulaiber.web.utils.SslTest;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.log4j.Logger;
@@ -70,8 +71,10 @@ public class SHTradingStatus {
             //拼接xml
             String xml = StringUtil.signHeader(interfaceNO,random,date,time) + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
             logger.info(">>>>>>>>>>流水号为"+RqUID+"开始发送请求给上海银行");
+            //发送请求
             SslTest st = new SslTest();
-            String result = st.postRequest(postUrl,xml, 10000);
+            String result = st.postRequest(postUrl,xml, 20000);
+           // String result = HttpsUtil.doPostSSL(postUrl,xml);
             logger.info(">>>>>>>>>>开始解析xml");
             Map<String,Object> resultMap = new HashMap<>();
             Document document = DocumentHelper.parseText(result);

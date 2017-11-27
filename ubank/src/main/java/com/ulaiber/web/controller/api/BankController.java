@@ -72,7 +72,7 @@ public class BankController extends BaseController {
 				String co = bankservice.getCodeByuserid(userid);
 				code = co;
 			}
-			//获取公司绑定的银行信息]
+			//获取公司绑定的银行信息
 			BankAccount bankAccount = bankservice.getBankByCode(code);
 			if(StringUtil.isEmpty(bankAccount)){
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -208,7 +208,7 @@ public class BankController extends BaseController {
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage(sa.getServerStatusCode());
 					map.put("status",status);
-					map.put("secondAcount","");
+					map.put("secondAccount","");
 					resultInfo.setData(map);
 					logger.info(">>>>>>>>>>"+SubAcctNo + " 查询上海二类账户余额失败");
 					return resultInfo;
@@ -219,13 +219,13 @@ public class BankController extends BaseController {
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage("查询余额失败");
 					map.put("status",status);
-					map.put("secondAcount","");
+					map.put("secondAccount","");
 					resultInfo.setData(map);
 					logger.info(">>>>>>>>>>"+SubAcctNo + " 更新二类户余额失败");
 					return resultInfo;
 				}
 				map.put("status",status);
-				map.put("secondAcount",sa);
+				map.put("secondAccount",sa);
 				resultInfo.setCode(IConstants.QT_CODE_OK);
 				resultInfo.setMessage(sa.getServerStatusCode());
 				resultInfo.setData(map);
@@ -301,6 +301,7 @@ public class BankController extends BaseController {
 				withd.setStatus(0);
 				withd.setTrading(0);
 				withd.setUserId(wid.getUserId());
+				withd.setBankNo(wid.getBankNo());
 				//新增提现记录
 				int inResult = bankservice.insertWithdraw(withd);
 				if(inResult == 0){

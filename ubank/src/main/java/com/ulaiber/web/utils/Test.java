@@ -435,10 +435,10 @@ public class Test {
 	}
 
 
-	//上海银行二类户改绑测试
+	//上海银行二类户查余测试
 	@org.junit.Test
 	public void queryBalance(){
-		String str = "623185009300012892";
+		String str = "623185009300026322";
 		SHQueryBalance.queryBalance(str);
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}

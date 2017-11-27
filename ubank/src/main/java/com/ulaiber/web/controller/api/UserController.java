@@ -182,6 +182,7 @@ public class UserController extends BaseController{
 		logger.info(">>>>>>>>>>开始激活钱包操作");
 		ResultInfo resultInfo = new ResultInfo();
 		String status = "";
+		logger.info(">>>>>>>>>>用户名称为：" + user.getUserName() + "ID :" + userId);
 		try {
 			if(bank.getType() == 0){
 				//注册上海银行二类户

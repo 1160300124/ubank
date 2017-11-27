@@ -5,6 +5,7 @@ import com.koalii.svs.SvsVerify;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import com.ulaiber.web.utils.HttpsUtil;
 import com.ulaiber.web.utils.SslTest;
 import com.ulaiber.web.utils.StringUtil;
 import com.ulaiber.web.utils.SysConf;
@@ -89,8 +90,10 @@ public class SHQueryBalance {
 //                    "</YFY0101Rq>" +
 //                    "</BOSFXII>";
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
+            //发送请求
             SslTest st = new SslTest();
-            String result = st.postRequest(postUrl,xml, 10000);
+            String result = st.postRequest(postUrl,xml, 20000);
+           // String result = HttpsUtil.doPostSSL(postUrl,xml);
             logger.info(">>>>>>>>>>开始解析xml");
             SecondAcount sa = new SecondAcount();
             Map<String,Object> resultMap = new HashMap<>();

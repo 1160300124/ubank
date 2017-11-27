@@ -116,9 +116,6 @@ public class User implements Serializable {
 
 	//离职时间
 	private String leaveDate;
-
-	//二类户信息
-	private SecondAcount secondAcount;
 	
 	//工资
 	private double salaries;
@@ -417,14 +414,6 @@ public class User implements Serializable {
 
 	public void setLeaveDate(String leaveDate) {
 		this.leaveDate = leaveDate;
-	}
-
-	public SecondAcount getSecondAcount() {
-		return secondAcount;
-	}
-
-	public void setSecondAcount(SecondAcount secondAcount) {
-		this.secondAcount = secondAcount;
 	}
 
 	public double getSalaries() {

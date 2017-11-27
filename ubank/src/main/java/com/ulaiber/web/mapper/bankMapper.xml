@@ -82,9 +82,9 @@
 
 	<!--新增提现记录-->
 	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
-		INSERT INTO tbl_withdraw(userid,SubAcctNo,RqUID,BindCardNo,Amount,BizDate,Currency,TheirRef,
+		INSERT INTO tbl_withdraw(userid,SubAcctNo,RqUID,bankNo,BindCardNo,Amount,BizDate,Currency,TheirRef,
 		    Purpose,Attach,MemoInfo,type,CreateDate,updateTime,status,trading,sortTime)
-			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{BindCardNo},#{Amount},#{BizDate},#{Currency},
+			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{bankNo},#{BindCardNo},#{Amount},#{BizDate},#{Currency},
 			    #{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{updateTime},#{status},#{trading},#{sortTime})
 	</insert>
 
@@ -94,8 +94,8 @@
 			select a.SubAcctNo,a.amount,a.trading ,a.status as tradingStatus,a.CreateDate,a.updateTime,
 				c.bankCardNo,d.name as bankName,a.RqUID,a.sortTime  from tbl_withdraw a
 			    left join tbl_userToBank c on a.userid = c.userid
-			    left join tbl_bindBank d on c.bankNo = d.bankNo
-			    where a.SubAcctNo = #{SubAcctNo}
+			    left join tbl_bindBank d on a.bankNo = d.bankNo
+			    where c.disabled = 0 and a.SubAcctNo = #{SubAcctNo}
 			union all
 			select b.SubAcctNo,b.salaries as amount,b.trading ,b.status as tradingStatus,b.CreateDate,b.updateTime,null as bankCardNo ,
 			    null as bankName,b.did as RqUID,null as sortTime from tbl_salaries_detail b

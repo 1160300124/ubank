@@ -90,9 +90,11 @@ public class ShangHaiAccount {
 //                    "</BOSFXII>";
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
+            //发送请求
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 30000);
-           // logger.info(">>>>>>>>>>请求结果为：" + result);
+            //String result = HttpsUtil.doPostSSL(postUrl,xml);
+            logger.info(">>>>>>>>>>请求结果为：" + result);
           //  System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
             Map<String,Object> resultMap = new HashMap<>();
             logger.info(">>>>>>>>>>开始解析xml");

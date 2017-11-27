@@ -12,6 +12,7 @@ public class Withdraw implements Serializable{
     private String SubAcctNo;           //平台理财专属子账户
     private String ProductCd;           //理财产品参数
     private String BindCardNo;          //银行卡号
+    private String bankNo;              //银行编号
     private double Amount;              //交易金额
     private String BizDate;             //交易日期
     private String Currency;            //入账币种
@@ -68,6 +69,14 @@ public class Withdraw implements Serializable{
 
     public void setBindCardNo(String bindCardNo) {
         BindCardNo = bindCardNo;
+    }
+
+    public String getBankNo() {
+        return bankNo;
+    }
+
+    public void setBankNo(String bankNo) {
+        this.bankNo = bankNo;
     }
 
     public double getAmount() {
