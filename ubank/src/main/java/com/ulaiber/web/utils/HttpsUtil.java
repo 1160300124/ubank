@@ -1,12 +1,13 @@
 package com.ulaiber.web.utils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -326,9 +329,6 @@ public class HttpsUtil {
         CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
         		.setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();  
         HttpPost httpPost = new HttpPost(apiUrl);
-        //httpPost.setHeader("Accept", "application/json;charset=utf-8");
-       // httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-        httpPost.setHeader("Content-Type", "text/plain; charset=utf-8");
         CloseableHttpResponse response = null;  
         String httpStr = null;  
   
@@ -488,4 +488,33 @@ public class HttpsUtil {
         }  
         return sslsf;  
     } 
+    
+    @SuppressWarnings("deprecation")
+	public static SSLConnectionSocketFactory createSSLConnSocketFactory2(){
+    	SSLConnectionSocketFactory sslsf = null;
+		try {
+			X509TrustManager x509mgr = new X509TrustManager() {
+				@Override
+				public void checkClientTrusted(X509Certificate[] xcs, String string) {
+				}
+				@Override
+				public void checkServerTrusted(X509Certificate[] xcs, String string) {
+				}
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+			};
+			SSLContext sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(null, new TrustManager[] { x509mgr }, new java.security.SecureRandom());
+			sslsf = new SSLConnectionSocketFactory(
+					sslContext,
+					SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		}
+    	return sslsf;
+    }
 }

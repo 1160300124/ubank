@@ -26,6 +26,12 @@ public interface SalaryDetailDao {
      * @return
      */
     int batchUpdate(List<SalaryDetail> details);
+    
+    /**
+     * 批量更新状态
+     * @return
+     */
+    int batchUpdateStatusBySid(List<SalaryDetail> details);
 
     /**
      * 根据工资流水id查询流水详情

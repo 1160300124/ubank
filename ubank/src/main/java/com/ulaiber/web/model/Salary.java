@@ -45,9 +45,14 @@ public class Salary {
 	private String salaryMonth;
 	
 	/**
-	 * 工资发放时间
+	 * 工资发放时间(对应浦发银企直连5652接口的bespeakDate)
 	 */
 	private String salaryDate;
+	
+	/**
+	 * 工资入账日期(对应浦发银企直联接口5630或5635的transDate)
+	 */
+	private String transDate;
 	
 	/**
 	 * 工资单生成时间
@@ -162,6 +167,14 @@ public class Salary {
 
 	public void setSalaryDate(String salaryDate) {
 		this.salaryDate = salaryDate;
+	}
+
+	public String getTransDate() {
+		return transDate;
+	}
+
+	public void setTransDate(String transDate) {
+		this.transDate = transDate;
 	}
 
 	public String getSalaryCreateTime() {

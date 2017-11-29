@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.Departments;
+import com.ulaiber.web.model.Payee;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.Salary;
 import com.ulaiber.web.model.SalaryDetail;
@@ -32,7 +33,7 @@ import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.SPDBUtil;
 
 /** 
- * 工资控制位
+ * 工资控制器
  *
  * @author  huangguoqing
  * @date 创建时间：2017年10月25日 下午5:47:09
@@ -44,6 +45,21 @@ import com.ulaiber.web.utils.SPDBUtil;
 public class SalaryController extends BaseController {
 	
 	private static Logger logger = Logger.getLogger(SalaryController.class);
+	
+	/**
+	 * 待发放工资状态
+	 */
+	private static String prepareStatus = "0,1,2,4,5,J,k,q";
+	
+	/**
+	 * 发放失败工资状态
+	 */
+	private static String failStatus = "3,6,7,E,G,H,I,Y";
+	
+	/**
+	 * 发放成功工资状态
+	 */
+	private static String successStatus = "S";
 	
 	@Autowired
 	private SalaryService service;
@@ -72,6 +88,16 @@ public class SalaryController extends BaseController {
 		return "salaryDetail";
 	}
 	
+	/**
+	 * 工资列表
+	 * @param limit  每页多少条
+	 * @param offset 从多少条数据开始
+	 * @param order  排序
+	 * @param search 搜索关键字
+	 * @param request request
+	 * @param response response
+	 * @return Map<String, Object>
+	 */
 	@RequestMapping(value = "getSalaries", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> getSalaries(int limit, int offset, String order, String search, HttpServletRequest request, HttpServletResponse response){
@@ -82,22 +108,67 @@ public class SalaryController extends BaseController {
 			if (StringUtils.isNotEmpty(sa.getEntrustSeqNo())){
 				String oldStatus = sa.getStatus();
 				String newStatus = "";
-				if (!StringUtils.equals(oldStatus, "5")){
+				if (!StringUtils.equals(successStatus, oldStatus) && prepareStatus.contains(oldStatus)){
 					Map<String, Object> params = new HashMap<String, Object>();
 					params.put("seqNo", sa.getEntrustSeqNo());
 					params.put("beginDate", sa.getSalaryDate().replaceAll("-", ""));
 					params.put("endDate", DateTimeUtil.getMonthEnd(sa.getSalaryDate()).replaceAll("-", ""));
-				    newStatus = SPDBUtil.getPayResult(params);
-//				    newStatus = "5";
+					Map<String, Object> resultMap = SPDBUtil.getPayResult(params);
+					
+//					List<Payee> payees = new ArrayList<Payee>();
+//					Payee payee2 = new Payee();
+//					payee2.setPayeeName("小李");
+//					payee2.setPayeeAcctNo("6217921102903120");
+//					payee2.setAmount(0.01);
+//					payee2.setNote("代发工资");
+//					payee2.setMessage("EAG1030:客户帐号类型不正确");
+//					
+//					Payee payee1 = new Payee();
+//					payee1.setPayeeName("李良");
+//					payee1.setPayeeAcctNo("6235591104059580");
+//					payee1.setAmount(0.01);
+//					payee1.setNote("代发工资");
+//					payee1.setMessage("");
+//					payees.add(payee1);
+//					payees.add(payee2);
+//					
+//					Map<String, Object> resultMap = new HashMap<>();
+//					resultMap.put("transstatus", "5");
+//					resultMap.put("transdate", "20171115");
+//					resultMap.put("payeeList", payees);
+					newStatus = resultMap.get("transstatus").toString();
+					String transDate = resultMap.get("transdate").toString();
+					//发工资成功
+					if (StringUtils.equals(newStatus, "5") && StringUtils.isNotEmpty(transDate)){
+						newStatus = successStatus;
+						sa.setTransDate(transDate);
+					}
+					List<Payee> payeeList = (List<Payee>)resultMap.get("payeeList");
+					List<SalaryDetail> details = new ArrayList<SalaryDetail>();
+					for (Payee payee : payeeList){
+						SalaryDetail detail = new SalaryDetail();
+						detail.setSid(sa.getSid());
+						detail.setSubAcctNo(payee.getPayeeAcctNo());
+						detail.setStatus(StringUtils.isEmpty(payee.getMessage()) ? "2" : "1");
+						detail.setRemark(payee.getMessage());
+						details.add(detail);
+					}
 					sa.setStatus(newStatus);
+					sa.setDetails(details);
 					//if new status != old status 更新工资流水状态
 					if (!StringUtils.equals(oldStatus, newStatus)){
-						service.updateStatusBySeqNo(sa);
+						service.updateStatusBySid(sa);
 					}
 				}
 				//状态转换
 				String status = StringUtils.isEmpty(newStatus) ? oldStatus : newStatus;
-				sa.setStatus(IConstants.TRANS_STATUS.get(status));
+				if (prepareStatus.contains(status)){
+					sa.setStatus("待发放：" + IConstants.TRANS_STATUS.get(status));
+				} else if (failStatus.contains(status)){
+					sa.setStatus("发放失败：" + IConstants.TRANS_STATUS.get(status));
+				} else if (successStatus.contains(status)){
+					sa.setStatus("发放成功");
+				}
 			}
 		}
 		
