@@ -1,6 +1,19 @@
 package com.ulaiber.web.service.impl;
 
-import com.ulaiber.web.controller.backend.SalaryAuditController;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ulaiber.web.dao.LeaveAuditDao;
 import com.ulaiber.web.dao.SalaryAuditDao;
 import com.ulaiber.web.model.LeaveRecord;
@@ -9,15 +22,6 @@ import com.ulaiber.web.model.SalaryRecord;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.SalaryAuditService;
 import com.ulaiber.web.utils.StringUtil;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * 工资审批业务接口实现类
@@ -91,4 +95,9 @@ public class SalaryAuditServiceImpl extends BaseService implements SalaryAuditSe
     public SalaryRecord querySalaryByRecordNo(int recordNo) {
         return salaryAuditDao.querySalaryByRecordNo(recordNo);
     }
+
+	@Override
+	public List<Map<String, Object>> getSalaryDetailByRecordNo(int recordNo) {
+		return salaryAuditDao.getSalaryDetailByRecordNo(recordNo);
+	}
 }

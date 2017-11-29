@@ -19,6 +19,7 @@
     	<result column="total_amount" property="totalAmount" jdbcType="DOUBLE" />
     	<result column="salary_month" property="salaryMonth" jdbcType="VARCHAR" />
     	<result column="salary_date" property="salaryDate" jdbcType="VARCHAR" />
+    	<result column="trans_date" property="transDate" jdbcType="VARCHAR" />
     	<result column="salary_createTime" property="salaryCreateTime" jdbcType="VARCHAR" />
     	<result column="approve_ids" property="approveIds" jdbcType="VARCHAR" />
     	<result column="approve_names" property="approveNames" jdbcType="VARCHAR" />
@@ -65,7 +66,7 @@
 	</select>
 	
 	<update id="updateStatusBySeqNo" parameterType="Salary">
-		update tbl_salaries set status=#{status} where entrustSeqNo=#{entrustSeqNo}
+		update tbl_salaries set status=#{status},trans_date=#{transDate} where entrustSeqNo=#{entrustSeqNo}
 	</update>
 	
 	<delete id="batchDeleteSalaries" parameterType="java.util.List">  

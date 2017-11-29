@@ -17,6 +17,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.ulaiber.web.model.Payee;
@@ -375,14 +376,8 @@ public class SPDBUtil {
      * 6-业务数据处理失败
 	 * 7-撤销
 	 */
-	public static String getPayResult(Map<String, Object> params){
+	public static Map<String, Object> getPayResult(Map<String, Object> params){
 		logger.info("getPayResult start...");
-//		BISAFE_IP = getProperty("BISAFE_IP", BISAFE_IP); 
-//		BISAFE_SIGN_PORT = getProperty("BISAFE_SIGN_PORT", BISAFE_SIGN_PORT);
-//		BISAFE_HTTP_PORT = getProperty("BISAFE_HTTP_PORT", BISAFE_HTTP_PORT);
-//		UNIT_NUM = getProperty("UNIT_NUM", UNIT_NUM);
-//		CLIENT_MASTER_ID = getProperty("CLIENT_MASTER_ID", CLIENT_MASTER_ID);
-//		CLIENT_ACCT_NO = getProperty("CLIENT_ACCT_NO", CLIENT_ACCT_NO);
 		String authMasterID = getProperty("CLIENT_MASTER_ID", CLIENT_MASTER_ID); 
 		String acctNo = getProperty("CLIENT_ACCT_NO", CLIENT_ACCT_NO); 
 		String seqNo = params.get("seqNo").toString();
@@ -426,9 +421,37 @@ public class SPDBUtil {
 					logger.error("[getPayResult] response body sign failed, result code: " + doc1.getElementsByTag("result").get(0).text());
 					return null;
 				}
-				Elements eles1 = doc1.getElementsByTag("sic");
+				Elements sicEles = doc1.getElementsByTag("sic");
 				logger.info("[getPayResult] sic body: " + doc1.getElementsByTag("sic"));
-				return eles1.select("transstatus").text();
+				Map<String, Object> data = new HashMap<String, Object>();
+				String status = sicEles.select("transstatus").text();
+				data.put("transstatus", status);
+				if (StringUtils.equals(status, "5")){
+					data.put("unitno", sicEles.select("unitno").text());
+					data.put("businesstype", sicEles.select("businesstype").text());
+					data.put("acctno", sicEles.select("acctno").text());
+					data.put("transdate", sicEles.select("transdate").text());
+					data.put("totalnumber", sicEles.select("totalnumber").text());
+					data.put("totalamount", sicEles.select("totalamount").text());
+					data.put("successcount", sicEles.select("successcount").text());
+					data.put("successamount", sicEles.select("successamount").text());
+					data.put("failcount", sicEles.select("failcount").text());
+					data.put("failamount", sicEles.select("failamount").text());
+
+					List<Payee> payeeList = new ArrayList<Payee>();
+					Elements salaryEles = sicEles.select("list");
+					for (Element salary : salaryEles){
+						Payee payeer = new Payee();
+						payeer.setPayeeAcctNo(salary.select("payeeacctno").text());
+						payeer.setPayeeName(salary.select("payeename").text());
+						payeer.setAmount(Double.parseDouble(salary.select("amount").text()));
+						payeer.setNote(salary.select("note").text());
+						payeer.setMessage(salary.select("message").text());
+						payeeList.add(payeer);
+					}
+					data.put("salaryList", payeeList);
+				}
+				return data;
 			}
 		} catch (DocumentException e) {
 			logger.error("parse response failed.", e);
@@ -577,7 +600,74 @@ public class SPDBUtil {
 		
 //		System.out.println("-----------------------------------------------" + transStatus);
 		
-		System.err.println(getProperty("BISAFE_IP"));
+
+		String html = "<sic>" +  
+		  "<unitno>19630031</unitno>" +
+		  "<businesstype>1001</businesstype>" + 
+		  "<acctno>19630155200001772</acctno>" +  
+		  "<transdate>20170811</transdate>" + 
+		  "<totalnumber>3</totalnumber>" +
+		  "<totalamount>0.03</totalamount>" +  
+		  "<successcount>0</successcount>" +
+		  "<successamount>0.00</successamount>" +   
+		  "<failcount>3</failcount>" +  
+		  "<failamount>0.03</failamount>" +  
+		  "<transstatus>5</transstatus>" +  
+		  "<lists name=\"SalaryList\">" + 
+		    "<list>" + 
+		      "<payeeacctno>62179211029031201</payeeacctno>" +  
+		      "<payeename>和俊杰</payeename>" +  
+		      "<amount>0.01</amount>" +  
+		      "<note>生产环境测试</note>" +  
+		      "<message>EAG1030:客户帐号类型不正确</message>" + 
+		    "</list>" +  
+		    "<list>" +
+		      "<payeeacctno>62355911040595801</payeeacctno>" +  
+		      "<payeename>李良</payeename>" +  
+		      "<amount>0.01</amount>" +  
+		      "<note>生产环境测试</note>" +  
+		      "<message>EAG1030:客户帐号类型不正确</message>" + 
+		    "</list>" +
+		    "<list>" + 
+		      "<payeeacctno>62355911040601671</payeeacctno>" +  
+		      "<payeename>莫立亮</payeename>" +  
+		      "<amount>0.01</amount>" +  
+		      "<note>生产环境测试</note>" +  
+		      "<message>EAG1030:客户帐号类型不正确</message>" + 
+		    "</list>" + 
+		  "</lists>" +
+		"</sic>";
 		
+		Document doc = Jsoup.parse(html);
+		Elements eles = doc.getElementsByTag("sic");
+		Map<String, Object> data = new HashMap<String, Object>();
+		String status = eles.select("transstatus").text();
+		data.put("transstatus", status);
+		if (StringUtils.equals(status, "5")){
+			data.put("unitno", eles.select("unitno").text());
+			data.put("businesstype", eles.select("businesstype").text());
+			data.put("acctno", eles.select("acctno").text());
+			data.put("transdate", eles.select("transdate").text());
+			data.put("totalnumber", eles.select("totalnumber").text());
+			data.put("totalamount", eles.select("totalamount").text());
+			data.put("successcount", eles.select("successcount").text());
+			data.put("successamount", eles.select("successamount").text());
+			data.put("failcount", eles.select("failcount").text());
+			data.put("failamount", eles.select("failamount").text());
+
+			List<Payee> payeeList = new ArrayList<Payee>();
+			Elements salaryEles = eles.select("list");
+			for (Element salary : salaryEles){
+				Payee payeer = new Payee();
+				payeer.setPayeeAcctNo(salary.select("payeeacctno").text());
+				payeer.setPayeeName(salary.select("payeename").text());
+				payeer.setAmount(Double.parseDouble(salary.select("amount").text()));
+				payeer.setNote(salary.select("note").text());
+				payeer.setMessage(salary.select("message").text());
+				payeeList.add(payeer);
+			}
+			data.put("salaryList", payeeList);
+		}
+		System.out.println(data);
 	}
 }

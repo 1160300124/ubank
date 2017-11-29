@@ -357,7 +357,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
     	Salary salary = dao.getSalaryBySid(salaryId);
     	if (salary.getTotalNumber() != details.size() || salary.getTotalAmount() != amount){
 			info.setMessage("工资总笔数或总金额不相符，请检查工资表！");
-			info.setCode(IConstants.QT_GET_BALANCE_ERROR);
+			info.setCode(IConstants.QT_CODE_ERROR);
 			return info;
 		}
     	String bespearkDate = salary.getSalaryDate().replaceAll("-", "");
@@ -392,6 +392,15 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
     		logger.info("paySalaries failed.");
     	}
 		return info;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public boolean updateStatusBySid(Salary salary) {
+		if (dao.updateStatusBySeqNo(salary) > 0){
+			return detailDao.batchUpdateStatusBySid(salary.getDetails()) > 0;
+		}
+		return false;
 	}
 
 }
