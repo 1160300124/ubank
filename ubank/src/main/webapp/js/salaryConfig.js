@@ -137,6 +137,13 @@ $(function () {
 		});
 	}
 	
+	//点击选中列，判断checkbox选中与取消选中
+	$('#tb_saraly_configs').on('click-cell.bs.table', function (e, field, value, row, $element){
+		
+	});
+	
+	
+	
 	$("#btn_import_user_info").unbind().bind("click", function(){
 		var select = $("#company_select").val();
 		if (select == "" || select == null || select == undefined){

@@ -183,6 +183,34 @@ $(function(){
 
 	});
 	
+	loadGroups();
+    //获取所有集团
+    function loadGroups() {
+        $.ajax({
+            url : 'getAllGroup',
+            dataType : 'json',
+            type : 'post',
+            data:  {
+                "groupNumber" : GROUPNUMBER,
+                "sysflag" : SYSFLAG
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    return;
+                }
+                var option = "";
+                for (var i = 0; i < data.length; i++){
+                        option += "<option value='"+ data[i].groupNumber +"'>"+data[i].name+"</option>";
+                }
+                $("#group_select").html(option);
+            },
+            error : function () {
+                Ewin.alert("操作异常");
+            }
+        })
+    }
+	
+	
 	loadCompanys();
 	function loadCompanys(){
 		var select = $("#company_select").empty();

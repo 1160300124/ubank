@@ -114,9 +114,14 @@ public class AttendanceController extends BaseController {
 	@ResponseBody
 	public List<Company> getCompanys(HttpServletRequest request, HttpServletResponse response){
 		logger.debug("getCompanys start...");
+		List<Company> companys = null;
 		User user = getUserFromSession(request);
-		String[] companyNums = user.getCompanyNumber().split(",");
-		List<Company> companys = permissionService.getCompanysByNums(companyNums);
+		if (StringUtils.equals(user.getUserName(), "admin")){
+			companys = permissionService.getAllCompany("0", "", "");
+		} else {
+			String[] companyNums = user.getCompanyNumber().split(",");
+			companys = permissionService.getCompanysByNums(companyNums);
+		}
 		logger.debug("getCompanys end...");
 		return companys;
 	}
