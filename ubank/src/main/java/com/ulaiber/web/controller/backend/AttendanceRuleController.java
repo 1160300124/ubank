@@ -104,27 +104,31 @@ public class AttendanceRuleController extends BaseController {
 	
 	@RequestMapping(value = "getDeptsAndUsers", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map<String, Object>> getDeptsAndUsers(String search, HttpServletRequest request, HttpServletResponse response){
+	public List<Map<String, Object>> getDeptsAndUsers(String rid, String search, HttpServletRequest request, HttpServletResponse response){
 		
 		User conuser = getUserFromSession(request);
 		List<Map<String, Object>> companyTree = new ArrayList<Map<String, Object>>();
 		try {
-			String[] companyNums = conuser.getCompanyNumber().split(",");
-			List<Company> companys = permissionService.getCompanysByNums(companyNums);
-			Map<String, String> comMap = new HashMap<String, String>();
-			for (Company com : companys){
-				comMap.put(com.getCompanyNumber() + "", com.getName());
+			List<Company> companys = null;
+			if (StringUtils.equals(conuser.getUserName(), "admin")){
+				companys = permissionService.getAllCompany("0", "", "");
+			} else {
+				String[] companyNums = conuser.getCompanyNumber().split(",");
+				companys = permissionService.getCompanysByNums(companyNums);
 			}
-			for (String companyNum : companyNums){
-				List<UserOfRule> uofs = service.getUserIdsByComId(Integer.parseInt(companyNum));
-				List<Long> userIds = new ArrayList<Long>();
+			for (Company company : companys){
+				List<UserOfRule> uofs = service.getUserIdsByComId(company.getCompanyNumber());
+				List<Long> chkDisabledUserIds = new ArrayList<Long>();
+				List<Long> checkNodeUserIds = new ArrayList<Long>();
 				for (UserOfRule uof : uofs){
-					userIds.add(uof.getUserId());
+					chkDisabledUserIds.add(uof.getUserId());
+					if (StringUtils.equals(uof.getRid() + "", rid)){
+						checkNodeUserIds.add(uof.getUserId());
+					}
 				}
-				List<Departments> depts = permissionService.getDeptByCom(companyNum);
-				List<User> users = userService.getUsersByComNum(companyNum, search);
+				List<Departments> depts = permissionService.getDeptByCom(company.getCompanyNumber() + "");
+				List<User> users = userService.getUsersByComNum(company.getCompanyNumber() + "", search);
 				
-				String companyName = comMap.get(companyNum);
 				List<Map<String, Object>> deptTree = new ArrayList<Map<String, Object>>();
 				for (Departments dept : depts){
 					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -133,8 +137,12 @@ public class AttendanceRuleController extends BaseController {
 							Map<String, Object> userMap = new HashMap<String, Object>();
 							userMap.put("id", user.getId());
 							userMap.put("name", user.getUserName());
-							if (userIds.contains(user.getId())){
+							if (chkDisabledUserIds.contains(user.getId())){
 								userMap.put("chkDisabled", true);
+							}
+							if (checkNodeUserIds.contains(user.getId())){
+								userMap.put("chkDisabled", false);
+								userMap.put("checked", true);
 							}
 							list.add(userMap);
 						}
@@ -142,6 +150,7 @@ public class AttendanceRuleController extends BaseController {
 					Map<String, Object> map = new HashMap<String, Object>();
 					map.put("id", dept.getDept_number());
 					map.put("name", dept.getName());
+					map.put("checked", true);
 					map.put("children" , list);
 					map.put("isParent", true);//设置根节点为父节点
 					map.put("open", true); //根节点展开
@@ -149,8 +158,9 @@ public class AttendanceRuleController extends BaseController {
 				}
 				
 				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("id", companyNum);
-				map.put("name", companyName);
+				map.put("id", company.getCompanyNumber());
+				map.put("name", company.getName());
+				map.put("checked", true);
 				map.put("children" , deptTree);
 				map.put("isParent", true);//设置根节点为父节点
 				map.put("open", true); //根节点展开
