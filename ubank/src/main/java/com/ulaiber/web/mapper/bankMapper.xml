@@ -44,9 +44,9 @@
 
 	<!--根据银行编号获取银行信息-->
 	<select id="queryBanksByNumber" parameterType="String" resultType="com.ulaiber.web.model.Bank">
-		select b.bankNo,a.type,b.name as bankName from tbl_banks a
+		select b.bankNo,a.type,b.name as bankName,b.icon from tbl_banks a
 		inner join tbl_bindBank b on a.type = b.type
-			where a.bankNo = #{bankNumber}
+			where a.bankNo = #{bankNumber} order by convert(name using gbk)
 	</select>
 
 	<!--删除原绑定银行卡-->
@@ -97,9 +97,9 @@
 			    left join tbl_bindBank d on a.bankNo = d.bankNo
 			    where c.disabled = 0 and a.SubAcctNo = #{SubAcctNo}
 			union all
-			select b.SubAcctNo,b.salaries as amount,b.trading ,b.status as tradingStatus,b.CreateDate,b.updateTime,null as bankCardNo ,
-			    null as bankName,b.did as RqUID,null as sortTime from tbl_salaries_detail b
-			    where b.SubAcctNo = #{SubAcctNo}
+			select b.SubAcctNo,b.amount,b.trading ,b.status as tradingStatus,b.BizDate as CreateDate,b.BizTime as updateTime,null as bankCardNo ,
+				null as bankName,b.RqUID,null as sortTime from tbl_transfer b
+				where b.SubAcctNo = #{SubAcctNo}
 		) x ORDER BY x.sortTime DESC limit #{pageNum},#{pageSize}
 	</select>
 
@@ -121,8 +121,9 @@
 
 	<!--根据流水号查询工资转入详情-->
 	<select id="querySalariesByRqUID" parameterType="String" resultType="com.ulaiber.web.model.BillDetail">
-		select a.did as RqUID,a.userName as username,a.CreateDate ,a.updateTime,a.status as tradingStatus from tbl_salaries_detail a
- 			left join tbl_salaries b on a.sid = b.sid where  a.did = #{rqUID}
+		select a.RqUID,b.user_name as username,a.BizDate as CreateDate ,a.BizTime as updateTime,a.status as tradingStatus
+			from tbl_transfer a left join tbl_users b on a.userid = b.user_id
+			where  a.RqUID = #{rqUID}
 	</select>
 
 	<!--根据二类户账号获取CID-->
@@ -141,4 +142,10 @@
 	<select id="getSubByCompanyNum" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
 		select s.userid,s.SubAcctNo from tbl_secondAccount s join tbl_roots r on s.userid=r.userid and r.companyNumber=#{companyNum} 
 	</select>
+
+	<!--插入转账记录-->
+	<insert id="insertTransfer" parameterType="com.ulaiber.web.model.Transfer">
+		INSERT INTO tbl_transfer (userid,SubAcctNo,RqUID,Amount,BizTime,BizDate,TheirRef,status,trading)
+			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{Amount},#{BizTime},#{BizDate},#{TheirRef},#{status},#{trading})
+	</insert>
 </mapper>

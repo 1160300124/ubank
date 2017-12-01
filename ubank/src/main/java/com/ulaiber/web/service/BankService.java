@@ -3,10 +3,7 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.model.BankAccount;
-import com.ulaiber.web.model.Bill;
-import com.ulaiber.web.model.BillDetail;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 
@@ -134,4 +131,11 @@ public interface BankService {
 	 * @return int
 	 */
 	int updateAccFreeze(String subAcctNo);
+
+	/**
+	 * 插入转账记录
+	 * @param tran 转账信息
+	 * @return
+	 */
+    int insertTransfer(Transfer tran);
 }

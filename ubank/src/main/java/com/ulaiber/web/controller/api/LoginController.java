@@ -98,6 +98,15 @@ public class LoginController extends BaseController{
 //					tempUser.setBankName(secondAccount.getBankName());
 					tempUser.setSecondAccount(secondAccount);
 				}
+				//拼接图片地址： 域名 + 图片名称
+				Map<String,Object> configMap = StringUtil.loadConfig();
+				String url = (String) configMap.get("QinNiuYun");
+				if(StringUtil.isEmpty(dbuser.getPay_password())){
+					tempUser.setPay_password("false");
+				}else{
+					tempUser.setPay_password("true");
+				}
+				tempUser.setImage(url + dbuser.getImage());
 				tempUser.setId(dbuser.getId());
 				tempUser.setUserName(dbuser.getUserName());
 				tempUser.setMobile(dbuser.getMobile());
@@ -112,11 +121,11 @@ public class LoginController extends BaseController{
 				tempUser.setDept_name(dbuser.getDept_name());
 				retInfo.setData(tempUser);
 				retInfo.setCode(IConstants.QT_CODE_OK);
-				retInfo.setMessage("登录成功。");
+				retInfo.setMessage("登录成功");
 				logger.info(dbuser.getUserName() + " login successed.");
 			} else {
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
-				retInfo.setMessage("登录失败。");
+				retInfo.setMessage("登录失败");
 				logger.error(dbuser.getUserName() + " login failed.");
 			}
 		}catch(Exception e){

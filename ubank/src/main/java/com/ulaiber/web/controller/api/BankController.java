@@ -4,14 +4,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ulaiber.web.SHSecondAccount.SHQueryBalance;
-import com.ulaiber.web.SHSecondAccount.SHTradingStatus;
-import com.ulaiber.web.SHSecondAccount.SHWithdraw;
+import com.ulaiber.web.SHSecondAccount.*;
 import com.ulaiber.web.model.*;
-import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
-import com.ulaiber.web.SHSecondAccount.SHChangeBinding;
-import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
-import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
+import com.ulaiber.web.model.ShangHaiAcount.*;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -197,9 +192,9 @@ public class BankController extends BaseController {
 			if(type.equals("0")){  // 上海银行二类户
 				ResultInfo result = SHQueryBalance.queryBalance(SubAcctNo);
 				logger.info(">>>>>>>>>> 查询上海二类户余额结果为：" + result);
-				logger.info(">>>>>>>>>>返回data为：" + result.getData());
+				//logger.info(">>>>>>>>>>返回data为：" + result.getData());
 				Map<String,Object> resultMap = (Map<String, Object>) result.getData();
-				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+				//logger.info(">>>>>>>>>resultMap is :" + resultMap);
 				SecondAcount sa = (SecondAcount) resultMap.get("secondAccount");
 				sa.setSubAcctNo(SubAcctNo);
 				status = (String) resultMap.get("status");
@@ -252,15 +247,13 @@ public class BankController extends BaseController {
 		ResultInfo resultInfo = new ResultInfo();
 		Map<String,Object> map = new HashMap<>();
 		String status = "";
-		//设置支付密码
-
 		if(wid.getType().equals("0")){
 			try{
 				//提现
 				ResultInfo result = SHWithdraw.withdraw(wid);
 				logger.info(">>>>>>>>>>上海银行提现结果为：" + result);
 				Map<String,Object> resultMap = (Map<String, Object>) result.getData();
-				logger.info(">>>>>>>>>resultMap is :" + resultMap);
+				//logger.info(">>>>>>>>>resultMap is :" + resultMap);
 				Withdraw withd = (Withdraw) resultMap.get("withdraw");
 				status = (String) resultMap.get("status");
 				if(!"0000".equals(status)){
@@ -337,7 +330,7 @@ public class BankController extends BaseController {
 	 */
 	@RequestMapping(value = "TradingQuery", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo tradingQuery(String SubAcctNo,int userId,String type,int pageNum,int pageSize){
+	public ResultInfo tradingQuery(String SubAcctNo,AccDetailVO vo,int userId,String type,int pageNum,int pageSize){
 		logger.info(">>>>>>>>>>开始二类户交易状态查询");
 		ResultInfo resultInfo = new ResultInfo();
 		Map<String,Object> resMap = new HashMap<>();
@@ -345,18 +338,74 @@ public class BankController extends BaseController {
 		if("0".equals(type)){  //上海银行二类户
             try {
                 pageNum = (pageNum - 1) * pageSize;
+				/**
+				 * 查询账户明细
+				 */
+				vo.setPageSize(pageSize);
+				vo.setSkipRecord(pageNum);
+				vo.setSubAcctNo(SubAcctNo);
+				ResultInfo infoDetails = SHAccountDetail.queryDetail(vo);
+				Map<String,Object> infoMap = (Map<String, Object>) infoDetails.getData();
+				Map<String,Object> detail = (Map<String, Object>) infoMap.get("accDetail");
                 //根据二类账户查询账单
-                Map<String,Object> map = new HashMap<>();
-                map.put("SubAcctNo",SubAcctNo);
-                map.put("pageNum",pageNum);
-                map.put("pageSize",pageSize);
-                List<Bill> wi = bankservice.queryWithdraw(map);
-                if(wi.size() <= 0){
-                    resultInfo.setCode(IConstants.QT_CODE_OK);
-                    resultInfo.setMessage("暂无数据");
-                    logger.info(">>>>>>>>>>类型为"+type+"的二类户交易状态查询结果为："+ wi.size());
-                    return resultInfo;
-                }
+				Map<String,Object> map = new HashMap<>();
+				map.put("SubAcctNo",SubAcctNo);
+				map.put("pageNum",pageNum);
+				map.put("pageSize",pageSize);
+				List<Bill> wi = bankservice.queryWithdraw(map);
+				if(wi.size() <= 0){
+					resultInfo.setCode(IConstants.QT_CODE_OK);
+					resultInfo.setMessage("暂无数据");
+					logger.info(">>>>>>>>>>类型为"+type+"的二类户交易状态查询结果为："+ wi.size());
+					return resultInfo;
+				}
+				if("0000".equals(infoMap.get("status"))){
+					List<SHAccDetail> detailList = (List<SHAccDetail>) detail.get("TxnInfo");
+					if(detailList.size() > 0){
+						//判断账户明细中的流水号是否存在数据库中，如果不存在，则将改记录保存到数据库中
+						boolean flag = true;
+						for (int j = 0 ; j < detailList.size() ; j++){
+							SHAccDetail sd = detailList.get(j);
+							for (int i = 0 ; i < wi.size() ; i++){
+								Bill wd = wi.get(i);
+								if (sd.getTxnBsnId().equals(wd.getRqUID())){
+									flag = false;
+									break;
+								}
+							}
+							if (flag){
+								//插入转账记录
+								Transfer tran = new Transfer();
+								tran.setSubAcctNo(SubAcctNo);
+								tran.setUserId(userId);
+								tran.setRqUID(sd.getTxnBsnId());
+								tran.setAmount(Double.parseDouble(sd.getTxnAmt()));
+								tran.setBizDate(sd.getTxnDate());
+								tran.setBizTime(sd.getTxnTime());
+								tran.setTheirRef(sd.getTheirRef());
+								tran.setStatus(1);
+								tran.setTrading(2);
+								int inResult = bankservice.insertTransfer(tran);
+//							Withdraw withd = new Withdraw();
+//							withd.setCreateDate(sdf.format(new Date()));
+//							withd.setUpdateTime(sd.getTxnTime());
+//							withd.setSortTime(sdf.format(new Date()));
+//							withd.setStatus(1);
+//							withd.setTrading(0);
+//							withd.setType(type);
+//							withd.setUserId(userId);
+//							withd.setSubAcctNo(SubAcctNo);
+//							withd.setRqUID(sd.getTxnBsnId());
+//							withd.setAmount(Double.parseDouble(sd.getTxnAmt()));
+//							withd.setBizDate(sd.getTxnDate());
+//							withd.setCurrency(vo.getCurrency());
+//							withd.setTheirRef(sd.getTheirRef());
+//							int inResult = bankservice.insertWithdraw(withd);
+
+							}
+						}
+					}
+				}
 				//根据用户ID，获取用户CID
 				//Map<String,Object> userMap = bankservice.queryCIDByUserid(userId);
                 for (int i = 0 ; i < wi.size() ; i++){
@@ -368,7 +417,7 @@ public class BankController extends BaseController {
 							ResultInfo result = SHTradingStatus.tradingStatus(RqUID);
 							logger.info(">>>>>>>>>>上海银行二类户交易状态查询结果为：" + result);
 							Map<String,Object> resultMap = (Map<String, Object>) result.getData();
-							logger.info(">>>>>>>>>resultMap is :" + resultMap);
+							//logger.info(">>>>>>>>>resultMap is :" + resultMap);
 							Map<String,Object> tradingMap = (Map<String, Object>) resultMap.get("tradingSta");
 							status = (String) resultMap.get("status");
 							if(!"0000".equals(status)){
@@ -460,13 +509,13 @@ public class BankController extends BaseController {
 				resultInfo.setCode(IConstants.QT_CODE_OK);
 				resultInfo.setMessage("查询成功");
 				resultInfo.setData(bd);
-			}else{ //工资转入
-				//根据流水号查询工资转入详情
+			}else{ //转账记录
+				//根据流水号查询转账详情
 				BillDetail billDet = bankservice.querySalariesByRqUID(RqUID);
 				if(StringUtil.isEmpty(billDet)){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage("暂无数据");
-					logger.error(">>>>>>>>>>查询工资转入详情失败，流水号为：" + RqUID);
+					logger.error(">>>>>>>>>>查询转账详情失败，流水号为：" + RqUID);
 					return resultInfo;
 				}
 				resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -477,6 +526,52 @@ public class BankController extends BaseController {
 			resultInfo.setCode(IConstants.QT_CODE_ERROR);
 			resultInfo.setMessage("查询失败");
 			logger.error(">>>>>>>>>>>查询交易详情失败，流水号为："+ RqUID,e);
+		}
+		return resultInfo;
+	}
+
+	/**
+	 * 查询上海二类户账户明细
+	 * @param vo
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "AccDetail", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo accDetail(AccDetailVO vo){
+		logger.info(">>>>>>>>>>开始查询账户明细");
+		ResultInfo resultInfo = new ResultInfo();
+		String status = "";
+		try {
+			ResultInfo result = SHAccountDetail.queryDetail(vo);
+			Map<String,Object> resultMap = (Map<String, Object>) result.getData();
+			//logger.info(">>>>>>>>>resultMap is :" + resultMap);
+			Map<String,Object> detail = (Map<String, Object>) resultMap.get("accDetail");
+			status = (String) resultMap.get("status");
+			if(!"0000".equals(status)){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage((String) detail.get("ServerStatusCode"));
+				Map<String,Object> param = new HashMap<>();
+				param.put("status",status);
+				resultInfo.setData(param);
+				logger.info(">>>>>>>>>>上海银行二类户查询账户明细失败，二类户账号为"+ vo.getSubAcctNo());
+				return resultInfo;
+			}
+			List<SHAccDetail> detailList = (List<SHAccDetail>) detail.get("TxnInfo");
+
+			return result;
+//			resultInfo.setCode(IConstants.QT_CODE_OK);
+//			resultInfo.setMessage((String) detail.get("ServerStatusCode"));
+//			Map<String,Object> param = new HashMap<>();
+//			param.put("status",status);
+//			param.put("accDetail",detail);
+//			resultInfo.setData(param);
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("查询账户明细失败");
+			Map<String,Object> param = new HashMap<>();
+			param.put("status",status);
+			resultInfo.setData(param);
+			logger.error(">>>>>>>>>>查询账户明细失败",e);
 		}
 		return resultInfo;
 	}

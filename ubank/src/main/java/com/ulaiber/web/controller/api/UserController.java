@@ -106,55 +106,8 @@ public class UserController extends BaseController{
 				logger.error(">>>>>>>>>>插入用户信息异常");
 				return retInfo;
 			}
-			// 0 上海银行二类户
-//			if(bank.getType() == 0){
-//
 //				//注册上海二类户
 //				//ResultInfo info = reigsterAcc(user,file,request);
-////				ResultInfo ri = ShangHaiAccount.register(param);
-////				logger.info(">>>>>>>>>> 注册结果为：" + ri);
-////				Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-////				logger.info(">>>>>>>>>resultMap is :" + resultMap);
-////				SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
-////				status = (String) resultMap.get("status");
-////				if(!"0000".equals(status)){
-////					retInfo.setCode(IConstants.QT_CODE_ERROR);
-////					retInfo.setMessage(sa.getServerStatusCode());
-////					retInfo.setData(status);
-////					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
-////					return retInfo;
-////				}
-////				String SubAcctNo = sa.getSubAcctNo();
-////				String EacctNo = sa.getEacctNo();
-////				//上传图片到sftp服务器上
-////				ResultInfo uploadResult = UploadImg(file,SubAcctNo,EacctNo,request);
-////				if(uploadResult.getCode() != 1000){
-////					retInfo.setCode(IConstants.QT_CODE_ERROR);
-////					retInfo.setMessage("上传图片失败");
-////					logger.error(">>>>>>>>>>"+user.getMobile() +"上传图片失败" );
-////					return retInfo;
-////				}
-//				if(info.getCode() == 1000){
-//					Map<String,Object> map = (Map<String, Object>) info.getData();
-//					SecondAcount sa = (SecondAcount) map.get("sa");
-//					status = (String) map.get("status");
-//					//新增用户权限层级信息
-//					user.setBank(bank);
-//					sa.setCreateDate(SDF.format(new Date()));
-//					long bankNo = Long.parseLong(bank.getBankNo());
-//					String bankCardNo = user.getBankCardNo();
-//					int type = bank.getType();
-//					int save = userService.save(user,code);
-//					if(save == 0){
-//						retInfo.setCode(IConstants.QT_CODE_ERROR);
-//						retInfo.setMessage("注册失败");
-//						retInfo.setData(status);
-//						logger.error(">>>>>>>>>>插入用户信息异常");
-//						return retInfo;
-//					}
-//				}
-//
-//			}
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("注册成功");
 				retInfo.setData(status);
@@ -394,6 +347,15 @@ public class UserController extends BaseController{
 				logger.info(userid + ">>>>>>>>>>二类户数据为：" + secondAccount);
 				retInfo.setCode(IConstants.QT_CODE_OK);
 				retInfo.setMessage("获取用户信息成功");
+				//拼接图片地址： 域名 + 图片名称
+				Map<String,Object> configMap = StringUtil.loadConfig();
+				String url = (String) configMap.get("QinNiuYun");
+				if(StringUtil.isEmpty(user.getPay_password())){
+					tempUser.setPay_password("false");
+				}else{
+					tempUser.setPay_password("true");
+				}
+				tempUser.setImage(url + user.getImage());
 				tempUser.setId(user.getId());
 				tempUser.setUserName(user.getUserName());
 				tempUser.setMobile(user.getMobile());
@@ -513,37 +475,34 @@ public class UserController extends BaseController{
 	/**
 	 * 忘记支付密码
 	 * 
-	 * @param mobile
-	 * @param captcha
-	 * @param password
-	 * @param confirm_password
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param mobile 手机号
+	 * @param captcha 验证码
+	 * @param password 密码
+	 * @param confirm_password 确认密码
+	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "forgetPayPassword", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo forgetPayPassword(String mobile, String captcha, String password, String confirm_password,
-			HttpServletRequest request, HttpServletResponse response){
-		logger.debug("forgetPayPassword start...");
+	public ResultInfo forgetPayPassword(String mobile, String captcha, String password, String confirm_password){
+		logger.info(">>>>>>>>>>开始找回密码");
 		ResultInfo retInfo = new ResultInfo();
 		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password)){
 			logger.error("params can not be null.");
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("参数不能为空。");
+			retInfo.setMessage("参数不能为空");
 			return retInfo;
 		}
 		if (!StringUtils.equals(password, confirm_password)){
 			logger.error("confirmed password and new password do not match.");
 			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("新密码与确认密码不一致。");
+			retInfo.setMessage("新密码与确认密码不一致");
 			return retInfo;
 		}
 		String cap = captchaMap.get(mobile);
 		if (!StringUtils.equals(captcha, cap)){
 			logger.error("captcha error.");
 			retInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
-			retInfo.setMessage("验证码错误。");
+			retInfo.setMessage("验证码错误");
 			return retInfo;
 		}
 		
@@ -551,12 +510,12 @@ public class UserController extends BaseController{
 		if (flag){
 			captchaMap.remove(mobile);
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("找回支付成功。");
+			retInfo.setMessage("找回支付成功");
 			logger.info(mobile + "find pay password successed.");
 		}
 		else {
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
-			retInfo.setMessage("找回支付密码失败。");
+			retInfo.setMessage("找回支付密码失败");
 			logger.error(mobile +  "find pay password failed.");
 		}
 		
@@ -564,33 +523,39 @@ public class UserController extends BaseController{
 		return retInfo;
 	}
 
-	
+
 	/**
 	 * 验证支付密码
-	 * @param request
-	 * @param response
+	 * @param mobile 电话号
+	 * @param password 密码
+	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "validatePayPwd", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo validatePayPwd(String mobile, String password, HttpServletRequest request, HttpServletResponse response){
-		logger.debug("validatePayPwd start...");
+	public ResultInfo validatePayPwd(String mobile, String password){
+		logger.info(">>>>>>>>>>开始验证支付密码");
 		ResultInfo info = new ResultInfo();
-		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password)){
-			logger.error("mobile or password can not be null.");
+		try {
+			if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password)){
+				logger.error("参数不能为空.");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("参数不能为空");
+				return info;
+			}
+			if(userService.validatePayPwd(mobile, password)){
+				logger.info(mobile + " 验证支付密码成功");
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("支付密码校验成功");
+			} else {
+				logger.error(mobile + " validate pay password failed.");
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("支付密码错误");
+			}
+		}catch (Exception e){
 			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("参数不能为空。");
-			return info;
+			info.setMessage("验证密码失败");
+			logger.error(">>>>>>>>>>验证密码失败",e);
 		}
-		if(userService.validatePayPwd(mobile, password)){
-			logger.info(mobile + " validate pay password successed.");
-			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("支付密码校验成功。");
-		} else {
-			logger.error(mobile + " validate pay password failed.");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("支付密码错误。");
-		}
-		logger.debug("validatePayPwd end...");
 		return info;
 	}
 	
@@ -762,6 +727,34 @@ public class UserController extends BaseController{
 		}
 	}
 
+	/**
+	 * 上传头像
+	 * @param userId 用户ID
+	 * @param image 头像
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "iconUpload", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo uploadIcon(String userId,String image){
+		logger.info(">>>>>>>>>>开始上传头像");
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+			int result = userService.uploadIcon(userId,image);
+			if(result <= 0){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("上传失败");
+				logger.error(">>>>>>>>>>上传头像失败,用户ID为"+userId+"");
+				return resultInfo;
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("上传成功");
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("上传失败");
+			logger.error(">>>>>>>>>>上传头像失败",e);
+		}
+		return resultInfo;
+	}
 
 
 

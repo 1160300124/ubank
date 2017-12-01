@@ -10,16 +10,13 @@ import javax.annotation.Resource;
 
 import com.ulaiber.web.dao.LeaveAuditDao;
 import com.ulaiber.web.dao.UserDao;
-import com.ulaiber.web.model.BankAccount;
-import com.ulaiber.web.model.Bill;
-import com.ulaiber.web.model.BillDetail;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.ulaiber.web.dao.BankDao;
-import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.service.BankService;
 import com.ulaiber.web.service.BaseService;
 import org.springframework.transaction.annotation.Propagation;
@@ -173,6 +170,12 @@ public class BankServiceImpl extends BaseService implements BankService {
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
     public int updateAccFreeze(String subAcctNo) {
         return mapper.updateAccFreeze(subAcctNo);
+    }
+
+    @Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int insertTransfer(Transfer tran) {
+        return mapper.insertTransfer(tran);
     }
 
 

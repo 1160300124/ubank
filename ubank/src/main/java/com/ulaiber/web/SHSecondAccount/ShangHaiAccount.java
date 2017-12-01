@@ -56,7 +56,6 @@ public class ShangHaiAccount {
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
-            logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
             map.put("SPName","CBIB");
             map.put("RqUID",random);

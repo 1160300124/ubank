@@ -16,6 +16,9 @@ public class Bank implements Serializable{
 	//银行连号
 	private String number;
 
+	//图标
+	private String icon;
+
 	public String getBankNo() {
 		return bankNo;
 	}
@@ -46,5 +49,13 @@ public class Bank implements Serializable{
 
 	public void setNumber(String number) {
 		this.number = number;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 }

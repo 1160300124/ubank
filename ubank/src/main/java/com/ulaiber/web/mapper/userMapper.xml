@@ -78,12 +78,13 @@
 	
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getUserByMobile" parameterType="String" resultMap="UserMap">
-		select u.*,r.groupNumber,r.companyNumber as companyId,r.dept_number,l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
+		select u.*,r.groupNumber,r.companyNumber as companyId,r.dept_number,l.companyNumber,
+		  r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
 		left join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
 		left join tbl_departments d on r.dept_number = d.dept_number
 		left join tbl_company c on r.companyNumber = c.companyNumber
-		where disabled = '0' and u.mobile=#{mobile}
+		where u.disabled = '0' and u.mobile=#{mobile}
 	</select>
 	
 	<select id="findAll" resultMap="UserMap">
@@ -143,7 +144,7 @@
 		INSERT INTO tbl_secondAccount (userid,EacctNo,CustName,SubAcctNo,CoopCustNo,ProductCd,Sign,FundCode
 				,AcctOpenResult,AcctOpenDesc,FundAcctOpenResult,FundAcctOpenDesc,FundAcct,FundTxnAcct,disabled,createDate,freeze)
 			VALUES (#{userid},#{EacctNo},#{CustName},#{SubAcctNo},#{CoopCustNo},#{ProductCd},#{Sign},#{FundCode},
-			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct},0,#{createDate},'0')
+			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct},0,#{createDate},'1')
 	</insert>
 
 	<!--根据公司编号查询绑定的银行-->
@@ -191,5 +192,10 @@
 	<!--修改密码-->
 	<update id="modifyPwd" parameterType="Map">
 		UPDATE tbl_users SET  login_password = #{password} where mobile = #{mobile}
+	</update>
+
+	<!--上传头像-->
+	<update id="uploadIcon" parameterType="Map" >
+		UPDATE tbl_users SET image = #{image} where user_id = #{userId}
 	</update>
 </mapper>

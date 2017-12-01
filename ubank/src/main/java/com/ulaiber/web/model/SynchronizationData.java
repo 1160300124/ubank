@@ -11,6 +11,7 @@ public class SynchronizationData implements Serializable {
     private String username;    //用户名
     private String deptName;    //部门名称
     private String image;       //头像
+    private String mobile;      //电话
     private String disabled;    //是否作废；0 否，1 是
 
     public long getId() {
@@ -51,5 +52,13 @@ public class SynchronizationData implements Serializable {
 
     public void setDisabled(String disabled) {
         this.disabled = disabled;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }

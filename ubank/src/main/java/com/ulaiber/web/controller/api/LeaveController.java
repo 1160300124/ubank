@@ -880,6 +880,7 @@ public class LeaveController extends BaseController {
                             async.setId(userList.get(i).getId());
                             async.setUsername(userList.get(i).getUserName());
                             async.setDeptName(userList.get(i).getDept_name());
+                            async.setMobile(userList.get(i).getMobile());
                             async.setImage(userList.get(i).getImage());
                             async.setDisabled(userList.get(i).getDisabled());
                             list.add(async);
@@ -888,6 +889,7 @@ public class LeaveController extends BaseController {
                             async.setId(userList.get(i).getId());
                             async.setUsername(userList.get(i).getUserName());
                             async.setDeptName(userList.get(i).getDept_name());
+                            async.setMobile(userList.get(i).getMobile());
                             async.setImage(userList.get(i).getImage());
                             async.setDisabled(userList.get(i).getDisabled());
                             list2.add(async);
@@ -923,6 +925,7 @@ public class LeaveController extends BaseController {
                         async.setId(userList.get(i).getId());
                         async.setUsername(userList.get(i).getUserName());
                         async.setDeptName(userList.get(i).getDept_name());
+                        async.setMobile(userList.get(i).getMobile());
                         async.setImage(userList.get(i).getImage());
                         async.setDisabled(userList.get(i).getDisabled());
                         list.add(async);
@@ -995,7 +998,9 @@ public class LeaveController extends BaseController {
                 //根据申请记录ID，获取报销记录
                 List<Reimbursement> reimList = reimbursementService.queryReimbersement(recordNo);
                 //拼接图片地址： 域名 + 图片名称
-                String url = "http://owgz2pijp.bkt.clouddn.com/";
+                Map<String,Object> configMap = StringUtil.loadConfig();
+                String url = (String) configMap.get("QinNiuYun");
+                //String url = "http://owgz2pijp.bkt.clouddn.com/";
                 for (int i = 0 ; i < reimList.size() ; i++){
                     Reimbursement re = reimList.get(i);
                     if(!StringUtil.isEmpty(re.getImages())){

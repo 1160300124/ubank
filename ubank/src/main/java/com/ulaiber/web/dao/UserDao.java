@@ -188,4 +188,11 @@ public interface UserDao {
      * @return int
      */
     int updateUserInfo(User user);
+
+    /**
+     * 上传头像
+     * @param map
+     * @return int
+     */
+    int uploadIcon(Map<String, Object> map);
 }

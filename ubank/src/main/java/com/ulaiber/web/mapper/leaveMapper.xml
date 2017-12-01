@@ -104,7 +104,7 @@
 
     <!--根据日期分页查询用户-->
     <select id="getUserByDate" parameterType="Map" resultType="com.ulaiber.web.model.User">
-        select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime  from tbl_users a
+        select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime,a.mobile  from tbl_users a
         left join tbl_roots b on a.user_id = b.userid
         left join tbl_departments c on b.dept_number = c.dept_number
         where 1=1 and b.companyNumber = #{companyNumber}

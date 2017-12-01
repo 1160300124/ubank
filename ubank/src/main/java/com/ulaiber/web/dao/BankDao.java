@@ -3,10 +3,7 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.model.BankAccount;
-import com.ulaiber.web.model.Bill;
-import com.ulaiber.web.model.BillDetail;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 
@@ -137,9 +134,16 @@ public interface BankDao {
     int updateAccFreeze(String subAcctNo);
     
 	/**
-	 * <!-- 根据公司编号查询该公司下所有二类户 -->
+	 * 根据公司编号查询该公司下所有二类户
 	 * @param companyNum 公司编号
 	 * @return List<SecondAcount>
 	 */
 	List<SecondAcount> getSubByCompanyNum(String companyNum);
+
+    /**
+     * 插入转账记录
+     * @param tran 转账信息
+     * @return
+     */
+    int insertTransfer(Transfer tran);
 }

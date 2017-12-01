@@ -577,6 +577,7 @@ public class StringUtil {
 			String downloadDir = prop.getProperty("SH_download");
 			String backup = prop.getProperty("SH_backup");
 			String SH_billFile = prop.getProperty("SH_billFile");
+			String qinniuyun = prop.getProperty("QinNiuYun");
 			map.put("privateKey",privateKey);
 			map.put("publicKey",publicKey);
 			map.put("postUrl",postUrl);
@@ -590,6 +591,7 @@ public class StringUtil {
 			map.put("downloadDir",downloadDir);
 			map.put("backup",backup);
 			map.put("billFile",SH_billFile);
+			map.put("QinNiuYun",qinniuyun);
 		} catch (IOException e) {
 			logger.error(">>>>>>>>加载config配置文件异常",e);
 		}
@@ -651,7 +653,6 @@ public class StringUtil {
 	 * @return
 	 */
 	public static String jointSignature(Map<String,Object> map){
-		Map<String,String> ma = new HashMap<>();
 		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
 		//排序方法
 		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
@@ -671,6 +672,23 @@ public class StringUtil {
 		str = sb.substring(0,sb.length()-1);
 		return str;
 	}
+
+	/**
+	 * 拼接重复的xml标签
+	 * @param list
+	 * @return
+	 */
+	public static String jointRepeat(List<String> list ){
+		StringBuffer sb = new StringBuffer();
+		Collections.sort(list);
+		for (String ss : list){
+			sb.append(ss + "&");
+		}
+		String str = "";
+		str = sb.substring(0,sb.length()-1);
+		return str;
+	}
+
 
 	/**
 	 *  拼接XML

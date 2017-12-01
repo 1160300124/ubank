@@ -186,4 +186,12 @@ public interface UserService {
 	 * @return int
 	 */
 	int modifyPwd(String mobile, String password);
+
+	/**
+	 * 上传头像
+	 * @param userId 用户ID
+	 * @param image 头像
+	 * @return int
+	 */
+    int uploadIcon(String userId, String image);
 }

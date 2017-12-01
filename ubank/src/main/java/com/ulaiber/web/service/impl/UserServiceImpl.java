@@ -14,6 +14,7 @@ import com.ulaiber.web.dao.LevelInfoDao;
 import com.ulaiber.web.dao.PermissionDao;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
+import com.ulaiber.web.utils.*;
 import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,10 +24,6 @@ import com.alibaba.fastjson.JSON;
 import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.UserService;
-import com.ulaiber.web.utils.DateTimeUtil;
-import com.ulaiber.web.utils.MD5Util;
-import com.ulaiber.web.utils.ObjUtil;
-import com.ulaiber.web.utils.StringUtil;
 
 @Service
 public class UserServiceImpl extends BaseService implements UserService {
@@ -150,7 +147,16 @@ public class UserServiceImpl extends BaseService implements UserService {
         return mapper.modifyPwd(map);
     }
 
-    @Override
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public int uploadIcon(String userId, String image) {
+		Map<String,Object> map =  new HashMap<>();
+		map.put("userId",userId);
+		map.put("image",image);
+		return mapper.uploadIcon(map);
+	}
+
+	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
 
@@ -180,10 +186,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public boolean updatePayPwd(String mobile, String password) {
-		
 		User user = new User();
 		user.setMobile(mobile);
-		user.setPay_password(MD5Util.getEncryptedPwd(password));
+		//user.setPay_password(MD5Util.getEncryptedPwd(password));
+		user.setPay_password(BCrypt.hashpw(password, BCrypt.gensalt()));
 		return mapper.updatePayPwd(user);
 		
 	}
@@ -281,15 +287,24 @@ public class UserServiceImpl extends BaseService implements UserService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean validatePayPwd(String mobile, String password) {
 		User user = mapper.getUserByMobile(mobile);
-		if (ObjUtil.notEmpty(user)){
-			String pwd2MD5 = MD5Util.getEncryptedPwd(password);
-			if (StringUtils.equals(user.getPay_password(), pwd2MD5)){
-				return true;
-			}
+		boolean flag = false;
+		if (!StringUtil.isEmpty(user.getPay_password())){
+//			String pwd2MD5 = MD5Util.getEncryptedPwd(password);
+//			if (StringUtils.equals(user.getPay_password(), pwd2MD5)){
+//				return true;
+//			}
+			flag = BCrypt.checkpw(password,user.getPay_password());
+			return flag;
+		}else{
+			User us = new User();
+			us.setMobile(mobile);
+			us.setPay_password(BCrypt.hashpw(password, BCrypt.gensalt()));
+			flag = mapper.updatePayPwd(us);
 		}
-		return false;
+		return flag;
 	}
 
 	@Override

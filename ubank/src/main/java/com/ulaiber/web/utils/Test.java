@@ -12,6 +12,8 @@ import com.ulaiber.web.SHSecondAccount.*;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.model.Reimbursement;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.ShangHaiAcount.AccDetailVO;
+import com.ulaiber.web.model.ShangHaiAcount.SHAccDetail;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import com.ulaiber.web.quartz.ReadFile;
@@ -490,6 +492,20 @@ public class Test {
 
 	}
 
+	//上海银行二类户账户明细状态
+	@org.junit.Test
+	public void accDetail() throws URISyntaxException {
+		AccDetailVO vo = new AccDetailVO();
+		vo.setSubAcctNo("623185009300012892");
+		vo.setCurrency("156");
+		vo.setBeginDt("20171101");
+		vo.setEndDt("20171128");
+		vo.setPageSize(1000);
+		vo.setSkipRecord(1);
+		SHAccountDetail.queryDetail(vo);
+
+	}
+
 	//获取账单详情
 	@org.junit.Test
 	public void tradingDetails(){
@@ -758,6 +774,89 @@ public class Test {
 //			e.printStackTrace();
 //		}
 	}
+
+	@org.junit.Test
+	public  void sort(){
+		//Map<String,Object> map = new HashMap<>();
+		IdentityHashMap map = new IdentityHashMap();
+		map.put("TxnRef","1");
+		map.put("TxnBsnId","2");
+		map.put("TxnDate","3");
+		map.put("TheirRef","4");
+		map.put("FlowCode","5");
+		map.put("TxnAmt","6");
+		map.put("TxnTime","7");
+		map.put("TxnRef","11");
+		map.put("TxnBsnId","22");
+		map.put("TheirRef","33");
+		map.put("TxnTime","44");
+		map.put("FlowCode","55");
+		map.put("TxnDate","66");
+		map.put("TxnAmt","77");
+		String a = "TxnRef=2222";
+		String b = "TxnRef=343434343";
+		String c = "TheirRef=3xxxxxx343";
+		String d = "TheirRef=dfdfdsfdsfdsfdsaf343";
+		List<String> list = new ArrayList<>();
+		list.add(a);
+		list.add(b);
+		list.add(c);
+		list.add(d);
+//		Map<String,Object> map2 = new HashMap<>();
+//		map.put("TxnRef","11");
+//		map.put("TxnBsnId","22");
+//		map.put("TheirRef","33");
+//		map.put("TxnTime","44");
+//		map.put("FlowCode","55");
+//		map.put("TxnDate","66");
+//		map.put("TxnAmt","77");
+//		List<Map<String,Object>> list = new ArrayList<>();
+//		list.add(map);
+//		list.add(map2);
+		StringBuffer sb = new StringBuffer();
+		Collections.sort(list);
+		for (String ss : list){
+			sb.append(ss+"&");
+		}
+		String str = "";
+		str = sb.substring(0,sb.length()-1);
+		System.out.println(sb.substring(0,sb.length()-1));
+//		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
+//		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
+//			@Override
+//			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+//				return (o1.getKey()).toString().compareTo(o2.getKey());
+//			}
+//
+//		});
+//		StringBuffer sb = new StringBuffer();
+//		//排序后
+//		for(Map.Entry<String, Object> m : infoIds){
+//
+//			System.out.println(m+",");
+//		}
+	}
+//
+//	public static String jointSignature(List<AccDetailVO> vo){
+//		List<Map.Entry<String, Object>> infoIds = new ArrayList<Map.Entry<String, Object>>(map.entrySet());
+//		//排序方法
+//		Collections.sort(infoIds, new Comparator<Map.Entry<String, Object>>() {
+//			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+//				//return (o2.getValue() - o1.getValue());
+//				return (o1.getKey()).toString().compareTo(o2.getKey());
+//			}
+//		});
+//		StringBuffer sb = new StringBuffer();
+//		//排序后
+//		for(Map.Entry<String, Object> m : infoIds){
+//			if(!StringUtil.isEmpty(m.getValue())){
+//				sb.append(m.getKey()+ "=" + m.getValue() + "&");
+//			}
+//		}
+//		String str = "";
+//		str = sb.substring(0,sb.length()-1);
+//		return str;
+//	}
 
 
 
