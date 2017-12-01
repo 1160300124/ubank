@@ -62,7 +62,17 @@
             </set>  
             where did=${detail.did}  
        </foreach>  
-   </update>  
+   </update>
+   
+   <update id="batchUpdateStatusBySid" parameterType="java.util.List">
+   		<foreach collection="list" item="detail" index="index" open="" close="" separator=";">  
+            update tbl_salaries_detail   
+            <set>  
+            	status=#{detail.status}, remark=#{detail.remark}
+            </set>  
+            where subAcctNo=#{detail.subAcctNo} and sid=#{detail.sid}
+       </foreach>
+   </update>
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getDetailsBySid2" parameterType="Map" resultMap="SalaryDetailMap">

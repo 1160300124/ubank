@@ -3,9 +3,6 @@ package com.ulaiber.web.controller.api;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ulaiber.web.model.SecondAccountAO;
-import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
-import com.ulaiber.web.utils.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,14 +13,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.ResultInfo;
+import com.ulaiber.web.model.SecondAccountAO;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.ObjUtil;
+import com.ulaiber.web.utils.StringUtil;
 import com.ulaiber.web.utils.UUIDGenerator;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 登录控制器

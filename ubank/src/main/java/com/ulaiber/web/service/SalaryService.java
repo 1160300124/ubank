@@ -84,4 +84,10 @@ public interface SalaryService {
 	 * @return ResultInfo ResultInfo
 	 */
 	ResultInfo pay(String salaryId);
+	
+	/**
+	 * 更新状态
+	 * @return boolean
+	 */
+	boolean updateStatusBySid(Salary salary);
 }

@@ -1028,8 +1028,8 @@ public class LeaveController extends BaseController {
                 return resultInfo;
             }else if(type.equals("3")){ //工资发放审批记录
                 //根据申请记录ID，获取工资发放审批记录
-                SalaryRecord salary = salaryAuditService.querySalaryByRecordNo(recordNo);
-                if(salary == null){
+            	List<Map<String, Object>> details = salaryAuditService.getSalaryDetailByRecordNo(recordNo);
+                if(details == null){
                     resultInfo.setCode(IConstants.QT_CODE_OK);
                     resultInfo.setMessage("暂时没有工资发放记录");
                     logger.info(">>>>>>>>>>>>>暂时没有工资发放记录");
@@ -1037,9 +1037,7 @@ public class LeaveController extends BaseController {
                 }
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("查询成功");
-                List<SalaryRecord> salaryList = new ArrayList<SalaryRecord>();
-                salaryList.add(salary);
-                resultInfo.setData(salaryList);
+                resultInfo.setData(details);
                 logger.info(">>>>>>>>>>>>>>>获取工资发放记录成功");
                 return resultInfo;
             }

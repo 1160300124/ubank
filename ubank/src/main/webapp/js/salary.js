@@ -201,12 +201,7 @@ function operateFormatter(value, row, index) {
 
 window.operateEvents = {
 		'click .detail': function (e, value, row, index) {
-			
 			window.location.href = "salaryDetail?sid=" + row.sid;
-//			$("#detail_modal").modal("show");
-//			$("#tb_salary_detail").bootstrapTable("refresh", {
-//				url : "details?sid=" + row.sid
-//			});
 		}
 };
 

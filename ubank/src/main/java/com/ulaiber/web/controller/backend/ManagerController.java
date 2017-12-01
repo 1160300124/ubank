@@ -98,7 +98,7 @@ public class ManagerController extends BaseController{
 					params.put("seqNo", sa.getEntrustSeqNo());
 					params.put("beginDate", sa.getSalaryDate());
 					params.put("endDate", sa.getSalaryDate());
-				    newStatus = SPDBUtil.getPayResult(params);
+//				    newStatus = SPDBUtil.getPayResult(params);
 //				    newStatus = "5";
 					sa.setStatus(newStatus);
 					//if new status != old status 更新工资流水状态

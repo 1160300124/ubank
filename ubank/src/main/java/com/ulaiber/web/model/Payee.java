@@ -9,11 +9,6 @@ package com.ulaiber.web.model;
 public class Payee {
 	
 	/**
-	 * id
-	 */
-	private String pid;
-	
-	/**
 	 * 收款人账号 VarString(32)
 	 */
 	private String payeeAcctNo;
@@ -32,14 +27,11 @@ public class Payee {
 	 * 备注 VarString(220)
 	 */
 	private String note;
-
-	public String getPid() {
-		return pid;
-	}
-
-	public void setPid(String pid) {
-		this.pid = pid;
-	}
+	
+	/**
+	 * 处理信息 VarString(50)
+	 */
+	private String message;
 
 	public String getPayeeAcctNo() {
 		return payeeAcctNo;
@@ -71,6 +63,14 @@ public class Payee {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 }
