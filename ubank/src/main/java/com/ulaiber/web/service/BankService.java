@@ -128,9 +128,10 @@ public interface BankService {
 	/**
 	 * 更新二类户冻结状态
 	 * @param subAcctNo 二类户账号
-	 * @return int
+	 * @param status
+     * @return int
 	 */
-	int updateAccFreeze(String subAcctNo);
+	int updateAccFreeze(String subAcctNo, String status);
 
 	/**
 	 * 插入转账记录

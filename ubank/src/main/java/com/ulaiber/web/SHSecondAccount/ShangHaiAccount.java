@@ -93,7 +93,7 @@ public class ShangHaiAccount {
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 30000);
             //String result = HttpsUtil.doPostSSL(postUrl,xml);
-            logger.info(">>>>>>>>>>请求结果为：" + result);
+            //logger.info(">>>>>>>>>>请求结果为：" + result);
           //  System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
             Map<String,Object> resultMap = new HashMap<>();
             logger.info(">>>>>>>>>>开始解析xml");

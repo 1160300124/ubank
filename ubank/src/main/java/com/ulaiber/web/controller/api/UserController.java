@@ -144,7 +144,11 @@ public class UserController extends BaseController{
 				if(info.getCode() != 1000){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage("激活失败");
+					Map<String,Object> paramMap = new HashMap<>();
+					paramMap.put("status",info.getData());
+					resultInfo.setData(paramMap);
 					logger.error(">>>>>>>>>>激活钱包失败");
+					return resultInfo;
 				}
 				Map<String,Object> map = (Map<String, Object>) info.getData();
 				SecondAcount sa = (SecondAcount) map.get("sa");
@@ -160,7 +164,11 @@ public class UserController extends BaseController{
 				if(result <= 0){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage("激活失败");
+					Map<String,Object> paramMap = new HashMap<>();
+					paramMap.put("status",status);
+					resultInfo.setData(paramMap);
 					logger.error(">>>>>>>>>>插入用户信息异常");
+					return resultInfo;
 				}
 			}
 			resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -597,6 +605,13 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file,String SubAcctNo,String EacctNo, HttpServletRequest request){
 		ResultInfo resultInfo = UploadImg(file,SubAcctNo,EacctNo,request);
+		//修改上海二类户状态
+		int result = userService.updateAccStatus(SubAcctNo);
+		if(result <= 0){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("上传文件失败");
+			logger.debug(">>>>>>>>>>重新上传文件后，修改二类户状态失败");
+		}
 		return resultInfo;
 	}
 

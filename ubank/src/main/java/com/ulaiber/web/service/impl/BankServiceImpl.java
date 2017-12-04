@@ -168,8 +168,11 @@ public class BankServiceImpl extends BaseService implements BankService {
 
     @Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-    public int updateAccFreeze(String subAcctNo) {
-        return mapper.updateAccFreeze(subAcctNo);
+    public int updateAccFreeze(String subAcctNo, String status) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("subAcctNo",subAcctNo);
+		map.put("status",status);
+        return mapper.updateAccFreeze(map);
     }
 
     @Override
