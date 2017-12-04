@@ -38,9 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/")
 public class UserController extends BaseController{
 
-	/**
-	 * 日志对象
-	 */
 	private static Logger logger = Logger.getLogger(UserController.class);
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -605,7 +602,7 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file,String SubAcctNo,String EacctNo, HttpServletRequest request){
 		ResultInfo resultInfo = UploadImg(file,SubAcctNo,EacctNo,request);
-		//修改上海二类户状态
+		//重新上传身份照片后，将二类户设置为审核中状态
 		int result = userService.updateAccStatus(SubAcctNo);
 		if(result <= 0){
 			resultInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -671,7 +668,6 @@ public class UserController extends BaseController{
 			//第二步
 			//拼接索引文件名
 			String random = StringUtil.getFixLenthString(4);
-			Random r = new Random(4);
 			String date = simple.format(new Date());
 			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
 			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";

@@ -45,7 +45,8 @@ public class SHAccountDetail {
             logger.info(">>>>>>>>>>加签成功");
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
-            String random = StringUtil.getStringRandom(36);
+            //String random = StringUtil.getStringRandom(36);
+            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");

@@ -541,17 +541,11 @@ public class StringUtil {
 	 * @return
 	 */
 	public static String getFixLenthString(int strLength) {
-
-		Random rm = new Random();
-
-		// 获得随机数
-		double pross = (1 + rm.nextDouble()) * Math.pow(10, strLength);
-
-		// 将获得的获得随机数转化为字符串
-		String fixLenthString = String.valueOf(pross);
-
-		// 返回固定的长度的随机数
-		return fixLenthString.substring(1, strLength + 1);
+		String str = "";
+		for(int i = 0;i < strLength ; i++){
+			str+=String.valueOf((int)(Math.random()*9));
+		}
+		return str;
 	}
 
 	/**
@@ -578,6 +572,8 @@ public class StringUtil {
 			String backup = prop.getProperty("SH_backup");
 			String SH_billFile = prop.getProperty("SH_billFile");
 			String qinniuyun = prop.getProperty("QinNiuYun");
+			String ALLMENU = prop.getProperty("ALLMENU");
+			String menuId = prop.getProperty("menuId");
 			map.put("privateKey",privateKey);
 			map.put("publicKey",publicKey);
 			map.put("postUrl",postUrl);
@@ -592,6 +588,8 @@ public class StringUtil {
 			map.put("backup",backup);
 			map.put("billFile",SH_billFile);
 			map.put("QinNiuYun",qinniuyun);
+			map.put("allMenu",ALLMENU);
+			map.put("menuId",menuId);
 		} catch (IOException e) {
 			logger.error(">>>>>>>>加载config配置文件异常",e);
 		}
@@ -902,8 +900,10 @@ public class StringUtil {
 	 * @return
 	 */
 	public static boolean isURL(String url){
+		Map<String,Object> configMap = StringUtil.loadConfig();
+		String allMenu = (String) configMap.get("allMenu");
 		boolean flag = false;
-		String[] arr = IConstants.ALLMENU.split(",");
+		String[] arr = allMenu.split(",");
 		for (int i = 0 ; i < arr.length ; i++){
 			if(url.equals(arr[i])){
 				flag = true;

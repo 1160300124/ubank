@@ -17,9 +17,9 @@ public class IConstants
 	//后台用户session常量名
 	public final static String UBANK_BACKEND_USERMENU = "USERMENU";
 
-	public final static String ALLMENU = "salary,salaryConfig,salaryRule,cutPayment,group,company,department," +
-			"module,category,thirdUrl,employee,roles,banner,attendance,statistics,rule,leaveReport,reimReport," +
-			"headquarters,branch,branch_children,bankUser,expand";
+//	public final static String ALLMENU = "salary,salaryConfig,salaryRule,cutPayment,group,company,department," +
+//			"module,category,thirdUrl,employee,roles,banner,attendance,statistics,rule,leaveReport,reimReport," +
+//			"headquarters,branch,branch_children,bankUser,expand";
 
     //成功
     public final static int QT_CODE_OK = 1000;
@@ -191,8 +191,8 @@ public class IConstants
 	public static final long HOUR_MS = 60 * 60 * 1000;
 
 	//集团角色权限菜单ID
-	public static final String menuId = "101,101001,102,102001,102002,102003,103,103001,103002," +
-			"103003,102004,102005,103004,104,104001,104002,104003,104004,104005";
+//	public static final String menuId = "101,101001,102,102001,102002,102003,103,103001,103002," +
+//			"103003,102004,102005,103004,104,104001,104002,104003,104004,104005";
 
 	//注册上传照片状态 成功
 	public static final int UPLOAD_STATUS_OK = 1200;

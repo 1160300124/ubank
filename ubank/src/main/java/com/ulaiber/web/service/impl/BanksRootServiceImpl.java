@@ -399,7 +399,9 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
         //新增角色权限菜单
         String roleId = String.valueOf(roles.getRole_id());
         List<Map<String,Object>> list = new ArrayList<>();
-        String[] arr = IConstants.menuId.split(",");
+        Map<String,Object> configMap = StringUtil.loadConfig();
+        String menu = (String) configMap.get("menuId");
+        String[] arr = menu.split(",");
         for (int i = 0 ; i <arr.length ; i++){
             Map<String,Object> paramMap = new HashMap<String,Object>();
             paramMap.put("menuId" , arr[i]);

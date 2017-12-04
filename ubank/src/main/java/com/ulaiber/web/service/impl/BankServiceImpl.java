@@ -70,6 +70,7 @@ public class BankServiceImpl extends BaseService implements BankService {
 		Map.put("bankNo",map.get("bankNo"));
 		Map.put("type",map.get("type"));
 		Map.put("bankCardNo",map.get("newCardNo"));
+		Map.put("newReserveMobile",map.get("newReserveMobile"));
 		logger.info(">>>>>>>>>新银行卡为:" + map.get("newCardNo"));
 		int result = 0;
 		if(map.get("modiType").equals("00")){   //改卡
@@ -84,6 +85,11 @@ public class BankServiceImpl extends BaseService implements BankService {
 			 result = userDao.insertUserToBank(Map);
 			if(result == 0){
 				logger.error(">>>>>>>>>>新增改绑后的银行卡信息失败");
+			}
+			//修改用户预留手机号
+			result = userDao.modifyReserveMobile(Map);
+			if(result == 0){
+				logger.error(">>>>>>>>>>修改用户预留手机号失败");
 			}
 			return result;
 		}else { //改电话
