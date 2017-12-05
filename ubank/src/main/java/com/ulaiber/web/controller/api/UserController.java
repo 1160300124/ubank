@@ -140,7 +140,7 @@ public class UserController extends BaseController{
 				//新增数据库信息
 				if(info.getCode() != 1000){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
-					resultInfo.setMessage("激活失败");
+					resultInfo.setMessage(info.getMessage());
 					Map<String,Object> paramMap = new HashMap<>();
 					paramMap.put("status",info.getData());
 					resultInfo.setData(paramMap);
@@ -194,8 +194,8 @@ public class UserController extends BaseController{
 		try {
 			//开通上海银行二类账户
 			Map<String,Object> param = new HashMap<>();
-			param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
-			param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+			param.put("CoopCustNo" , IConstants.CoopCustNo);		//合作方客户账号
+			param.put("ProductCd" , IConstants.ProductCd);			//理财产品参数
 			param.put("CustName" , user.getUserName());				//姓名
 			param.put("IdNo" , user.getCardNo());					//身份证号
 			param.put("MobllePhone" , user.getMobile());			//手机号
@@ -204,16 +204,22 @@ public class UserController extends BaseController{
 			param.put("Sign" , "N");								//是否开通余额理财功能
 			String status = "";
 			ResultInfo ri = ShangHaiAccount.register(param);
-			logger.info(">>>>>>>>>> 注册结果为：" + ri);
 			Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-			logger.info(">>>>>>>>>resultMap is :" + resultMap);
 			SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
 			status = (String) resultMap.get("status");
 			if(!"0000".equals(status)){
+				//特殊处理。如果当前身份证不合法，则给前端提示让其跳转页面
+				if(sa.getServerStatusCode().contains("身份证")){
+					retInfo.setCode(IConstants.ILLEGAL);
+					retInfo.setMessage(sa.getServerStatusCode());
+					retInfo.setData(status);
+					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册上海银行二类账户失败，状态信息为："+sa.getServerStatusCode()+"，状态码为："+ status);
+					return retInfo;
+				}
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
 				retInfo.setMessage(sa.getServerStatusCode());
 				retInfo.setData(status);
-				logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+				logger.error(">>>>>>>>>>"+user.getMobile() + " 注册上海银行二类账户失败，状态信息为："+sa.getServerStatusCode()+"，状态码为："+ status);
 				return retInfo;
 			}
 			String SubAcctNo = sa.getSubAcctNo();
@@ -653,7 +659,7 @@ public class UserController extends BaseController{
 				uploadPath.mkdir();
 			}
 			for (int i = 0 ; i < file.length ; i++){
-				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
+				logger.info(">>>>>>>>>>上传文件第"+ (i+1) +"个文件:" + file[i]);
 				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
 				InputStream in = file[i].getInputStream();
 				int r = 0;

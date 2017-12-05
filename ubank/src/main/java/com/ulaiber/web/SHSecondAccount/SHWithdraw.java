@@ -61,14 +61,14 @@ public class SHWithdraw {
             logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
+            rqMap.put("SPName",IConstants.SPName);
+            rqMap.put("ChannelId",IConstants.ChannelId);
             rqMap.put("Amount",wd.getAmount());
-            rqMap.put("ChannelId","YFY");
             rqMap.put("BindCardNo",wd.getBindCardNo());
             rqMap.put("Currency",wd.getCurrency());
             rqMap.put("ClearDate",date);
             rqMap.put("Purpose",wd.getPurpose());
             rqMap.put("RqUID",random);
-            rqMap.put("SPName","CBIB");
             rqMap.put("ProductCd",wd.getProductCd());
             rqMap.put("TranDate",date);
             rqMap.put("SubAcctNo",wd.getSubAcctNo());
@@ -142,7 +142,7 @@ public class SHWithdraw {
                 }
 
             }
-            if(!withdraw.getStatusCode().equals("0000")){
+            if(!"0000".equals(withdraw.getStatusCode())){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(withdraw.getServerStatusCode());
                 resultMap.put("status",withdraw.getStatusCode());
@@ -166,10 +166,6 @@ public class SHWithdraw {
             rsMap.put("RqUID",withdraw.getRqUID());
             logger.info(">>>>>>>>>>解析xml完毕");
             signDataStr = StringUtil.jointSignature(rsMap);
-//            signDataStr = "Amount="+withdraw.getAmount()+"&BindCardNo="+withdraw.getBindCardNo()+"&BizDate="+withdraw.getBizDate()
-//                    +"&Currency="+withdraw.getCurrency()+"&ProductCd="+withdraw.getProductCd()+"&Purpose="+withdraw.getPurpose()
-//                    +"&RqUID="+withdraw.getRqUID()+"&SPRsUID="+withdraw.getSPRsUID()+"&ServerStatusCode="+withdraw.getServerStatusCode()
-//                    +"&StatusCode="+withdraw.getStatusCode()+"&SubAcctNo="+withdraw.getSubAcctNo()+"&TheirRef="+withdraw.getTheirRef();
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
@@ -181,16 +177,6 @@ public class SHWithdraw {
                 resultInfo.setData(resultMap);
                 System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
                  System.out.println(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
-                logger.error(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
-                return resultInfo;
-            }
-            if(!withdraw.getStatusCode().equals("0000")){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage(withdraw.getServerStatusCode());
-                resultMap.put("status",withdraw.getStatusCode());
-                resultMap.put("withdraw",withdraw);
-                resultInfo.setData(resultMap);
-                System.out.println(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 return resultInfo;
             }

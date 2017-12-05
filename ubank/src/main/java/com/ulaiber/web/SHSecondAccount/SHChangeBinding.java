@@ -58,8 +58,9 @@ public class SHChangeBinding {
             logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
+            rqMap.put("SPName",IConstants.SPName);
+            rqMap.put("ChannelId",IConstants.ChannelId);
             rqMap.put("BindCardNo",shCard.getBindCardNo());
-            rqMap.put("ChannelId","YFY");
             rqMap.put("ClearDate",date);
             rqMap.put("CustName",shCard.getCustName());
             rqMap.put("IdNo",shCard.getIdNo());
@@ -69,7 +70,6 @@ public class SHChangeBinding {
             rqMap.put("ProductCd",shCard.getProductCd());
             rqMap.put("ReservedPhone",shCard.getReservedPhone());
             rqMap.put("RqUID",random);
-            rqMap.put("SPName","CBIB");
             rqMap.put("SubAcctNo",shCard.getSubAcctNo());
             rqMap.put("TranDate",date);
             rqMap.put("TranTime",time);
@@ -127,7 +127,7 @@ public class SHChangeBinding {
                     shChangeCard.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
                 }
             }
-            if(!shChangeCard.getStatusCode().equals("0000")){
+            if(!"0000".equals(shChangeCard.getStatusCode())){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(shChangeCard.getServerStatusCode());
                 resultMap.put("status",shChangeCard.getStatusCode());
@@ -158,15 +158,6 @@ public class SHChangeBinding {
                 logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }
-//            if(!shChangeCard.getStatusCode().equals("0000")){
-//                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-//                resultInfo.setMessage(shChangeCard.getServerStatusCode());
-//                resultMap.put("status",shChangeCard.getStatusCode());
-//                resultMap.put("SHChangeCard",shChangeCard);
-//                resultInfo.setData(resultMap);
-//                logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
-//                return resultInfo;
-//            }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultMap.put("status",shChangeCard.getStatusCode());
             resultMap.put("SHChangeCard",shChangeCard);

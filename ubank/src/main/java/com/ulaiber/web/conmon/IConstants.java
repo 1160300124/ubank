@@ -17,10 +17,6 @@ public class IConstants
 	//后台用户session常量名
 	public final static String UBANK_BACKEND_USERMENU = "USERMENU";
 
-//	public final static String ALLMENU = "salary,salaryConfig,salaryRule,cutPayment,group,company,department," +
-//			"module,category,thirdUrl,employee,roles,banner,attendance,statistics,rule,leaveReport,reimReport," +
-//			"headquarters,branch,branch_children,bankUser,expand";
-
     //成功
     public final static int QT_CODE_OK = 1000;
     
@@ -50,25 +46,11 @@ public class IConstants
     
     //手机号不存在错误码
     public final static int QT_MOBILE_NOT_EXISTS = 2012;
-    
-    //注销失败错误码
-    public final static int QT_LOGOUT_ERROR = 2013;
-    
-    //银行开户失败错误码
-    public final static int QT_OPEN_ACCOUT_ERROR = 3010; 
-    
+
+
     //查询余额失败错误码
-    public final static int QT_GET_BALANCE_ERROR = 3011; 
-    
-    //查询账单失败错误码
-    public final static int QT_GET_BILL_ERROR = 3012;
-    
-    //提现失败错误码
-    public final static int QT_GET_MONEY_ERROR = 3013; 
-    
-    //更改绑定银行卡失败错误码
-    public final static int QT_BIND_BANKCARD_ERROR = 3014; 
-    
+    public final static int QT_GET_BALANCE_ERROR = 3011;
+
     //不能打上班卡
     public final static int QT_CANNOT_CLOCK_ON = 4001;
     
@@ -190,21 +172,26 @@ public class IConstants
 	//一小时的毫秒数
 	public static final long HOUR_MS = 60 * 60 * 1000;
 
-	//集团角色权限菜单ID
-//	public static final String menuId = "101,101001,102,102001,102002,102003,103,103001,103002," +
-//			"103003,102004,102005,103004,104,104001,104002,104003,104004,104005";
-
-	//注册上传照片状态 成功
-	public static final int UPLOAD_STATUS_OK = 1200;
-
-	//注册上传照片状态 失败
-	public static final int UPLOAD_STATUS_ERROR = 1500;
-
 	//操作数据库失败
 	public static final int INSER_DB_ERROR = 1060;
 
 	//上海银行压缩包大小
 	public static final int SH_size = 300;
+
+	//合作方客户账号
+	public static final String CoopCustNo = "110310018000073";
+
+	//理财产品参数
+	public static final String ProductCd = "yfyBalFinancing";
+
+	//
+	public static final String SPName = "CBIB";
+
+	//
+	public static final String ChannelId = "YFY";
+
+	//身份证格式不合法
+	public static final int ILLEGAL = 1030;
 
 
 }
