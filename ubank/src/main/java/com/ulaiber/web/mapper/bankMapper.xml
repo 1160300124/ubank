@@ -134,8 +134,8 @@
 	</select>
 
 	<!-- 更新二类户冻结状态-->
-	<update id="updateAccFreeze" parameterType="String">
-		UPDATE tbl_secondAccount SET freeze = '0' WHERE SubAcctNo = #{subAcctNo}
+	<update id="updateAccFreeze" parameterType="Map">
+		UPDATE tbl_secondAccount SET freeze = #{status} WHERE SubAcctNo = #{subAcctNo}
 	</update>
 	
 	<!-- 根据公司编号查询该公司下所有二类户 -->

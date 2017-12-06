@@ -45,16 +45,17 @@ public class SHAccountDetail {
             logger.info(">>>>>>>>>>加签成功");
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
-            String random = StringUtil.getStringRandom(36);
+            //String random = StringUtil.getStringRandom(36);
+            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
-            rqMap.put("ChannelId","YFY");
+            rqMap.put("SPName",IConstants.SPName);
+            rqMap.put("ChannelId",IConstants.ChannelId);
             rqMap.put("ClearDate",date);
             rqMap.put("RqUID",random);
-            rqMap.put("SPName","CBIB");
             rqMap.put("TranDate",date);
             rqMap.put("TranTime",time);
             rqMap.put("SubAcctNo",vo.getSubAcctNo());

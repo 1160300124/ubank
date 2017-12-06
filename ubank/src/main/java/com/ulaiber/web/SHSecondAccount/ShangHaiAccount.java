@@ -41,8 +41,6 @@ public class ShangHaiAccount {
             String publicKey = (String) configMap.get("publicKey");
             String postUrl = (String) configMap.get("postUrl");
             String pwd = (String) configMap.get("pwd");
-
-
             String KoalB64Cert = "";
             String Signature = "";
             logger.info(">>>>>>>>>>开始加签");
@@ -52,17 +50,18 @@ public class ShangHaiAccount {
             logger.info(">>>>>>>>>>加签成功");
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
-            String random = StringUtil.getStringRandom(36);
+            //String random = StringUtil.getStringRandom(36);
+            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             //拼接待签名数据
-            map.put("SPName","CBIB");
+            map.put("SPName",IConstants.SPName);
+            map.put("ChannelId",IConstants.ChannelId);
             map.put("RqUID",random);
             map.put("ClearDate",date);
             map.put("TranDate",date);
             map.put("TranTime",time);
-            map.put("ChannelId","YFY");
             String signDataStr = StringUtil.jointSignature(map);
             //待签名的数据
             logger.info(">>>>>>>>>获取Signature");
@@ -72,29 +71,13 @@ public class ShangHaiAccount {
             String joint = StringUtil.jointXML(map);
             String interfaceNO = "YFY0001";  //接口编号
             //拼接xml
-            String xml =
-//                    "<?xml version='1.0' encoding='UTF-8'?>" +
-//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-//                    "<YFY0001Rq>" +
-//                    "<CommonRqHdr>" +
-//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-//                    "</CommonRqHdr>"
-                    StringUtil.signHeader(interfaceNO,random,date,time)  + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
-//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-//                    "</YFY0001Rq>" +
-//                    "</BOSFXII>";
+            String xml = StringUtil.signHeader(interfaceNO,random,date,time)  + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             //发送请求
             SslTest st = new SslTest();
             String result = st.postRequest(postUrl,xml, 30000);
             //String result = HttpsUtil.doPostSSL(postUrl,xml);
-            logger.info(">>>>>>>>>>请求结果为：" + result);
-          //  System.out.println(">>>>>>>>>>>>>>请求结果为 ：" + result);
             Map<String,Object> resultMap = new HashMap<>();
             logger.info(">>>>>>>>>>开始解析xml");
             //解析XML
@@ -149,8 +132,7 @@ public class ShangHaiAccount {
                 }
             }
             logger.info(">>>>>>>>>>解析xml完毕");
-            logger.info(">>>>>>>>>>secondAcount is :" + secondAcount);
-            if(!secondAcount.getStatusCode().equals("0000")){
+            if(!"0000".equals(secondAcount.getStatusCode())){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(secondAcount.getServerStatusCode());
                 resultMap.put("secondAcount",secondAcount);
@@ -175,17 +157,9 @@ public class ShangHaiAccount {
             rsMap.put("SPRsUID",secondAcount.getSPRsUID());
             rsMap.put("RqUID",secondAcount.getRqUID());
             signDataStr = StringUtil.jointSignature(rsMap);
-//            signDataStr = "AcctOpenResult="+secondAcount.getAcctOpenResult()+"&CoopCustNo="+secondAcount.getCoopCustNo()+"&CustName="
-//                    +secondAcount.getCustName()+"&EacctNo="+secondAcount.getEacctNo()
-//                    +"&IdNo="+secondAcount.getIdNo()+"&ProductCd="+secondAcount.getProductCd()+"&RqUID="+secondAcount.getRqUID()
-//                    +"&SPRsUID="+secondAcount.getSPRsUID()+"&ServerStatusCode="+secondAcount.getServerStatusCode()+"&Sign="
-//                    +secondAcount.getSign()+"&StatusCode="+secondAcount.getStatusCode()+"&SubAcctNo="+secondAcount.getSubAcctNo();
-            System.out.println(">>>>>>>>>signDataStr :" + signDataStr);
-           // System.out.println(">>>>>>>>>resultSign :" + resultSign);
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
-            //  System.out.println(">>>>>>>>>>>验签结果为：" + verifyRet);
             if(verifyRet != 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(secondAcount.getServerStatusCode());
@@ -193,15 +167,6 @@ public class ShangHaiAccount {
                 resultMap.put("status",secondAcount.getStatusCode());
                 resultInfo.setData(resultMap);
                 logger.error(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-                logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
-                return resultInfo;
-            }
-            if(!secondAcount.getStatusCode().equals("0000")){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage(secondAcount.getServerStatusCode());
-                resultMap.put("secondAcount",secondAcount);
-                resultMap.put("status",secondAcount.getStatusCode());
-                resultInfo.setData(resultMap);
                 logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
                 return resultInfo;
             }

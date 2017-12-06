@@ -9,9 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ulaiber.web.dao.BanksRootDao;
-import com.ulaiber.web.dao.LevelInfoDao;
-import com.ulaiber.web.dao.PermissionDao;
+import com.ulaiber.web.dao.*;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.utils.*;
@@ -21,7 +19,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.UserService;
 
@@ -38,7 +35,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	private PermissionDao permissionDao;
 
 	@Resource
-	private LevelInfoDao levelInfoDao;
+	private BankDao bankDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
@@ -156,7 +153,16 @@ public class UserServiceImpl extends BaseService implements UserService {
 		return mapper.uploadIcon(map);
 	}
 
-	@Override
+    @Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int updateAccStatus(String subAcctNo) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("subAcctNo",subAcctNo);
+		map.put("status","0");
+        return bankDao.updateAccFreeze(map);
+    }
+
+    @Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
 

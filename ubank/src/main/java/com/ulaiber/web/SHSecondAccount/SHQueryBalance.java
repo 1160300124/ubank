@@ -53,16 +53,17 @@ public class SHQueryBalance {
             signer.initSignCertAndKey(privateKey,pwd);
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
-            String random = StringUtil.getStringRandom(36);
+           // String random = StringUtil.getStringRandom(36);
+            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为'"+random+"'开始拼接待签名数据");
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
-            rqMap.put("ChannelId","YFY");
+            rqMap.put("SPName",IConstants.SPName);
+            rqMap.put("ChannelId",IConstants.ChannelId);
             rqMap.put("ClearDate",date);
             rqMap.put("RqUID",random);
-            rqMap.put("SPName","CBIB");
             rqMap.put("SubAcctNo",SubAcctNo);
             rqMap.put("TranDate",date);
             rqMap.put("TranTime",time);
@@ -75,20 +76,6 @@ public class SHQueryBalance {
             String interfaceNO = "YFY0101";  //接口编号
             //拼接xml
             String xml = StringUtil.signHeader(interfaceNO,random,date,time) + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
-//                    "<?xml version='1.0' encoding='UTF-8'?>" +
-//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-//                    "<YFY0101Rq>" +
-//                    "<CommonRqHdr>" +
-//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-//                    "</CommonRqHdr>"
-//                     + joint +
-//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-//                    "</YFY0101Rq>" +
-//                    "</BOSFXII>";
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             //发送请求
             SslTest st = new SslTest();
@@ -144,7 +131,7 @@ public class SHQueryBalance {
                     sa.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
                 }
             }
-            if(!sa.getStatusCode().equals("0000")){
+            if(!"0000".equals(sa.getStatusCode())){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(sa.getServerStatusCode());
                 resultMap.put("status",sa.getStatusCode());
@@ -164,10 +151,6 @@ public class SHQueryBalance {
             rsMap.put("RqUID",sa.getRqUID());
             signDataStr = StringUtil.jointSignature(rsMap);
             //验签
-//            signDataStr = "AvaiBal="+avaiBal+"&AvaiFundShare="+avaifundShare+"&EarningsYesterday="+earningsYesterday
-//                    +"&FundShare="+fundShare+"&RqUID="+sa.getRqUID()+"&SPRsUID="+sa.getSPRsUID()+"&ServerStatusCode="+sa.getServerStatusCode()
-//                    +"&StatusCode="+sa.getStatusCode()+"&SubAcctNo="+sa.getSubAcctNo()+"&WorkingBal="+workingBal+"";
-
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
@@ -187,15 +170,6 @@ public class SHQueryBalance {
             sa.setFundShare(StringUtil.round(fundShare));
             sa.setAvaiFundShare(StringUtil.round(avaifundShare));
             sa.setEarningsYesterday(StringUtil.round(earningsYesterday));
-            if(!sa.getStatusCode().equals("0000")){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage(sa.getServerStatusCode());
-                resultMap.put("secondAccount",sa);
-                resultMap.put("status",sa.getStatusCode());
-                resultInfo.setData(resultMap);
-                logger.error(">>>>>>>>>>验签失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
-                return resultInfo;
-            }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage(sa.getServerStatusCode());
             resultMap.put("secondAccount",sa);

@@ -52,21 +52,18 @@ public class BankController extends BaseController {
 
 	/**
 	 * 根据邀请码，查询银行
-	 * @param code 邀请码
+	 * @param userId 用户ID
 	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "queryAllBanks", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo queryAllBanks(String code,String userId){
+	public ResultInfo queryAllBanks(String userId){
 		logger.info(">>>>>>>>>>开始查询银行信息");
 		ResultInfo retInfo = new ResultInfo();
 		try{
-			if(!StringUtil.isEmpty(userId)){
-				long userid = Long.parseLong(userId);
-				//根据用户ID获取对应公司的邀请码
-				String co = bankservice.getCodeByuserid(userid);
-				code = co;
-			}
+			long userid = Long.parseLong(userId);
+			//根据用户ID获取对应公司的邀请码
+			String code = bankservice.getCodeByuserid(userid);
 			//获取公司绑定的银行信息
 			BankAccount bankAccount = bankservice.getBankByCode(code);
 			if(StringUtil.isEmpty(bankAccount)){

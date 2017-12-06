@@ -50,15 +50,17 @@ public class SHChangeBinding {
             logger.info(">>>>>>>>>>加签成功");
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
-            String random = StringUtil.getStringRandom(36);
+            //String random = StringUtil.getStringRandom(36);
+            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
+            rqMap.put("SPName",IConstants.SPName);
+            rqMap.put("ChannelId",IConstants.ChannelId);
             rqMap.put("BindCardNo",shCard.getBindCardNo());
-            rqMap.put("ChannelId","YFY");
             rqMap.put("ClearDate",date);
             rqMap.put("CustName",shCard.getCustName());
             rqMap.put("IdNo",shCard.getIdNo());
@@ -68,7 +70,6 @@ public class SHChangeBinding {
             rqMap.put("ProductCd",shCard.getProductCd());
             rqMap.put("ReservedPhone",shCard.getReservedPhone());
             rqMap.put("RqUID",random);
-            rqMap.put("SPName","CBIB");
             rqMap.put("SubAcctNo",shCard.getSubAcctNo());
             rqMap.put("TranDate",date);
             rqMap.put("TranTime",time);
@@ -80,22 +81,7 @@ public class SHChangeBinding {
             String joint = StringUtil.jointXML(rqMap);
             String interfaceNO = "YFY0002";  //接口编号
             //拼接xml
-            String xml =
-//                    "<?xml version='1.0' encoding='UTF-8'?>" +
-//                    "<BOSFXII xmlns='http://www.bankofshanghai.com/BOSFX/2010/08' " +
-//                    "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " +
-//                    "xsi:schemaLocation='http://www.bankofshanghai.com/BOSFX/2010/08 BOSFX2.0.xsd'>" +
-//                    "<YFY0002Rq>" +
-//                    "<CommonRqHdr>" +
-//                    "<SPName>CBIB</SPName><RqUID>"+ random +"</RqUID>" +
-//                    "<ClearDate>"+ date +"</ClearDate><TranDate>"+ date +"</TranDate>" +
-//                    "<TranTime>"+ time +"</TranTime><ChannelId>YFY</ChannelId>" +
-//                    "</CommonRqHdr>"
-                    StringUtil.signHeader(interfaceNO,random,date,time)  + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
-//                    "<KoalB64Cert>"+ KoalB64Cert +"</KoalB64Cert><Signature>"+ Signature +"</Signature>" +
-//                    "</YFY0002Rq>" +
-//                    "</BOSFXII>";
-           // System.out.println(">>>>>>>>>>xml is :" + xml);
+            String xml = StringUtil.signHeader(interfaceNO,random,date,time)  + joint + StringUtil.signFooter(interfaceNO,KoalB64Cert,Signature);
             logger.info(">>>>>>>>>>拼接xml完毕");
             logger.info(">>>>>>>>>>流水号为"+random+"开始发送请求给上海银行");
             //发送请求
@@ -141,7 +127,7 @@ public class SHChangeBinding {
                     shChangeCard.setRqUID(recordEles.elementTextTrim("RqUID"));   //请求流水号
                 }
             }
-            if(!shChangeCard.getStatusCode().equals("0000")){
+            if(!"0000".equals(shChangeCard.getStatusCode())){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage(shChangeCard.getServerStatusCode());
                 resultMap.put("status",shChangeCard.getStatusCode());
@@ -160,10 +146,6 @@ public class SHChangeBinding {
             rsMap.put("RqUID",shChangeCard.getRqUID());
             logger.info(">>>>>>>>>>解析xml完毕");
             signDataStr = StringUtil.jointSignature(rsMap);
-//            signDataStr = "CustName="+shChangeCard.getCustName()+"&NewCardNo="+shChangeCard.getNewCardNo()+"&NewReservedPhone="+shChangeCard.getNewReservedPhone()
-//                    +"&ProductCd="+shChangeCard.getProductCd()+"&RqUID="+shChangeCard.getRqUID()+"&SPRsUID="+shChangeCard.getSPRsUID()
-//                    +"&ServerStatusCode="+shChangeCard.getServerStatusCode()+"&StatusCode="+shChangeCard.getStatusCode()+"&SubAcctNo="+shChangeCard.getSubAcctNo()+"";
-
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
@@ -176,19 +158,11 @@ public class SHChangeBinding {
                 logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }
-            if(!shChangeCard.getStatusCode().equals("0000")){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage(shChangeCard.getServerStatusCode());
-                resultMap.put("status",shChangeCard.getStatusCode());
-                resultMap.put("SHChangeCard",shChangeCard);
-                resultInfo.setData(resultMap);
-                logger.error(">>>>>>>>>>验签失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
-                return resultInfo;
-            }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultMap.put("status",shChangeCard.getStatusCode());
             resultMap.put("SHChangeCard",shChangeCard);
             resultInfo.setData(resultMap);
+            logger.info(">>>>>>>>>>上海二类户改绑成功");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(">>>>>>>>上海二类账户改绑异常：",e);

@@ -38,9 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/")
 public class UserController extends BaseController{
 
-	/**
-	 * 日志对象
-	 */
 	private static Logger logger = Logger.getLogger(UserController.class);
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -143,8 +140,12 @@ public class UserController extends BaseController{
 				//新增数据库信息
 				if(info.getCode() != 1000){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
-					resultInfo.setMessage("激活失败");
+					resultInfo.setMessage(info.getMessage());
+					Map<String,Object> paramMap = new HashMap<>();
+					paramMap.put("status",info.getData());
+					resultInfo.setData(paramMap);
 					logger.error(">>>>>>>>>>激活钱包失败");
+					return resultInfo;
 				}
 				Map<String,Object> map = (Map<String, Object>) info.getData();
 				SecondAcount sa = (SecondAcount) map.get("sa");
@@ -160,7 +161,11 @@ public class UserController extends BaseController{
 				if(result <= 0){
 					resultInfo.setCode(IConstants.QT_CODE_ERROR);
 					resultInfo.setMessage("激活失败");
+					Map<String,Object> paramMap = new HashMap<>();
+					paramMap.put("status",status);
+					resultInfo.setData(paramMap);
 					logger.error(">>>>>>>>>>插入用户信息异常");
+					return resultInfo;
 				}
 			}
 			resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -189,8 +194,8 @@ public class UserController extends BaseController{
 		try {
 			//开通上海银行二类账户
 			Map<String,Object> param = new HashMap<>();
-			param.put("CoopCustNo" , "110310018000073");			//合作方客户账号
-			param.put("ProductCd" , "yfyBalFinancing");				//理财产品参数
+			param.put("CoopCustNo" , IConstants.CoopCustNo);		//合作方客户账号
+			param.put("ProductCd" , IConstants.ProductCd);			//理财产品参数
 			param.put("CustName" , user.getUserName());				//姓名
 			param.put("IdNo" , user.getCardNo());					//身份证号
 			param.put("MobllePhone" , user.getMobile());			//手机号
@@ -199,16 +204,22 @@ public class UserController extends BaseController{
 			param.put("Sign" , "N");								//是否开通余额理财功能
 			String status = "";
 			ResultInfo ri = ShangHaiAccount.register(param);
-			logger.info(">>>>>>>>>> 注册结果为：" + ri);
 			Map<String,Object> resultMap = (Map<String, Object>) ri.getData();
-			logger.info(">>>>>>>>>resultMap is :" + resultMap);
 			SecondAcount sa = (SecondAcount) resultMap.get("secondAcount");
 			status = (String) resultMap.get("status");
 			if(!"0000".equals(status)){
+				//特殊处理。如果当前身份证不合法，则给前端提示让其跳转页面
+				if(sa.getServerStatusCode().contains("身份证")){
+					retInfo.setCode(IConstants.ILLEGAL);
+					retInfo.setMessage(sa.getServerStatusCode());
+					retInfo.setData(status);
+					logger.error(">>>>>>>>>>"+user.getMobile() + " 注册上海银行二类账户失败，状态信息为："+sa.getServerStatusCode()+"，状态码为："+ status);
+					return retInfo;
+				}
 				retInfo.setCode(IConstants.QT_CODE_ERROR);
 				retInfo.setMessage(sa.getServerStatusCode());
 				retInfo.setData(status);
-				logger.error(">>>>>>>>>>"+user.getMobile() + " 注册二类账户信息失败，状态信息为："+sa.getServerStatusCode()+"状态码为："+ status);
+				logger.error(">>>>>>>>>>"+user.getMobile() + " 注册上海银行二类账户失败，状态信息为："+sa.getServerStatusCode()+"，状态码为："+ status);
 				return retInfo;
 			}
 			String SubAcctNo = sa.getSubAcctNo();
@@ -597,6 +608,13 @@ public class UserController extends BaseController{
 	@ResponseBody
 	public ResultInfo uploadSFTP(@RequestParam("file") MultipartFile[] file,String SubAcctNo,String EacctNo, HttpServletRequest request){
 		ResultInfo resultInfo = UploadImg(file,SubAcctNo,EacctNo,request);
+		//重新上传身份照片后，将二类户设置为审核中状态
+		int result = userService.updateAccStatus(SubAcctNo);
+		if(result <= 0){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("上传文件失败");
+			logger.debug(">>>>>>>>>>重新上传文件后，修改二类户状态失败");
+		}
 		return resultInfo;
 	}
 
@@ -641,7 +659,7 @@ public class UserController extends BaseController{
 				uploadPath.mkdir();
 			}
 			for (int i = 0 ; i < file.length ; i++){
-				logger.info(">>>>>>>>>>上传文件第"+i+"个文件:" + file[i]);
+				logger.info(">>>>>>>>>>上传文件第"+ (i+1) +"个文件:" + file[i]);
 				FileOutputStream out = new FileOutputStream(oriPath + "/" + file[i].getOriginalFilename());
 				InputStream in = file[i].getInputStream();
 				int r = 0;
@@ -656,7 +674,6 @@ public class UserController extends BaseController{
 			//第二步
 			//拼接索引文件名
 			String random = StringUtil.getFixLenthString(4);
-			Random r = new Random(4);
 			String date = simple.format(new Date());
 			String indexFile = "IMGDOC0001_YFY_" + date + "_" + random;
 			//String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";

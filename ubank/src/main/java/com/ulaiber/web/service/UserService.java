@@ -194,4 +194,11 @@ public interface UserService {
 	 * @return int
 	 */
     int uploadIcon(String userId, String image);
+
+	/**
+	 * 修改上海二类户状态
+	 * @param subAcctNo 二类户账号
+	 * @return int
+	 */
+	int updateAccStatus(String subAcctNo);
 }

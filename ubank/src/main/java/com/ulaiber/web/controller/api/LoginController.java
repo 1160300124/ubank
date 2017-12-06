@@ -23,6 +23,8 @@ import com.ulaiber.web.utils.ObjUtil;
 import com.ulaiber.web.utils.StringUtil;
 import com.ulaiber.web.utils.UUIDGenerator;
 
+import java.util.Map;
+
 /**
  * 登录控制器
  * 

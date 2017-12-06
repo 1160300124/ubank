@@ -85,7 +85,13 @@ public class ReadFile extends QuartzJobBean {
                 Map<String,Object> paraMap = bankService.queryCIdbySub(SubAcctNo);
                 StringUtil.sendPictureMsg(paraMap,result);
                 //更新二类户冻结状态
-                int res = bankService.updateAccFreeze(SubAcctNo);
+                String status = "";
+                if(result){
+                   status = "2";
+                }else{
+                    status = "1";
+                }
+                int res = bankService.updateAccFreeze(SubAcctNo,status);
                 if(res <= 0){
                     logger.error(">>>>>>>>>>定时任务-"+sdf.format(new Date())+"更新二类户冻结状态失败，二类户为：" + SubAcctNo);
                 }

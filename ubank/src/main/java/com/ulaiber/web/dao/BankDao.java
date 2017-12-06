@@ -128,10 +128,10 @@ public interface BankDao {
 
     /**
      * 更新二类户冻结状态
-     * @param subAcctNo 二类户账号
+     * @param map 二类户账号
      * @return int
      */
-    int updateAccFreeze(String subAcctNo);
+    int updateAccFreeze(Map<String, Object> map);
     
 	/**
 	 * 根据公司编号查询该公司下所有二类户
