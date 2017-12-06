@@ -757,7 +757,8 @@ public class LeaveController extends BaseController {
         if (auditData.getType().equals("3")){
         	if (auditData.getStatus().equals("1")){
         		SalaryRecord record = salaryAuditService.querySalaryByRecordNo(Integer.parseInt(auditData.getRecordNo()));
-        		salaryService.pay(record.getSalaryId());
+        		//TODO
+//        		salaryService.pay(record.getSalaryId());
         	}
         }
         //当前为补卡审批才执行以下代码

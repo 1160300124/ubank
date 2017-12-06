@@ -558,7 +558,7 @@ function renderSelected(treeId) {
 //选择部门与人员modal 所有员工渲染
 function renderPeople(companyId, companyName, search) {
 	if (search == undefined){
-		search == "";
+		search = "";
 	}
 	if (companyId == undefined || companyName == undefined){
 		return;
