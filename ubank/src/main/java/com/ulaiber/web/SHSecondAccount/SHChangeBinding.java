@@ -51,9 +51,9 @@ public class SHChangeBinding {
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
             //String random = StringUtil.getStringRandom(36);
-            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            String random = date + time + StringUtil.getFixLenthString(22);
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
@@ -133,6 +133,7 @@ public class SHChangeBinding {
                 resultMap.put("status",shChangeCard.getStatusCode());
                 resultMap.put("SHChangeCard",shChangeCard);
                 resultInfo.setData(resultMap);
+                logger.error(">>>>>>>>>>上海二类账户改绑失败,状态为：" + shChangeCard.getStatusCode() + ",信息为：" + shChangeCard.getServerStatusCode());
                 return resultInfo;
             }
             rsMap.put("SubAcctNo",shChangeCard.getSubAcctNo());

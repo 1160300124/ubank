@@ -95,7 +95,7 @@
     <select id="getUserTotalByDate" parameterType="Map" resultType="int">
         select count(a.user_id) as total from tbl_users a
         left join tbl_roots b on a.user_id = b.userid
-        where 1=1 and b.companyNumber = #{companyNumber}
+        where  b.companyNumber = #{companyNumber}
         <if test='_parameter != "" and _parameter != null'>
             and a.createTime > #{date}
         </if>
@@ -107,7 +107,7 @@
         select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime,a.mobile  from tbl_users a
         left join tbl_roots b on a.user_id = b.userid
         left join tbl_departments c on b.dept_number = c.dept_number
-        where 1=1 and b.companyNumber = #{companyNumber}
+        where  a.user_name is not null and b.companyNumber = #{companyNumber}
         <if test='date != "" and date != null'>
             and  a.createTime > #{date}
         </if>
@@ -144,7 +144,7 @@
             l.leaveType,
         </if>
     	sum(l.realLeaveTime) totalTime from tbl_leave_record l join tbl_roots r on l.userId=r.userId 
-		where r.companyNumber=#{companyNum} and  l.type=#{type} and l.status='1' and l.disable='0' and locate(#{month},l.startDate)>0 group by l.userId
+		where r.disabled = '0' and  r.companyNumber=#{companyNum} and  l.type=#{type} and l.status='1' and l.disable='0' and locate(#{month},l.startDate)>0 group by l.userId
 		<if test='type == "0"'>
             ,l.leaveType
         </if>

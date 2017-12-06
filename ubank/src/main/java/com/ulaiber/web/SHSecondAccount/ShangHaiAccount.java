@@ -51,9 +51,9 @@ public class ShangHaiAccount {
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
             //String random = StringUtil.getStringRandom(36);
-            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            String random = date + time + StringUtil.getFixLenthString(22);
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             //拼接待签名数据
             map.put("SPName",IConstants.SPName);
@@ -138,6 +138,7 @@ public class ShangHaiAccount {
                 resultMap.put("secondAcount",secondAcount);
                 resultMap.put("status",secondAcount.getStatusCode());
                 resultInfo.setData(resultMap);
+                logger.error(">>>>>>>>>>验签失败,状态为：" + secondAcount.getStatusCode() + ",信息为：" + secondAcount.getServerStatusCode());
                 return resultInfo;
             }
             rsMap.put("CoopCustNo",secondAcount.getCoopCustNo());

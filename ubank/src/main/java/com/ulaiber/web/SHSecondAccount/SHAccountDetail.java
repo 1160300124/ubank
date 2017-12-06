@@ -46,9 +46,9 @@ public class SHAccountDetail {
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
             //String random = StringUtil.getStringRandom(36);
-            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            String random = date + time + StringUtil.getFixLenthString(22);
             logger.info(">>>>>>>>>流水号为"+random+"开始拼接待签名数据");
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
@@ -150,6 +150,7 @@ public class SHAccountDetail {
                 resultMap.put("status",rsMap.get("StatusCode"));
                 resultMap.put("accDetail",rsMap);
                 resultInfo.setData(resultMap);
+                logger.error(">>>>>>>>>>查询账户明细失败,返回结果为："+ rsMap.get("StatusCode") + ",信息为：" + rsMap.get("ServerStatusCode"));
                 return resultInfo;
             }
            signDataStr = StringUtil.jointRepeat(sortList);

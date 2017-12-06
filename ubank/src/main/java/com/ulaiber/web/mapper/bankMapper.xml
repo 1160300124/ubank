@@ -66,7 +66,7 @@
 	<select id="getCodeByuserid" parameterType="Long" resultType="String" >
 		select distinct b.code from tbl_roots a
 		left join tbl_company b on a.companyNumber = b.companyNumber
-		 where a.userid = #{userid}
+		 where a.userid = #{userid} and a.disabled ='0'
 	</select>
 
 	<!--更新二类账户余额-->
@@ -140,7 +140,8 @@
 	
 	<!-- 根据公司编号查询该公司下所有二类户 -->
 	<select id="getSubByCompanyNum" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
-		select s.userid,s.SubAcctNo from tbl_secondAccount s join tbl_roots r on s.userid=r.userid and r.companyNumber=#{companyNum} 
+		select s.userid,s.SubAcctNo from tbl_secondAccount s
+		join tbl_roots r on s.userid=r.userid where r.disabled ='0' and  r.companyNumber=#{companyNum}
 	</select>
 
 	<!--插入转账记录-->

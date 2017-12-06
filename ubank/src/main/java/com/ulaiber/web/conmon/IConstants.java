@@ -168,6 +168,9 @@ public class IConstants
 
 	//推送个人身份证上传反馈
 	public static final int PICTURE = 3;
+
+	//推送公告消息
+	public static final int NOTICE = 4;
 	
 	//一小时的毫秒数
 	public static final long HOUR_MS = 60 * 60 * 1000;

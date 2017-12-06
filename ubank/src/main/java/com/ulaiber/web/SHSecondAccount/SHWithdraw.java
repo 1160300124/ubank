@@ -55,9 +55,9 @@ public class SHWithdraw {
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
             //String random = StringUtil.getStringRandom(36);
-            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            String random = date + time + StringUtil.getFixLenthString(22);
             logger.info(">>>>>>>>>>请求流水号为：" + random);
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
@@ -148,6 +148,7 @@ public class SHWithdraw {
                 resultMap.put("status",withdraw.getStatusCode());
                 resultMap.put("withdraw",withdraw);
                 resultInfo.setData(resultMap);
+                logger.error(">>>>>>>>>>上海银行二类户提现操作失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 return resultInfo;
             }
             rsMap.put("BizDate",withdraw.getBizDate());
@@ -175,8 +176,6 @@ public class SHWithdraw {
                 resultMap.put("status",withdraw.getStatusCode());
                 resultMap.put("withdraw",withdraw);
                 resultInfo.setData(resultMap);
-                System.out.println(">>>>>>>>>>验签失败,原因是返回结果为：" + verifyRet);
-                 System.out.println(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 logger.error(">>>>>>>>>>验签失败,状态为：" + withdraw.getStatusCode() + ",信息为：" + withdraw.getServerStatusCode());
                 return resultInfo;
             }

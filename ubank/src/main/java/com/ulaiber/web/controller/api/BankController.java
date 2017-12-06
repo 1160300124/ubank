@@ -119,7 +119,7 @@ public class BankController extends BaseController {
 				status = (String) resultMap.get("status");
 				SHChangeCard data = (SHChangeCard) resultMap.get("SHChangeCard");
 				if(!data.getStatusCode().equals("0000")){
-					if("子账户余额不为零".contains(data.getServerStatusCode()) && "S72_0003".equals(status)){
+					if("子账户余额不为零".contains(data.getServerStatusCode())){
 						resultInfo.setCode(IConstants.QT_CODE_ERROR);
 						resultInfo.setMessage("暂时无法改绑，余额和份额必须为零");
 						Map<String,Object> param = new HashMap<>();
@@ -541,7 +541,6 @@ public class BankController extends BaseController {
 		try {
 			ResultInfo result = SHAccountDetail.queryDetail(vo);
 			Map<String,Object> resultMap = (Map<String, Object>) result.getData();
-			//logger.info(">>>>>>>>>resultMap is :" + resultMap);
 			Map<String,Object> detail = (Map<String, Object>) resultMap.get("accDetail");
 			status = (String) resultMap.get("status");
 			if(!"0000".equals(status)){
@@ -556,12 +555,6 @@ public class BankController extends BaseController {
 			List<SHAccDetail> detailList = (List<SHAccDetail>) detail.get("TxnInfo");
 
 			return result;
-//			resultInfo.setCode(IConstants.QT_CODE_OK);
-//			resultInfo.setMessage((String) detail.get("ServerStatusCode"));
-//			Map<String,Object> param = new HashMap<>();
-//			param.put("status",status);
-//			param.put("accDetail",detail);
-//			resultInfo.setData(param);
 		}catch (Exception e){
 			resultInfo.setCode(IConstants.QT_CODE_ERROR);
 			resultInfo.setMessage("查询账户明细失败");

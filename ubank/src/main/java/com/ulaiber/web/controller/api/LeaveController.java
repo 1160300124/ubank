@@ -979,6 +979,11 @@ public class LeaveController extends BaseController {
                     }else{
                         SynchronizationData async = new SynchronizationData();
                         async.setId(userList.get(i).getId());
+                        async.setUsername(userList.get(i).getUserName());
+                        async.setDeptName(userList.get(i).getDept_name());
+                        async.setMobile(userList.get(i).getMobile());
+                        async.setImage(userList.get(i).getImage());
+                        async.setDisabled(userList.get(i).getDisabled());
                         list2.add(async);
                     }
                 }

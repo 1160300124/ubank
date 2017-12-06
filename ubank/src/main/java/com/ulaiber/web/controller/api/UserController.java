@@ -182,6 +182,7 @@ public class UserController extends BaseController{
 		return resultInfo;
 	}
 
+
 	/**
 	 * 注册上海银行二类户
 	 * @param user 用户信息

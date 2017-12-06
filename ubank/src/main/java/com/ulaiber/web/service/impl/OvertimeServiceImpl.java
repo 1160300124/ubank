@@ -65,10 +65,12 @@ public class OvertimeServiceImpl extends BaseService implements OvertimeService{
         //消息内容
         String content = name + "有一条加班申请需要您审批，原因是:" + applyForVO.getReason();
         String title = "您有一条加班申请待审批记录";
+        long id = 0; //内容ID，如果不需要默认为0
+        String status = ""; //状态 0 失败，1 成功
         if(!StringUtil.isEmpty(cid)){
             try {
                 //推送审批信息致第一个审批人
-                PushtoSingle.singlePush(cid,type,content,title);
+                PushtoSingle.singlePush(cid,type,content,title,id,status);
             } catch (Exception e) {
                 e.printStackTrace();
             }

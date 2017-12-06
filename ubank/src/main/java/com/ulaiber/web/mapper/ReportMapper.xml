@@ -12,7 +12,7 @@
     <!--获取申请记录总数-->
     <select id="getLeaveCount" parameterType="Map" resultType="int">
         select count(a.id)as count from tbl_leave_record a
-            left join tbl_roots b on a.userid = b.userid
+        left join (select userid,groupNumber,companyNumber,dept_number from tbl_roots where disabled = '0') b on a.userid = b.userid
             left join tbl_group c on b.groupNumber = c.groupNumber
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
@@ -25,7 +25,7 @@
     <!--申请记录查询-->
     <select id="leaveQuery" parameterType="Map" resultType="com.ulaiber.web.model.LeaveReturnVO">
         select a.id,a.startDate,a.endDate,a.leaveTime,a.reason,a.auditor,a.status,d.name as company from tbl_leave_record a
-            left join tbl_roots b on a.userid = b.userid
+        left join (select userid,groupNumber,companyNumber,dept_number from tbl_roots where disabled = '0') b on a.userid = b.userid
             left join tbl_group c on b.groupNumber = c.groupNumber
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
@@ -105,7 +105,7 @@
     <!--导出报表查询-->
     <select id="reportQuery" parameterType="Map" resultType="com.ulaiber.web.model.LeaveReturnVO">
         select a.id,a.startDate,a.endDate,a.leaveTime,a.reason,a.auditor,a.status,d.name as company from tbl_leave_record a
-        left join tbl_roots b on a.userid = b.userid
+        left join (select userid,groupNumber,companyNumber,dept_number from tbl_roots where disabled = '0') b on a.userid = b.userid
         left join tbl_group c on b.groupNumber = c.groupNumber
         left join tbl_company d on b.companyNumber = d.companyNumber
         left join tbl_departments e on e.dept_number = b.dept_number
@@ -193,7 +193,7 @@
     <!--获取报销记录总数-->
     <select id="getReimCount" parameterType="Map" resultType="int">
         select count(a.id) as count from tbl_leave_record a
-            left join tbl_roots b on a.userid = b.userid
+        left join (select userid,groupNumber,companyNumber,dept_number from tbl_roots where disabled = '0') b on a.userid = b.userid
             left join tbl_users c on a.userid = c.user_id
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
@@ -207,7 +207,7 @@
     <!--报销记录查询-->
     <select id="reimQuery" parameterType="Map" resultType="com.ulaiber.web.model.ReimReportVO">
         select a.id,a.createDate,c.user_name as username,d.name as company,e.name as dept,a.reason,a.status from tbl_leave_record a
-            left join tbl_roots b on a.userid = b.userid
+        left join (select userid,groupNumber,companyNumber,dept_number from tbl_roots where disabled = '0') b on a.userid = b.userid
             left join tbl_users c on a.userid = c.user_id
             left join tbl_company d on b.companyNumber = d.companyNumber
             left join tbl_departments e on e.dept_number = b.dept_number
@@ -300,7 +300,7 @@
     <!--导出报销报表查询-->
     <select id="reimReportQuery" parameterType="Map" resultType="com.ulaiber.web.model.ReimReportVO">
         select a.id,a.createDate,c.user_name as username,d.name as company,e.name as dept,a.reason,a.status from tbl_leave_record a
-        left join tbl_roots b on a.userid = b.userid
+        left join (select userid,groupNumber,companyNumber,dept_number from tbl_roots where disabled = '0') b on a.userid = b.userid
         left join tbl_users c on a.userid = c.user_id
         left join tbl_company d on b.companyNumber = d.companyNumber
         left join tbl_departments e on e.dept_number = b.dept_number

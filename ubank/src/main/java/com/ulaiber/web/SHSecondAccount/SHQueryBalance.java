@@ -54,9 +54,9 @@ public class SHQueryBalance {
             //获取经过Base64处理的商户证书代码
             KoalB64Cert = signer.getEncodedSignCert();
            // String random = StringUtil.getStringRandom(36);
-            String random = SDF.format(new Date()) + TIME.format(new Date()) + StringUtil.getFixLenthString(22);
             String date = SDF.format(new Date());
             String time = TIME.format(new Date());
+            String random = date + time + StringUtil.getFixLenthString(22);
             logger.info(">>>>>>>>>流水号为'"+random+"'开始拼接待签名数据");
             //拼接待签名数据
             Map<String ,Object> rqMap = new HashMap<>();
@@ -137,6 +137,7 @@ public class SHQueryBalance {
                 resultMap.put("status",sa.getStatusCode());
                 resultMap.put("secondAccount",sa);
                 resultInfo.setData(resultMap);
+                logger.error(">>>>>>>>>>查询上海银行二类户余额失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
                 return resultInfo;
             }
             rsMap.put("SubAcctNo",sa.getSubAcctNo());

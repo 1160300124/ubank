@@ -289,9 +289,10 @@ public class Test {
 	@org.junit.Test
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("date","");
-		map.put("pageNum",1);
+		map.put("date","2017-12-06 14:48:15");
+		map.put("pageNum",0);
 		map.put("pageSize",50);
+		map.put("companyNumber","20047");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
 		System.out.print(">>>>>>>>同步数据结果为："+result);
 	}
@@ -583,7 +584,7 @@ public class Test {
 		System.out.println(getFixLenthString(4));
 //		try {
 //			String indexName = "IMGDOC0001_SSSSS_yyyyMMdd_XXXX.zip";
-//			//加密
+//			//加密\
 //			EncryDecryUtils.makeZip("/Users/emacs/Desktop/image",
 //					"/Users/emacs/Desktop/image2",indexName);
 //			//解密

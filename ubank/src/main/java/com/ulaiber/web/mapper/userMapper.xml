@@ -84,7 +84,7 @@
 		left join tbl_roles l on u.role_id = l.role_id
 		left join tbl_departments d on r.dept_number = d.dept_number
 		left join tbl_company c on r.companyNumber = c.companyNumber
-		where u.disabled = '0' and u.mobile=#{mobile}
+		where u.disabled = '0' and r.disabled ='0' and u.mobile=#{mobile}
 	</select>
 	
 	<select id="findAll" resultMap="UserMap">
@@ -96,16 +96,17 @@
 		LEFT join tbl_roots b on a.user_id = b.userid
 		left join tbl_roles c on a.role_id = c.role_id
 		left join tbl_company e on b.companyNumber = e.companyNumber
-		where disabled = '0' and a.user_name = #{userName}
+		where disabled = '0' and b.disabled ='0' and a.user_name = #{userName}
 	</select>
 	
 	<select id="getUserById" resultMap="UserMap">
-		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
+		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,
+		l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
 		left join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
 		left join tbl_departments d on r.dept_number = d.dept_number
 		left join tbl_company c on r.companyNumber = c.companyNumber
-		where disabled = '0' and u.user_id = #{userId}
+		where u.disabled = '0' and r.disabled ='0' and  u.user_id = #{userId}
 	</select>
 
 	<!--获取集团系统所有菜单-->
@@ -133,7 +134,7 @@
 		select u.user_id,u.user_name,u.cardNo,u.salaries,r.groupNumber,r.dept_number,r.companyNumber,r.sysflag from tbl_users u
 		LEFT join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
-		where u.disabled = '0' and r.companyNumber = #{comNum}
+		where u.disabled = '0' and r.disabled ='0' and  r.companyNumber = #{comNum}
 		<if test="search != null and search != ''">
 			and u.user_name like concat('%',#{search},'%')
 		</if>

@@ -414,13 +414,15 @@ public class StringUtil {
 				//消息内容
 				String title = "您有个"+types+"申请待审批";
 				String str = "";
+				long id = 0; //内容ID，如果不需要默认为0
+                String status = ""; //状态 0 失败，1 成功
 				if(!StringUtil.isEmpty(reason)){
 					str = reason;
 				}
 				String content = name + "先生/女士你好，有一条请假申请需要您审批，原因是:"+ str;
 				try {
 					//推送审批信息致第一个审批人
-					PushtoSingle.singlePush(cid,type,content,title);
+					PushtoSingle.singlePush(cid,type,content,title,id,status);
 				} catch (Exception e) {
 					logger.error(">>>>>>>>>>向"+name+"推送消息异常",e);
 				}
@@ -465,8 +467,10 @@ public class StringUtil {
 					//消息内容
 					String title = "您有一条"+ types +"记录";
 					String content = name + "先生/女士你好，您的"+types+"交易已处理"+result;
+					long id = 0; //内容ID，如果不需要默认为0
+                    String statu = ""; //状态 0 失败，1 成功
 					//推送审批信息致第一个审批人
-					PushtoSingle.singlePush(cid,type,content,title);
+					PushtoSingle.singlePush(cid,type,content,title,id,statu);
 				}
 			}
 		}catch(Exception e){
@@ -483,6 +487,8 @@ public class StringUtil {
 	public static void sendPictureMsg(Map<String,Object> map,boolean flag){
 		String cid  = "";
 		String name = "";
+		long id = 0; //内容ID，如果不需要默认为0
+		String status = ""; //状态 0 失败，1 成功
 		try {
 			if(!StringUtil.isEmpty(map.get("CID"))){
 				cid = (String) map.get("CID");
@@ -495,12 +501,14 @@ public class StringUtil {
 					if(flag){
 						title = "优发展银行APP开户申请反馈";
 						content = name + "先生/女士你好,您在优发展银行APP的开户申请已成功,欢迎使用.";
+						status = "1";
 					}else{
 						title = "优发展银行APP开户申请反馈";
 						content = name + "先生/女士你好,您在优发展银行APP上传的个人身份证照片不合格,为了不影响APP的正常使用，请尽快重新上传,谢谢合作.";
+						status = "0";
 					}
 					//推送审批信息致第一个审批人
-					PushtoSingle.singlePush(cid,type,content,title);
+					PushtoSingle.singlePush(cid,type,content,title,id,status);
 				}
 			}else{
 				logger.warn(">>>>>>>>>>图片检验失败，根据二类户查询用户为空");
@@ -521,7 +529,6 @@ public class StringUtil {
 		Random random = new Random();
 		//参数length，表示生成几位随机数
 		for(int i = 0; i < length; i++) {
-
 			String charOrNum = random.nextInt(2) % 2 == 0 ? "char" : "num";
 			//输出字母还是数字
 			if( "char".equalsIgnoreCase(charOrNum) ) {
@@ -595,43 +602,6 @@ public class StringUtil {
 		}
 		return map;
 
-	}
-
-
-	/**
-	 * 解析xml
-	 * @param xml
-	 * @return map
-	 * @throws XmlPullParserException
-	 * @throws IOException
-	 */
-	public static Map<String, String> xmlParse(String xml) throws XmlPullParserException, IOException {
-		Map<String, String> map = null;
-		if (!StringUtil.isEmpty(xml)) {
-			InputStream inputStream = new ByteArrayInputStream(xml.getBytes());
-			XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
-			pullParser.setInput(inputStream, "UTF-8"); // 为xml设置要解析的xml数据
-			int eventType = pullParser.getEventType();
-
-			while (eventType != XmlPullParser.END_DOCUMENT) {
-				switch (eventType) {
-					case XmlPullParser.START_DOCUMENT:
-						map = new HashMap<String, String>();
-						break;
-					case XmlPullParser.START_TAG:
-						String key = pullParser.getName();
-						if (key.equals("xml"))
-							break;
-						String value = pullParser.nextText().trim();
-						map.put(key, value);
-						break;
-					case XmlPullParser.END_TAG:
-						break;
-				}
-				eventType = pullParser.next();
-			}
-		}
-		return map;
 	}
 
 	/**

@@ -25,20 +25,22 @@ public class PushtoSingle {
     private static String appKey = "U8kOKaQJ6g7a1PbDLs55r";
     private static String masterSecret = "H7mg8I19q58MVUp1EXIeN2";
     private static String host = "http://sdk.open.api.igexin.com/apiex.htm";
-    //static String CID = "";
     //别名推送方式
     // static String Alias = "";
 
     /**
-     *
+     * 推送个人信息
      * @param CID 个人用户clientid
-     * @param type //推送待审批的记录 0，推送已审批的记录 1 ，推送交易信息 2，推送个人身份证上传反馈 3
+     * @param type 推送待审批的记录 0，推送已审批的记录 1 ，推送交易信息 2，推送个人身份证上传反馈 3
+     * @param content 内容
+     * @param title 标题
+     * @param status 状态，0 失败 1 成功
      * @throws Exception
      */
-    public static void singlePush(String CID,int type,String content,String title) throws Exception {
+    public static void singlePush(String CID,int type,String content,String title,long id,String status) throws Exception {
         IGtPush push = new IGtPush(host, appKey, masterSecret);
         //LinkTemplate template = linkTemplateDemo();
-        TransmissionTemplate template = transmissionTemplateDemo(type,content,title);
+        TransmissionTemplate template = transmissionTemplateDemo(type,content,title,id,status);
         SingleMessage message = new SingleMessage();
         message.setOffline(true);
         // 离线有效时间，单位为毫秒，可选
@@ -93,7 +95,7 @@ public class PushtoSingle {
      * 透传信息模板.对个人消息推送
      * @return
      */
-    public static TransmissionTemplate transmissionTemplateDemo(int type,String content,String title) {
+    public static TransmissionTemplate transmissionTemplateDemo(int type,String content,String title,long id,String status) {
         TransmissionTemplate template = new TransmissionTemplate();
         template.setAppId(appId);
         template.setAppkey(appKey);
@@ -103,6 +105,8 @@ public class PushtoSingle {
         pushInfo.setType(type);
         pushInfo.setContent(content);
         pushInfo.setTitle(title);
+        pushInfo.setId(id);
+        pushInfo.setStatus(status);
         String msg = JSONObject.fromObject(pushInfo).toString();
         template.setTransmissionContent(msg);
         // 设置定时展示时间

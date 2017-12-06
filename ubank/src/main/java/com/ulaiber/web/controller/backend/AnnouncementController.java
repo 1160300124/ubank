@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.utils.PushtoSingle;
+import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,5 +155,38 @@ public class AnnouncementController extends BaseController {
 		}
 
 		return info;
+	}
+
+	/**
+	 * 推送公告
+	 * @param cid 个推CID
+	 * @param content 内容
+	 * @param title 标题
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "sendNotice", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo notice(String cid,String content,String title,long id){
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+			int type = IConstants.NOTICE;
+			String status = "";
+			//暂时不需要内容
+			content = "";
+			String[] CIDS = cid.split(",");
+			for (int i = 0 ; i < CIDS.length; i++){
+				if(!StringUtil.isEmpty(CIDS[i])){
+					PushtoSingle.singlePush(CIDS[i],type,content,title,id,status);
+				}
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("推送公告成功");
+			logger.info("推送公告成功");
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("推送公告失败");
+			logger.error("推送公告失败",e);
+		}
+		return resultInfo;
 	}
 }

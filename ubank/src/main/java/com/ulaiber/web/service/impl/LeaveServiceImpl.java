@@ -192,6 +192,8 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         String cid = "";
         String name = "";
         Integer user_id = 0;
+        long id = 0; //内容ID，如果不需要默认为0
+        String status = ""; //状态 0 失败，1 成功
         int type = 0;
         for (int i = 0 ; i < list.size() ; i++){
             Map<String,Object> map2 = list.get(i);
@@ -204,7 +206,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
                     title = "您有一条已审批的记录";
                     content = name + "你好，您有一条申请已回复，理由是：" + auditData.getReason();
                     try {
-                        PushtoSingle.singlePush(cid,type,content,title);
+                        PushtoSingle.singlePush(cid,type,content,title,id,status);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -214,7 +216,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
                         title = "您有一条待审批的记录";
                         content = name + "你好，您有一个条待审批的记录需要审批，请查看";
                         try {
-                            PushtoSingle.singlePush(cid,type,content,title);
+                            PushtoSingle.singlePush(cid,type,content,title,id,status);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
