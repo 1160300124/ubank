@@ -7,8 +7,8 @@
 		<form class="form-horizontal" role="form" id="record_form">
 			<div class="form-group">
 	            <div class="col-sm-1">
-	            	<button type="button" class="btn btn-default" id="btn_search" >
-	            		<span class="fa icon-search" aria-hidden="true"></span>发公告发公告发公告
+	            	<button type="button" class="btn btn-default" id="btn_to_send" >
+	            		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fa icon-share-alt" aria-hidden="true"></span>发公告&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	            	</button>
 	            </div>
 	            

@@ -70,4 +70,21 @@
 		select * from tbl_users_of_announcements a join tbl_users u on a.userid=u.user_id where u.disabled='0' and aid=#{aid}
 	</select>
 	
+	<select id="getAnnouncementsByUserId" resultType="java.util.Map">
+		select a.aid,a.create_time,a.announce_title,a.announce_body from tbl_announcements a join tbl_users_of_announcements ua on a.aid=ua.aid where ua.userId=#{userId} 
+		order by a.create_time desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getTotalCountByUserId" resultType="Integer">
+		select count(1) from tbl_announcements a join tbl_users_of_announcements ua on a.aid=ua.aid where ua.userId=#{userId} 
+	</select>
+	
+	<select id="getAttachmentCountByUserId" resultType="java.util.Map">
+		select aa.aid,count(1) total from tbl_announcements_attachments aa join tbl_users_of_announcements ua on ua.aid=aa.aid where ua.userId=#{userId} group by aa.aid
+	</select>
+	
+	<select id="getAttachmentsByAid" parameterType="Long" resultType="com.ulaiber.web.model.announcement.Attachment">
+		select * from tbl_announcements_attachments where aid=#{aid}
+	</select>
+	
 </mapper>

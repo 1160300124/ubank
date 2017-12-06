@@ -66,6 +66,15 @@ public class AnnouncementController extends BaseController {
 		return "addAnnouncement";
 	}
 	
+	/**
+	 * 分页查询公告列表
+	 * @param limit
+	 * @param offset
+	 * @param order
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "getAnnouncements", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Object> rules(int limit, int offset, String order, HttpServletRequest request, HttpServletResponse response){

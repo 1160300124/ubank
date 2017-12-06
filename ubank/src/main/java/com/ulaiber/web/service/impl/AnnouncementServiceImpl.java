@@ -3,6 +3,7 @@ package com.ulaiber.web.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ulaiber.web.dao.AnnouncementDao;
 import com.ulaiber.web.model.announcement.Announcement;
+import com.ulaiber.web.model.announcement.Attachment;
 import com.ulaiber.web.model.announcement.UserOfAnnouncement;
 import com.ulaiber.web.service.AnnouncementService;
 import com.ulaiber.web.service.BaseService;
@@ -90,6 +92,27 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 	@Override
 	public List<UserOfAnnouncement> getUserIdsByRid(long aid) {
 		return dao.getUserIdsByRid(aid);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAnnouncementsByUserId(long userId, int pageSize, int pageNum) {
+		int offset = pageSize * (pageNum -1);
+		return dao.getAnnouncementsByUserId(userId, pageSize, offset);
+	}
+
+	@Override
+	public int getTotalCountByUserId(long userId) {
+		return dao.getTotalCountByUserId(userId);
+	}
+
+	@Override
+	public List<Map<String, Object>> getAttachmentCountByUserId(long userId) {
+		return dao.getAttachmentCountByUserId(userId);
+	}
+
+	@Override
+	public List<Attachment> getAttachmentsByAid(long aid) {
+		return dao.getAttachmentsByAid(aid);
 	}
 
 }
