@@ -113,29 +113,29 @@ public class SalaryController extends BaseController {
 					params.put("seqNo", sa.getEntrustSeqNo());
 					params.put("beginDate", sa.getSalaryDate().replaceAll("-", ""));
 					params.put("endDate", DateTimeUtil.getMonthEnd(sa.getSalaryDate()).replaceAll("-", ""));
-					Map<String, Object> resultMap = SPDBUtil.getPayResult(params);
+//					Map<String, Object> resultMap = SPDBUtil.getPayResult(params);
 					
-//					List<Payee> payees = new ArrayList<Payee>();
-//					Payee payee2 = new Payee();
-//					payee2.setPayeeName("小李");
-//					payee2.setPayeeAcctNo("6217921102903120");
-//					payee2.setAmount(0.01);
-//					payee2.setNote("代发工资");
-//					payee2.setMessage("EAG1030:客户帐号类型不正确");
-//					
-//					Payee payee1 = new Payee();
-//					payee1.setPayeeName("李良");
-//					payee1.setPayeeAcctNo("6235591104059580");
-//					payee1.setAmount(0.01);
-//					payee1.setNote("代发工资");
-//					payee1.setMessage("");
-//					payees.add(payee1);
-//					payees.add(payee2);
-//					
-//					Map<String, Object> resultMap = new HashMap<>();
-//					resultMap.put("transstatus", "5");
-//					resultMap.put("transdate", "20171115");
-//					resultMap.put("payeeList", payees);
+					List<Payee> payees = new ArrayList<Payee>();
+					Payee payee2 = new Payee();
+					payee2.setPayeeName("小李");
+					payee2.setPayeeAcctNo("6217921102903120");
+					payee2.setAmount(0.01);
+					payee2.setNote("代发工资");
+					payee2.setMessage("EAG1030:客户帐号类型不正确");
+					
+					Payee payee1 = new Payee();
+					payee1.setPayeeName("李良");
+					payee1.setPayeeAcctNo("6235591104059580");
+					payee1.setAmount(0.01);
+					payee1.setNote("代发工资");
+					payee1.setMessage("");
+					payees.add(payee1);
+					payees.add(payee2);
+					
+					Map<String, Object> resultMap = new HashMap<>();
+					resultMap.put("transstatus", "5");
+					resultMap.put("transdate", "20171115");
+					resultMap.put("payeeList", payees);
 					newStatus = resultMap.get("transstatus").toString();
 					String transDate = resultMap.get("transdate").toString();
 					//发工资成功

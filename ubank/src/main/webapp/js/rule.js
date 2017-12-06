@@ -914,7 +914,7 @@ function renderPeople(flag, rid, search) {
 			rid : rid,
 			search : search
 		},
-		async : false, 
+		async : true, 
 		dataType : "json",
 		success : function(data, status) {
 			if (flag == "add"){
@@ -1139,31 +1139,6 @@ window.operateEvents = {
 			});
 		    
 		    renderPeople("edit", row.rid);
-//		    $.ajax({
-//				url : "getUserIdsByRid",
-//				type: "get",
-//				data : {
-//					rid : row.rid
-//				},
-//				dataType : "json",
-//				success : function(data, status) {
-//					var code = data['code'];
-//					if (code === 1000){
-//						var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree_edit");
-//						zTreeObj.checkAllNodes(false);   //清空tree
-//						$(data['data']).each(function(index,item){
-//							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.companyId), true);
-//							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.deptId), true);
-//							zTreeObj.setChkDisabled(zTreeObj.getNodeByParam("id", item.userId), false);
-//							zTreeObj.checkNode(zTreeObj.getNodeByParam("id", item.userId), true);
-//						})
-//						renderSelected("peoplesTree_edit");
-//					}
-//				},
-//				error : function(data, status, e) {
-//					Ewin.alert("系统内部错误！");
-//				}
-//			});
 		    
 		    //选择所有员工事件
 			$("#checkAll_edit").unbind().bind("change", function(event){

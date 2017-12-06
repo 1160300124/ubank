@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.AnnouncementDao">
+
+    <resultMap id="AnnouncementMap" type="Announcement" >
+    	<id column="aid" property="aid" jdbcType="BIGINT" />
+    	<result column="company_id" property="companyId" jdbcType="BIGINT" />
+    	<result column="announce_title" property="announceTitle" jdbcType="VARCHAR" />
+    	<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    	<result column="announce_count" property="announceCount" jdbcType="VARCHAR" />
+    	<result column="announce_body" property="announceBody" jdbcType="VARCHAR" />
+    	<result column="operate_user_id" property="operateUserId" jdbcType="BIGINT" />
+    	<result column="operate_user_name" property="operateUserName" jdbcType="VARCHAR" />
+   </resultMap>
+  
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<insert id="save" parameterType="Announcement" useGeneratedKeys="true" keyProperty="aid">
+		insert into tbl_announcements(company_id,announce_title,create_time,announce_count,announce_body,operate_user_id,operate_user_name) values
+		(#{companyId},#{announceTitle},#{createTime},#{announceCount},#{announceBody},#{operateUserId},#{operateUserName}) 
+	</insert>
+	
+	<select id="getAnnouncements" resultMap="AnnouncementMap">
+		select * from tbl_announcements order by create_time desc limit #{offset},#{limit}
+		<if test="companyId != null and companyId != ''">
+			where companyId=#{companyId}
+		</if>
+	</select>
+
+	<select id="getTotalCount" parameterType="Long" resultType="Integer">
+		select count(1) from tbl_announcements 
+		<if test="companyId != null and companyId != ''">
+			where companyId=#{companyId}
+		</if>
+	</select>
+	
+	<select id="getAnnouncementByAid" parameterType="Long" resultMap="AnnouncementMap">
+		select * from tbl_announcements where aid=#{aid}
+	</select>
+	
+	<delete id="deleteByAid" parameterType="Long">
+	  	delete from tbl_announcements where aid=#{aid}
+	</delete>
+	
+	<insert id="batchInsertUserOfAnnouncement" parameterType="java.util.List">
+		insert into tbl_users_of_announcements(userId,aid,deptId,companyId) values
+		<foreach collection ="list" item="ua" index= "index" separator =",">
+             (#{ua.userId}, #{ua.aid}, #{ua.deptId}, #{ua.companyId})
+        </foreach >
+	</insert>
+	
+	<insert id="batchDeleteUserOfAnnouncement" parameterType="java.util.List">
+		delete from tbl_users_of_announcements where userId in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach> 
+	</insert>
+	
+	<delete id="deleteUserOfAnnouncementByAid" parameterType="Long">
+		delete from tbl_users_of_announcements where aid=#{aid}
+	</delete>
+	
+	<select id="getUserIdsByRid" parameterType="Long" resultType="com.ulaiber.web.model.announcement.UserOfAnnouncement">
+		select * from tbl_users_of_announcements a join tbl_users u on a.userid=u.user_id where u.disabled='0' and aid=#{aid}
+	</select>
+	
+</mapper>

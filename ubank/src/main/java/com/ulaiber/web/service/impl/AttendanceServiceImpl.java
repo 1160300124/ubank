@@ -311,7 +311,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				att.setClockOffStatus(isOutClock ? "3" : "0");
 			}
 			//当前时间大于上次打卡时间小于下班打卡时间----早退
-			else if (datetime.compareTo(clockOffBegin) > 0 && datetime.compareTo(clockOffTime) < 0){
+			else if (datetime.compareTo(clockOffBegin) >= 0 && datetime.compareTo(clockOffTime) < 0){
 				att.setClockOffStatus(isOutClock ? "3" : "2");
 			}
 			

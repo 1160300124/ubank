@@ -44,6 +44,7 @@ public class SessionInterceptor extends HandlerInterceptorAdapter {
 				if (isAjaxRequest) {
 					response.setCharacterEncoding("UTF-8");
 					response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作，请刷新页面");
+					return false;
 				}
 				response.sendRedirect(request.getContextPath() + "/backend/tologin");
 				return false;

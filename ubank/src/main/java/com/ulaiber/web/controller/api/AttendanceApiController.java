@@ -378,6 +378,43 @@ public class AttendanceApiController extends BaseController {
 							}
 						}
 					}
+				} else {
+					//是否有休息时段
+					if (rule.getRestFlag() == 0){
+						String restStartTime = date + " " + rule.getRestStartTime();
+						String restEndTime = date + " " + rule.getRestEndTime();
+						//上午请假
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+							if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+								clockOnTime = restEndTime;
+							}
+							if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+						}
+						//下午请假
+						else if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+							if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+								clockOffTime = restStartTime;
+							}
+							if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+						}
+					} else {
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+						else if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							clockOffTime = leaveRecord.getStartDate();
+						}
+					}
 				}
 			}
 		//请假开始时间为今天
@@ -413,6 +450,28 @@ public class AttendanceApiController extends BaseController {
 							}
 						}
 					}
+				} else {
+					//是否有休息时段
+					if (rule.getRestFlag() == 0){
+						String restStartTime = date + " " + rule.getRestStartTime();
+						String restEndTime = date + " " + rule.getRestEndTime();
+						//上午请假
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							if (leaveRecord.getEndDate().compareTo(restStartTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+							if (leaveRecord.getEndDate().compareTo(restStartTime) >= 0 && leaveRecord.getEndDate().compareTo(restEndTime) <= 0){
+								clockOnTime = restEndTime;
+							}
+							if (leaveRecord.getEndDate().compareTo(restEndTime) > 0 && leaveRecord.getEndDate().compareTo(clockOffTime) < 0){
+								clockOnTime = leaveRecord.getEndDate();
+							}
+						}
+					} else {
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0){
+							clockOnTime = leaveRecord.getEndDate();
+						}
+					}
 				}
 			}
 		//请假结束时间为今天
@@ -446,6 +505,28 @@ public class AttendanceApiController extends BaseController {
 							if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
 								clockOffTime = leaveRecord.getStartDate();
 							}
+						}
+					}
+				} else {
+					//是否有休息时段
+					if (rule.getRestFlag() == 0){
+						String restStartTime = date + " " + rule.getRestStartTime();
+						String restEndTime = date + " " + rule.getRestEndTime();
+						//下午请假
+						if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							if (leaveRecord.getStartDate().compareTo(clockOnTime) > 0 && leaveRecord.getStartDate().compareTo(restStartTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+							if (leaveRecord.getStartDate().compareTo(restStartTime) >= 0 && leaveRecord.getStartDate().compareTo(restEndTime) <= 0){
+								clockOffTime = restStartTime;
+							}
+							if (leaveRecord.getStartDate().compareTo(restEndTime) > 0 && leaveRecord.getStartDate().compareTo(clockOffTime) < 0){
+								clockOffTime = leaveRecord.getStartDate();
+							}
+						}
+					} else {
+						if (leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							clockOffTime = leaveRecord.getStartDate();
 						}
 					}
 				}

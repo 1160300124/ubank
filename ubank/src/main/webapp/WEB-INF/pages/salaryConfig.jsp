@@ -172,54 +172,5 @@ var salaryDate = "${param.salaryDate}";
 var peopleId = "${param.peopleId}";
 var peopleName = "${param.peopleName}";
 var sid = "${param.sid}";
-$("#editBtn").bind('click',function(event){
-    var table = $('#tb_saraly_configs');
-    var isEdit = table.bootstrapTable('getEditStatus')
-    if (isEdit) return;
-		table.bootstrapTable('prepend',{
-	        'id':0,
-	        'userName': '快速批量设置',
-	        'cardNo': '--',
-	        'pre_tax_salaries': '10000',
-	        'bonuses': 0,
-	        'subsidies': 0,
-	        'attendance_cut_payment': '--',
-	        'askForLeave_cut_payment': '--',
-	        'socialInsurance': 0,
-	        'publicAccumulationFunds': 0,
-	        'taxThreshold': 3500,
-	        'personalIncomeTax': '--',
-	        'else_cut_payment': 0,
-	        'salaries': '--',
-	    });
-		table.bootstrapTable('editAll');
-
-	    var firstRow = table.find('tbody').children()[0];
-	    var inputs = $(firstRow).find('input');
-	    var selects = $(firstRow).find('select');
-	    inputs.on('keyup', function(e){
-	        var tdIndex = $(this).parent().parent().index();
-	        var value = this.value;
-	        table.find('tbody').children().each(function(index, row){
-	            if (index !== 0){
-	                $($(row).children()[tdIndex]).find('input[type="text"]').val(value);
-	            }
-	        })
-	    });
-	    selects.on('change', function(e){
-	        var tdIndex = $(this).parent().index();
-	        var value = this.value;
-	        table.find('tbody').children().each(function(index, row){
-	            if (index !== 0){
-	                $($(row).children()[tdIndex]).find('select').val(value);
-	            }
-	        })
-	    });
-})
-$("#saveBtn").bind('click',function(event){
-    $('#tb_saraly_configs').bootstrapTable('cancelEditAll');
-    $('#tb_saraly_configs').bootstrapTable('removeRow', 0);
-    console.log($('#tb_saraly_configs').bootstrapTable('getModiDatas'));
-})
 </script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>
