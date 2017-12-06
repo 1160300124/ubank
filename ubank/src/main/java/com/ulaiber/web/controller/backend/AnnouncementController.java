@@ -162,6 +162,7 @@ public class AnnouncementController extends BaseController {
 	 * @param cid 个推CID
 	 * @param content 内容
 	 * @param title 标题
+	 * @param id 详情id
 	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "sendNotice", method = RequestMethod.POST)
