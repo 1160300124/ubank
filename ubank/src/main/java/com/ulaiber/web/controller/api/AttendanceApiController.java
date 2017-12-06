@@ -120,32 +120,32 @@ public class AttendanceApiController extends BaseController {
 		String today = datetime.split(" ")[0];
 		String time = datetime.split(" ")[1];
 		
+		data.put("clockOnTime", rule.getClockOnTime());
+		data.put("clockOffTime", rule.getClockOffTime());
+		
 		if (StringUtils.equals(today, date)){
 			date = "";
 		}
+		
+		if (StringUtils.isNotEmpty(date)){
+			today = date;
+		} 
 		
 		String clockOnTime= today + " " + rule.getClockOnTime();
 		String clockOffTime = today + " " + rule.getClockOffTime();
 		String dateBegin = today + " " + rule.getClockOnStartTime();
 		String dateEnd = today + " " + rule.getClockOffEndTime();
 		
-		data.put("clockOnTime", rule.getClockOnTime());
-		data.put("clockOffTime", rule.getClockOffTime());
-		
-		if (StringUtils.isNotEmpty(date)){
-			today = date;
-		} else {
-			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
-				if (time.compareTo(rule.getClockOffEndTime()) <= 0){
-					today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
-					dateBegin = DateTimeUtil.getfutureTime(dateBegin, -1, 0, 0);
-					clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, -1, 0, 0);
-					clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, -1, 0, 0);
-				} else {
-					dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
-					if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
-						clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 1, 0, 0);
-					}
+		if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+			if (time.compareTo(rule.getClockOffEndTime()) <= 0){
+				today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
+				dateBegin = DateTimeUtil.getfutureTime(dateBegin, -1, 0, 0);
+				clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, -1, 0, 0);
+				clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, -1, 0, 0);
+			} else {
+				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
+				if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
+					clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 1, 0, 0);
 				}
 			}
 		}

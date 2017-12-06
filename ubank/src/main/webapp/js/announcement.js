@@ -77,6 +77,11 @@ $(function(){
 			}
 		});
 	});
+	
+	
+	$("#btn_to_send").unbind().bind("click", function(){
+		window.location.href = "addAnnouncement";
+	});
 
 	$("#btn_send").unbind().bind("click", function(){
 		var companyId = $("#company_select").val();
