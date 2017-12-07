@@ -149,4 +149,9 @@
 		INSERT INTO tbl_transfer (userid,SubAcctNo,RqUID,Amount,BizTime,BizDate,TheirRef,status,trading)
 			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{Amount},#{BizTime},#{BizDate},#{TheirRef},#{status},#{trading})
 	</insert>
+
+	<!-- 查询二类户激活状态-->
+	<select id="queryActiveStatus" parameterType="String" resultType="String">
+		SELECT freeze FROM tbl_secondAccount where SubAcctNo = #{subAccNo}
+	</select>
 </mapper>

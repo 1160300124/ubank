@@ -779,7 +779,14 @@ public class Test {
 	}
 
 	@org.junit.Test
-	public  void sort(){
+	public  void sort() throws Exception {
+		String CID = "dbc748f4a1ed1543c987d3db8db62f7d";
+		int type = 3;
+		String content = "老子又开始测试啦啦啦啦啦啦";
+		String title = "老子在测试！！！";
+		long id = 0;
+		String status = "1";
+		PushtoSingle.singlePush(CID,type,content,title,id,status);
 
 	}
 

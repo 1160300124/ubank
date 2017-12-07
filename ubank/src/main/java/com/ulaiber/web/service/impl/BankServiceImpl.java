@@ -187,5 +187,10 @@ public class BankServiceImpl extends BaseService implements BankService {
         return mapper.insertTransfer(tran);
     }
 
+    @Override
+    public String queryActiveStatus(String subAccNo) {
+        return mapper.queryActiveStatus(subAccNo);
+    }
+
 
 }

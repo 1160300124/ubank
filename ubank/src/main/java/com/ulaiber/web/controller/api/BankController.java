@@ -566,5 +566,32 @@ public class BankController extends BaseController {
 		return resultInfo;
 	}
 
+	/**
+	 * 查询二类户激活状态
+	 * @param SubAccNo 二类户账号
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "getActiveStatus", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo accDetail(String SubAccNo){
+		logger.info("开始查询二类户激活状态");
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+			String status = bankservice.queryActiveStatus(SubAccNo);
+			if(StringUtil.isEmpty(status)){
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("查询二类户激活状态失败");
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("查询二类户激活状态成功");
+			resultInfo.setData(status);
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("查询二类户激活状态失败");
+			logger.error("查询二类户激活状态失败");
+		}
+		return resultInfo;
+	}
+
 
 }

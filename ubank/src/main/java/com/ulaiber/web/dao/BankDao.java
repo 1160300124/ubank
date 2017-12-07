@@ -146,4 +146,11 @@ public interface BankDao {
      * @return
      */
     int insertTransfer(Transfer tran);
+
+    /**
+     * 查询二类户激活状态
+     * @param subAccNo 二类户账号
+     * @return ResultInfo
+     */
+    String queryActiveStatus(String subAccNo);
 }

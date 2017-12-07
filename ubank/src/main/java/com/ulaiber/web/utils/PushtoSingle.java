@@ -34,6 +34,7 @@ public class PushtoSingle {
      * @param type 推送待审批的记录 0，推送已审批的记录 1 ，推送交易信息 2，推送个人身份证上传反馈 3
      * @param content 内容
      * @param title 标题
+     * @param id 详情ID
      * @param status 状态，0 失败 1 成功
      * @throws Exception
      */
