@@ -28,12 +28,17 @@ public class Attachment {
 	/**
 	 * 附件类型
 	 */
-	private String attachment_tyTpe;
+	private String attachment_type;
 	
 	/**
 	 * 附件地址
 	 */
 	private String attachment_path;
+	
+	/**
+	 * 附件大小
+	 */
+	private String attachment_size;
 
 	public long getAtt_id() {
 		return att_id;
@@ -59,12 +64,12 @@ public class Attachment {
 		this.attachment_name = attachment_name;
 	}
 
-	public String getAttachment_tyTpe() {
-		return attachment_tyTpe;
+	public String getAttachment_type() {
+		return attachment_type;
 	}
 
-	public void setAttachment_tyTpe(String attachment_tyTpe) {
-		this.attachment_tyTpe = attachment_tyTpe;
+	public void setAttachment_type(String attachment_type) {
+		this.attachment_type = attachment_type;
 	}
 
 	public String getAttachment_path() {
@@ -73,6 +78,14 @@ public class Attachment {
 
 	public void setAttachment_path(String attachment_path) {
 		this.attachment_path = attachment_path;
+	}
+
+	public String getAttachment_size() {
+		return attachment_size;
+	}
+
+	public void setAttachment_size(String attachment_size) {
+		this.attachment_size = attachment_size;
 	}
 
 }

@@ -118,6 +118,9 @@ public class IConstants
 	//banner路径
 	public static String BANNER_PATH = "/banner";
 	
+	//banner路径
+	public static String ATTACHMENT_PATH = "/attachment";
+	
 	//上传临时目录
 	public static String TEMP_UPLOAD_PATH = UPLOAD_PATH + TEMP_PATH;
 	
@@ -126,6 +129,9 @@ public class IConstants
 	
 	//图标上传目录
 	public static String ICON_UPLOAD_PATH = UPLOAD_PATH + ICON_PATH;
+	
+	//附件上传临时目录
+	public static String ATTACHMENT_TEMP_UPLOAD_PATH = TEMP_UPLOAD_PATH + ATTACHMENT_PATH;
 	
 	//banner上传临时目录
 	public static String BANNER_TEMP_UPLOAD_PATH = TEMP_UPLOAD_PATH + BANNER_PATH;

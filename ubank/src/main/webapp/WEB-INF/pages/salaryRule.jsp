@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <!-- 公司页 -->
 <div class="page-content">
@@ -11,14 +11,12 @@
         <button id="btn_remove" type="button" class="btn btn-default">
             <span class="fa icon-remove" aria-hidden="true"></span>删除
         </button>
-		<button id="btn_refresh" type="button" class="btn btn-default">
-			<span class="fa icon-refresh" aria-hidden="true"></span>刷新
-		</button>
     </div>
 
     <%--数据表格--%>
     <table id="tb_salary_rules" data-toggle="table" data-url="salaryRules" data-method="get" data-toolbar="#toolbar" data-striped="true"
-			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
+			   data-pagination="true" data-side-pagination="server" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
+			   data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<th data-checkbox="true"></th>

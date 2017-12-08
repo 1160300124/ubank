@@ -6,8 +6,8 @@ import java.util.Map;
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.SecondAccountAO;
-import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 
 /**
  * user数据库接口
@@ -101,6 +101,13 @@ public interface UserDao {
      * @return
      */
     User getUserById(long userId);
+    
+    /**
+     * 根据用户ID集合查询CID
+     * @param userIds
+     * @return
+     */
+    List<String> queryCIDsByIds(List<Long> userIds);
 
     /**
      * 根据用户名获取系统所有菜单

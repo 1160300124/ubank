@@ -8,8 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ulaiber.web.utils.PushtoSingle;
-import com.ulaiber.web.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,12 @@ import com.ulaiber.web.controller.api.AttendanceApiController;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.announcement.Announcement;
+import com.ulaiber.web.model.announcement.Attachment;
 import com.ulaiber.web.service.AnnouncementService;
+import com.ulaiber.web.utils.MathUtil;
+import com.ulaiber.web.utils.PushtoSingle;
+import com.ulaiber.web.utils.StringUtil;
+import com.ulaiber.web.utils.SysConf;
 
 /** 
  * 公告控制器
@@ -98,7 +101,7 @@ public class AnnouncementController extends BaseController {
 	 */
 	@RequestMapping(value = "uploadPicOfAnnounce", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo picupload(MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo uploadPicOfAnnounce(MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
 		try {
     		// 取得request中的所有文件名
@@ -118,7 +121,7 @@ public class AnnouncementController extends BaseController {
         			if (fileName.trim() != "") {
         				logger.info("upload file name: " + fileName.trim());
         				
-        				String path = upload(request, IConstants.ICON_TEMP_UPLOAD_PATH, file.getBytes(), fileName);
+        				String path = upload(request, IConstants.ATTACHMENT_TEMP_UPLOAD_PATH, file.getBytes(), fileName);
         				logger.debug("upload temp path----" + path);
         				if (StringUtils.isEmpty(path)){
         					info.setCode(IConstants.QT_CODE_ERROR);
@@ -126,7 +129,7 @@ public class AnnouncementController extends BaseController {
             				return info;
         				}
         				info.setCode(IConstants.QT_CODE_OK);
-        				info.setData("http://localhost:8080/ubank/" + path);
+        				info.setData(SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn") + path);
 //        				file.transferTo(arg0);
         				
         			}
@@ -140,6 +143,95 @@ public class AnnouncementController extends BaseController {
 		return info;
 	}
 	
+	/**
+	 * 公告正文图片上传
+	 * @param multiRequest
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "uploadAttachment", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo uploadAttachment(MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		try {
+    		// 取得request中的所有文件名
+        	Iterator<String> iter = multiRequest.getFileNames();
+        	while (iter.hasNext()) {
+        		// 取得上传文件
+        		MultipartFile file = multiRequest.getFile(iter.next());
+        		if (file != null) {
+        			// 取得当前上传文件的文件名称
+        			String fileName = file.getOriginalFilename();
+        			String type = "0";
+        			if (fileName.endsWith("doc") || fileName.endsWith("docx")){
+        				type = "0";	
+        			}
+        			else if (fileName.endsWith("xls") || fileName.endsWith("xlsx")){
+        				type = "1";	
+        			}
+        			else if (fileName.endsWith("ppt") || fileName.endsWith("pptx")){
+        				type = "2";	
+        			}
+        			else if (fileName.endsWith("pdf")){
+        				type = "3";	
+        			}
+        			else if (fileName.endsWith("zip")){
+        				type = "4";	
+        			}
+        			else if (fileName.endsWith("rar")){
+        				type = "5";	
+        			}
+        			else {
+        				info.setCode(IConstants.QT_CODE_ERROR);
+        				info.setMessage("上传附件格式错误" );
+        				return info;
+        			}
+        			long fileSize = file.getSize();
+        			double kBsize = MathUtil.div(fileSize, 1024 , 1);
+        			String size = kBsize + "KB";
+        			if (kBsize > 1024){
+        				double MBsize = MathUtil.div(fileSize, 1024 * 1024, 2);
+        				size = MBsize + "MB";
+        			}
+        			// 如果名称不为"",说明该文件存在，否则说明该文件不存在
+        			if (fileName.trim() != "") {
+        				logger.info("upload file name: " + fileName.trim());
+        				
+        				String path = upload(request, IConstants.ATTACHMENT_TEMP_UPLOAD_PATH, file.getBytes(), fileName);
+        				logger.debug("upload temp path----" + path);
+        				if (StringUtils.isEmpty(path)){
+        					info.setCode(IConstants.QT_CODE_ERROR);
+            				info.setMessage("上传附件失败：IO异常！" );
+            				return info;
+        				}
+        				info.setCode(IConstants.QT_CODE_OK);
+        				Attachment att = new Attachment();
+        				att.setAttachment_name(fileName);
+        				att.setAttachment_path(SysConf.getProperty("SYS_DOMAIN_NAME", "http://ubankapp.cn") + path);
+        				att.setAttachment_size(size);
+        				att.setAttachment_type(type);
+        				info.setData(att);
+//        				file.transferTo(arg0);
+        				
+        			}
+        		}
+        	}
+    	} catch (Exception e) {
+			logger.error("upload file failed:" , e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+		}
+		
+		return info;
+	}
+	
+	/**
+	 * 保存公告
+	 * @param announcement 公告实体
+	 * @param request request
+	 * @param response response
+	 * @return ResultInfo
+	 */
 	@RequestMapping(value = "saveAnnouncement", method = RequestMethod.POST)
 	@ResponseBody
 	public ResultInfo saveAnnouncement(@RequestBody Announcement announcement, HttpServletRequest request, HttpServletResponse response){
@@ -150,6 +242,7 @@ public class AnnouncementController extends BaseController {
 			announcement.setOperateUserName(user.getUserName());
 			boolean flag = service.save(announcement);
 			if (flag){
+				service.send(announcement.getUserIds(), announcement.getAid(), announcement.getAnnounceTitle());
 				info.setCode(IConstants.QT_CODE_OK);
 				info.setMessage("公告保存成功。");
 			} else {
@@ -160,6 +253,37 @@ public class AnnouncementController extends BaseController {
 			logger.error("saveAnnouncement exception:", e);
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("公告保存失败。");
+			return info;
+		}
+
+		return info;
+	}
+	
+	/**
+	 * 撤回公告
+	 * @param announcement 公告实体
+	 * @param request request
+	 * @param response response
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "deleteAnnouncement", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo deleteAnnouncement(long aid, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		try {
+
+			boolean flag = service.deleteByAid(aid);
+			if (flag){
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setMessage("公告撤回成功。");
+			} else {
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("公告撤回失败。");
+			}
+		} catch (Exception e) {
+			logger.error("deleteAnnouncement exception:", e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("公告撤回失败。");
 			return info;
 		}
 
