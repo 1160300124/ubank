@@ -23,6 +23,11 @@ public class Announcement {
 	private int companyId;
 	
 	/**
+	 * 公告公司名称
+	 */
+	private String companyName;
+	
+	/**
 	 * 公告标题
 	 */
 	private String announceTitle;
@@ -57,6 +62,11 @@ public class Announcement {
 	 */
 	private List<Long> userIds;
 	
+	/**
+	 * 附件
+	 */
+	private List<Attachment> attachments;
+	
 	public long getAid() {
 		return aid;
 	}
@@ -71,6 +81,14 @@ public class Announcement {
 
 	public void setCompanyId(int companyId) {
 		this.companyId = companyId;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	public String getAnnounceTitle() {
@@ -127,6 +145,14 @@ public class Announcement {
 
 	public void setUserIds(List<Long> userIds) {
 		this.userIds = userIds;
+	}
+
+	public List<Attachment> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<Attachment> attachments) {
+		this.attachments = attachments;
 	}
 	
 }

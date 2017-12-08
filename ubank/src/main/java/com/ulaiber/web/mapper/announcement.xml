@@ -12,6 +12,7 @@
     <resultMap id="AnnouncementMap" type="Announcement" >
     	<id column="aid" property="aid" jdbcType="BIGINT" />
     	<result column="company_id" property="companyId" jdbcType="BIGINT" />
+    	<result column="company_name" property="companyName" jdbcType="VARCHAR" />
     	<result column="announce_title" property="announceTitle" jdbcType="VARCHAR" />
     	<result column="create_time" property="createTime" jdbcType="VARCHAR" />
     	<result column="announce_count" property="announceCount" jdbcType="VARCHAR" />
@@ -22,8 +23,8 @@
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="Announcement" useGeneratedKeys="true" keyProperty="aid">
-		insert into tbl_announcements(company_id,announce_title,create_time,announce_count,announce_body,operate_user_id,operate_user_name) values
-		(#{companyId},#{announceTitle},#{createTime},#{announceCount},#{announceBody},#{operateUserId},#{operateUserName}) 
+		insert into tbl_announcements(company_id,company_name,announce_title,create_time,announce_count,announce_body,operate_user_id,operate_user_name) values
+		(#{companyId},#{companyName},#{announceTitle},#{createTime},#{announceCount},#{announceBody},#{operateUserId},#{operateUserName}) 
 	</insert>
 	
 	<select id="getAnnouncements" resultMap="AnnouncementMap">
@@ -78,6 +79,17 @@
 	<select id="getTotalCountByUserId" resultType="Integer">
 		select count(1) from tbl_announcements a join tbl_users_of_announcements ua on a.aid=ua.aid where ua.userId=#{userId} 
 	</select>
+	
+	<insert id="batchInsertAttachments" parameterType="java.util.List">
+		insert into tbl_announcements_attachments(aid,attachment_name,attachment_type,attachment_size,attachment_path) values
+		<foreach collection ="list" item="att" index= "index" separator =",">
+             (#{att.aid}, #{att.attachment_name}, #{att.attachment_type}, #{att.attachment_size}, #{att.attachment_path})
+        </foreach >
+	</insert>
+	
+	<delete id="deleteAttachmentsByAid" parameterType="Long">
+		delete from tbl_announcements_attachments where aid=#{aid}
+	</delete>
 	
 	<select id="getAttachmentCountByUserId" resultType="java.util.Map">
 		select aa.aid,count(1) total from tbl_announcements_attachments aa join tbl_users_of_announcements ua on ua.aid=aa.aid where ua.userId=#{userId} group by aa.aid

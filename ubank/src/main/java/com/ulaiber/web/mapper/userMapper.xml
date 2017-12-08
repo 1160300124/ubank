@@ -108,6 +108,13 @@
 		left join tbl_company c on r.companyNumber = c.companyNumber
 		where u.disabled = '0' and r.disabled ='0' and  u.user_id = #{userId}
 	</select>
+	
+    <select id="queryCIDsByIds" parameterType="java.util.List" resultType="String">
+        select CID from tbl_users where user_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 	<!--获取集团系统所有菜单-->
 	 <select id="getAllMenuByUser" resultType="com.ulaiber.web.model.Menu" parameterType="Map">

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.ResultInfo;
@@ -136,41 +135,22 @@ public class AnnouncementApiController extends BaseController {
 	 * @param response response
 	 * @return ResultInfo
 	 */
-	@RequestMapping(value = "getAnnouncementDetail", method = RequestMethod.GET)
-	@ResponseBody
-	public ResultInfo getAnnouncementDetail(long aid, HttpServletRequest request, HttpServletResponse response){
-		ResultInfo info = new ResultInfo();
-		String html = "<!DOCTYPE html>"
-					+ "<html>"
-					+ "<head>"
-					+ "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
-					+ "<title>公告</title>"
-					+ "</head>"
-					+ "<body>#{text}</body>"
-					+ "</html>";
+	@RequestMapping(value = "detail", method = RequestMethod.GET)
+	public String detail(Long aid, HttpServletRequest request, HttpServletResponse response){
 		try {
-			Announcement announcement = service.getAnnouncementByAid(aid);
-			List<Attachment> list = service.getAttachmentsByAid(aid);
-			StringBuffer body = new StringBuffer();
-			body.append("<p><b>" + announcement.getAnnounceTitle() + "</b></p>");
-			body.append("<p>" + announcement.getCreateTime() + "</p>");
-			body.append(announcement.getAnnounceBody());
-			body.append("<p>附件：</p>");
-			for (Attachment att : list){
-				body.append("<p>" + att.getAttachment_name() + "</p>");
+			if (aid != null){
+				Announcement announcement = service.getAnnouncementByAid(aid);
+				List<Attachment> list = service.getAttachmentsByAid(aid);
+				request.setAttribute("title", announcement.getAnnounceTitle());
+				request.setAttribute("companyName", announcement.getCompanyName());
+				request.setAttribute("createTime", announcement.getCreateTime());
+				request.setAttribute("content", announcement.getAnnounceBody());
+				request.setAttribute("attachments", list);
 			}
-			html = html.replace("#{text}", body.toString());
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("html", html);
-			info.setCode(IConstants.QT_CODE_OK);
-			info.setMessage("获取公告详情成功。");
-			info.setData(data);
 		} catch (Exception e) {
-			logger.error("getAnnouncementDetail exception:" ,e);
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("获取公告详情成功。");
+			logger.error("detail exception:" ,e);
 		}
-		return info;
+		return "announcementDetail";
 	}
-    
+	
 }

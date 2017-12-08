@@ -6,10 +6,12 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.swing.plaf.synth.SynthSpinnerUI;
+import com.ulaiber.web.model.announcement.Attachment;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -61,18 +63,18 @@ public class MapTest {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
         
-        String apiUrl = "http://127.0.0.1:8080/ubank/api/v1/clock";
-        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-        params.put("mobile", "15919477086");
-        params.put("longitude", "113.944173");
-        params.put("latitude", "22.538667");
-        params.put("isOutClock", true);
-        params.put("remark", "出差啊啊啊");
-//        params.put("revokeType", "0");
-        params.put("location", "深圳市优融网络科技有限公司M-10");
-        params.put("device", "android-8.0土豪金版");
-        String response = HttpsUtil.doPostSSL(apiUrl, params);
-        System.out.println(response);
+//        String apiUrl = "http://127.0.0.1:8080/ubank/api/v1/clock";
+//        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+//        params.put("mobile", "15919477086");
+//        params.put("longitude", "113.944173");
+//        params.put("latitude", "22.538667");
+//        params.put("isOutClock", true);
+//        params.put("remark", "出差啊啊啊");
+////        params.put("revokeType", "0");
+//        params.put("location", "深圳市优融网络科技有限公司M-10");
+//        params.put("device", "android-8.0土豪金版");
+//        String response = HttpsUtil.doPostSSL(apiUrl, params);
+//        System.out.println(response);
         
 //        String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
 //        Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
@@ -126,7 +128,47 @@ public class MapTest {
 //			}
 //			System.out.println(sql);
 //		}
+        Attachment a1 = new Attachment();
+        a1.setAttachment_name("11111");
+        
+        Attachment a2 = new Attachment();
+        a2.setAttachment_name("2222222");
+        
+        Attachment a3 = new Attachment();
+        a3.setAttachment_name("3333333");
+        List<Attachment> as = new ArrayList<Attachment>();
+        as.add(a1);
+        as.add(a2);
+        as.add(a3);
+        for (Attachment att : as){
+        	att.setAid(55555);
+        }
+        System.out.println(as);
     }
+    
+    /**  
+     *   
+     * 基本功能：过滤指定标签  
+     * <p>  
+     *   
+     * @param str  
+     * @param tag  
+     *            指定标签  
+     * @return String  
+     */  
+    public static String fiterHtmlTag(String str, String tag) {   
+        String regxp = "<\\s*" + tag + "\\s+([^>]*)\\s*>";   
+        Pattern pattern = Pattern.compile(regxp);   
+        Matcher matcher = pattern.matcher(str);   
+        StringBuffer sb = new StringBuffer();   
+        boolean result1 = matcher.find();   
+        while (result1) {   
+            matcher.appendReplacement(sb, "");   
+            result1 = matcher.find();   
+        }   
+        matcher.appendTail(sb);   
+        return sb.toString();   
+    }  
 
     private static String getLonLat(String address){
         //返回输入地址address的经纬度信息, 格式是 经度,纬度

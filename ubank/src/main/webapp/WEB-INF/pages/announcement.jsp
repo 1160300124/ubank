@@ -22,7 +22,7 @@
 			</div>
 		</form>
 		
-		<table id="tb_attendance_records" data-toggle="table" data-url="getAnnouncements" data-method="get" data-striped="true" data-sort-order="desc"
+		<table id="tb_announcement_records" data-toggle="table" data-url="getAnnouncements" data-method="get" data-striped="true" data-sort-order="desc"
 			   data-pagination="true" data-side-pagination="server" data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
@@ -32,7 +32,7 @@
 				<th data-field="createTime" data-width="160px">发送时间</th>
 				<th data-field="announceCount">发送范围</th>
 				<th data-field="operateUserName">发送人</th>
-				<th data-field="clockOffDevice">操作栏</th>
+				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>
 
