@@ -122,12 +122,6 @@ $(function(){
 		addModal.modal("show");
 	});
 
-	$("#btn_refresh").unbind().bind("click", function(){
-
-		$("#tb_rules").bootstrapTable("refresh");
-	});
-
-
 	$("#btn_add_confirm").unbind().bind("click", function(){
 
 		var params = {};

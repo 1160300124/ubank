@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <div class="page-content">
 	<div id="toolbar" class="btn-group">
@@ -16,8 +16,8 @@
 	</div>
 
 	<table id="tb_saraly_records" data-toggle="table" data-url="getSalaries" data-method="get" data-toolbar="#toolbar" data-striped="true"
-		   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
-		   data-page-size="10" data-page-list="[10,15,20]">
+		   data-pagination="true" data-side-pagination="server" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true" 
+		   data-click-to-select="true" data-page-size="10" data-page-list="[10,15,20]">
 		<thead>
 		<tr>
 			<th data-checkbox="true"></th>

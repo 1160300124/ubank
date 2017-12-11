@@ -112,4 +112,18 @@ public interface AnnouncementDao {
 	 * @return List<Attachment>
 	 */
 	List<Attachment> getAttachmentsByAid(long aid);
+	
+	/**
+	 * 批量插入附件
+	 * @param attachments
+	 * @return
+	 */
+	int batchInsertAttachments(List<Attachment> attachments);
+	
+	/**
+	 * 根据aid删除附件
+	 * @param aid
+	 * @return
+	 */
+	int deleteAttachmentsByAid(long aid);
 }

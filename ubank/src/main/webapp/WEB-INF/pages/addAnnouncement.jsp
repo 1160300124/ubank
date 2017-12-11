@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/summernote.css">
 <style>
@@ -36,7 +36,16 @@
     left: 15px;
     top: 12px;
     z-index: 10;
-    color: #ccc;
+    color: #ccc;tach
+}
+.table-attachment{
+    width:100%;
+}
+.table-attachment tr{
+    height: 35px;
+}
+.table-attachment td:nth-child(3){
+    text-align: right;
 }
 </style>
 <div class="page-content">
@@ -75,22 +84,27 @@
 				<div class="summernote" id="body" name="body" placeholder="请填写公告正文"></div>
 			</div>
 		</div>
-	</form>
-	
-	<form class="form-horizontal required-validate" action="#" enctype="multipart/form-data" method="post" onsubmit="return iframeCallback(this, pageAjaxDone)">
-		<div class="form-group">
-			<label for="" class="col-sm-1 control-label">附件</label>
-			<div class="col-sm-5 tl th">
-				<input type="file" name="image" class="projectfile" value="${deal.image}"/>
-				<p class="help-block">支持doc、xls、ppt、pdf格式，大小不超过10M</p>
-			</div>
-		</div>
+		
+	<div class="form-group">
+       <label class="col-sm-1 control-label" for="ds_host">附件</label>
+       <div class="col-sm-5">
+         	<input id="lefile" name="lefile" type="file" style="display:none" onchange="return addFileChange();">  
+       		<button id="btn_attachment_upload" type="button" class="btn btn-default" onclick="$('input[id=lefile]').click();">
+			    <span class="fa icon-folder-open" aria-hidden="true">点击上传</span>
+			</button>
+		    <p class="help-block">支持doc、xls、ppt、pdf格式，大小不超过10M</p>
+	    	<table class="table-attachment" id="table_attachment">
+	    	
+           	</table>
+       </div>
+     </div>
+     
 	</form>
 	
 	<div class="form-group">
 		<label for="" class="col-sm-1 control-label"></label>
         <button type="button" class="btn btn-primary" id="btn_send">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发送&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
-        <button type="button" class="btn btn-default" if="btn_preview">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预览&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+        <button type="button" class="btn btn-default" id="btn_preview">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预览&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
     </div>
 	
 	<!-- 模态框（Modal） -->
@@ -134,7 +148,26 @@
             </div>
         </div>
     </div>
+    
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="previewModal">
+        <div class="modal-dialog" role="document" style="width:500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">公告预览</h4>
+                </div>
+                <div class="modal-body">
+                    <%@ include file="announcementDetail.jsp" %>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
 	
+</div>
 </div>
 
 

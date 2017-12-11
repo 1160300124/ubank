@@ -1,28 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <div class="page-content">
 	<div id="toolbar" class="btn-group">
  		<button id="btn_add" type="button" class="btn btn-default">
                <span class="fa icon-plus" aria-hidden="true"></span>新增
            </button>
-<!--             <button id="btn_edit" type="button" class="btn btn-default">
-                <span class="fa icon-edit" aria-hidden="true"></span>修改
-            </button> -->
 		<button id="btn_delete" type="button" class="btn btn-default">
 			<span class="fa icon-remove" aria-hidden="true"></span>删除
 		</button>
-		<button id="btn_refresh" type="button" class="btn btn-default">
-			<span class="fa icon-refresh" aria-hidden="true"></span>刷新
-		</button>
-		
 
 	</div>
 
 	<table id="tb_banners" data-toggle="table" data-url="banners" data-method="get" data-toolbar="#toolbar" data-striped="true" data-sort-order="desc"
-		   data-pagination="true" data-side-pagination="server" data-search="true" data-show-columns="true" data-click-to-select="true"
-		   data-page-size="10" data-page-list="[10,15,20]">
+		   data-pagination="true" data-side-pagination="server" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
+		   data-click-to-select="true" data-page-size="10" data-page-list="[10,15,20]">
 		<thead>
 		<tr>
 			<th data-checkbox="true"></th>

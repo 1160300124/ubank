@@ -157,6 +157,18 @@ $(function(){
 	    params.announceCount = count;
 	    params.userIds = nodes.substring(0, nodes.length - 1).split(",");
 	    
+	    var table = document.getElementById("table_attachment");
+	    var attachments = new Array();
+	    var attachment = {};
+		for (var i = 0; i < table.rows.length; i++){
+			attachment.attachment_name = table.rows[i].cells[0].innerHTML;
+			attachment.attachment_type = table.rows[i].cells[1].innerHTML;
+			attachment.attachment_size = table.rows[i].cells[2].innerHTML;
+			attachment.attachment_path = table.rows[i].cells[4].innerHTML;
+			attachments.push(attachment);
+		}
+		params.attachments = attachments;
+	    
 	  //0 新增工资表  1 修改工资表
 	    if (flag == 0){
 	    	$.ajax({
@@ -168,8 +180,8 @@ $(function(){
 	    		success : function(data, status) {
 	    			var code = data['code'];
 	    			if (code == 1000) {
-	    				Ewin.alert("发送成功");
 	    				window.location.href = "announcement";
+	    				Ewin.alert("发送成功");
 	    			}else{
 	    				Ewin.alert(data['message']);
 	    			}
@@ -201,8 +213,72 @@ $(function(){
 	    	});
 	    }
 
-	    
-
+	});
+	
+	function curDateTime(){
+		var d = new Date(); 
+		var year = d.getFullYear(); 
+		var month = d.getMonth() + 1; 
+		var date = d.getDate(); 
+		var day = d.getDay(); 
+		var hours = d.getHours(); 
+		var minutes = d.getMinutes(); 
+		var seconds = d.getSeconds(); 
+		var ms = d.getMilliseconds(); 
+		var curDateTime= year;
+		if(month > 9)
+			curDateTime = curDateTime + "-" + month;
+		else
+			curDateTime = curDateTime + "-0" + month;
+		if(date > 9)
+			curDateTime = curDateTime + "-" + date;
+		else
+			curDateTime = curDateTime + "-0" + date;
+		if(hours > 9)
+			curDateTime = curDateTime + " " + hours;
+		else
+			curDateTime = curDateTime + " 0" + hours;
+		if(minutes > 9)
+			curDateTime = curDateTime + ":" + minutes;
+		else
+			curDateTime = curDateTime + ":0" + minutes;
+		if(seconds > 9)
+			curDateTime = curDateTime + ":" + seconds;
+		else
+			curDateTime = curDateTime + ":0" + seconds;
+		return curDateTime; 
+	}
+	
+	$("#btn_preview").unbind().bind("click", function(){
+		var companyId = $("#company_select").val();
+		var companyName = $("#company_select").find("option:selected").text();
+		if (companyId == "" || companyId == null || companyId == undefined){
+			Ewin.alert("请先选择公司");
+			return false;
+		}
+		var title = $("#title").val();
+		var content = $('.summernote').summernote('code');
+		if (title == "" || title == null || title == undefined){
+			Ewin.alert("请填写公告标题");
+			return false;
+		}
+		if (content == "<p><br></p>"){
+			Ewin.alert("请填写公告正文");
+			return false;
+		}
+		$("#previewModal").find(".title").html(title);
+		$("#previewModal").find(".time").html(companyName + "&nbsp;&nbsp;&nbsp;" + curDateTime());
+		$("#previewModal").find(".content").html(content);
+		$("#table_preview_attachment").empty();
+		var table = document.getElementById("table_attachment");
+		var previewtable = document.getElementById("table_preview_attachment");
+		for (var i = 0; i < table.rows.length; i++){
+			var tr = previewtable.insertRow(previewtable.rows.length);
+			tr.innerHTML = "<td><div class='file-icon'> <img src='../images/pdf.png'></div></td>" + 
+			"<td><div class='file-info'>" + table.rows[i].cells[0].innerHTML + "</div></td>";
+		}
+		
+		$("#previewModal").modal("show");
 	});
 	
 	$("#choose_people").unbind().bind("click", function(){
@@ -356,5 +432,108 @@ function renderPeople(companyId, companyName, search) {
 		}
 	});
 	
+}
+
+function addFileChange(){
+	var file = $('#lefile').val();
+	if (file == null || file == "" || file == undefined){
+		Ewin.alert("请上传图标！");
+		return false;
+	}
+	$("#btn_attachment_upload").attr("disabled", true);
+	
+	$.ajaxFileUpload({
+		url : "uploadAttachment",
+		type: "post",
+		secureuri : false,
+		fileElementId : "lefile",
+		dataType : "json",
+		data : {
+			name : $('#lefile').val()
+		},
+		success : function(data, status) {
+			$("#btn_attachment_upload").attr("disabled", false);
+			data = $.parseJSON(data.replace(/<.*?>/ig,""));
+			var code = data['code'];
+			if (code == 1000) {
+				var table = document.getElementById("table_attachment");
+				var tr = table.insertRow(table.rows.length);
+				var rowIndex = tr.rowIndex.toString();
+				tr.innerHTML = "<td>" + data['data'].attachment_name + "</td>" + 
+				"<td style='display:none'>" + data['data'].attachment_type + "</td>" + 
+				"<td style='display:none'>" + data['data'].attachment_size + "</td>" + 
+				"<td style='display:none'>" + data['data'].attachment_path + "</td>" + 
+				"<td>" + 
+				'<a href="javascript:;" style="margin-left:20px;" onclick="deleteAttachment(' + rowIndex + ',\'table_attachment\')"><span class="fa icon-remove" aria-hidden="true"></span></a>' + 
+				"</td>"; 
+			}else{
+				Ewin.alert("上传失败！" + data['message']);
+			}
+		},
+		error : function(data, status, e) {
+			Ewin.alert("上传发生异常");
+		}
+	})
+	
+	$("#btn_attachment_upload").attr("disabled", false);
+	return false;
+}
+
+function deleteAttachment(trid, tableId){
+	var table = document.getElementById(tableId);
+	table.deleteRow(trid);  //从table中删除
+    for(i = trid; i < table.rows.length; i++){
+    	table.rows[i].innerHTML = "<td>" + table.rows[i].cells[0].innerHTML + "</td>" + 
+		"<td style='display:none'>" + table.rows[i].cells[1].innerHTML + "</td>" + 
+		"<td style='display:none'>" + table.rows[i].cells[2].innerHTML + "</td>" + 
+		"<td style='display:none'>" + table.rows[i].cells[3].innerHTML + "</td>" + 
+		"<td>" + 
+		'<a href="javascript:;" style="margin-left:20px;" onclick="deleteAttachment(' +  i + ',\'' + tableId + '\')"><span class="fa icon-remove" aria-hidden="true"></span></a>' + 
+		"</td>"; 
+    }
+}
+
+function operateFormatter(value, row, index) {
+	return [
+	        '<a class="edit"  href="javascript:void(0)" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;',
+	        '<a class="remove"  href="javascript:void(0)" title="撤回">撤回</a>'
+	        ].join('');
+}
+
+window.operateEvents = {
+		'click .edit': function (e, value, row, index) {
+			
+		},
+		'click .remove': function (e, value, row, index) {
+			
+			Ewin.confirm({ message: "确定要撤回本条公告吗？" }).on(function (e) {
+				if (!e) {
+					return;
+				}
+				
+				$.ajax({
+					url : "deleteAnnouncement",
+					type: "post",
+					data : {
+						aid : row.aid
+					},
+					async : true, 
+					dataType : "json",
+					success : function(data, status) {
+						var code = data['code'];
+						if (code == 1000) {
+							Ewin.alert("撤回成功。");
+							$("#tb_announcement_records").bootstrapTable("refresh");
+						}else{
+							Ewin.alert(data['message']);
+						}
+					},
+					error : function(data, status, e) {
+						Ewin.alert("系统内部错误！");
+					}
+				});
+				
+			});
+		}
 }
 

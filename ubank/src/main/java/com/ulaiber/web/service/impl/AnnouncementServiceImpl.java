@@ -7,17 +7,21 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AnnouncementDao;
+import com.ulaiber.web.dao.UserDao;
 import com.ulaiber.web.model.announcement.Announcement;
 import com.ulaiber.web.model.announcement.Attachment;
 import com.ulaiber.web.model.announcement.UserOfAnnouncement;
 import com.ulaiber.web.service.AnnouncementService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.PushtoSingle;
 
 /** 
  * 公告业务逻辑实现类
@@ -32,6 +36,9 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 	
 	@Resource
 	private AnnouncementDao dao;
+	
+    @Resource
+    private UserDao userDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
@@ -45,9 +52,24 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 				uoa.setUserId(userId);
 				list.add(uoa);
 			}
-			return dao.batchInsertUserOfAnnouncement(list) > 0;
+			dao.batchInsertUserOfAnnouncement(list);
+			for (Attachment att : announcement.getAttachments()){
+				att.setAid(announcement.getAid());
+			}
+			return dao.batchInsertAttachments(announcement.getAttachments()) > 0;
 		}
 		return false;
+	}
+	
+	@Override
+	public void send(List<Long> userIds, long aid, String title) throws Exception {
+		List<String> CIDs = userDao.queryCIDsByIds(userIds);
+		for (String CID : CIDs){
+			if(StringUtils.isNotEmpty(CID)){
+				PushtoSingle.singlePush(CID, IConstants.NOTICE, "", title, aid, "");
+			}
+		}
+		
 	}
 
 	@Override
@@ -68,7 +90,11 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean deleteByAid(long aid) {
-		return dao.deleteByAid(aid) > 0;
+		if (dao.deleteByAid(aid) > 0){
+			 dao.deleteUserOfAnnouncementByAid(aid);
+			 return dao.deleteAttachmentsByAid(aid) > 0;
+		}
+		return false;
 	}
 
 	@Override

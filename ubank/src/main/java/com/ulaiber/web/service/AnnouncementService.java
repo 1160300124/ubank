@@ -24,6 +24,15 @@ public interface AnnouncementService {
 	boolean save(Announcement announcement);
 	
 	/**
+	 * 推送消息
+	 * @param userIds 用户id集合
+	 * @param aid   公告id
+	 * @param title 标题
+	 * @throws Exception 
+	 */
+	void send(List<Long> userIds, long aid, String title) throws Exception;
+	
+	/**
 	 * 分页查询公告
 	 * @param limit
 	 * @param offset

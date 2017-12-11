@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.ulaiber.web.model.*;
+import com.ulaiber.web.model.Bank;
+import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.SecondAccountAO;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 
 /**
@@ -87,7 +91,7 @@ public interface UserDao {
     /**
      * 根据用户名获取用户信息
      *
-     * @param uesrName
+     * @param userName
      * @return User
      */
     User getUserByName(String userName);
@@ -98,6 +102,13 @@ public interface UserDao {
      * @return
      */
     User getUserById(long userId);
+    
+    /**
+     * 根据用户ID集合查询CID
+     * @param userIds
+     * @return
+     */
+    List<String> queryCIDsByIds(List<Long> userIds);
 
     /**
      * 根据用户名获取系统所有菜单
