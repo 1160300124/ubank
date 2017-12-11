@@ -30,8 +30,6 @@ $(function () {
     });
 
     EmployeeFun.emp_getAllGroup();
-   // EmployeeFun.emp_getCompany();
-    //EmployeeFun.emp_getDept();
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
     EmployeeFun.getAllRoles();

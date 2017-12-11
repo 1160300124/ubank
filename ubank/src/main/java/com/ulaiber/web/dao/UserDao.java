@@ -3,11 +3,8 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.Bank;
-import com.ulaiber.web.model.Menu;
-import com.ulaiber.web.model.SecondAccountAO;
+import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
-import com.ulaiber.web.model.User;
 
 /**
  * user数据库接口
@@ -195,4 +192,11 @@ public interface UserDao {
      * @return int
      */
     int uploadIcon(Map<String, Object> map);
+
+    /**
+     * 根据公司编号获取公司信息
+     * @param numbers 公司编号
+     * @return Company
+     */
+    List<Company> getCompanyByNum(Map<String, Object> numbers);
 }

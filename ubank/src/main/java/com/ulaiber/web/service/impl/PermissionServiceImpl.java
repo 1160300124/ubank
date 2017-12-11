@@ -4,6 +4,7 @@ import com.ulaiber.web.dao.*;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.PermissionService;
+import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -668,6 +669,36 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         //给注册用户分配公司和集团
         int result = permissionDao.insertRoots(map);
         return result;
+    }
+
+    @Override
+    public User queryuserByMobile(String mobile) {
+        return permissionDao.queryuserByMobile(mobile);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+    public int insertUser(Map<String, Object> param) {
+        User user = new User();
+        user.setUserName((String) param.get("name"));
+        String pwd = (String) param.get("mobile");
+        pwd = pwd.substring(5,6);
+        String password = MD5Util.getEncryptedPwd(pwd);
+        user.setMobile((String) param.get("mobile"));
+        user.setLogin_password(password);
+        user.setCardNo((String) param.get("idcard"));
+        user.setEntryDate((String) param.get("entryTime"));
+        user.setCreateTime(sdf.format(new Date()));
+        int result = employeeDao.addEmployee(user);
+        if(result <= 0){
+            return result;
+        }
+        user.setId(user.getId());
+        user.setGroupNumber((String) param.get("gropNum"));
+        user.setCompanyNumber((String) param.get("comNum"));
+        user.setDept_number((String) param.get("deptNum"));
+        int result2 = levelInfoDao.addPermission(user);
+        return result2;
     }
 
 

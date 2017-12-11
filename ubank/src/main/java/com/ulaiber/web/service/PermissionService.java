@@ -137,4 +137,18 @@ public interface PermissionService {
      * @return int
      */
     int saveRoots(String code,int userid);
+
+    /**
+     * 查询当前电话号码是否已被注册
+     * @param mobile 电话号码
+     * @return user
+     */
+    User queryuserByMobile(String mobile);
+
+    /**
+     * 新增用户
+     * @param param
+     * @return int
+     */
+    int insertUser(Map<String, Object> param);
 }

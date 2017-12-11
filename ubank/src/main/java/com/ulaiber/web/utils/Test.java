@@ -765,7 +765,7 @@ public class Test {
 
 	//测试读取文件并解析
 	@org.junit.Test
-	public void read(){
+	public void read() throws IOException {
 		//ReadFile re = new ReadFile();
 		//re.readFile();
 //		SFTPUtil sftpUtil = new SFTPUtil();
@@ -774,8 +774,12 @@ public class Test {
 //		} catch (JSchException e) {
 //			e.printStackTrace();
 //		}
-		String random = "20171204152748" + StringUtil.getFixLenthString(22);
-		System.out.println(random);
+//		String random = "20171204152748" + StringUtil.getFixLenthString(22);
+//		System.out.println(random);
+		ExportExcel ee = new ExportExcel();
+		File file = new File("/Users/emacs/Desktop/model2.xlsx");
+		//ee.readExcel(file);
+
 	}
 
 	@org.junit.Test

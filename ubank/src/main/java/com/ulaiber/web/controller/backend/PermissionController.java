@@ -1,20 +1,27 @@
 package com.ulaiber.web.controller.backend;
 
+import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.UserService;
+import com.ulaiber.web.utils.ExportExcel;
 import com.ulaiber.web.utils.MD5Util;
 import com.ulaiber.web.utils.StringUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
-import org.junit.Before;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -1080,6 +1087,123 @@ public class PermissionController extends BaseController {
             logger.error(">>>>>>>>>>获取各个部门员工人数异常：" ,e);
         }
         return list;
+    }
+
+    /**
+     * 导入Excel
+     * @param file 文件名
+     * @param gropNum 集团编号
+     * @param comNum 公司编号
+     * @param deptNum 部门编号
+     * @return resultInfo
+     */
+    @RequestMapping(value = "importEmployee", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo importEmployee(MultipartFile file, @Param("groupNum") String gropNum,
+                                     @Param("comNum") String comNum, @Param("deptNum") String deptNum){
+        ResultInfo resultInfo = new ResultInfo();
+        try {
+            //导入excel
+            ExportExcel excel = new ExportExcel();
+            CommonsMultipartFile cf = (CommonsMultipartFile)file;
+            DiskFileItem fi = (DiskFileItem) cf.getFileItem();
+            File orifile = fi.getStoreLocation();
+            Map<String,Object> map = excel.readExcel(orifile);
+            if(StringUtil.isEmpty(map)){
+                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                resultInfo.setMessage("导入Excel失败");
+                return resultInfo;
+            }
+           //保存数据
+            List<ExcelAO> Tlist = (List<ExcelAO>) map.get("true");
+            List<ExcelAO> Flist = (List<ExcelAO>) map.get("false");
+            if(Tlist.size() > 0){
+                for (int i = 0 ; i < Tlist.size() ; i++){
+                    ExcelAO ao = Tlist.get(i);
+                    String mobile = ao.getMobile();
+                    //查询当前电话号码是否已被注册
+                    User user = permissionService.queryuserByMobile(mobile);
+                    if(StringUtil.isEmpty(user)){
+                       //新增用户
+                        Map<String,Object> param = new HashMap<>();
+                        param.put("gropNum",gropNum);
+                        param.put("comNum",comNum);
+                        param.put("deptNum",deptNum);
+                        param.put("name",ao.getName());
+                        param.put("idcard",ao.getIDCard());
+                        param.put("mobile",ao.getMobile());
+                        param.put("entryTime",ao.getEntryTime());
+                        int result = permissionService.insertUser(param);
+                    }else{
+                        //如果当前电话已存在数据库中，则返回给前台提示
+                        ExcelAO ea = new ExcelAO();
+                        ea.setId(ao.getId());
+                        ea.setIDCard(ao.getIDCard());
+                        ea.setEntryTime(ao.getEntryTime());
+                        ea.setMobile(ao.getMobile());
+                        ea.setName(ao.getName());
+                        ea.setMessage("电话已被注册");
+                        Flist.add(ea);
+                    }
+                }
+            }
+            if(Flist.size() > 0){
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("导入成功");
+                resultInfo.setData(Flist);
+                return resultInfo;
+            }
+
+        }catch (Exception e){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("导入Excel失败");
+            logger.error("导入Excel失败",e);
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 批量新增员工
+     * @param gropNum 集团编号
+     * @param rows 用户信息
+     * @param comNum 公司编号
+     * @param deptNum 部门编号
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "batchImport", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo batchAddUser(@Param("groupNum") String gropNum,@Param("rows") String rows,
+                                   @Param("comNum") String comNum, @Param("deptNum") String deptNum){
+        ResultInfo resultInfo = new  ResultInfo();
+        try {
+            JSONArray array = JSONArray.fromObject(rows);
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject jsons = array.getJSONObject(i);
+                Map<String,Object> param = new HashMap<>();
+                param.put("gropNum",gropNum);
+                param.put("comNum",comNum);
+                param.put("deptNum",deptNum);
+                param.put("name",jsons.get("name").toString());
+                param.put("idcard",jsons.get("IDCard").toString());
+                param.put("mobile",jsons.get("mobile").toString());
+                param.put("entryTime",jsons.get("entryTime").toString());
+                int result = permissionService.insertUser(param);
+                if(result <= 0){
+                    resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                    resultInfo.setMessage("批量新增员工失败");
+                    return resultInfo;
+                }
+            }
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("批量新增员工成功");
+
+        }catch (Exception e){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("批量新增员工失败");
+            logger.error("批量新增员工失败",e);
+        }
+
+        return resultInfo;
     }
 
 }

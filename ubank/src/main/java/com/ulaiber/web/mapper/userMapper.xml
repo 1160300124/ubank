@@ -199,4 +199,12 @@
 	<update id="uploadIcon" parameterType="Map" >
 		UPDATE tbl_users SET image = #{image} where user_id = #{userId}
 	</update>
+
+	<!--根据公司编号获取公司信息-->
+	<select id="getCompanyByNum" parameterType="Map" resultType="com.ulaiber.web.model.Company">
+		SELECT companyNumber,name from tbl_company where companyNumber in
+		<foreach collection="numbers" item="number" open="(" separator="," close=")">
+			#{number}
+		</foreach>
+	</select>
 </mapper>

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ulaiber.web.model.Company;
 import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,7 @@ public class BackendLoginController extends BaseController {
 			}
 			String userName = dbuser.getUserName();
 			String sysflag = dbuser.getSysflag();
+			//获取当前用户所有权限菜单
 			List<Menu> menu = userService.getAllMenuByUser(userName,sysflag);
 			String str = "";
 			for (int i = 0; i < menu.size() ; i++){
@@ -107,6 +109,31 @@ public class BackendLoginController extends BaseController {
 						str += url ;
 					}
 				}
+			}
+			String number = "";
+			String name = "";
+			//获取当前用用户所属公司
+			if("1".equals(sysflag)){
+				String[] comNum = dbuser.getCompanyNumber().split(",");
+				int numbers[] = new int[comNum.length];
+				for (int i = 0 ; i < comNum.length ; i++){
+					numbers[i] = Integer.parseInt(comNum[i]);
+				}
+				List<Company> comList = userService.getCompanyByNum(numbers);
+				if(comList.size() > 0){
+					for (int i = 0 ; i < comList.size(); i++){
+						Company com = comList.get(i);
+						if(i > 0 ){
+							number += "," + com.getCompanyNumber();
+							name += "," + com.getName();
+						}else{
+							number += com.getCompanyNumber();
+							name += com.getName();
+						}
+					}
+				}
+				dbuser.setCompanyNumber(number);
+				dbuser.setCom_name(name);
 			}
 			//放入session
 			request.getSession().setAttribute(IConstants.UBANK_BACKEND_USERSESSION, dbuser);
