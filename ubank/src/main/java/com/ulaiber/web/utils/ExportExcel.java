@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import net.sf.json.JSONException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 利用开源组件POI3.0.2动态导出EXCEL文档
@@ -63,7 +64,7 @@ public class ExportExcel {
      * @param request
      */
     public void export(String jsonStr, String sheaders, String fileName, String title,
-                       HttpServletResponse response, HttpServletRequest request) throws IOException,FileNotFoundException{
+                       HttpServletResponse response, HttpServletRequest request) throws IOException{
         try {
             // 将json字符串转换为json对象
             JSONArray jsonArray = new JSONArray(jsonStr);
@@ -253,17 +254,17 @@ public class ExportExcel {
      * @param file
      * @throws IOException
      */
-    public Map<String,Object> readExcel(File file) throws IOException {
+    public Map<String,Object> readExcel(MultipartFile file) throws IOException {
         logger.info("开始导入excel");
         Map<String,Object> resultMap = new HashMap<>();
         try {
-            String path = file.getAbsolutePath();
+            String path = file.getOriginalFilename();
             path = path.substring(path.lastIndexOf("."),path.length());
             List<ExcelAO> TList = new ArrayList<>();
             List<ExcelAO> FList = new ArrayList<>();
             if(".xlsx".equals(path)){
-                InputStream stream = new FileInputStream(file);
-                XSSFWorkbook xssfWorkbook = new XSSFWorkbook(stream);
+                //InputStream stream = new FileInputStream(file);
+                XSSFWorkbook xssfWorkbook = new XSSFWorkbook(file.getInputStream());
                 XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(0);
 
                 int rowstart = xssfSheet.getFirstRowNum();
@@ -284,9 +285,6 @@ public class ExportExcel {
                         XSSFCell cell = row.getCell(k);
                         if(k == 0){ //判断序号
                             excelAO.setId(cell.toString());
-//                    if(StringUtil.isEmpty(cell.toString())){
-//                        sb.append("序号不能为空,");
-//                    }
                             continue;
                         }else if(k == 1){ //判断姓名
                             if(StringUtil.isEmpty(cell.toString())){
@@ -326,6 +324,7 @@ public class ExportExcel {
                             }else{
                                 TList.add(excelAO);
                             }
+
                             break;
                         }
 
@@ -336,7 +335,7 @@ public class ExportExcel {
                 resultMap.put("false",FList);
             }else if(".xls".equals(path)){
                 logger.info("开始导入excel");
-                POIFSFileSystem poifsFileSystem = new POIFSFileSystem(new FileInputStream(file));
+                POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file.getInputStream());
                 HSSFWorkbook hssfWorkbook =  new HSSFWorkbook(poifsFileSystem);
                 HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
 
@@ -356,9 +355,6 @@ public class ExportExcel {
                         HSSFCell cell = row.getCell(k);
                         if(k == 0){ //判断序号
                             excelAO.setId(cell.toString());
-//                    if(StringUtil.isEmpty(cell.toString())){
-//                        sb.append("序号不能为空,");
-//                    }
                             continue;
                         }else if(k == 1){ //判断姓名
                             if(StringUtil.isEmpty(cell.toString())){

@@ -1099,17 +1099,15 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "importEmployee", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo importEmployee(MultipartFile file, @Param("groupNum") String gropNum,
+    public ResultInfo importEmployee( @Param("file") MultipartFile file, @Param("groupNum") String gropNum,
                                      @Param("comNum") String comNum, @Param("deptNum") String deptNum){
         ResultInfo resultInfo = new ResultInfo();
         try {
+            String name = file.getOriginalFilename();
             //导入excel
             ExportExcel excel = new ExportExcel();
-            CommonsMultipartFile cf = (CommonsMultipartFile)file;
-            DiskFileItem fi = (DiskFileItem) cf.getFileItem();
-            File orifile = fi.getStoreLocation();
-            Map<String,Object> map = excel.readExcel(orifile);
-            if(StringUtil.isEmpty(map)){
+            Map<String,Object> map = excel.readExcel(file);
+            if(map.size() <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage("导入Excel失败");
                 return resultInfo;
@@ -1134,6 +1132,12 @@ public class PermissionController extends BaseController {
                         param.put("mobile",ao.getMobile());
                         param.put("entryTime",ao.getEntryTime());
                         int result = permissionService.insertUser(param);
+                        if(result <= 0){
+                            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+                            resultInfo.setMessage("导入Excel失败");
+                        }
+                        resultInfo.setCode(IConstants.QT_CODE_OK);
+                        resultInfo.setMessage("导入成功");
                     }else{
                         //如果当前电话已存在数据库中，则返回给前台提示
                         ExcelAO ea = new ExcelAO();

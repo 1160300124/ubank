@@ -30,6 +30,8 @@ $(function () {
     });
 
     EmployeeFun.emp_getAllGroup();
+    // EmployeeFun.emp_getCompany();
+    //EmployeeFun.emp_getDept();
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
     EmployeeFun.getAllRoles();
@@ -125,7 +127,7 @@ var EmployeeFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                   // Ewin.alert("获取公司失败");
+                    // Ewin.alert("获取公司失败");
                     return;
                 }
 
@@ -209,7 +211,7 @@ var EmployeeFun = {
                     return;
                 }
                 var option = "";
-                    option = "<option value='0'>员工</option>";
+                option = "<option value='0'>员工</option>";
                 for (var i = 0; i < data.length; i++){
                     if(data[i].role_id == 0){
                         continue;
@@ -495,8 +497,37 @@ var EmployeeFun = {
     },
     reload : function () {
         $('#employee_table').bootstrapTable('refresh');
-    }
+    },
+    showImport: function(){
+        $('#employee_import_modal').modal("show");
+    },
+    import: function() {
+        var formData = new FormData($("#import_employee_form")[0]);
+        formData.append('groupNum', GROUPNUMBER);
+        formData.append('comNum', COMPANYNUMBER);
+        formData.append('deptNum', DEPTNUMBER);
 
+        $.ajaxFileUpload({
+            url: 'importEmployee',
+            type: 'POST',
+            secureuri : false,
+            fileElementId : "employee_upload_file",
+            dataType : "json",
+            data : {
+                file : $('#employee_upload_file').val(),
+                groupNum : GROUPNUMBER,
+                comNum : COMPANYNUMBER,
+                deptNum : DEPTNUMBER
+            },
+            success :function (data) {
+                debugger;
+            },
+            error : function () {
+                Ewin.alert("导入失败");
+            }
+
+        })
+    }
 
 };
 
