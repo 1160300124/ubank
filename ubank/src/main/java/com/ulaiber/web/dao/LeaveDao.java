@@ -51,6 +51,10 @@ public interface LeaveDao {
     
     List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(Map<String, Object> params); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长
     
+    double getTotalTimeByUserId(@Param("userId") long userId, @Param("month") String date); //获取某个月份某人的审批通过的请假的总时长
+    
+    double getTotalTimeByMobile(@Param("mobile") String mobile, @Param("month") String date);//获取某个月份某人的审批通过的请假的总时长
+    
     int updateRealLeaveTime(@Param("userId") long userId,@Param("time") double time, @Param("today") String date);//更新实际请假时长
     
     LeaveRecord getLeaveRecordByUserIdAndDate(@Param("userId") long userId, @Param("today") String date); //查询用户指定日期是否有审批通过的请假记录

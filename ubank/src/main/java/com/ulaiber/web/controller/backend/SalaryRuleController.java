@@ -40,7 +40,7 @@ public class SalaryRuleController extends BaseController {
 	private SalaryRuleService service;
 	
 	@RequestMapping(value = "salaryRule", method = RequestMethod.GET)
-	public String salaryConfig(HttpServletRequest request, HttpServletResponse response){
+	public String salaryRule(HttpServletRequest request, HttpServletResponse response){
 		return "salaryRule";
 	}
 	
