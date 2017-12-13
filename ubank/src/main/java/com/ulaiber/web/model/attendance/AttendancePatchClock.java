@@ -31,13 +31,13 @@ public class AttendancePatchClock {
 	private String patchClockDate;
 	
 	/**
-	 * 补卡类型 0：全天补卡 1：上班补卡 2：下班补卡
+	 * 补卡类型 0：全天补卡  1：上班补卡  2：下班补卡
 	 *
 	 */
 	private int patchClockType;
 	
 	/**
-	 * //补卡审批状态 0：审批中  1：已通过  2：未通过  3:已取消
+	 * 补卡审批状态 0：审批中  1：已通过  2：未通过  3：已取消
 	 */
 	private String patchClockStatus;
 	

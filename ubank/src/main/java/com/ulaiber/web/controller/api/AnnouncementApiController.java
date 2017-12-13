@@ -129,16 +129,18 @@ public class AnnouncementApiController extends BaseController {
 	/**
 	 * 获取用户公告列表
 	 * @param userId 用户id
-	 * @param pageSize 每页多少条
-	 * @param pageNum 第几页
+	 * @param aid 公告id
 	 * @param request request
 	 * @param response response
 	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "detail", method = RequestMethod.GET)
-	public String detail(Long aid, HttpServletRequest request, HttpServletResponse response){
+	public String detail(Long userId, Long aid, HttpServletRequest request, HttpServletResponse response){
 		try {
-			if (aid != null){
+			if (userId != null && aid != null){
+				//更新公告为已读
+				service.updateTypeByUserIdAndRid(userId, aid);
+				//获取公告信息，附件信息
 				Announcement announcement = service.getAnnouncementByAid(aid);
 				List<Attachment> list = service.getAttachmentsByAid(aid);
 				request.setAttribute("title", announcement.getAnnounceTitle());
@@ -151,6 +153,34 @@ public class AnnouncementApiController extends BaseController {
 			logger.error("detail exception:" ,e);
 		}
 		return "announcementDetail";
+	}
+	
+	/**
+	 * 获取用户公告列表
+	 * @param userId 用户id
+	 * @param aid 公告id
+	 * @param request request
+	 * @param response response
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "getUnreadCount", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getUnreadCount(Long userId, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		try {
+			if (userId != null){
+				//获取未读公告
+				int count = service.getUnreadCountByUserId(userId);
+				Map<String, Object> data = new HashMap<String, Object>();
+				data.put("count", count);
+				info.setCode(IConstants.QT_CODE_OK);
+				info.setData(count);
+			}
+		} catch (Exception e) {
+			logger.error("getUnreadCount exception:" ,e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+		}
+		return info;
 	}
 	
 }

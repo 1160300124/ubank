@@ -149,6 +149,17 @@
             ,l.leaveType
         </if>
 	</select>
+	
+	<!--获取某个月份某人的审批通过的请假的总时长  -->
+    <select id="getTotalTimeByUserId" resultType="Double">
+		select sum(realLeaveTime) totalTime from tbl_leave_record where type='0' and status='1' and disable='0' and locate(#{month},startDate)>0 and userId=#{userId}
+	</select>
+	
+		<!--获取某个月份某人的审批通过的请假的总时长  -->
+    <select id="getTotalTimeByMobile" resultType="Double">
+    	select sum(realLeaveTime) totalTime from tbl_leave_record r join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and r.type='0'
+    	and r.status='1' and r.disable='0' and locate(#{month},r.startDate)>0
+	</select>
 		
 	<!-- 更新实际请假时长 -->
 	<update id="updateRealLeaveTime">

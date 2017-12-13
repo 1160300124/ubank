@@ -99,7 +99,7 @@ $(function () {
 			'id':0,
 			'userName': '快速批量设置',
 			'cardNo': '-',
-			'preTaxSalaries': 0,
+			'preTaxSalaries': '-',
 			'bonuses': 0,
 			'subsidies': 0,
 			'attendanceCutPayment': '-',

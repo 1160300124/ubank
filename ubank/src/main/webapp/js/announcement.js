@@ -164,7 +164,7 @@ $(function(){
 			attachment.attachment_name = table.rows[i].cells[0].innerHTML;
 			attachment.attachment_type = table.rows[i].cells[1].innerHTML;
 			attachment.attachment_size = table.rows[i].cells[2].innerHTML;
-			attachment.attachment_path = table.rows[i].cells[4].innerHTML;
+			attachment.attachment_path = table.rows[i].cells[3].innerHTML;
 			attachments.push(attachment);
 		}
 		params.attachments = attachments;

@@ -126,4 +126,19 @@ public interface AnnouncementDao {
 	 * @return
 	 */
 	int deleteAttachmentsByAid(long aid);
+	
+	/**
+	 * 更新用户公告为已读
+	 * @param userId 用户id
+	 * @param aid 公告id
+	 * @return boolean
+	 */
+	boolean updateTypeByUserIdAndRid(@Param("userId") long userId, @Param("aid") long aid);
+	
+	/**
+	 * 获取用户未读公告条数
+	 * @param userId 用户id
+	 * @return int
+	 */
+	int getUnreadCountByUserId(long userId);
 }

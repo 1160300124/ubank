@@ -101,7 +101,7 @@
 		<tr>
 			<th data-field="userName" data-edit="false">姓名</th>
 			<th data-field="cardNo" data-edit="false">身份证号码</th>
-			<th data-field="preTaxSalaries">税前工资</th>
+			<th data-field="preTaxSalaries" data-edit="false">税前工资</th>
 			<th data-field="bonuses">奖金</th>
 			<th data-field="subsidies">补贴</th>
 			<th data-field="totalCutPayment" data-edit="false">考勤扣款</th>
@@ -164,7 +164,7 @@
 <script src="<%=request.getContextPath()%>/js/bootstrap-table/bootstrap-table-editable.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.core.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.excheck.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/salaryConfig.js" type="text/javascript" ></script>
+<script src="<%=request.getContextPath()%>/js/salarySetting.js" type="text/javascript" ></script>
 <script type="text/javascript">
 var companyId = "${param.companyId}";
 var salaryMonth = "${param.salaryMonth}";

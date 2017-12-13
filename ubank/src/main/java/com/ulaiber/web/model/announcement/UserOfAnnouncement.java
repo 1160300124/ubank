@@ -29,6 +29,11 @@ public class UserOfAnnouncement {
 	 * 公司id
 	 */
 	private int companyId;
+	
+	/**
+	 * 0：未读  1：已读
+	 */
+	private int type;
 
 	public long getUserId() {
 		return userId;
@@ -60,6 +65,14 @@ public class UserOfAnnouncement {
 
 	public void setCompanyId(int companyId) {
 		this.companyId = companyId;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 }

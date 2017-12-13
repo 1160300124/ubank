@@ -83,7 +83,7 @@ $(function () {
 	});
 	
 	$("#btn_add").unbind().bind("click", function(){
-		window.location.href = "salaryConfig";
+		window.location.href = "salarySetting";
 		
 	});
 	
@@ -101,7 +101,7 @@ $(function () {
 		var peopleName = arrselections[0].approveNames;
 		var sid = arrselections[0].sid;
 		
-		window.location.href = "salaryConfig?companyId=" + companyId + "&salaryMonth=" + salaryMonth + "&salaryDate=" + salaryDate
+		window.location.href = "salarySetting?companyId=" + companyId + "&salaryMonth=" + salaryMonth + "&salaryDate=" + salaryDate
 			+ "&peopleId=" + peopleId + "&peopleName=" + peopleName + "&sid=" + sid;
 		
 	});
