@@ -52,11 +52,14 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 				uoa.setUserId(userId);
 				list.add(uoa);
 			}
-			dao.batchInsertUserOfAnnouncement(list);
-			for (Attachment att : announcement.getAttachments()){
-				att.setAid(announcement.getAid());
+			
+			if (announcement.getAttachments().size() > 0){
+				for (Attachment att : announcement.getAttachments()){
+					att.setAid(announcement.getAid());
+				}
+				dao.batchInsertAttachments(announcement.getAttachments());
 			}
-			return dao.batchInsertAttachments(announcement.getAttachments()) > 0;
+			return  dao.batchInsertUserOfAnnouncement(list) > 0;
 		}
 		return false;
 	}
@@ -139,6 +142,17 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 	@Override
 	public List<Attachment> getAttachmentsByAid(long aid) {
 		return dao.getAttachmentsByAid(aid);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public boolean updateTypeByUserIdAndRid(long userId, long aid) {
+		return dao.updateTypeByUserIdAndRid(userId, aid);
+	}
+
+	@Override
+	public int getUnreadCountByUserId(long userId) {
+		return dao.getUnreadCountByUserId(userId);
 	}
 
 }

@@ -1,6 +1,6 @@
 var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 $(function(){
-    SalaryConfigFun.com_listening();
+    SalarySettingFun.com_listening();
     
     $("#btn_refresh").unbind().bind("click", function(){
     	$("#tb_salary_rules").bootstrapTable("refresh");
@@ -199,7 +199,7 @@ var earlyLeave=[{
     value:"",
     unit:0, //0元，1天
 }] //早退
-var salaryConfigTemplateStr = '<tr>'+
+var salarySettingTemplateStr = '<tr>'+
                 '<td><input type="text" class="form-control" name="minute" value="@minute" /></td>'+
                 '<td><input type="text" class="form-control" name="value" value="@value" /></td>'+
                 '<td><select class="form-control" name="unit"><option value="0">元</option><option value="1">天</option></select></td>'+
@@ -214,7 +214,7 @@ String.prototype.formatStr = function(data){
 }
 
 function formatStr(item){
-	var str = salaryConfigTemplateStr.formatStr({
+	var str = salarySettingTemplateStr.formatStr({
     	minute : item.minute,
     	value : item.value,
     	unit : item.unit
@@ -361,7 +361,7 @@ function leave(value){
 }
 
 //考勤计算规则
-function renderSalaryConfig(renderObj,data){
+function renderSalarySetting(renderObj,data){
     renderObj.html('');
     var renderStr = '';
     $(data).each(function(index,item){
@@ -437,7 +437,7 @@ window.operateEvents = {
 	                unit : laterCuts[i].split(",")[2],
 	            })
 	        }
-	        renderSalaryConfig($('#late_table>tbody'), latercutRules);
+	        renderSalarySetting($('#late_table>tbody'), latercutRules);
 	        
 	        var earlyLeaveCuts =  row.leaveEarlyCutPayment.split("|");
 	        var earlyLeavcutRules = [];
@@ -448,7 +448,7 @@ window.operateEvents = {
 	                unit : earlyLeaveCuts[i].split(",")[2],
 	            })
 	        }
-	        renderSalaryConfig($('#earlyLeave_table>tbody'), earlyLeavcutRules);
+	        renderSalarySetting($('#earlyLeave_table>tbody'), earlyLeavcutRules);
 	        
 	        $("#allowforgetclock_count").val(row.allowForgetClockCount);
 	        $("#forgetclock_cut").val(row.forgetClockCutPayment);
@@ -473,7 +473,7 @@ window.operateEvents = {
 }
 
 //all function
-var SalaryConfigFun = {
+var SalarySettingFun = {
     //打开新增dialog
     openAdd : function(){
     	//标识。 0 表示新增操作，1 表示修改操作
@@ -481,8 +481,8 @@ var SalaryConfigFun = {
         var addModal = $("#salaryRule_config_modal");
 		addModal.find("#salaryRule_config_form")[0].reset();
         loadCompanys();
-        renderSalaryConfig($('#late_table>tbody'), late);
-        renderSalaryConfig($('#earlyLeave_table>tbody'), earlyLeave);
+        renderSalarySetting($('#late_table>tbody'), late);
+        renderSalarySetting($('#earlyLeave_table>tbody'), earlyLeave);
         $(".selectpicker").selectpicker({
         	noneSelectedText : '请选择公司'
         });
@@ -517,20 +517,20 @@ var SalaryConfigFun = {
             
         });
     },
-    addSalaryConfigLate : function(){
+    addSalarySettingLate : function(){
     	if ($("#late_table tbody tr").length >= 5){
     		Ewin.alert("迟到最多只能添加5项");
     		return;
     	}
-        $('#late_table>tbody').append(salaryConfigTemplateStr.formatStr({minute:'', value:''}))
+        $('#late_table>tbody').append(salarySettingTemplateStr.formatStr({minute:'', value:''}))
         bindIconDelete();
     },
-    addSalaryConfigEarlyLeave : function(){
+    addSalarySettingEarlyLeave : function(){
     	if ($("#earlyLeave_table tbody tr").length >= 5){
     		Ewin.alert("早退最多只能添加5项");
     		return;
     	}
-        $('#earlyLeave_table>tbody').append(salaryConfigTemplateStr.formatStr({minute:'', value:''}))
+        $('#earlyLeave_table>tbody').append(salarySettingTemplateStr.formatStr({minute:'', value:''}))
         bindIconDelete();
     },
     //新增
@@ -541,7 +541,7 @@ var SalaryConfigFun = {
     deletewages : function(e){
         
     },
-    saveSalaryConfig:function(){
+    saveSalarySetting:function(){
         var lateRules=[]    //迟到规则
         var earlyLeaveRules=[]; //早退规则
         $("#late_table tbody tr").each(function(index,item){

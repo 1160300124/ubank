@@ -5,7 +5,7 @@
 <div class="page-content">
     <%--工具栏--%>
     <div id="toolbar" class="btn-group">
-        <button  onclick="SalaryConfigFun.openAdd()" type="button" class="btn btn-default">
+        <button  onclick="SalarySettingFun.openAdd()" type="button" class="btn btn-default">
             <span class="fa icon-plus" aria-hidden="true"></span>新增
         </button>
         <button id="btn_remove" type="button" class="btn btn-default">
@@ -73,7 +73,7 @@
                               <label class="col-sm-3 control-label" for="exampleInputName2">考勤规则</label>
                               <div class="col-sm-6">
                               	  <div class="control-label" style="float:left;">
-                                  	<a href="javascript:SalaryConfigFun.openAttendance();">配置</a>
+                                  	<a href="javascript:SalarySettingFun.openAttendance();">配置</a>
                                   </div>
                               </div>
                           </div>
@@ -165,7 +165,7 @@
                                     <tbody>
                                     </tbody>
                                 </table>
-                                <button onclick="SalaryConfigFun.addSalaryConfigLate()" class="btn btn-default">添加更多迟到项</button>
+                                <button onclick="SalarySettingFun.addSalarySettingLate()" class="btn btn-default">添加更多迟到项</button>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -186,7 +186,7 @@
                                         
                                     </tbody>
                                 </table>
-                                <button onclick="SalaryConfigFun.addSalaryConfigEarlyLeave()" class="btn btn-default">添加更多早退项</button>
+                                <button onclick="SalarySettingFun.addSalarySettingEarlyLeave()" class="btn btn-default">添加更多早退项</button>
                             </div>
                         </div>
                     </div>

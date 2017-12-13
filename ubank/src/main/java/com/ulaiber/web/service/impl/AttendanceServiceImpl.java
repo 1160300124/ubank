@@ -36,6 +36,7 @@ import com.ulaiber.web.service.AttendanceService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.HttpsUtil;
+import com.ulaiber.web.utils.MathUtil;
 
 /** 
  * 考勤记录业务逻辑实现类
@@ -482,15 +483,39 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		params.put("mobile", mobile);
 		List<Attendance> list = dao.getRecordsByDateAndMobile(params);
 		
-		Map<String, Object> data = new LinkedHashMap<String, Object>();
+		//key为打卡日期，value为打卡记录对象
+		Map<String, Object> recordMap = new HashMap<String, Object>();
+		for (Attendance att : list){
+			recordMap.put(att.getClockDate(), att);
+		}
+		
+		Map<String, Object> records = new LinkedHashMap<String, Object>();
+		
+		//迟到次数
+		int laterCount = 0;
+		//早退次数
+		int leaveEarlyCount = 0;
+		//未打卡次数
+		int noClockCount = 0;
 		//指定月份为空则获取当前月份
 		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
-		//0 正常   1异常(迟到，早退，忘打卡) 2未打卡  3休息日  4审批补卡已通过
-		int type = 3;
 		
+		double totalTime = leaveDao.getTotalTimeByMobile(mobile, month);
+		String newDay = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
+		//每天工作小时数
+		double workHours = DateTimeUtil.gethour(newDay + " " + rule.getClockOnTime(), newDay + " " + rule.getClockOffTime());
+		if (rule.getRestFlag() == 0){
+			double restHours = DateTimeUtil.gethour(newDay + " " + rule.getRestEndTime(), newDay + " " + rule.getRestStartTime());
+			workHours = MathUtil.formatDouble(MathUtil.sub(workHours, restHours), 1);
+		}
+		double leaveDay = new BigDecimal(MathUtil.div(totalTime, workHours)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+		
+		//0 正常   1异常(迟到，早退) 2未打卡  3休息日  4请假
+		int type = 3;
 		List<String> days = DateTimeUtil.getDaysFromMonth(month);
 		for (String day : days){
-			data.put(day, type);
+			records.put(day, type);
+			//指定月份不能大于当前月份
 			if (month.compareTo(currentMonth) > 0){
 				continue;
 			}
@@ -516,40 +541,71 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 			
 			if (isRestDay){
-				data.put(day, 3);
+				records.put(day, 3);
 				continue;
 			}
 
-			int count = 0;
-			for (Attendance att : list){
-				if (StringUtils.equals(att.getClockDate(), day)){
-					if (StringUtils.equals(att.getPatchClockStatus(), "1")){
-						type = 4;
-					} else if (StringUtils.equals(att.getPatchClockStatus(), "2")){
-						type = 2;
-					} else if (StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "0")){
-						type = 0;
+			//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
+			LeaveRecord leaveRecord = leaveDao.getLeaveRecordByMobileAndDate(mobile, day);
+			Attendance att = (Attendance) recordMap.get(day);
+			//没有考勤记录为旷工
+			if (att == null ){
+				records.put(day, 2);
+				if (leaveRecord != null){
+					records.put(day, 4);
+				}
+			} else {
+				//上班，下班都没打卡
+				if (StringUtils.isEmpty(att.getClockOnDateTime()) && StringUtils.isEmpty(att.getClockOffDateTime())){
+					if (leaveRecord == null){
+						records.put(day, 2);
+						noClockCount ++;
 					} else {
-						type = 1;
+						records.put(day, 4);
 					}
-					count ++;
+					continue;
+				}
+				//打卡状态 0：正常  1：迟到  2：早退  3：外勤
+				if (StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "0")
+						|| StringUtils.equals(att.getClockOnStatus(), "0") && StringUtils.equals(att.getClockOffStatus(), "3")
+						|| StringUtils.equals(att.getClockOnStatus(), "3") && StringUtils.equals(att.getClockOffStatus(), "0")
+						|| StringUtils.equals(att.getClockOnStatus(), "3") && StringUtils.equals(att.getClockOffStatus(), "3")){
+					records.put(day, 0);
+					//revokeType 0：不销假打卡 1：销假打卡
+					if (StringUtils.equals(att.getRevokeType(), "0")){
+						records.put(day, 4);
+					}
+				}
+				if (StringUtils.equals(att.getClockOnStatus(), "1")){
+					records.put(day, 1);
+					laterCount ++;
+				}
+				if (StringUtils.equals(att.getClockOffStatus(), "2")){
+					records.put(day, 1);
+					leaveEarlyCount ++;
+				}
+				if (StringUtils.isEmpty(att.getClockOnDateTime()) || StringUtils.isEmpty(att.getClockOffDateTime())){
+					records.put(day, 2);
+					noClockCount ++;
 				}
 			}
 			
-			if (count == 0){
-				data.put(day, 2);
-				if (isRestDay){
-					data.put(day, 3);
-				}
-			} else if (count == 1){
-				data.put(day, type);
-				if (isRestDay){
-					data.put(day, 0);
-				}
-			} 
-
 		}
 		
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("records", records);
+		data.put("laterCount", laterCount);
+		data.put("leaveEarlyCount", leaveEarlyCount);
+		data.put("noClockCount", noClockCount);
+		data.put("leaveDay", leaveDay);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("clockOnTime", rule.getClockOnTime());
+		map.put("clockOffTime", rule.getClockOffTime());
+		map.put("restStartTime", rule.getRestStartTime());
+		map.put("restEndTime", rule.getRestEndTime());
+		map.put("restFlag", rule.getRestFlag());
+		data.put("rule", map);
+
 		return data;
 	}
 
@@ -731,7 +787,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		}
 		
 		boolean flag = false;
-		//补卡审批状态 0：审批中  1：已通过  2：未通过  3:已取消
+		//补卡审批状态 0：审批中  1：已通过  2：未通过  3：已取消
 		if (StringUtils.equals(patchClock.getPatchClockStatus(), "0")){
 			flag = updatePatchClockStatus(user, patchClock.getPatchClockDate(), patchClock.getPatchClockType(), patchClock.getPatchClockStatus());
 			if (flag){
