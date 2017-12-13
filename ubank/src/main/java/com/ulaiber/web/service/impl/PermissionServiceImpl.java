@@ -367,7 +367,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
     }
 
     @Override
-    public List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr) {
+    public List<User> empQuery(String search, int pageSize, int pageNum, String sysflag, String[] comArr, String activetion) {
         Map<String,Object> map = new HashMap<String,Object>();
         if(!sysflag.equals("0")){
             int arr[] = new int[comArr.length];
@@ -378,12 +378,14 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
             map.put("pageSize" , pageSize);
             map.put("pageNum" , pageNum);
             map.put("sysflag" , sysflag);
+            map.put("activetion" , activetion);
             map.put("companyNumber" , arr);
         }else{
             map.put("search" ,search );
             map.put("pageSize" , pageSize);
             map.put("pageNum" , pageNum);
             map.put("sysflag" , sysflag);
+            map.put("activetion" , activetion);
             map.put("companyNumber" , new int[0]);
         }
 
@@ -694,7 +696,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
             return result;
         }
         user.setId(user.getId());
-        user.setGroupNumber((String) param.get("gropNum"));
+        user.setGroupNumber((String) param.get("groupNum"));
         user.setCompanyNumber((String) param.get("comNum"));
         user.setDept_number((String) param.get("deptNum"));
         int result2 = levelInfoDao.addPermission(user);

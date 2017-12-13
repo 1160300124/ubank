@@ -64,6 +64,14 @@
         <if test="search != null and search != ''">
             and  (a.user_name like concat('%',#{search},'%') or a.mobile like concat('%',#{search},'%') or c.name like concat('%',#{search},'%'))
         </if>
+        <if test="activetion != null and activetion != ''">
+            <if test="activetion == '0'">
+                and s.freeze &lt;&gt; '2'
+            </if>
+            <if test="activetion == '1'">
+                and s.freeze = '2'
+            </if>
+        </if>
         <if test = 'sysflag == "1"'>
             and e.companyNumber  in
             <foreach collection="companyNumber" item="companyNumber" open="(" separator="," close=")">

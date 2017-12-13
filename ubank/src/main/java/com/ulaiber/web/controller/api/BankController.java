@@ -373,7 +373,7 @@ public class BankController extends BaseController {
 							if (flag){
 								//插入转账记录
 								Transfer tran = new Transfer();
-								tran.setSubAcctNo(SubAcctNo);
+		 						tran.setSubAcctNo(SubAcctNo);
 								tran.setUserId(userId);
 								tran.setRqUID(sd.getTxnBsnId());
 								tran.setAmount(Double.parseDouble(sd.getTxnAmt()));
@@ -383,22 +383,6 @@ public class BankController extends BaseController {
 								tran.setStatus(1);
 								tran.setTrading(2);
 								int inResult = bankservice.insertTransfer(tran);
-//							Withdraw withd = new Withdraw();
-//							withd.setCreateDate(sdf.format(new Date()));
-//							withd.setUpdateTime(sd.getTxnTime());
-//							withd.setSortTime(sdf.format(new Date()));
-//							withd.setStatus(1);
-//							withd.setTrading(0);
-//							withd.setType(type);
-//							withd.setUserId(userId);
-//							withd.setSubAcctNo(SubAcctNo);
-//							withd.setRqUID(sd.getTxnBsnId());
-//							withd.setAmount(Double.parseDouble(sd.getTxnAmt()));
-//							withd.setBizDate(sd.getTxnDate());
-//							withd.setCurrency(vo.getCurrency());
-//							withd.setTheirRef(sd.getTheirRef());
-//							int inResult = bankservice.insertWithdraw(withd);
-
 							}
 						}
 					}

@@ -65,7 +65,7 @@ public interface PermissionService {
 
     int getEmpTotal(String sysflag,String[] comArr); //获取员工总数
 
-    List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr); //分页查询员工信息
+    List<User> empQuery(String search, int pageSize, int pageNum, String sysflag, String[] comArr, String activetion); //分页查询员工信息
 
     int editEmp(User user); //修改员工信息
 

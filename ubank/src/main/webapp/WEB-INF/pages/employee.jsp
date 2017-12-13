@@ -18,10 +18,10 @@
         <button onclick="" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>搜索
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="EmployeeFun.activetion()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>已激活
         </button>
-        <button onclick="" type="button" class="btn btn-default">
+        <button onclick="EmployeeFun.inactivated()" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>未激活
         </button>
 

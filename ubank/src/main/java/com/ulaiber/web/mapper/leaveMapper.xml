@@ -172,4 +172,16 @@
     <select id="queryApplyStatus" parameterType="int" resultType="com.ulaiber.web.model.LeaveRecord">
         select disable FROM tbl_leave_record where id = #{recordNo}
     </select>
+    
+    <!--获取个人申请记录数量-->
+    <select id="getLeaveRecordCount" parameterType="String" resultType="int">
+        select COUNT(a.userid) as count from tbl_leave_record a left join tbl_users b on a.userid = b.user_id
+        where a.disable = '0' and a.status = '0' and a.userid = #{userId} order by a.createDate DESC
+    </select>
+
+    <!--获取个人审批记录数量-->
+    <select id="getLeaveAuditorCount" parameterType="String" resultType="int">
+          select COUNT(userid) as count from tbl_leave_audit_record
+            WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate DESC
+    </select>
 </mapper>

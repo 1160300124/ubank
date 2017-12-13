@@ -784,13 +784,28 @@ public class Test {
 
 	@org.junit.Test
 	public  void sort() throws Exception {
-		String CID = "dbc748f4a1ed1543c987d3db8db62f7d";
-		int type = 3;
-		String content = "老子又开始测试啦啦啦啦啦啦";
-		String title = "老子在测试！！！";
-		long id = 0;
-		String status = "1";
-		PushtoSingle.singlePush(CID,type,content,title,id,status);
+//		String CID = "dbc748f4a1ed1543c987d3db8db62f7d";
+//		int type = 3;
+//		String content = "老子又开始测试啦啦啦啦啦啦";
+//		String title = "老子在测试！！！";
+//		long id = 0;
+//		String status = "1";
+//		PushtoSingle.singlePush(CID,type,content,title,id,status);
+//		String rows = "[{\"id\":\"2.0\",\"name\":\"马云\",\"mobile\":\"13082212668\",\"entryTime\":\"2017-11-01\",\"message\":\"身份证长度为18位\",\"idcard\":\"440983199901015\"}]";
+//		String deptNum = "40068";
+//		String comNum = "20094";
+//		String groupNum = "1041";
+//		Map<String,Object> map = new HashMap<String,Object>();
+//		map.put("group","1111");
+//		map.put("rows",rows);
+//		map.put("deptNum",deptNum);
+//		map.put("comNum",comNum);
+//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/backend/batchImport",map);
+//		System.out.print(">>>>>>>>结果为："+result);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("userId","359");
+		String result = HttpsUtil.doGet("http://localhost:8080/ubank/api/v1/getApplyCount",map);
+		System.out.println("result is : "+result);
 
 	}
 

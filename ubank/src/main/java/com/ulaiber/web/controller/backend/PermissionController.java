@@ -605,7 +605,7 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "empQuery", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> empQuery(@Param("search") String search,@Param("pageSize") int pageSize,
+    public Map<String,Object> empQuery(@Param("search") String search,@Param("pageSize") int pageSize,@Param("sysflag") String activetion,
                                        @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
@@ -619,7 +619,7 @@ public class PermissionController extends BaseController {
             //获取部门总数
             int empTotal = permissionService.getEmpTotal(sysflag,comArr);
             //分页查询
-            List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,comArr);
+            List<User> list = permissionService.empQuery(search,pageSize,pageNum,sysflag,comArr,activetion);
             map.put("total",empTotal);
             map.put("rows",list);
         }catch (Exception e){
@@ -1092,14 +1092,14 @@ public class PermissionController extends BaseController {
     /**
      * 导入Excel
      * @param file 文件名
-     * @param gropNum 集团编号
+     * @param group 集团编号
      * @param comNum 公司编号
      * @param deptNum 部门编号
      * @return resultInfo
      */
     @RequestMapping(value = "importEmployee", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo importEmployee( @Param("file") MultipartFile file, @Param("groupNum") String gropNum,
+    public ResultInfo importEmployee( @Param("file") MultipartFile file, @Param("group") String group,
                                      @Param("comNum") String comNum, @Param("deptNum") String deptNum){
         ResultInfo resultInfo = new ResultInfo();
         try {
@@ -1124,7 +1124,7 @@ public class PermissionController extends BaseController {
                     if(StringUtil.isEmpty(user)){
                        //新增用户
                         Map<String,Object> param = new HashMap<>();
-                        param.put("gropNum",gropNum);
+                        param.put("gropNum",group);
                         param.put("comNum",comNum);
                         param.put("deptNum",deptNum);
                         param.put("name",ao.getName());
@@ -1168,7 +1168,7 @@ public class PermissionController extends BaseController {
 
     /**
      * 批量新增员工
-     * @param gropNum 集团编号
+     * @param group 集团编号
      * @param rows 用户信息
      * @param comNum 公司编号
      * @param deptNum 部门编号
@@ -1176,19 +1176,33 @@ public class PermissionController extends BaseController {
      */
     @RequestMapping(value = "batchImport", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo batchAddUser(@Param("groupNum") String gropNum,@Param("rows") String rows,
+    public ResultInfo batchAddUser(String group,@Param("rows") String rows,
                                    @Param("comNum") String comNum, @Param("deptNum") String deptNum){
         ResultInfo resultInfo = new  ResultInfo();
         try {
             JSONArray array = JSONArray.fromObject(rows);
+            List<ExcelAO> list = new ArrayList<>();
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsons = array.getJSONObject(i);
+                ExcelAO ao = new ExcelAO();
+                String mobile = jsons.get("mobile").toString();
+                //查询当前电话号码是否已被注册
+                User user = permissionService.queryuserByMobile(mobile);
+                if(!StringUtil.isEmpty(user)){
+                    ao.setName(jsons.get("name").toString());
+                    ao.setId(jsons.get("id").toString());
+                    ao.setMobile(jsons.get("mobile").toString());
+                    ao.setEntryTime(jsons.get("entryTime").toString());
+                    ao.setMessage("电话号码已存在");
+                    list.add(ao);
+                    break;
+                }
                 Map<String,Object> param = new HashMap<>();
-                param.put("gropNum",gropNum);
+                param.put("groupNum",group);
                 param.put("comNum",comNum);
                 param.put("deptNum",deptNum);
                 param.put("name",jsons.get("name").toString());
-                param.put("idcard",jsons.get("IDCard").toString());
+                param.put("idcard",jsons.get("idcard").toString());
                 param.put("mobile",jsons.get("mobile").toString());
                 param.put("entryTime",jsons.get("entryTime").toString());
                 int result = permissionService.insertUser(param);
@@ -1197,6 +1211,9 @@ public class PermissionController extends BaseController {
                     resultInfo.setMessage("批量新增员工失败");
                     return resultInfo;
                 }
+            }
+            if(list.size() > 0 ){
+                resultInfo.setData(list);
             }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("批量新增员工成功");

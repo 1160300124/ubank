@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ulaiber.web.service.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,11 +36,6 @@ import com.ulaiber.web.model.SynchronizationData;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.WorkAuditRecordVO;
 import com.ulaiber.web.model.attendance.AttendancePatchClock;
-import com.ulaiber.web.service.AttendanceService;
-import com.ulaiber.web.service.LeaveService;
-import com.ulaiber.web.service.ReimbursementService;
-import com.ulaiber.web.service.SalaryAuditService;
-import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.utils.StringUtil;
 
 /**
@@ -67,7 +63,9 @@ public class LeaveController extends BaseController {
     private AttendanceService attendanceService;
     
     @Autowired
-    private SalaryService salaryService;
+    private AnnouncementService service;
+
+
 
     /**
      * 申请请假
@@ -379,6 +377,64 @@ public class LeaveController extends BaseController {
 
         return resultInfo;
     }
+
+    /**
+     * 获取申请、审批、公告、考勤数量
+     * @param userId 用户ID
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getAllCount", method = RequestMethod.GET)
+    @ResponseBody
+    public ResultInfo allCount(String userId){
+        ResultInfo resultInfo = new ResultInfo();
+        try {
+            //获取个人申请记录数量
+            int apply = leaveService.getLeaveRecordCount(userId);
+            //获取个人审批数量
+            int audit = leaveService.getLeaveAuditorCount(userId);
+            //获取个人公告数量
+            //int notice = service.getUnreadCountByUserId(userId);
+            //获取我的考勤数量
+            Map<String,Object> map = new HashMap<>();
+            map.put("apply",apply);
+            map.put("audit",audit);
+            //map.put("notice",notice);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("查询数量成功");
+            resultInfo.setData(map);
+            logger.info("查询申请、审批、公告、考勤成功");
+        }catch(Exception e){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("查询数量失败");
+            logger.error("申请、审批、公告、考勤",e);
+        }
+        return resultInfo;
+    }
+
+    /**
+     * 获取个人审批数量
+     * @param userId 用户ID
+     * @return ResultInfo
+     */
+    @RequestMapping(value = "getAuditCount", method = RequestMethod.GET)
+    @ResponseBody
+    public ResultInfo auditCount(String userId){
+        ResultInfo resultInfo = new ResultInfo();
+        try {
+            //获取个人审批记录数量
+            int count = leaveService.getLeaveAuditorCount(userId);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("查询审批数量成功");
+            resultInfo.setData(count);
+            logger.info("查询审批数量成功");
+        }catch(Exception e){
+            resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            resultInfo.setMessage("查询审批数量失败");
+            logger.error("查询审批数量失败",e);
+        }
+        return resultInfo;
+    }
+
 
     /**
      * 查询工作审批记录
