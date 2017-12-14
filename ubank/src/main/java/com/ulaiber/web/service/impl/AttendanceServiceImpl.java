@@ -377,7 +377,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public ResultInfo refreshLocation(String mobile, String longitude, String latitude, AttendanceRule rule) {
+	public ResultInfo refreshLocation(String longitude, String latitude, AttendanceRule rule) {
 		ResultInfo retInfo = new ResultInfo();
 		
 		//APP手机定位的坐标
@@ -432,8 +432,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public List<Attendance> getRecordsByDateAndUserId(Map<String, Object> params) {
-		
+	public List<Attendance> getRecordsByDateAndUserId(String dateBegin, String dateEnd, long userId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("dateBegin", dateBegin);
+		params.put("dateEnd", dateEnd);
+		params.put("userId", userId);
 		return dao.getRecordsByDateAndUserId(params);
 	}
 
@@ -461,7 +464,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public Map<String, Object> getRecordsByMonthAndMobile(String month, String mobile, AttendanceRule rule) {
+	public Map<String, Object> getRecordsByMonthAndUserId(String month, long userId, AttendanceRule rule) {
 		Holiday holiday = null;
 		List<String> holidays = null;
 		List<String> workdays = null;
@@ -480,8 +483,8 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		String monthEnd = month + "-" + DateTimeUtil.getNumFromMonth(month);
 		params.put("dateBegin", monthBegin);
 		params.put("dateEnd", monthEnd);
-		params.put("mobile", mobile);
-		List<Attendance> list = dao.getRecordsByDateAndMobile(params);
+		params.put("userId", userId);
+		List<Attendance> list = dao.getRecordsByDateAndUserId(params);
 		
 		//key为打卡日期，value为打卡记录对象
 		Map<String, Object> recordMap = new HashMap<String, Object>();
@@ -497,10 +500,10 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		int leaveEarlyCount = 0;
 		//未打卡次数
 		int noClockCount = 0;
-		//指定月份为空则获取当前月份
+		//当前月份
 		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
 		
-		double totalTime = leaveDao.getTotalTimeByMobile(mobile, month);
+		double totalTime = leaveDao.getTotalTimeByUserId(userId, month);
 		String newDay = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
 		//每天工作小时数
 		double workHours = DateTimeUtil.gethour(newDay + " " + rule.getClockOnTime(), newDay + " " + rule.getClockOffTime());
@@ -512,6 +515,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		
 		//0 正常   1异常(迟到，早退) 2未打卡  3休息日  4请假
 		int type = 3;
+		//获取指定月份的所有天数集合(如果是当月则只返回当前日期之前的天数)
 		List<String> days = DateTimeUtil.getDaysFromMonth(month);
 		for (String day : days){
 			records.put(day, type);
@@ -546,13 +550,17 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			}
 
 			//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
-			LeaveRecord leaveRecord = leaveDao.getLeaveRecordByMobileAndDate(mobile, day);
+			LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(userId, day);
 			Attendance att = (Attendance) recordMap.get(day);
+			String clockOnTime = day + " " + rule.getClockOnTime();
+			String clockOffTime = day + " " + rule.getClockOffTime();
 			//没有考勤记录为旷工
 			if (att == null ){
 				records.put(day, 2);
 				if (leaveRecord != null){
-					records.put(day, 4);
+					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+						records.put(day, 4);
+					}
 				}
 			} else {
 				//上班，下班都没打卡
@@ -561,7 +569,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 						records.put(day, 2);
 						noClockCount ++;
 					} else {
-						records.put(day, 4);
+						if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
+							records.put(day, 4);
+						}
 					}
 					continue;
 				}
@@ -598,13 +608,6 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		data.put("leaveEarlyCount", leaveEarlyCount);
 		data.put("noClockCount", noClockCount);
 		data.put("leaveDay", leaveDay);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("clockOnTime", rule.getClockOnTime());
-		map.put("clockOffTime", rule.getClockOffTime());
-		map.put("restStartTime", rule.getRestStartTime());
-		map.put("restEndTime", rule.getRestEndTime());
-		map.put("restFlag", rule.getRestFlag());
-		data.put("rule", map);
 
 		return data;
 	}
@@ -892,6 +895,24 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		}
 		
 		return false;
+	}
+
+	@Override
+	public int getAbnormalCountByUserId(long userId) {
+		//当前月份
+		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
+		AttendanceRule rule = ruleDao.getRuleByUserId(userId);
+		if (null == rule){
+			logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
+			return 0;
+		}
+		Map<String, Object> map = getRecordsByMonthAndUserId(currentMonth, userId, rule);
+		int count = 0;
+		count += (Integer)map.get("laterCount");
+		count += (Integer)map.get("leaveEarlyCount");
+		count += (Integer)map.get("noClockCount");
+
+		return count;
 	}
 	
 }

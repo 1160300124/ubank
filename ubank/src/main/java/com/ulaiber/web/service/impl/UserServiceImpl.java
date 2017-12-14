@@ -9,18 +9,29 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ulaiber.web.dao.*;
-import com.ulaiber.web.model.*;
-import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
-import com.ulaiber.web.utils.*;
-import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.ulaiber.web.dao.BankDao;
+import com.ulaiber.web.dao.BanksRootDao;
+import com.ulaiber.web.dao.PermissionDao;
+import com.ulaiber.web.dao.UserDao;
+import com.ulaiber.web.model.Bank;
+import com.ulaiber.web.model.BankUsers;
+import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.Message;
+import com.ulaiber.web.model.SecondAccountAO;
+import com.ulaiber.web.model.User;
+import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.UserService;
+import com.ulaiber.web.utils.BCrypt;
+import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.MD5Util;
+import com.ulaiber.web.utils.StringUtil;
 
 @Service
 public class UserServiceImpl extends BaseService implements UserService {
@@ -56,6 +67,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 		User user = mapper.getUserByMobile(mobile);
 		
 		return user;
+	}
+	
+	@Override
+	public User getUserById(long userId) {
+		return mapper.getUserById(userId);
 	}
 
 	@Override

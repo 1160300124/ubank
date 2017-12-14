@@ -87,6 +87,13 @@ public interface UserService {
 	 * @return User
 	 */
 	User getUserByName(String uesrName);
+	
+    /**
+     * 根据用户ID获取用户信息
+     * @param userId
+     * @return
+     */
+    User getUserById(long userId);
 
 	/**
 	 * 银行开户接口
