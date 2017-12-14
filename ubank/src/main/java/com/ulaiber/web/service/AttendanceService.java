@@ -44,7 +44,7 @@ public interface AttendanceService {
 	 * 刷新地理位置坐标
 	 * @return
 	 */
-	ResultInfo refreshLocation(String mobile, String longitude, String latitude, AttendanceRule rule);
+	ResultInfo refreshLocation(String longitude, String latitude, AttendanceRule rule);
 	
 	/**
 	 * 根据条件获取记录数
@@ -58,7 +58,7 @@ public interface AttendanceService {
 	 * @param params
 	 * @return
 	 */
-	List<Attendance> getRecordsByDateAndUserId(Map<String, Object> params);
+	List<Attendance> getRecordsByDateAndUserId(String dateBegin, String dateEnd, long userId);
 	
 	/**
 	 * 根据date和手机号查询考勤记录
@@ -87,7 +87,7 @@ public interface AttendanceService {
 	 * 根据月份查询考勤记录
 	 * @param month
 	 */
-	Map<String, Object> getRecordsByMonthAndMobile(String month, String mobile, AttendanceRule rule);
+	Map<String, Object> getRecordsByMonthAndUserId(String month, long userId, AttendanceRule rule);
 	
 	/**
 	 * 获取一段时间内的工作小时数
@@ -104,5 +104,12 @@ public interface AttendanceService {
 	 * @return
 	 */
 	boolean patchClock(AttendancePatchClock patchClock);
+	
+	/**
+	 * 获取考勤异常的次数(迟到，早退，未打卡)
+	 * @param userId
+	 * @return
+	 */
+	int getAbnormalCountByUserId(long userId);
 	
 }

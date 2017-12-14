@@ -99,7 +99,7 @@
 		where disabled = '0' and b.disabled ='0' and a.user_name = #{userName}
 	</select>
 	
-	<select id="getUserById" resultMap="UserMap">
+	<select id="getUserById" parameterType="Long" resultMap="UserMap">
 		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,
 		l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
 		left join tbl_roots r on u.user_id = r.userid
