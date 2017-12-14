@@ -315,23 +315,24 @@ public class LeaveController extends BaseController {
             //审批记录
             RemindAuditVO remindAuditVO = new RemindAuditVO();
             if(list2.size() > 0){
-                for (int i = 0 ; i < list2.size() ; i++){
-                    AuditVO au = list2.get(i);
-                    String recordNo = au.getRecordNo();
-                    int sort = au.getSort();
-                    int sortValue = sort - 1;
-                    if(sortValue != 0){
-                        List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
-                        String status = list3.get(0).getStatus();
-                        if(status.equals("1")){
-                            resultList.add(au);
-                        }
-                    }else{
-                        if(au.getStatus().equals("0")){
-                            resultList.add(au);
-                        }
-                    }
-                }
+//                for (int i = 0 ; i < list2.size() ; i++){
+//                    AuditVO au = list2.get(i);
+//                    String recordNo = au.getRecordNo();
+//                    int sort = au.getSort();
+//                    int sortValue = sort - 1;
+//                    if(sortValue != 0){
+//                        List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
+//                        String status = list3.get(0).getStatus();
+//                        if(status.equals("1")){
+//                            resultList.add(au);
+//                        }
+//                    }else{
+//                        if(au.getStatus().equals("0")){
+//                            resultList.add(au);
+//                        }
+//                    }
+//                }
+                resultList = auditRecode(list2);
                 if(resultList.size() > 0){
                     //申请记录ID
                     int id = Integer.parseInt(resultList.get(0).getRecordNo());
@@ -391,14 +392,16 @@ public class LeaveController extends BaseController {
             //获取个人申请记录数量
             int apply = leaveService.getLeaveRecordCount(userId);
             //获取个人审批数量
-            int audit = leaveService.getLeaveAuditorCount(userId);
+            List<AuditVO> list =leaveService.getLeaveAuditor(String.valueOf(userId));
+            List<AuditVO> resultList = resultList = auditRecode(list);
+            //int audit = leaveService.getLeaveAuditorCount(userId);
             //获取个人公告数量
             int notice = service.getUnreadCountByUserId(userId);
             //获取我的考勤数量
             int attendance = attendanceService.getAbnormalCountByUserId(userId);
             Map<String,Object> map = new HashMap<>();
             map.put("apply",apply);
-            map.put("audit",audit);
+            map.put("audit",resultList.size());
             map.put("notice",notice);
             map.put("attendance", attendance);
             resultInfo.setCode(IConstants.QT_CODE_OK);
@@ -414,7 +417,30 @@ public class LeaveController extends BaseController {
     }
 
 
-
+    /**
+     * 通用获取待审批记录方法
+     * @param list
+     * @return
+     */
+    public List<AuditVO> auditRecode(List<AuditVO> list) {
+        List<AuditVO> resultList = new ArrayList<>();
+        for (int i = 0 ; i < list.size() ; i++){
+            AuditVO au = list.get(i);
+            String recordNo = au.getRecordNo();
+            int sort = au.getSort();
+            int sortValue = sort - 1;
+            if(sortValue != 0){
+                List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
+                String status = list3.get(0).getStatus();
+                if(status.equals("1")){
+                    resultList.add(au);
+                }
+            }else{
+                resultList.add(au);
+            }
+        }
+        return resultList;
+    }
 
     /**
      * 查询工作审批记录
@@ -439,21 +465,22 @@ public class LeaveController extends BaseController {
             List<AuditVO> resultList = new ArrayList<>();
             WorkAuditRecordVO workAuditRecordVO = new WorkAuditRecordVO();
             if(list.size() > 0){
-                for (int i = 0 ; i < list.size() ; i++){
-                    AuditVO au = list.get(i);
-                    String recordNo = au.getRecordNo();
-                    int sort = au.getSort();
-                    int sortValue = sort - 1;
-                    if(sortValue != 0){
-                        List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
-                        String status = list3.get(0).getStatus();
-                        if(status.equals("1")){
-                            resultList.add(au);
-                        }
-                    }else{
-                        resultList.add(au);
-                    }
-                }
+//                for (int i = 0 ; i < list.size() ; i++){
+//                    AuditVO au = list.get(i);
+//                    String recordNo = au.getRecordNo();
+//                    int sort = au.getSort();
+//                    int sortValue = sort - 1;
+//                    if(sortValue != 0){
+//                        List<LeaveAudit> list3 = leaveService.getAuditorBySort(recordNo,sortValue);
+//                        String status = list3.get(0).getStatus();
+//                        if(status.equals("1")){
+//                            resultList.add(au);
+//                        }
+//                    }else{
+//                        resultList.add(au);
+//                    }
+//                }
+                resultList = auditRecode(list);
                 if(resultList.size() > 0){
                     workAuditRecordVO.setMark(IConstants.Pengding_AUDIT_MARK );
                     workAuditRecordVO.setCount(resultList.size());
