@@ -385,7 +385,7 @@ public class LeaveController extends BaseController {
      */
     @RequestMapping(value = "getAllCount", method = RequestMethod.GET)
     @ResponseBody
-    public ResultInfo allCount(String userId){
+    public ResultInfo allCount(long userId){
         ResultInfo resultInfo = new ResultInfo();
         try {
             //获取个人申请记录数量
@@ -393,12 +393,13 @@ public class LeaveController extends BaseController {
             //获取个人审批数量
             int audit = leaveService.getLeaveAuditorCount(userId);
             //获取个人公告数量
-            //int notice = service.getUnreadCountByUserId(userId);
+            int notice = service.getUnreadCountByUserId(userId);
             //获取我的考勤数量
             Map<String,Object> map = new HashMap<>();
             map.put("apply",apply);
             map.put("audit",audit);
-            //map.put("notice",notice);
+            map.put("notice",notice);
+            map.put("attendance",0);
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("查询数量成功");
             resultInfo.setData(map);
@@ -411,29 +412,7 @@ public class LeaveController extends BaseController {
         return resultInfo;
     }
 
-    /**
-     * 获取个人审批数量
-     * @param userId 用户ID
-     * @return ResultInfo
-     */
-    @RequestMapping(value = "getAuditCount", method = RequestMethod.GET)
-    @ResponseBody
-    public ResultInfo auditCount(String userId){
-        ResultInfo resultInfo = new ResultInfo();
-        try {
-            //获取个人审批记录数量
-            int count = leaveService.getLeaveAuditorCount(userId);
-            resultInfo.setCode(IConstants.QT_CODE_OK);
-            resultInfo.setMessage("查询审批数量成功");
-            resultInfo.setData(count);
-            logger.info("查询审批数量成功");
-        }catch(Exception e){
-            resultInfo.setCode(IConstants.QT_CODE_ERROR);
-            resultInfo.setMessage("查询审批数量失败");
-            logger.error("查询审批数量失败",e);
-        }
-        return resultInfo;
-    }
+
 
 
     /**

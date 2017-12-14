@@ -30,7 +30,7 @@ $(function () {
     });
 
     EmployeeFun.emp_getAllGroup();
-    // EmployeeFun.emp_getCompany();
+    EmployeeFun.emp_getCompany_copy();
     //EmployeeFun.emp_getDept();
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
@@ -38,10 +38,39 @@ $(function () {
     EmployeeFun.emp_listening();
 
 
+    $("#employee_upload_file").on('change', fileUploadOnChange);
+
 });
 
 var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 var activetion = ""; //是否激活。 0 否 1 是
+var importExcelData = null;
+
+function fileUploadOnChange(e) {
+
+    if($(e.currentTarget).val() != '') {
+        $("#import_btn").attr('disabled', false);
+        $("#import_btn").removeClass('disabled');
+        $(".import-file-name").html('已选择：' + $(e.currentTarget).val());
+    } else {
+        $("#import_btn").attr('disabled', true);
+        $("#import_btn").addClass('disabled');
+        $(".import-file-name").html('');
+    }
+}
+
+function fileUploadOnChange(e) {
+
+    if($(e.currentTarget).val() != '') {
+        $("#import_btn").attr('disabled', false);
+        $("#import_btn").removeClass('disabled');
+        $(".import-file-name").html('已选择：' + $(e.currentTarget).val());
+    } else {
+        $("#import_btn").attr('disabled', true);
+        $("#import_btn").addClass('disabled');
+        $(".import-file-name").html('');
+    }
+}
 
 var EmployeeFun = {
     //查询
@@ -120,6 +149,7 @@ var EmployeeFun = {
     //获取所有公司
     emp_getCompany : function (groupNum) {
         $("#emp_select").empty();
+        $("#emp_select_copy").empty();
         $.ajax({
             url : 'getComByGroup',
             dataType : 'json',
@@ -140,6 +170,7 @@ var EmployeeFun = {
                     option += "<option value='"+data[i].companyNumber+"'>"+data[i].name+"</option>";
                 }
                 $("#emp_select").html(option);
+                $("#emp_select_copy").html(option);
 
             },
             error : function () {
@@ -147,9 +178,21 @@ var EmployeeFun = {
             }
         })
     },
+    //获取所有公司复制
+    emp_getCompany_copy : function (groupNum) {
+        var companys = COMPANYNUMBER.split(',');
+
+        $("#emp_select_copy").empty();
+        var option = "";
+        for (var i = 0; i < companys.length; i++){
+            option += "<option value='" + companys[i] + "'>" + companys[i] + "</option>";
+        }
+        $("#emp_select_copy").html(option);
+    },
     //获取所有部门
     emp_getDept : function (comNum) {
         $("#emp_select_dept").empty();
+        $("#emp_select_dept_copy").empty();
         $.ajax({
             url : 'getDeptByCom',
             dataType : 'json',
@@ -166,6 +209,33 @@ var EmployeeFun = {
                     option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
                 }
                 $("#emp_select_dept").html(option);
+                $("#emp_select_dept_copy").html(option);
+
+            },
+            error : function () {
+                Ewin.alert("操作异常");
+            }
+        })
+    },
+    //获取所有部门copy
+    emp_getDept_copy : function (comNum) {
+        $("#emp_select_dept_copy").empty();
+        $.ajax({
+            url : 'getDeptByCom',
+            dataType : 'json',
+            type : 'post',
+            data:  {
+                "comNum" : comNum
+            },
+            success : function (data) {
+                if(data.length <= 0){
+                    return;
+                }
+                var option = "";
+                for (var i = 0; i < data.length; i++){
+                    option += "<option value='"+data[i].dept_number+"'>"+data[i].name+"</option>";
+                }
+                $("#emp_select_dept_copy").html(option);
 
             },
             error : function () {
@@ -403,7 +473,7 @@ var EmployeeFun = {
             async : false,
             data : {
                 "groupNumber" : GROUPNUMBER,
-                companyNumber : COMPANYNUMBER,
+                "companyNumber" : COMPANYNUMBER,
                 "sysflag" : SYSFLAG
             },
             success : function (data) {
@@ -506,31 +576,107 @@ var EmployeeFun = {
         $('#employee_import_modal').modal("show");
     },
     import: function() {
-        var formData = new FormData($("#import_employee_form")[0]);
-        formData.append('groupNum', GROUPNUMBER);
-        formData.append('comNum', COMPANYNUMBER);
-        formData.append('deptNum', DEPTNUMBER);
+        $('.import-step').hide();
+        $('.import-step-two').show();
+
+        $("#import_btn").attr('disabled', true);
+        $("#import_btn").addClass('disabled');
 
         $.ajaxFileUpload({
             url: 'importEmployee',
             type: 'POST',
-            secureuri : false,
-            fileElementId : "employee_upload_file",
-            dataType : "json",
-            data : {
-                file : $('#employee_upload_file').val(),
+            secureuri: false,
+            fileElementId: "employee_upload_file",
+            dataType: "json",
+            data: {
+                name : $('#employee_upload_file').val(),
                 groupNum : GROUPNUMBER,
                 comNum : COMPANYNUMBER,
-                deptNum : DEPTNUMBER
+                deptNum : DEPTNUMBER,
             },
-            success :function (data) {
-                debugger;
-            },
-            error : function () {
-                Ewin.alert("导入失败");
-            }
+            success: function(data) {
+                console.log('success')
+                $("#employee_upload_file").on('change', fileUploadOnChange);
+                $('.import-step').hide();
+                $('.import-modal-btns').hide();
 
+                var importData = JSON.parse(data);
+
+                if (importData.code === 1000) {
+                    if (importData.data && importData.data.length > 0) {
+
+                        importExcelData = importData.data;
+                        editImportData();
+                    } else {
+                        $('.import-step-success').show();
+                        $('.import-btns').show();
+                    }
+                }
+            },
+            error: function(error, b, c) {
+                $("#employee_upload_file").on('change', fileUploadOnChange);
+                $('.import-step').hide();
+                $('.import-step-one').show();
+                console.log(error);
+                console.log(b);
+                console.log(c);
+            }
         })
+    },
+    updateImport: function() {
+        unEditAll();
+        // if(toEditErrorData())
+        // {
+
+        // }
+        $('.import-step').hide();
+        $('.import-step-two').show();
+
+        $("#update_import_btn").attr('disabled', true);
+        $("#update_import_btn").addClass('disabled');
+
+        $.ajax({
+            url: 'batchImport',
+            type: 'POST',
+            dataType: "json",
+            data: {
+                rows : JSON.stringify(importExcelData),
+                group : GROUPNUMBER,
+                comNum : COMPANYNUMBER,
+                deptNum : DEPTNUMBER,
+            },
+            success: function(data) {
+                $("#employee_upload_file").on('change', fileUploadOnChange);
+                $('.import-step').hide();
+                $('.import-modal-btns').hide();
+
+                if (data.code === 1000) {
+                    if (data.data && data.data.length > 0) {
+                        importExcelData = data.data;
+                        editImportData();
+                    } else {
+                        $('.import-step-success').show();
+                        $('.import-btns').show();
+                    }
+                } else {
+                    $(".import-step-edit").show();
+                    $(".update-import-btns").show();
+                }
+            },
+            error: function() {
+                $("#employee_upload_file").on('change', fileUploadOnChange);
+                $('.import-step').hide();
+                $('.import-step-one').show();
+            }
+        })
+    },
+    initImportModal: function() {
+        $('.import-step').hide();
+        $('.import-step-one').show();
+
+        $('.import-modal-btns').hide();
+        $('.import-btns').show();
+        $(".import-file-name").html('');
     },
     //激活
     activetion : function () {
@@ -545,7 +691,6 @@ var EmployeeFun = {
 
 };
 
-
 //选择框监听事件
 $("#emp_select_group").change(function(){
     var groupNum = $(this).val();
@@ -559,3 +704,175 @@ $("#emp_select").change(function () {
     var comNum = $(this).val();
     EmployeeFun.emp_getDept(comNum);
 });
+
+$("#emp_select_copy").change(function () {
+    var comNum = $(this).val();
+    EmployeeFun.emp_getDept_copy(comNum);
+});
+
+function editImportData() {
+
+    $('.import-step-edit').show();
+    $('.update-import-btns').show();
+
+    $("#update_import_btn").attr('disabled', false);
+    $("#update_import_btn").removeClass('disabled');
+
+    $("#updat_import_table").bootstrapTable({
+        striped : true, // 是否显示行间隔色
+        editable: true,
+        cache : false, // 是否使用缓存，默认为true
+        pagination : true, // 是否显示分页
+        contentType : "application/x-www-form-urlencoded",
+        sidePagination : "client", // 分页方式：client客户端分页，server服务端分页
+        pageSize : 10, // 每页的记录行数
+        pageList : [10, 20], // 可供选择的每页的行数
+        clickToSelect : true,
+        data: importExcelData,
+        columns : [
+            {field : 'id', title: '序号', width: 10, align : 'center', formatter: function(value, row, index, field){
+                return parseInt(value);
+            }},
+            {field : 'name', title: '姓名', width: 10, align : 'center',edit:{type:'text' }},
+            {field : 'idcard', title: '身份证', width: 10, align : 'center',edit:{type:'text' }},
+            {field : 'mobile', title: '手机号', width: 10, align : 'center',edit:{type:'text' }},
+            {field : 'entryTime', title: '入职时间', width: 10, align : 'center',edit:{type:'text' }},
+            {field : 'message', title: '', width: 30, align : 'left', formatter: function(value, row, index, field){
+                return '<i class="error-info glyphicon glyphicon-alert" data-info="' + value + '"></i>'
+            }}
+        ],
+        onPostBody: function(e) {
+            toEditErrorData(importExcelData);
+        }
+    });
+    $("#updat_import_table").bootstrapTable('load', importExcelData);
+
+
+    //错误信息展示
+    $(".error-info").on('mouseenter', function(e) {
+        var msg = $(e.currentTarget).attr('data-info');
+        var msgs = msg.split(',');
+        var msgsDom = '';
+        $(msgs).each(function(index, item) {
+            msgsDom += "<div>" + (index + 1) + ":" + item + "</div>"
+        });
+        $('body').append('<div class="error-info-tip" style="left:' + ($(e.currentTarget).offset().left + 40) + 'px;top:' + ($(e.currentTarget).offset().top + e.currentTarget.offsetHeight / 2 ) + 'px;">' + msgsDom + '</div>')
+    })
+    //移除错误信息
+    $(".error-info").on('mouseout', function(e) {
+        $(".error-info-tip").remove();
+    })
+
+    //单击单元格编辑
+    $("#updat_import_table tbody td").on('click', function(e) {
+        var tdDom = $(e.currentTarget);
+        editTd(tdDom);
+
+        tdDom
+            .find('input')
+            .removeClass('danger-input')
+            .focus();
+        setSelectionRange(tdDom.find('input')[0], tdDom.html().length, tdDom.html().length);
+    });
+
+}
+
+//定位输入框光标到指定位置
+function setSelectionRange(input, selectionStart, selectionEnd) {
+    if (input.setSelectionRange) {
+        input.focus();
+        input.setSelectionRange(selectionStart, selectionEnd);
+    }
+    else if (input.createTextRange) {
+        var range = input.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', selectionEnd);
+        range.moveStart('character', selectionStart);
+        range.select();
+    }
+}
+
+//把单元格变成可编辑输入框
+function editTd(target) {
+    if(target.index() <= 0 || target.index() >= 5){
+        return;
+    }
+    if(!target.hasClass('td-editing')){
+        target
+            .html('<input type="text" class="td-input" value="' + target.text() + '" />')
+            .addClass('td-editing')
+            .find('input').on('blur', function(e) {
+            unEdit($(e.currentTarget));
+        });
+    }
+
+}
+
+//遍历数据 把错误的数据单元格变成编辑状态
+function toEditErrorData(data) {
+    var haveError = false;
+    $(data).each(function(index, item) {
+        for(var key in item) {
+            if(key === 'id' || key === 'message') continue;
+            if(item[key] === '') {
+                var dataTdIndex = findTdIndexByFieldName(key);
+                editTd(findTdByRC(index, dataTdIndex));
+                haveError = true;
+                return ;
+            }
+            if(key === 'mobile' && item[key] && !Validate.regPhone(item[key])) {
+                var dataTdIndex = findTdIndexByFieldName(key);
+                editTd(findTdByRC(index, dataTdIndex));
+                haveError = true;
+                return ;
+            }
+            if(key === 'idcard' && item[key] && item[key].length < 18) {
+                var dataTdIndex = findTdIndexByFieldName(key);
+                editTd(findTdByRC(index, dataTdIndex));
+                haveError = true;
+                return ;
+            }
+        }
+    });
+    $(".td-input").addClass('danger-input');
+    return haveError;
+}
+
+//通过字段名找到列的index
+function findTdIndexByFieldName(fieldName) {
+    return $('#updat_import_table thead th[data-field="' + fieldName + '"').index();
+}
+
+/**
+ * 通过列index获取列名
+ * @param {列index} index
+ */
+function getFieldNameByColumnIndex(index) {
+    return $($("#updat_import_table thead tr").children()[index]).attr('data-field');
+}
+
+//通过行号、列号找到 td
+function findTdByRC(row, column) {
+    var td = $($('#updat_import_table tbody tr')[row]).children()[column];
+    return $(td);
+}
+
+function unEditAll() {
+    var inputs = $('#updat_import_table tbody input');
+    $(inputs).each(function(index, item) {
+        console.log(item);
+        unEdit($(item));
+    })
+}
+
+/**
+ * 取消编辑状态
+ * @param {输入框} input
+ */
+function unEdit(input) {
+    var tdDom = input.parent();
+    tdDom.removeClass('td-editing').html(input.val());
+    var index = tdDom.parent().attr('data-index');
+    var fieldName = getFieldNameByColumnIndex(tdDom.index());
+    importExcelData[index][fieldName] = input.val();
+}

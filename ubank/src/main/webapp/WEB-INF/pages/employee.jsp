@@ -1,19 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
-
 <%@ include file="/WEB-INF/pages/header.jsp" %>
-
 <!-- 公司页 -->
-
 <div class="page-content">
-
     <div class="col-md-12">
         <div class="col-md-3">
-            公司<select class="combobox form-control" name="company"></select>
+            公司<select class="combobox form-control" name="company" id="emp_select_copy"></select>
         </div>
         <div class="col-md-3">
-            部门<select class="combobox form-control" name="company"></select>
+            部门<select class="combobox form-control" name="dept" id="emp_select_dept_copy"></select>
         </div>
         <button onclick="" type="button" class="btn btn-default">
             <span class="fa icon-edit" aria-hidden="true"></span>搜索
@@ -139,7 +134,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                     <button type="button" onclick="EmployeeFun.addEmp() " class="btn btn-primary">保存</button>
                 </div>
             </div><!-- /.modal-content -->
@@ -147,31 +142,60 @@
     </div><!-- /.modal -->
     <!-- 弹出框（Modal） -->
     <div id="employee_import_modal" class="modal fade">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="min-width:750px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h4 class="modal-title" >批量添加员工</h4>
                 </div>
-                <div class="modal-body">
-                    <form id="import_employee_form" enctype="multipart/form-data">
-                        <a class="file-upload-button" href="javascript:;">
-                            选择文件
-                            <input id="employee_upload_file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
+                <div class="modal-body" style="padding: 20px;">
+                    <div class="import-step import-step-one">
+                        <form id="import_employee_form" enctype="multipart/form-data">
+                            <a class="file-upload-button" href="javascript:;" target="_blank">
+                                选择文件
+                                <input id="employee_upload_file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
+                            </a>
+                        </form>
+                        <div class="import-file-name">
+
+                        </div>
+                        <div class="import-tip" style="text-align:center;">（请<a href="../model/model.xls">下载模板</a>文件，上传说明<span>?</span>）</div>
+                    </div>
+                    <div class="import-step import-step-two" style="display:none;">
+                        <img src="../images/loading.gif" alt="">
+                        <br/>
+                        正在导入员工请稍等，马上好。
+                    </div>
+                    <div class="import-step import-step-success" style="display:none;">
+                        <i class="glyphicon glyphicon-ok-circle"></i>
+                    </div>
+                    <div class="import-step import-step-edit" style="display:none;">
+                        <a class="file-upload-button" href="javascript:;" target="_blank" style="margin: 0px 0px 10px 0px;">
+                            重新选择
+                            <input id="employee_upload_file_rechoose" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
                         </a>
-                    </form>
-                    <div style="text-align:center;">（请<a href="/file.xlsx">下载模板</a>文件，上传说明<span>?</span>）</div>
+                        <div>
+                            <table id="updat_import_table"></table>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" onclick="EmployeeFun.import() " class="btn btn-primary">确认添加</button>
+                <div class="modal-footer" style="text-align:center;">
+                    <span class="import-modal-btns complete-btns" style="display:none;">
+                        <button type="button" onclick="EmployeeFun.initImportModal()" class="btn btn-primary" data-dismiss="modal">完成</button>
+                    </span>
+                    <span class="import-modal-btns import-btns">
+                        <button type="button" onclick="EmployeeFun.import()" id="import_btn" class="btn btn-primary disabled" disabled="disabled">确认添加</button>
+                        <button type="button" onclick="EmployeeFun.initImportModal()" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </span>
+                    <span class="import-modal-btns update-import-btns" style="display:none;">
+                        <button type="button" onclick="EmployeeFun.updateImport()" id="update_import_btn" class="btn btn-primary">填好了，导入！</button>
+                        <button type="button" onclick="EmployeeFun.initImportModal()" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </span>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
 </div>
-
 <script src="<%=request.getContextPath()%>/js/employee.js" type="text/javascript"></script>
-
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

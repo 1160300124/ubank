@@ -331,12 +331,12 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-    public int getLeaveRecordCount(String userId) {
+    public int getLeaveRecordCount(long userId) {
         return leaveDao.getLeaveRecordCount(userId);
     }
 
     @Override
-    public int getLeaveAuditorCount(String userId) {
+    public int getLeaveAuditorCount(long userId) {
         return leaveDao.getLeaveAuditorCount(userId);
     }
 
