@@ -139,7 +139,7 @@ public class AnnouncementApiController extends BaseController {
 		try {
 			if (userId != null && aid != null){
 				//更新公告为已读
-				service.updateTypeByUserIdAndRid(userId, aid);
+				service.updateTypeByUserIdAndAid(userId, aid);
 				//获取公告信息，附件信息
 				Announcement announcement = service.getAnnouncementByAid(aid);
 				List<Attachment> list = service.getAttachmentsByAid(aid);

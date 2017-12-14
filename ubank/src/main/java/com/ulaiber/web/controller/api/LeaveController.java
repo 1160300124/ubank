@@ -395,11 +395,12 @@ public class LeaveController extends BaseController {
             //获取个人公告数量
             int notice = service.getUnreadCountByUserId(userId);
             //获取我的考勤数量
+            int attendance = attendanceService.getAbnormalCountByUserId(userId);
             Map<String,Object> map = new HashMap<>();
             map.put("apply",apply);
             map.put("audit",audit);
             map.put("notice",notice);
-            map.put("attendance",0);
+            map.put("attendance", attendance);
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("查询数量成功");
             resultInfo.setData(map);
