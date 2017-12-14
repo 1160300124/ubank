@@ -60,18 +60,18 @@
         	附件：
         <table id="table_preview_attachment">
         	<c:forEach items="${attachments}" var="attachment">
-	        	<tr>
-		                <td>
-		                	<div class="file-icon">
-				                <img src="<%=request.getContextPath()%>/images/pdf.png" alt="">
-				            </div>
-						</td>
-		                <td>
-		                    <div class="file-info">
-				                <div class="file-name">${attachment.attachment_name}</div>
-				                <div class="file-size">${attachment.attachment_size}</div>
-				            </div>
-		                </td>
+	        	<tr data-down="${attachment.attachment_path}" data-preview="http://dcsapi.com/?k=262732077&url=${attachment.attachment_path}">
+	                <td>
+	                	<div class="file-icon">
+			                <img src="<%=request.getContextPath()%>/images/pdf.png" alt="">
+			            </div>
+					</td>
+	                <td>
+	                    <div class="file-info">
+			                <div class="file-name">${attachment.attachment_name}</div>
+			                <div class="file-size">${attachment.attachment_size}</div>
+			            </div>
+	                </td>
 	            </tr>
 	        </c:forEach>
         </table>

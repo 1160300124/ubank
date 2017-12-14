@@ -149,6 +149,17 @@
             ,l.leaveType
         </if>
 	</select>
+	
+	<!--获取某个月份某人的审批通过的请假的总时长  -->
+    <select id="getTotalTimeByUserId" resultType="Double">
+		select sum(realLeaveTime) totalTime from tbl_leave_record where type='0' and status='1' and disable='0' and locate(#{month},startDate)>0 and userId=#{userId}
+	</select>
+	
+		<!--获取某个月份某人的审批通过的请假的总时长  -->
+    <select id="getTotalTimeByMobile" resultType="Double">
+    	select sum(realLeaveTime) totalTime from tbl_leave_record r join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and r.type='0'
+    	and r.status='1' and r.disable='0' and locate(#{month},r.startDate)>0
+	</select>
 		
 	<!-- 更新实际请假时长 -->
 	<update id="updateRealLeaveTime">
@@ -171,5 +182,17 @@
     <!--根据审批状态获取申请记录状态-->
     <select id="queryApplyStatus" parameterType="int" resultType="com.ulaiber.web.model.LeaveRecord">
         select disable FROM tbl_leave_record where id = #{recordNo}
+    </select>
+    
+    <!--获取个人申请记录数量-->
+    <select id="getLeaveRecordCount" parameterType="String" resultType="int">
+        select COUNT(a.userid) as count from tbl_leave_record a left join tbl_users b on a.userid = b.user_id
+        where a.disable = '0' and a.status = '0' and a.userid = #{userId} order by a.createDate DESC
+    </select>
+
+    <!--获取个人审批记录数量-->
+    <select id="getLeaveAuditorCount" parameterType="String" resultType="int">
+          select COUNT(userid) as count from tbl_leave_audit_record
+            WHERE disable = '0' and status = '0' and auditor = #{userId} ORDER BY auditDate DESC
     </select>
 </mapper>

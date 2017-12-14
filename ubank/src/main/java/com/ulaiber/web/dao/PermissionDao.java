@@ -77,6 +77,13 @@ public interface PermissionDao {
      * @return int
      */
     int insertRoots(Map<String, Object> map);
+
+    /**
+     * 查询当前电话号码是否已被注册
+     * @param mobile 电话号码
+     * @return user
+     */
+    User queryuserByMobile(String mobile);
 }
 
 

@@ -99,4 +99,12 @@
 		select * from tbl_announcements_attachments where aid=#{aid}
 	</select>
 	
+	<update id="updateTypeByUserIdAndRid">
+		update tbl_users_of_announcements set type=1 where userId=#{userId} and rid=#{rid}
+	</update>
+	
+	<select id="getUnreadCountByUserId"  resultType="Integer">
+		select count(1) from tbl_users_of_announcements where type=0 and userId=#{userId};
+	</select>
+	
 </mapper>

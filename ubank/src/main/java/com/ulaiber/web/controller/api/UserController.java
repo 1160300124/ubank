@@ -139,7 +139,7 @@ public class UserController extends BaseController{
 				ResultInfo info = reigsterAcc(user,file,request);
 				//新增数据库信息
 				if(info.getCode() != 1000){
-					resultInfo.setCode(IConstants.QT_CODE_ERROR);
+					resultInfo.setCode(info.getCode());
 					resultInfo.setMessage(info.getMessage());
 					Map<String,Object> paramMap = new HashMap<>();
 					paramMap.put("status",info.getData());

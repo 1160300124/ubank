@@ -30,16 +30,19 @@ $(function () {
     });
 
     EmployeeFun.emp_getAllGroup();
-   // EmployeeFun.emp_getCompany();
+    // EmployeeFun.emp_getCompany();
     //EmployeeFun.emp_getDept();
     EmployeeFun.getAllBank();
     EmployeeFun.employeeQuery();
     EmployeeFun.getAllRoles();
     EmployeeFun.emp_listening();
 
-    var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
 
 });
+
+var flag = 0; //标识。 0 表示新增操作，1 表示修改操作
+var activetion = ""; //是否激活。 0 否 1 是
+
 var EmployeeFun = {
     //查询
     employeeQuery : function () {
@@ -93,7 +96,8 @@ var EmployeeFun = {
             pageNum : params.offset,
             search : params.search,
             sysflag : SYSFLAG,
-            companyNumber : COMPANYNUMBER
+            companyNumber : COMPANYNUMBER,
+            activetion : activetion
         };
         return paramData;
     },
@@ -127,7 +131,7 @@ var EmployeeFun = {
             },
             success : function (data) {
                 if(data.length <= 0){
-                   // Ewin.alert("获取公司失败");
+                    // Ewin.alert("获取公司失败");
                     return;
                 }
 
@@ -211,7 +215,7 @@ var EmployeeFun = {
                     return;
                 }
                 var option = "";
-                    option = "<option value='0'>员工</option>";
+                option = "<option value='0'>员工</option>";
                 for (var i = 0; i < data.length; i++){
                     if(data[i].role_id == 0){
                         continue;
@@ -369,8 +373,8 @@ var EmployeeFun = {
             Ewin.alert("请选中需要修改的数据");
             return;
         }
-        //this.emp_queryAllCom(); //加载公司信息
-        this.emp_queryAllDept(); //加载部门信息
+        this.emp_queryAllCom(); //加载公司信息
+        this.emp_queryAllDept(row[0].companyNumber); //加载部门信息
         $("input[name=id]").val(row[0].id);
         $("input[name=mobile]").val(row[0].mobile);
         $("input[name=bankCardNo]").val(row[0].bankCardNo);
@@ -378,8 +382,8 @@ var EmployeeFun = {
         $("input[name=cardNo]").val(row[0].cardNo);
         $("#emp_select_group").find("option[value="+row[0].groupNumber+"]").prop("selected","selected");
         $("#emp_select").find("option[value="+row[0].companyNumber+"]").prop("selected","selected");
-        var option = "<option value='"+row[0].companyNumber+"'>"+row[0].com_name+"</option>";
-        $("#emp_select").html(option);
+        // var option = "<option value='"+row[0].companyNumber+"'>"+row[0].com_name+"</option>";
+        // $("#emp_select").html(option);
         if(row[0].dept_number != ""){
             $("#emp_select_dept").find("option[value="+row[0].dept_number+"]").prop("selected","selected");
         }
@@ -418,14 +422,14 @@ var EmployeeFun = {
         });
     },
     //点击修改，加载部门信息
-    emp_queryAllDept : function (data) {
+    emp_queryAllDept : function (companyNumber) {
         $.ajax({
             url : 'queryAllDept',
             dataType : 'json',
             type : 'post',
             async : false,
             data : {
-                "companyNumber" : COMPANYNUMBER,
+                "companyNumber" : companyNumber,
                 "sysflag" : SYSFLAG
             },
             success : function (data) {
@@ -497,10 +501,50 @@ var EmployeeFun = {
     },
     reload : function () {
         $('#employee_table').bootstrapTable('refresh');
+    },
+    showImport: function(){
+        $('#employee_import_modal').modal("show");
+    },
+    import: function() {
+        var formData = new FormData($("#import_employee_form")[0]);
+        formData.append('groupNum', GROUPNUMBER);
+        formData.append('comNum', COMPANYNUMBER);
+        formData.append('deptNum', DEPTNUMBER);
+
+        $.ajaxFileUpload({
+            url: 'importEmployee',
+            type: 'POST',
+            secureuri : false,
+            fileElementId : "employee_upload_file",
+            dataType : "json",
+            data : {
+                file : $('#employee_upload_file').val(),
+                groupNum : GROUPNUMBER,
+                comNum : COMPANYNUMBER,
+                deptNum : DEPTNUMBER
+            },
+            success :function (data) {
+                debugger;
+            },
+            error : function () {
+                Ewin.alert("导入失败");
+            }
+
+        })
+    },
+    //激活
+    activetion : function () {
+        activetion = "1";
+        this.reload();
+    },
+    //未激活
+    inactivated : function () {
+        activetion = "0";
+        this.reload();
     }
 
-
 };
+
 
 //选择框监听事件
 $("#emp_select_group").change(function(){

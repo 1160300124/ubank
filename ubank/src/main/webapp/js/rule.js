@@ -566,7 +566,7 @@ $(function(){
 	$("#people_search").unbind().bind("input propertychange", function(){
 		
 		var search = $("#people_search").val();
-		renderPeople("add", search);
+		renderPeople("add", "", search);
 		
 	});
 	

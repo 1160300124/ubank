@@ -201,4 +201,11 @@ public interface UserService {
 	 * @return int
 	 */
 	int updateAccStatus(String subAcctNo);
+
+	/**
+	 * 根据公司编号获取公司信息
+	 * @param numbers 公司编号
+	 * @return Company
+	 */
+    List<Company> getCompanyByNum(int[] numbers);
 }

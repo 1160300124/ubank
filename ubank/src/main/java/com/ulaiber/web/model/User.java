@@ -29,7 +29,7 @@ public class User implements Serializable {
 
 	//银行预留手机号码
 	private String reserve_mobile;
-	
+
 	//用户所属公司ID
 	private int companyId;
 

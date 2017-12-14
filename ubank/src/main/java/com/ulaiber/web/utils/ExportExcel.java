@@ -10,14 +10,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.JOptionPane;
 
+import com.ulaiber.web.controller.backend.PermissionController;
+import com.ulaiber.web.model.ExcelAO;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -29,10 +30,16 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import net.sf.json.JSONException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 利用开源组件POI3.0.2动态导出EXCEL文档
@@ -41,6 +48,8 @@ import net.sf.json.JSONException;
 public class ExportExcel {
     //文件分隔符"\"（在 UNIX 系统中是“/”）
     public static final String FILE_SEPARATOR = System.getProperties().getProperty("file.separator");
+
+    private static Logger logger = Logger.getLogger(ExportExcel.class);
 
     /**
      *
@@ -52,7 +61,7 @@ public class ExportExcel {
      * @param request
      */
     public void export(String jsonStr, String sheaders, String fileName, String title,
-                       HttpServletResponse response, HttpServletRequest request) throws IOException,FileNotFoundException{
+                       HttpServletResponse response, HttpServletRequest request) throws IOException{
         try {
             // 将json字符串转换为json对象
             JSONArray jsonArray = new JSONArray(jsonStr);
@@ -236,4 +245,167 @@ public class ExportExcel {
             ex.printStackTrace();
         }
     }
+
+    /**
+     *  去读Excel的方法readExcel，该方法的入口参数为一个File对象
+     * @param file
+     * @throws IOException
+     */
+    public Map<String,Object> readExcel(MultipartFile file) throws IOException {
+        logger.info("开始导入excel");
+        Map<String,Object> resultMap = new HashMap<>();
+        try {
+            String path = file.getOriginalFilename();
+            path = path.substring(path.lastIndexOf("."),path.length());
+            List<ExcelAO> TList = new ArrayList<>();
+            List<ExcelAO> FList = new ArrayList<>();
+            if(".xlsx".equals(path)){
+                //InputStream stream = new FileInputStream(file);
+                XSSFWorkbook xssfWorkbook = new XSSFWorkbook(file.getInputStream());
+                XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(0);
+
+                int rowstart = xssfSheet.getFirstRowNum();
+                int rowEnd = xssfSheet.getLastRowNum();
+                logger.info("excel总记录数为：" + (rowEnd-1));
+                //获取所有行
+                for(int i=rowstart;i<=rowEnd;i++) {
+                    logger.info("开始导入第（"+(i+1) +"）条数据");
+                    //从第二行开始
+                    XSSFRow row = xssfSheet.getRow(i + 1);
+                    if(null == row) continue;
+                    int cellStart = row.getFirstCellNum();
+                    int cellEnd = row.getLastCellNum();
+                    ExcelAO excelAO =  new ExcelAO();
+                    StringBuffer sb = new StringBuffer();
+                    //遍历每一行中的表格数据
+                    for(int k = cellStart ; k <= cellEnd ;k++) {
+                        XSSFCell cell = row.getCell(k);
+                        if(k == 0){ //判断序号
+                            excelAO.setId(cell.toString());
+                            continue;
+                        }else if(k == 1){ //判断姓名
+                            if(StringUtil.isEmpty(cell.toString())){
+                                sb.append("名字不能为空,");
+                            }
+                            excelAO.setName(cell.toString());
+                            continue;
+                        }else if(k == 2){ //判断身份证
+                            String idcard = cell.toString();
+                            if (StringUtil.isEmpty(cell.toString())){
+                                sb.append("身份证不能为空,");
+                            }else if(idcard.length() != 18){
+                                sb.append("身份证长度为18位,");
+                            }
+                            excelAO.setIDCard(idcard);
+                            continue;
+                        }else if(k == 3){ //判断电话号码
+                            String mobile = cell.toString();
+                            if (StringUtil.isEmpty(cell.toString())){
+                                sb.append("电话号码不能为空,");
+                            }else if(mobile.length() != 11){
+                                sb.append("电话号码长度为11位,");
+                            }
+                            excelAO.setMobile(mobile);
+                            continue;
+                        }else if(k == 4){ //判断入职时间
+                            if(StringUtil.isEmpty(cell.toString())){
+                                sb.append("入职时间不能为空,");
+                            }
+                            excelAO.setEntryTime(cell.toString());
+                            continue;
+                        }else{
+                            if(!"".equals(sb.toString())){
+                                String str = sb.substring(0,sb.length()-1);
+                                excelAO.setMessage(str);
+                                FList.add(excelAO);
+                            }else{
+                                TList.add(excelAO);
+                            }
+
+                            break;
+                        }
+
+                    }
+                }
+                logger.info("导出完毕");
+                resultMap.put("true",TList);
+                resultMap.put("false",FList);
+            }else if(".xls".equals(path)){
+                logger.info("开始导入excel");
+                POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file.getInputStream());
+                HSSFWorkbook hssfWorkbook =  new HSSFWorkbook(poifsFileSystem);
+                HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
+
+                int rowstart = hssfSheet.getFirstRowNum();
+                int rowEnd = hssfSheet.getLastRowNum();
+                logger.info("excel总记录数为：" + (rowEnd-1));
+                for(int i=rowstart;i<=rowEnd;i++) {
+                    logger.info("开始导入第（"+(i+1) +"）条数据");
+                    HSSFRow row = hssfSheet.getRow(i + 1);
+                    if(null == row) continue;
+                    int cellStart = row.getFirstCellNum();
+                    int cellEnd = row.getLastCellNum();
+                    ExcelAO excelAO =  new ExcelAO();
+                    StringBuffer sb = new StringBuffer();
+
+                    for(int k=cellStart;k<=cellEnd;k++){
+                        HSSFCell cell = row.getCell(k);
+                        if(k == 0){ //判断序号
+                            excelAO.setId(cell.toString());
+                            continue;
+                        }else if(k == 1){ //判断姓名
+                            if(StringUtil.isEmpty(cell.toString())){
+                                sb.append("名字不能为空,");
+                            }
+                            excelAO.setName(cell.toString());
+                            continue;
+                        }else if(k == 2){ //判断身份证
+                            String idcard = cell.toString();
+                            if (StringUtil.isEmpty(cell.toString())){
+                                sb.append("身份证不能为空,");
+                            }else if(idcard.length() != 18){
+                                sb.append("身份证长度为18位,");
+                            }
+                            excelAO.setIDCard(idcard);
+                            continue;
+                        }else if(k == 3){ //判断电话号码
+                            String mobile = cell.toString();
+                            if (StringUtil.isEmpty(cell.toString())){
+                                sb.append("电话号码不能为空,");
+                            }else if(mobile.length() != 11){
+                                sb.append("电话号码长度为11位,");
+                            }
+                            excelAO.setMobile(mobile);
+                            continue;
+                        }else if(k == 4){ //判断入职时间
+                            if(StringUtil.isEmpty(cell.toString())){
+                                sb.append("入职时间不能为空,");
+                            }
+                            excelAO.setEntryTime(cell.toString());
+                            continue;
+                        }else{
+                            if(!"".equals(sb.toString())){
+                                String str = sb.substring(0,sb.length()-1);
+                                excelAO.setMessage(str);
+                                FList.add(excelAO);
+                            }else{
+                                TList.add(excelAO);
+                            }
+                            break;
+                        }
+
+                    }
+                }
+                logger.info("导出完毕");
+                resultMap.put("true",TList);
+                resultMap.put("false",FList);
+            }
+        }catch (Exception e){
+            logger.error("导入excel失败" ,e);
+        }
+
+        return resultMap;
+
+    }
+
 }

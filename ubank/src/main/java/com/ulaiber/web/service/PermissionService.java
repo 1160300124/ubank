@@ -65,7 +65,7 @@ public interface PermissionService {
 
     int getEmpTotal(String sysflag,String[] comArr); //获取员工总数
 
-    List<User> empQuery(String search, int pageSize, int pageNum,String sysflag,String[] comArr); //分页查询员工信息
+    List<User> empQuery(String search, int pageSize, int pageNum, String sysflag, String[] comArr, String activetion); //分页查询员工信息
 
     int editEmp(User user); //修改员工信息
 
@@ -137,4 +137,18 @@ public interface PermissionService {
      * @return int
      */
     int saveRoots(String code,int userid);
+
+    /**
+     * 查询当前电话号码是否已被注册
+     * @param mobile 电话号码
+     * @return user
+     */
+    User queryuserByMobile(String mobile);
+
+    /**
+     * 新增用户
+     * @param param
+     * @return int
+     */
+    int insertUser(Map<String, Object> param);
 }

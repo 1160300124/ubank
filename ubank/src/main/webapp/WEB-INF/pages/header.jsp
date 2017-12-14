@@ -112,7 +112,8 @@
 <script type="text/javascript">
     var GROUPNUMBER = "${BACKENDUSER.groupNumber}"; //当前用户所属集团编号
     var SYSFLAG = "${BACKENDUSER.sysflag}"; //角色标识。为 0 表示为根节点，为 1 表示非根节点
-    var COMPANYNUMBER = "${BACKENDUSER.companyNumber}";  //当前用户所属公司
+    var COMPANYNUMBER = "${BACKENDUSER.companyNumber}";  //当前用户所属公司编号
+    var COMPANYNAME = "${BACKENDUSER.com_name}";  //当前用户所属公司名称
     var DEPTNUMBER = "${BACKENDUSER.dept_number}";		//当前用户所属部门
     var ROLEID = "${BACKENDUSER.role_id}";		//当前用户角色ID
     $(function () {

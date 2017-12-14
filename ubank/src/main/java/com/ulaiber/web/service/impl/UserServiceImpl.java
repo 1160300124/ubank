@@ -162,7 +162,14 @@ public class UserServiceImpl extends BaseService implements UserService {
         return bankDao.updateAccFreeze(map);
     }
 
-    @Override
+	@Override
+	public List<Company> getCompanyByNum(int[] numbers) {
+		Map<String,Object> map = new HashMap<>();
+		map.put("numbers",numbers);
+		return mapper.getCompanyByNum(map);
+	}
+
+	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean update(User user) {
 

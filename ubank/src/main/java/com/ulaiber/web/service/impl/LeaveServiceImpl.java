@@ -9,7 +9,6 @@ import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.utils.PushtoSingle;
 import com.ulaiber.web.utils.StringUtil;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -331,7 +330,17 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return leaveDao.queryApplyStatus(id);
     }
 
-	@Override
+    @Override
+    public int getLeaveRecordCount(String userId) {
+        return leaveDao.getLeaveRecordCount(userId);
+    }
+
+    @Override
+    public int getLeaveAuditorCount(String userId) {
+        return leaveDao.getLeaveAuditorCount(userId);
+    }
+
+    @Override
 	public LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date) {
 		return leaveDao.getLeaveRecordByMobileAndDate(mobile, date);
 	}

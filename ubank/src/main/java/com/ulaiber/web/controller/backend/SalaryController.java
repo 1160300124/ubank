@@ -78,9 +78,9 @@ public class SalaryController extends BaseController {
 		return "salary";
 	}
 	
-	@RequestMapping(value = "salaryConfig", method = RequestMethod.GET)
-	public String salaryConfig(HttpServletRequest request, HttpServletResponse response){
-		return "salaryConfig";
+	@RequestMapping(value = "salarySetting", method = RequestMethod.GET)
+	public String salarySetting(HttpServletRequest request, HttpServletResponse response){
+		return "salarySetting";
 	}
 	
 	@RequestMapping(value = "salaryDetail", method = RequestMethod.GET)
