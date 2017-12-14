@@ -61,7 +61,7 @@
 				<th data-field="clockOnDateTime" data-width="100px">入职时间</th>
 				<th data-field="clockOnStatus" data-formatter="clockOnStatusFormatter">任职状态</th>
 				<th data-field="clockOnLocation">基本工资</th>
-				<th data-field="clockOnDevice">操作栏</th>
+				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>
 

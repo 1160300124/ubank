@@ -34,4 +34,18 @@ $(function(){
 		$("#btn_leave_office").removeClass("btn-primary").addClass("btn-default");
 		$("#btn_salary_set").removeClass("btn-primary").addClass("btn-default");
 	});
+	
 })
+
+function operateFormatter(value, row, index) {
+	return [
+	        '<a class="edit"  href="javascript:void(0)" title="编辑">编辑</a>'
+	        ].join('');
+}
+
+window.operateEvents = {
+		'click .edit': function (e, value, row, index) {
+			
+		}
+}
+
