@@ -556,10 +556,15 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 			String clockOffTime = day + " " + rule.getClockOffTime();
 			//没有考勤记录为旷工
 			if (att == null ){
-				records.put(day, 2);
-				if (leaveRecord != null){
+				if (leaveRecord == null){
+					records.put(day, 2);
+					noClockCount ++;
+				} else {
 					if (leaveRecord.getStartDate().compareTo(clockOnTime) <= 0 && leaveRecord.getEndDate().compareTo(clockOffTime) >= 0){
 						records.put(day, 4);
+					} else {
+						records.put(day, 2);
+						noClockCount ++;
 					}
 				}
 			} else {

@@ -133,7 +133,7 @@ public interface AnnouncementDao {
 	 * @param aid 公告id
 	 * @return boolean
 	 */
-	boolean updateTypeByUserIdAndRid(@Param("userId") long userId, @Param("aid") long aid);
+	boolean updateTypeByUserIdAndAid(@Param("userId") long userId, @Param("aid") long aid);
 	
 	/**
 	 * 获取用户未读公告条数

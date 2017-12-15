@@ -804,7 +804,7 @@ public class Test {
 //		System.out.print(">>>>>>>>结果为："+result);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
-		String result = HttpsUtil.doGet("http://localhost:8080/ubank/api/v1/getApplyCount",map);
+		String result = HttpsUtil.doGet("http://localhost:8080/ubank/api/v1/getAllCount",map);
 		System.out.println("result is : "+result);
 
 	}

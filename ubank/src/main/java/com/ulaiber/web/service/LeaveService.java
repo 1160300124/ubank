@@ -64,8 +64,8 @@ public interface LeaveService {
 
     LeaveRecord queryApplyStatus(String recordNo);  //根据审批状态获取申请记录状态
 
-    int getLeaveRecordCount(String userId); //获取个人申请记录数量
+    int getLeaveRecordCount(long userId); //获取个人申请记录数量
 
-    int getLeaveAuditorCount(String userId);  //获取个人审批记录数量
+    int getLeaveAuditorCount(long userId);  //获取个人审批记录数量
 
 }

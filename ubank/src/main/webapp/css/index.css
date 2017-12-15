@@ -230,6 +230,7 @@ a:active, a:hover, a:focus, a:visited {
     position: relative;
     margin: 0px auto;
     cursor: pointer;
+    overflow: hidden;
 }
 .file-upload-button:hover{
     color: #fff;
@@ -367,4 +368,82 @@ a:active, a:hover, a:focus, a:visited {
 
 .error-tip{
     color: red;
+}
+
+.import-step{
+
+}
+
+.import-file-name{
+    text-align: center;
+    color: red;
+}
+
+.import-tip{
+    padding-top: 20px;
+}
+
+.import-step-two{
+    text-align: center;
+}
+
+.import-step-success{
+    text-align: center;
+    color: greenyellow;
+    font-size: 50px;
+}
+
+.error-info{
+    color: #f56b43;
+    font-size: 18px;
+}
+
+.error-info-tip{
+    background-color: #f56b43;
+    color: #fff;
+    padding: 10px;
+    position: absolute;
+    z-index: 9999;
+    transform: translateY(-50%);
+}
+
+.error-info-tip::before{
+    content: '';
+    height: 0px;
+    width: 0px;
+    border: 10px solid transparent;
+    border-right: 10px solid #f56b43;
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.td-input{
+    border: none;
+    width: 100%;
+    height: 39px;
+    text-align: left;
+    outline: none;
+}
+
+.danger-input{
+    box-shadow: 0 0 5px red;
+    animation: flashInputBorder 1.8s infinite;
+}
+
+.td-editing{
+    padding: 0px !important;
+}
+
+.td-editing>input{
+    box-shadow: 0 0 5px lightskyblue;
+}
+
+@keyframes flashInputBorder {
+    50%{
+        box-shadow: none;
+    }
+    100%{
+        box-shadow: 0 0 5px red;
+    }
 }

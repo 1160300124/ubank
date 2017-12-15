@@ -146,8 +146,8 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean updateTypeByUserIdAndRid(long userId, long aid) {
-		return dao.updateTypeByUserIdAndRid(userId, aid);
+	public boolean updateTypeByUserIdAndAid(long userId, long aid) {
+		return dao.updateTypeByUserIdAndAid(userId, aid);
 	}
 
 	@Override
