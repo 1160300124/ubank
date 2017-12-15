@@ -246,3 +246,125 @@ a:active, a:hover, a:focus, a:visited {
     font-size: 100px;
     cursor: pointer;
 }
+
+.flex{
+    display: flex;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+}
+
+.flex1{
+    flex: 1;
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+}
+
+.flex2{
+    flex: 2;
+    -webkit-flex: 2;
+    -moz-flex: 2;
+    -ms-flex: 2;
+}
+
+.flex3{
+    flex: 3;
+    -webkit-flex: 3;
+    -moz-flex: 3;
+    -ms-flex: 3;
+}
+
+.align-right{
+    text-align: right;
+}
+
+.align-left{
+    text-align: left;
+}
+
+.align-item-center{
+    align-items: center;
+}
+
+.padding10{
+    padding: 10px;
+}
+
+.paddingright20{
+    padding-right: 20px;
+}
+
+.adjustment-log{
+    background-color: #f8f7f8;
+}
+
+.salary-log{
+    position: relative;
+    color: #666;
+    padding: 10px 10px 10px 20px;
+}
+
+.salary-log::before{
+    content: '';
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    background-color: #fff;
+    box-sizing: content-box;
+    border: 1px solid lightblue;
+    z-index: 999;
+    left: -9px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.salary-log::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 2px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-color: #ccc;
+}
+
+.salary-log:nth-child(:last-child) .salary-log::after {
+    height: 50% !important;
+}
+
+.employee-name{
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.color999{
+    color: #999;
+}
+
+.employee-info .status span{
+    display: inline-block;
+    height: 30px;
+    padding: 5px;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.employee-info .status .on-job{
+    background-color: #43ac34;
+}
+.employee-info .status .no-job{
+    background-color: #e8583d;
+}
+
+.add-turn-positive-btn{
+    cursor: pointer;
+    color: #999;
+}
+
+.error-tip{
+    color: red;
+}

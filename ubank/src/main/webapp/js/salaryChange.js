@@ -34,8 +34,54 @@ $(function(){
 		$("#btn_leave_office").removeClass("btn-primary").addClass("btn-default");
 		$("#btn_salary_set").removeClass("btn-primary").addClass("btn-default");
 	});
+
 	
 })
+
+var salaryChangeFun = {
+	openAdjustmentSalaryModal: function() {
+		$('#adjustment_salary_modal').modal('show');
+		$("#effectTime").datetimepicker({  
+			format: 'yyyy-mm-dd',  
+			language: 'zh-CN',  
+			pickDate: true,  
+			pickTime: true,  
+			autoclose: 1,
+			todayBtn:  1,
+			todayHighlight: 1,
+			minView: "month"
+		});
+
+		$("#adjustmentSalaryText").on('keyup', function(e) {
+			if(validateMoney(e)){
+				var oldSalary = parseFloat($("#oldSalary").html());
+
+				var adjustmentPercent = ($(e.currentTarget).val() - oldSalary )/ oldSalary
+				$("#adjustmentPercent").val(adjustmentPercent * 100 + '%');
+			}
+
+		})
+	},
+	openPositiveSalaryModal: function() {
+		$('#fixed_salary_modal').modal('show');
+		$("#turnPositive").datetimepicker({  
+			format: 'yyyy-mm-dd',  
+			language: 'zh-CN',  
+			pickDate: true,  
+			pickTime: true,  
+			autoclose: 1,
+			todayBtn:  1,
+			todayHighlight: 1,
+			minView: "month"
+		});
+
+		$("#fixedSalaryText").on('keyup', validateMoney)
+	},
+	showTurnPositive: function() {
+		$(".turn-positive").show();
+		$(".add-turn-positive-btn").parent().hide();
+	}
+}
 
 function operateFormatter(value, row, index) {
 	return [
@@ -49,3 +95,14 @@ window.operateEvents = {
 		}
 }
 
+function validateMoney(e) {
+	if(!Validate.isMoney($(e.currentTarget).val()))
+	{
+		$(e.currentTarget.nextElementSibling).html('请输入合法金额');
+		return false;
+	}
+	else {
+		$(e.currentTarget.nextElementSibling).html('');
+		return true;
+	}
+}
