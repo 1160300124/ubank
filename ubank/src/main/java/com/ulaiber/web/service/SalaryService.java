@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ulaiber.web.model.ResultInfo;
-import com.ulaiber.web.model.Salary;
-import com.ulaiber.web.model.SalaryDetail;
+import com.ulaiber.web.model.salary.Salary;
+import com.ulaiber.web.model.salary.SalaryDetail;
 
 /**
  * 工资流水服务接口

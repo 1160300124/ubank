@@ -2,7 +2,7 @@ package com.ulaiber.web.service;
 
 import java.util.List;
 
-import com.ulaiber.web.model.attendance.SalaryRule;
+import com.ulaiber.web.model.salary.SalaryRule;
 
 /** 
  * 工资规则配置

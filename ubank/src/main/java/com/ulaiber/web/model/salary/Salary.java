@@ -1,4 +1,4 @@
-package com.ulaiber.web.model;
+package com.ulaiber.web.model.salary;
 
 import java.util.List;
 
