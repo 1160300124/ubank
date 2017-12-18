@@ -12,8 +12,8 @@
 	<typeAliases>
 		<typeAlias alias="User" type="com.ulaiber.web.model.User" />
 		<typeAlias alias="Bank" type="com.ulaiber.web.model.Bank" />
-		<typeAlias alias="Salary" type="com.ulaiber.web.model.Salary" />
-		<typeAlias alias="SalaryDetail" type="com.ulaiber.web.model.SalaryDetail" />
+		<typeAlias alias="Salary" type="com.ulaiber.web.model.salary.Salary" />
+		<typeAlias alias="SalaryDetail" type="com.ulaiber.web.model.salary.SalaryDetail" />
 		<typeAlias alias="ThirdUrl" type="com.ulaiber.web.model.ThirdUrl" />
 		<typeAlias alias="Category" type="com.ulaiber.web.model.Category" />
 		<typeAlias alias="Module" type="com.ulaiber.web.model.Module" />
@@ -21,7 +21,7 @@
 		<typeAlias alias="Attendance" type="com.ulaiber.web.model.attendance.Attendance" />
 		<typeAlias alias="AttendanceRule" type="com.ulaiber.web.model.attendance.AttendanceRule" />
 		<typeAlias alias="AttendanceStatistic" type="com.ulaiber.web.model.attendance.AttendanceStatistic" />
-		<typeAlias alias="SalaryRule" type="com.ulaiber.web.model.attendance.SalaryRule" />
+		<typeAlias alias="SalaryRule" type="com.ulaiber.web.model.salary.SalaryRule" />
 		<typeAlias alias="CutPayment" type="com.ulaiber.web.model.attendance.CutPayment" />
 		<typeAlias alias="Announcement" type="com.ulaiber.web.model.announcement.Announcement" />
 	</typeAliases>
