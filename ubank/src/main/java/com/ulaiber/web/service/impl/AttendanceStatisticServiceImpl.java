@@ -241,7 +241,7 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			month = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
 		}
 		//获取指定月份的天数
-		List<String> days = DateTimeUtil.getDaysFromMonth(month);
+		List<String> days = DateTimeUtil.getDaysFromMonth(month, false);
 			
 		return getWorkdays(rule, month, days);
 	}
@@ -253,7 +253,7 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			month = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
 		}
 		//获取指定月份的天数
-		List<String> days = DateTimeUtil.getDaysFromMonth(month);
+		List<String> days = DateTimeUtil.getDaysFromMonth(month, false);
 			
 		return getWorkdays(rule, month, days);
 	}

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ulaiber.web.dao.SalaryDetailDao;
-import com.ulaiber.web.model.SalaryDetail;
+import com.ulaiber.web.model.salary.SalaryDetail;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.SalaryDetailService;
 

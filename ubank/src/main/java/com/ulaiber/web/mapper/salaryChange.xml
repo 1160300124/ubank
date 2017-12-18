@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.ulaiber.web.dao.SalaryChangeDao">
+
+    <resultMap id="SalaryChangeMap" type="SalaryChange" >
+       	<id column="cid" property="cid" jdbcType="BIGINT" />
+       	<result column="operate_user_id" property="operateUserId" jdbcType="BIGINT" />
+    	<result column="operate_user_name" property="operateUserName" jdbcType="VARCHAR" />
+    	<result column="operate_date" property="operateDate" jdbcType="VARCHAR" />
+    	<result column="user_id" property="userId" jdbcType="BIGINT" />
+    	<result column="current_salary" property="currentSalary" jdbcType="DOUBLE" />
+    	<result column="after_change_salary" property="afterChangeSalary" jdbcType="DOUBLE" />
+    	<result column="change_range" property="changeRange" jdbcType="VARCHAR" />
+    	<result column="change_date" property="changeDate" jdbcType="VARCHAR" />
+    	<result column="change_reason" property="changeReason" jdbcType="VARCHAR" />
+   </resultMap>
+  
+   <insert id="save" parameterType="SalaryChange" useGeneratedKeys="true" keyProperty="cid">
+   		insert into tbl_salaries_change(operate_user_id, operate_user_name, operate_data, user_id, before_change_salary, after_change_salary, change_range, change_date, change_reason)
+   		values (#{operateUserId}, #{operateUserName}, #{operateDate}, #{userId}, #{beforeChangeSalary}, #{afterChangeSalary}, #{changeRange}, #{changeDate}, #{changeReason})
+   </insert>
+   
+   <update id="update" parameterType="SalaryChange">
+   		update tbl_salaries set operate_user_id=#{operateUserId}, operate_user_name=#{operateUserName}, company_id=#{companyId}, company_name=#{companyName},
+   		total_number=#{totalNumber}, total_amount=#{totalAmount}, salary_month=#{salaryMonth}, salary_date=#{salaryDate}, salary_createTime=#{salaryCreateTime},
+   		approve_ids=#{approveIds}, approve_names=#{approveNames} where cid=#{cid}
+   </update>
+	
+	<select id="getAllSalariesChange" resultMap="SalaryChangeMap">
+		select * from tbl_salaries_change
+	</select>
+	
+	<select id="getTotalNum" resultType="Integer">
+		select count(1) from tbl_salaries_change
+	</select>
+	
+	<select id="getSalariesByUserId" parameterType="Map" resultType="Map">
+		select s.salary_month,d.salaries from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId} 
+		order by s.salary_month desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getSalaries" parameterType="Map" resultMap="SalaryChangeMap">
+		select * from tbl_salaries_change 
+		<if test="search != null and search != ''">
+			where userName like concat('%',#{search},'%') or company like concat('%',#{search},'%')
+		</if>
+		order by salary_date desc limit #{offset},#{limit}
+	</select>
+	
+	<select id="getSalaryBySid" parameterType="String" resultMap="SalaryChangeMap">
+		select * from tbl_salaries_change where sid=#{sid}
+	</select>
+	
+</mapper>

@@ -3,7 +3,7 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.Salary;
+import com.ulaiber.web.model.salary.Salary;
 
 /**
  * 工资流水数据库接口

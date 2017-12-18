@@ -25,8 +25,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ulaiber.web.model.Salary;
-import com.ulaiber.web.model.SalaryDetail;
+import com.ulaiber.web.model.salary.Salary;
+import com.ulaiber.web.model.salary.SalaryDetail;
 
 /**
  * Excel工具类

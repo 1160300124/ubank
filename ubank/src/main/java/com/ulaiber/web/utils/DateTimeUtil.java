@@ -296,9 +296,10 @@ public class DateTimeUtil {
 	/**
 	 * 获取指定月份的所有天数集合
 	 * @param month yyyy-MM
+	 * @param flag 获取当月的全部天数或小于当天的天数
 	 * @return
 	 */
-	public static List<String> getDaysFromMonth(String month){
+	public static List<String> getDaysFromMonth(String month, boolean flag){
 		String currentMonth = date2Str(new Date(), DATE_FORMAT_MONTHTIME);
 		String currentDay = "";
 		if (currentMonth.equals(month)){
@@ -314,14 +315,14 @@ public class DateTimeUtil {
 				day = month + "-" + (i + 1);
 			}
 
-			if (currentDay.equals(day)){
+			if (!flag && currentDay.equals(day)){
 				break;
 			}
 			days.add(day);
 		}
 		return days;
 	}
-
+	
 	/**
 	 * 获取指定时间段的所有天数集合
 	 * @param dateBegin  yyyy-MM-dd

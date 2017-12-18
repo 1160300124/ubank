@@ -7,7 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,8 +31,8 @@ public class MapTest {
         String start = "深圳市深大地铁站A出口";
         String end = "深圳市优融网络科技有限公司";
 
-        String startLonLat = getLonLat(start);
-        String endLonLat = getLonLat(end);
+//        String startLonLat = getLonLat(start);
+//        String endLonLat = getLonLat(end);
 //        endLonLat +=  "|" + getLonLat("海王银河科技大厦");
 //        System.out.println(startLonLat);
 //        System.out.println(endLonLat);
@@ -90,7 +92,7 @@ public class MapTest {
 //        String response3 = HttpsUtil.doGet(apiUrl3, params3);
 //        System.out.println(response3);
         
-        
+       
 //      String apiUrl2 = "http://localhost:8080/ubank/api/v1/patchClock";
 //      Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
 //      params2.put("userId", 336);
@@ -101,6 +103,7 @@ public class MapTest {
 //      params2.put("patchClockOffTime", "2017-09-29 19:10");
 //      String response2 = HttpsUtil.doPost(apiUrl2, params2);
 //      System.out.println(response2);
+        	
         
 //		for (int i = 1; i<= 30; i++){
 //			String sql = "insert into tbl_attendance_records(user_id,user_name,dept_num,company_num,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_off_datetime,clock_off_status,clock_off_location,clock_off_device) values(336,'黄国清',40025,20047,'2017-09-";
@@ -128,22 +131,6 @@ public class MapTest {
 //			}
 //			System.out.println(sql);
 //		}
-        Attachment a1 = new Attachment();
-        a1.setAttachment_name("11111");
-        
-        Attachment a2 = new Attachment();
-        a2.setAttachment_name("2222222");
-        
-        Attachment a3 = new Attachment();
-        a3.setAttachment_name("3333333");
-        List<Attachment> as = new ArrayList<Attachment>();
-        as.add(a1);
-        as.add(a2);
-        as.add(a3);
-        for (Attachment att : as){
-        	att.setAid(55555);
-        }
-        System.out.println(as);
     }
     
     /**  

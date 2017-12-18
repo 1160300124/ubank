@@ -19,7 +19,7 @@ import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
-import com.ulaiber.web.model.attendance.SalaryRule;
+import com.ulaiber.web.model.salary.SalaryRule;
 import com.ulaiber.web.service.SalaryRuleService;
 
 /** 

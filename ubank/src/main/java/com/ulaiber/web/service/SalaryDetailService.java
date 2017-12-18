@@ -2,7 +2,7 @@ package com.ulaiber.web.service;
 
 import java.util.List;
 
-import com.ulaiber.web.model.SalaryDetail;
+import com.ulaiber.web.model.salary.SalaryDetail;
 
 /**
  * 工资流水详情服务接口

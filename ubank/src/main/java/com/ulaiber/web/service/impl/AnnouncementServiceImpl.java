@@ -94,8 +94,8 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean deleteByAid(long aid) {
 		if (dao.deleteByAid(aid) > 0){
-			 dao.deleteUserOfAnnouncementByAid(aid);
-			 return dao.deleteAttachmentsByAid(aid) > 0;
+			dao.deleteAttachmentsByAid(aid) ;
+			return dao.deleteUserOfAnnouncementByAid(aid) > 0;
 		}
 		return false;
 	}
