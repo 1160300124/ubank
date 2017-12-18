@@ -783,7 +783,7 @@ public class Test {
 	}
 
 	@org.junit.Test
-	public  void sort() throws Exception {
+	public void sort() throws Exception {
 //		String CID = "dbc748f4a1ed1543c987d3db8db62f7d";
 //		int type = 3;
 //		String content = "老子又开始测试啦啦啦啦啦啦";
@@ -802,10 +802,15 @@ public class Test {
 //		map.put("comNum",comNum);
 //		String result = HttpsUtil.doPost("http://localhost:8080/ubank/backend/batchImport",map);
 //		System.out.print(">>>>>>>>结果为："+result);
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("userId","359");
-		String result = HttpsUtil.doGet("http://localhost:8080/ubank/api/v1/getAllCount",map);
-		System.out.println("result is : "+result);
+
+//		Map<String,Object> map = new HashMap<String,Object>();
+//		map.put("userId","359");
+//		String result = HttpsUtil.doGet("http://localhost:8080/ubank/api/v1/getAllCount",map);
+//		System.out.println("result is : "+result);
+
+		Integer a = 128;
+		Integer b = 128;
+		System.out.println(a.equals(b));
 
 	}
 

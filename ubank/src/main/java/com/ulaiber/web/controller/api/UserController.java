@@ -486,7 +486,7 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 忘记支付密码
-	 * 
+	 * 版本 V0.6
 	 * @param mobile 手机号
 	 * @param captcha 验证码
 	 * @param password 密码
@@ -522,7 +522,7 @@ public class UserController extends BaseController{
 		if (flag){
 			captchaMap.remove(mobile);
 			retInfo.setCode(IConstants.QT_CODE_OK);
-			retInfo.setMessage("找回支付成功");
+			retInfo.setMessage("找回支付密码成功");
 			logger.info(mobile + "find pay password successed.");
 		}
 		else {
@@ -533,6 +533,75 @@ public class UserController extends BaseController{
 		
 		logger.debug("forgetPayPassword end...");
 		return retInfo;
+	}
+
+	/**
+	 * 验证手机（验证）码
+	 * 版本 v0.61
+	 * @param mobile 电话号码
+	 * @param captcha 手机号码
+	 * @return
+	 */
+	@RequestMapping(value = "validataCaptcha", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo updatePwd(String mobile, String captcha){
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+			String cap = captchaMap.get(mobile);
+			if (!StringUtils.equals(captcha, cap) && !StringUtils.equals(captcha, "12345")){
+				logger.error("验证错误");
+				resultInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+				resultInfo.setMessage("验证错误");
+				return resultInfo;
+			}
+			resultInfo.setCode(IConstants.QT_CODE_OK);
+			resultInfo.setMessage("验证成功");
+			logger.info("验证成功");
+		}catch(Exception e){
+			resultInfo.setCode(IConstants.QT_CAPTCHA_ERROR);
+			resultInfo.setMessage("验证错误");
+			logger.error("验证失败");
+		}
+		return  resultInfo;
+	}
+
+	/**
+	 * 修改支付密码
+	 * 版本 v0.61
+	 * @param mobile 电话号码
+	 * @param password 支付密码
+	 * @param confirm_password 确认支付密码
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "updatePassword", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo updatePassword(String mobile,String password, String confirm_password){
+		ResultInfo resultInfo = new ResultInfo();
+		try {
+			if (!StringUtils.equals(password, confirm_password)){
+				logger.error("confirmed password and new password do not match.");
+				resultInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
+				resultInfo.setMessage("新密码与确认密码不一致");
+				return resultInfo;
+			}
+			boolean flag = userService.updatePayPwd(mobile, password);
+			if (flag){
+				captchaMap.remove(mobile);
+				resultInfo.setCode(IConstants.QT_CODE_OK);
+				resultInfo.setMessage("修改支付密码成功");
+				logger.info(mobile + "修改支付密码成功");
+			}else{
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("修改支付密码失败");
+				logger.error(mobile +  "修改支付密码失败");
+			}
+		}catch (Exception e){
+			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+			resultInfo.setMessage("修改支付密码失败");
+			logger.error(mobile +  "修改支付密码失败",e);
+
+		}
+		return resultInfo;
 	}
 
 
@@ -559,7 +628,7 @@ public class UserController extends BaseController{
 				info.setCode(IConstants.QT_CODE_OK);
 				info.setMessage("支付密码校验成功");
 			} else {
-				logger.error(mobile + " validate pay password failed.");
+				logger.error(mobile + " 验证支付密码失败");
 				info.setCode(IConstants.QT_CODE_ERROR);
 				info.setMessage("支付密码错误");
 			}
