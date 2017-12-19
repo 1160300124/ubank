@@ -19,8 +19,8 @@
 
     <!--新增员工信息-->
     <insert id="addEmployee" parameterType="com.ulaiber.web.model.User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id ,createTime,entryDate,leaveDate,disabled)
-            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id},#{createTime},#{entryDate},#{leaveDate},'0')
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id ,createTime,entryDate,leaveDate,salaries,disabled)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id},#{createTime},#{entryDate},#{leaveDate},#{salaries},'0')
     </insert>
 
     <!--修改员工信息-->

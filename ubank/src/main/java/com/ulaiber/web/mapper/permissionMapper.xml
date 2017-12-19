@@ -231,4 +231,9 @@
     <select id="queryuserByMobile" parameterType="String" resultType="com.ulaiber.web.model.User">
         SELECT user_id as id ,mobile,user_name as userName FROM tbl_users WHERE mobile = #{mobile}
     </select>
+
+    <!--根据名称查询部门信息-->
+    <select id="queryDeptByName" parameterType="String" resultType="com.ulaiber.web.model.Departments">
+        select dept_number , name from tbl_departments where name = #{deptName}
+    </select>
 </mapper>

@@ -1094,16 +1094,13 @@ public class PermissionController extends BaseController {
      * @param file 文件名
      * @param group 集团编号
      * @param comNum 公司编号
-     * @param deptNum 部门编号
      * @return resultInfo
      */
     @RequestMapping(value = "importEmployee", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo importEmployee( @Param("file") MultipartFile file, @Param("group") String group,
-                                     @Param("comNum") String comNum, @Param("deptNum") String deptNum){
+    public ResultInfo importEmployee( @Param("file") MultipartFile file, @Param("group") String group,@Param("comNum") String comNum){
         ResultInfo resultInfo = new ResultInfo();
         try {
-            String name = file.getOriginalFilename();
             //导入excel
             ExportExcel excel = new ExportExcel();
             Map<String,Object> map = excel.readExcel(file);
@@ -1115,18 +1112,53 @@ public class PermissionController extends BaseController {
            //保存数据
             List<ExcelAO> Tlist = (List<ExcelAO>) map.get("true");
             List<ExcelAO> Flist = (List<ExcelAO>) map.get("false");
+            Map<String,Object> resultMap = new HashMap<>();
+            resultMap.put("totalCount",map.get("totalCount"));
+            //成功导入记录数
+            int sucCount = 0;
+            //被注册记录数
+            int alreadySign = 0;
             if(Tlist.size() > 0){
                 for (int i = 0 ; i < Tlist.size() ; i++){
                     ExcelAO ao = Tlist.get(i);
-                    String mobile = ao.getMobile();
+                    String mobile = ao.getMobile(); //电话号码
+                    String deptName = ao.getDept(); //部门名称
                     //查询当前电话号码是否已被注册
                     User user = permissionService.queryuserByMobile(mobile);
-                    if(StringUtil.isEmpty(user)){
-                       //新增用户
+                    //根据名称查询部门信息
+                    Departments departments = permissionService.queryDeptByName(deptName);
+                    if(!StringUtil.isEmpty(user)){
+                        //如果当前电话已存在数据库中，则返回给前台提示
+                        ExcelAO ea = new ExcelAO();
+                        ea.setId(ao.getId());
+                        ea.setIDCard(ao.getIDCard());
+                        ea.setEntryTime(ao.getEntryTime());
+                        ea.setMobile(ao.getMobile());
+                        ea.setName(ao.getName());
+                        ea.setSalary(ao.getSalary());
+                        ea.setDept(ao.getDept());
+                        ea.setMessage("该号码已被注册");
+                        Flist.add(ea);
+                        alreadySign++;
+                    }else if(StringUtil.isEmpty(departments)){
+                        //如果当前部门不存在于数据库中，则返回前台提示
+                        ExcelAO ea = new ExcelAO();
+                        ea.setId(ao.getId());
+                        ea.setIDCard(ao.getIDCard());
+                        ea.setEntryTime(ao.getEntryTime());
+                        ea.setMobile(ao.getMobile());
+                        ea.setName(ao.getName());
+                        ea.setSalary(ao.getSalary());
+                        ea.setDept(ao.getDept());
+                        ea.setMessage("该部门不存在");
+                        Flist.add(ea);
+                    }else{
+                        //新增用户
                         Map<String,Object> param = new HashMap<>();
                         param.put("gropNum",group);
                         param.put("comNum",comNum);
-                        param.put("deptNum",deptNum);
+                        param.put("deptNum",departments.getDept_number());
+                        param.put("salary",ao.getSalary());
                         param.put("name",ao.getName());
                         param.put("idcard",ao.getIDCard());
                         param.put("mobile",ao.getMobile());
@@ -1135,28 +1167,36 @@ public class PermissionController extends BaseController {
                         if(result <= 0){
                             resultInfo.setCode(IConstants.QT_CODE_ERROR);
                             resultInfo.setMessage("导入Excel失败");
+                            return resultInfo;
                         }
-                        resultInfo.setCode(IConstants.QT_CODE_OK);
-                        resultInfo.setMessage("导入成功");
-                    }else{
-                        //如果当前电话已存在数据库中，则返回给前台提示
-                        ExcelAO ea = new ExcelAO();
-                        ea.setId(ao.getId());
-                        ea.setIDCard(ao.getIDCard());
-                        ea.setEntryTime(ao.getEntryTime());
-                        ea.setMobile(ao.getMobile());
-                        ea.setName(ao.getName());
-                        ea.setMessage("电话已被注册");
-                        Flist.add(ea);
+                        sucCount++;
+
                     }
                 }
-            }
-            if(Flist.size() > 0){
+                resultMap.put("sucCount",sucCount);
+                resultMap.put("failCount",Flist.size());
+                resultMap.put("alreadySign",alreadySign);
+                resultMap.put("list",Flist);
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("导入成功");
-                resultInfo.setData(Flist);
-                return resultInfo;
+                resultInfo.setData(resultMap);
+            }else{
+                resultMap.put("sucCount",sucCount);
+                resultMap.put("failCount",Flist.size());
+                resultMap.put("alreadySign",alreadySign);
+                resultMap.put("list",Flist);
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("数据异常，没有可以导入的数据");
+                resultInfo.setData(resultMap);
+
             }
+
+//            if(Flist.size() > 0){
+//                resultInfo.setCode(IConstants.QT_CODE_OK);
+//                resultInfo.setMessage("导入成功");
+//                resultInfo.setData(resultMap);
+//                return resultInfo;
+//            }
 
         }catch (Exception e){
             resultInfo.setCode(IConstants.QT_CODE_ERROR);
@@ -1171,13 +1211,11 @@ public class PermissionController extends BaseController {
      * @param group 集团编号
      * @param rows 用户信息
      * @param comNum 公司编号
-     * @param deptNum 部门编号
      * @return ResultInfo
      */
     @RequestMapping(value = "batchImport", method = RequestMethod.POST)
     @ResponseBody
-    public ResultInfo batchAddUser(String group,@Param("rows") String rows,
-                                   @Param("comNum") String comNum, @Param("deptNum") String deptNum){
+    public ResultInfo batchAddUser(String group,@Param("rows") String rows,  @Param("comNum") String comNum){
         ResultInfo resultInfo = new  ResultInfo();
         try {
             JSONArray array = JSONArray.fromObject(rows);
@@ -1186,6 +1224,9 @@ public class PermissionController extends BaseController {
                 JSONObject jsons = array.getJSONObject(i);
                 ExcelAO ao = new ExcelAO();
                 String mobile = jsons.get("mobile").toString();
+//                String deptName = jsons.get("deptName").toString(); //部门名称
+//                //根据名称查询部门信息
+//                Departments departments = permissionService.queryDeptByName(deptName);
                 //查询当前电话号码是否已被注册
                 User user = permissionService.queryuserByMobile(mobile);
                 if(!StringUtil.isEmpty(user)){
@@ -1193,14 +1234,28 @@ public class PermissionController extends BaseController {
                     ao.setId(jsons.get("id").toString());
                     ao.setMobile(jsons.get("mobile").toString());
                     ao.setEntryTime(jsons.get("entryTime").toString());
+                    ao.setDept(jsons.get("deptNum").toString());
+                    ao.setSalary((Double) jsons.get("salary"));
                     ao.setMessage("电话号码已存在");
                     list.add(ao);
                     break;
                 }
+//                else if(StringUtil.isEmpty(departments)){
+//                    //如果当前部门不存在于数据库中，则返回前台提示
+//                    ExcelAO ea = new ExcelAO();
+//                    ao.setName(jsons.get("name").toString());
+//                    ao.setId(jsons.get("id").toString());
+//                    ao.setMobile(jsons.get("mobile").toString());
+//                    ao.setEntryTime(jsons.get("entryTime").toString());
+//                    ao.setDept(jsons.get("").toString());
+//                    ao.setMessage("电话号码已存在");
+//                    list.add(ao);
+//                }
                 Map<String,Object> param = new HashMap<>();
                 param.put("groupNum",group);
                 param.put("comNum",comNum);
-                param.put("deptNum",deptNum);
+                param.put("deptNum",jsons.get("deptNum").toString());
+                param.put("salary",jsons.get("salary"));
                 param.put("name",jsons.get("name").toString());
                 param.put("idcard",jsons.get("idcard").toString());
                 param.put("mobile",jsons.get("mobile").toString());

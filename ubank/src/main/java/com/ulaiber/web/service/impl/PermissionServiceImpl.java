@@ -691,6 +691,7 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         user.setCardNo((String) param.get("idcard"));
         user.setEntryDate((String) param.get("entryTime"));
         user.setCreateTime(sdf.format(new Date()));
+        user.setSalaries((Double) param.get("salary"));
         int result = employeeDao.addEmployee(user);
         if(result <= 0){
             return result;
@@ -701,6 +702,11 @@ public class PermissionServiceImpl extends BaseService implements PermissionServ
         user.setDept_number((String) param.get("deptNum"));
         int result2 = levelInfoDao.addPermission(user);
         return result2;
+    }
+
+    @Override
+    public Departments queryDeptByName(String deptName) {
+        return permissionDao.queryDeptByName(deptName);
     }
 
 

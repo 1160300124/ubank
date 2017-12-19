@@ -1,5 +1,6 @@
 package com.ulaiber.web.dao;
 
+import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.User;
 
 /**
@@ -9,4 +10,5 @@ import com.ulaiber.web.model.User;
 public interface LevelInfoDao {
 
     int addPermission(User user); //新增用户权限层级信息
+
 }

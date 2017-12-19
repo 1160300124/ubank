@@ -7,12 +7,14 @@ import java.io.Serializable;
  * Created by daiqingwen on 2017/12/8.
  */
 public class ExcelAO implements Serializable {
-    private String id;             //序号
+    private String id;          //序号
     private String name;        //姓名
     private String IDCard;      //身份证
     private String mobile;      //电话
     private String entryTime;   //入职时间
-    private String message;      //错误信息
+    private String message;     //错误信息
+    private String dept;        //部门
+    private double salary;      //工资
 
     public String getId() {
         return id;
@@ -60,5 +62,21 @@ public class ExcelAO implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getDept() {
+        return dept;
+    }
+
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 }

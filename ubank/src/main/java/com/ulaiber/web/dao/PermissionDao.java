@@ -84,6 +84,13 @@ public interface PermissionDao {
      * @return user
      */
     User queryuserByMobile(String mobile);
+
+    /**
+     * 根据名称查询部门信息
+     * @param deptName  部门名称
+     * @return Departments
+     */
+    Departments queryDeptByName(String deptName);
 }
 
 

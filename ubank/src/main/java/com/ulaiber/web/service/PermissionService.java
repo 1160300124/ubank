@@ -151,4 +151,11 @@ public interface PermissionService {
      * @return int
      */
     int insertUser(Map<String, Object> param);
+
+    /**
+     * 根据名称查询部门信息
+     * @param deptName  部门名称
+     * @return Departments
+     */
+    Departments queryDeptByName(String deptName);
 }

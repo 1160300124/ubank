@@ -267,6 +267,8 @@ public class ExportExcel {
                 int rowstart = xssfSheet.getFirstRowNum();
                 int rowEnd = xssfSheet.getLastRowNum();
                 logger.info("excel总记录数为：" + (rowEnd-1));
+                //将总记录数返回给前台
+                resultMap.put("totalCount",rowEnd - 1);
                 //获取所有行
                 for(int i=rowstart;i<=rowEnd;i++) {
                     logger.info("开始导入第（"+(i+1) +"）条数据");
@@ -313,6 +315,18 @@ public class ExportExcel {
                             }
                             excelAO.setEntryTime(cell.toString());
                             continue;
+                        }else if(k == 5){ //薪资
+                            if(StringUtil.isEmpty(cell)){
+                                sb.append("工资不能为空,");
+                            }
+                            excelAO.setSalary(Double.parseDouble(cell.toString()));
+                            continue;
+                        }else if(k == 6){ //部门
+                            if(StringUtil.isEmpty(cell)){
+                                sb.append("部门不能为空,");
+                            }
+                            excelAO.setDept(cell.toString());
+                            continue;
                         }else{
                             if(!"".equals(sb.toString())){
                                 String str = sb.substring(0,sb.length()-1);
@@ -339,6 +353,8 @@ public class ExportExcel {
                 int rowstart = hssfSheet.getFirstRowNum();
                 int rowEnd = hssfSheet.getLastRowNum();
                 logger.info("excel总记录数为：" + (rowEnd-1));
+                //将总记录数返回给前台
+                resultMap.put("totalCount",rowEnd - 1);
                 for(int i=rowstart;i<=rowEnd;i++) {
                     logger.info("开始导入第（"+(i+1) +"）条数据");
                     HSSFRow row = hssfSheet.getRow(i + 1);
@@ -382,6 +398,18 @@ public class ExportExcel {
                                 sb.append("入职时间不能为空,");
                             }
                             excelAO.setEntryTime(cell.toString());
+                            continue;
+                        }else if(k == 5){ //薪资
+                            if(StringUtil.isEmpty(cell)){
+                                sb.append("工资不能为空,");
+                            }
+                            excelAO.setSalary(Double.parseDouble(cell.toString()));
+                            continue;
+                        }else if(k == 6){ //部门
+                            if(StringUtil.isEmpty(cell)){
+                                sb.append("部门不能为空,");
+                            }
+                            excelAO.setDept(cell.toString());
                             continue;
                         }else{
                             if(!"".equals(sb.toString())){
