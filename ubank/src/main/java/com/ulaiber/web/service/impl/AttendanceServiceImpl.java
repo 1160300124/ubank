@@ -465,6 +465,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 
 	@Override
 	public Map<String, Object> getRecordsByMonthAndUserId(String month, long userId, AttendanceRule rule) {
+		//当前月份
+		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
+		if (StringUtils.isEmpty(month)){
+			month = currentMonth;
+		}
 		Holiday holiday = null;
 		List<String> holidays = null;
 		List<String> workdays = null;
@@ -500,25 +505,28 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		int leaveEarlyCount = 0;
 		//未打卡次数
 		int noClockCount = 0;
-		//当前月份
-		String currentMonth = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MONTHTIME);
 		
-		double totalTime = leaveDao.getTotalTimeByUserId(userId, month);
-		String newDay = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
-		//每天工作小时数
-		double workHours = DateTimeUtil.gethour(newDay + " " + rule.getClockOnTime(), newDay + " " + rule.getClockOffTime());
-		if (rule.getRestFlag() == 0){
-			double restHours = DateTimeUtil.gethour(newDay + " " + rule.getRestEndTime(), newDay + " " + rule.getRestStartTime());
-			workHours = MathUtil.formatDouble(MathUtil.sub(workHours, restHours), 1);
+		Double totalTime = leaveDao.getTotalTimeByUserId(userId, month);
+		double leaveDay = 0;
+		if (totalTime != null){
+			String newDay = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
+			//每天工作小时数
+			double workHours = DateTimeUtil.gethour(newDay + " " + rule.getClockOnTime(), newDay + " " + rule.getClockOffTime());
+			if (rule.getRestFlag() == 0){
+				double restHours = DateTimeUtil.gethour(newDay + " " + rule.getRestEndTime(), newDay + " " + rule.getRestStartTime());
+				workHours = MathUtil.formatDouble(MathUtil.sub(workHours, restHours), 1);
+			}
+			leaveDay = new BigDecimal(MathUtil.div(totalTime, workHours)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 		}
-		double leaveDay = new BigDecimal(MathUtil.div(totalTime, workHours)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 		
+		//当天
+		String currentDay = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
 		//0 正常   1异常(迟到，早退) 2未打卡  3休息日  4请假
 		int type = 3;
 		//获取指定月份的所有天数集合(如果是当月则只返回当前日期之前的天数)
-		List<String> days = DateTimeUtil.getDaysFromMonth(month);
+		List<String> days = DateTimeUtil.getDaysFromMonth(month, true);
 		for (String day : days){
-			records.put(day, type);
+//			records.put(day, type);
 			//指定月份不能大于当前月份
 			if (month.compareTo(currentMonth) > 0){
 				continue;
@@ -544,8 +552,14 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				} 
 			}
 			
+			//休息日
 			if (isRestDay){
 				records.put(day, 3);
+				continue;
+			}
+			
+			//比当天大且不是休息日
+			if (day.compareTo(currentDay) > 0){
 				continue;
 			}
 

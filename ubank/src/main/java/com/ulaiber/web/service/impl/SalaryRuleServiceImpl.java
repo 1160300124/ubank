@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ulaiber.web.dao.SalaryRuleDao;
-import com.ulaiber.web.model.attendance.SalaryRule;
+import com.ulaiber.web.model.salary.SalaryRule;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.SalaryRuleService;
 import com.ulaiber.web.utils.DateTimeUtil;

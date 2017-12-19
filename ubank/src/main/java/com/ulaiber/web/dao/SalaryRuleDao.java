@@ -3,7 +3,7 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.attendance.SalaryRule;
+import com.ulaiber.web.model.salary.SalaryRule;
 
 /** 
  * <一句话概述功能>

@@ -1,4 +1,4 @@
-package com.ulaiber.web.model.attendance;
+package com.ulaiber.web.model.salary;
 
 /** 
  * 工资规则

@@ -10,7 +10,7 @@
 <mapper namespace="com.ulaiber.web.dao.SalaryDao">
 
     <resultMap id="SalaryMap" type="Salary" >
-       	<id column="sid" property="sid" jdbcType="VARCHAR" />
+       	<id column="sid" property="sid" jdbcType="BIGINT" />
        	<result column="operate_user_id" property="operateUserId" jdbcType="BIGINT" />
     	<result column="operate_user_name" property="operateUserName" jdbcType="VARCHAR" />
     	<result column="company_id" property="companyId" jdbcType="VARCHAR" />
@@ -76,7 +76,4 @@
 	    </foreach>  
 	</delete>
 	
-	<select id="">
-	
-	</select>
 </mapper>

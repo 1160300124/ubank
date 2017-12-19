@@ -12,7 +12,6 @@ import com.ulaiber.web.SHSecondAccount.EncryDecryUtils;
 import com.ulaiber.web.model.*;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 import com.ulaiber.web.SHSecondAccount.ShangHaiAccount;
-import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,8 +39,6 @@ public class UserController extends BaseController{
 
 	private static Logger logger = Logger.getLogger(UserController.class);
 
-	private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 	private static final SimpleDateFormat simple = new SimpleDateFormat("yyyyMMdd");
 
 	/**
@@ -54,9 +51,6 @@ public class UserController extends BaseController{
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private PermissionService permissionService;
-	
 	/**
 	 * 注册并激活钱包
 	 * @param request

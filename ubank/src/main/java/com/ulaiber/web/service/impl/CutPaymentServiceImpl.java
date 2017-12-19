@@ -29,7 +29,7 @@ import com.ulaiber.web.model.attendance.Attendance;
 import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.model.attendance.CutPayment;
 import com.ulaiber.web.model.attendance.CutPaymentRule;
-import com.ulaiber.web.model.attendance.SalaryRule;
+import com.ulaiber.web.model.salary.SalaryRule;
 import com.ulaiber.web.service.AttendanceStatisticService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.CutPaymentService;
