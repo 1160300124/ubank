@@ -181,13 +181,15 @@ var EmployeeFun = {
     //获取所有公司复制
     emp_getCompany_copy : function (groupNum) {
         var companys = COMPANYNUMBER.split(',');
+        var companyNames = COMPANYNAME.split(',');
 
         $("#emp_select_copy").empty();
         var option = "";
         for (var i = 0; i < companys.length; i++){
-            option += "<option value='" + companys[i] + "'>" + companys[i] + "</option>";
+            option += "<option value='" + companys[i] + "'>" + companyNames[i] + "</option>";
         }
         $("#emp_select_copy").html(option);
+        // EmployeeFun.emp_getDept_copy(companys[0]);
     },
     //获取所有部门
     emp_getDept : function (comNum) {
@@ -574,6 +576,21 @@ var EmployeeFun = {
     },
     showImport: function(){
         $('#employee_import_modal').modal("show");
+        //错误信息展示
+        $(".import-help").on('mouseenter', function(e) {
+            var msg = '支持WPS、excel2003以上版本文件|请将要上传的内容放在第一个sheet中|请不要加密模板文件，将导致错误|请不要上传带宏的文件，将导致错误|请不要过多的使用格式，如背景色和边框，将可能导致超时|请将手机号、身份证号等内容设置为文本格式|示例行的内容无需删除，将不会上传到系统中|只支持“xlsx,xls”的文件格式';
+            var msgs = msg.split('|');
+            var msgsDom = '';
+            $(msgs).each(function(index, item) {
+                msgsDom += "<div>· " + item + "</div>"
+            });
+            $('body').append('<div class="import-help-info" style="left:' + ($(e.currentTarget).offset().left + 40) + 'px;top:' + ($(e.currentTarget).offset().top + e.currentTarget.offsetHeight / 2 ) + 'px;">'+
+                '<div class="color-red">重要提示</div>' + msgsDom + '</div>')
+        })
+        //移除错误信息
+        $(".import-help").on('mouseout', function(e) {
+            $(".import-help-info").remove();
+        })
     },
     import: function() {
         $('.import-step').hide();
@@ -591,21 +608,19 @@ var EmployeeFun = {
             data: {
                 name : $('#employee_upload_file').val(),
                 groupNum : GROUPNUMBER,
-                comNum : COMPANYNUMBER,
-                deptNum : DEPTNUMBER,
+                comNum : COMPANYNUMBER
             },
             success: function(data) {
-                console.log('success')
                 $("#employee_upload_file").on('change', fileUploadOnChange);
                 $('.import-step').hide();
                 $('.import-modal-btns').hide();
 
                 var importData = JSON.parse(data);
-
+                console.log(importData);
                 if (importData.code === 1000) {
-                    if (importData.data && importData.data.length > 0) {
+                    if (importData.data && importData.data.list && importData.data.list.length > 0) {
 
-                        importExcelData = importData.data;
+                        importExcelData = importData.data.list;
                         editImportData();
                     } else {
                         $('.import-step-success').show();
@@ -677,6 +692,7 @@ var EmployeeFun = {
         $('.import-modal-btns').hide();
         $('.import-btns').show();
         $(".import-file-name").html('');
+        $("#employee_upload_file").val('')
     },
     //激活
     activetion : function () {
@@ -737,6 +753,8 @@ function editImportData() {
             {field : 'idcard', title: '身份证', width: 10, align : 'center',edit:{type:'text' }},
             {field : 'mobile', title: '手机号', width: 10, align : 'center',edit:{type:'text' }},
             {field : 'entryTime', title: '入职时间', width: 10, align : 'center',edit:{type:'text' }},
+            {field : 'salary', title: '薪资', width: 10, align : 'center',edit:{type:'text' }},
+            {field : 'dept', title: '部门', width: 10, align : 'center',edit:{type:'select' }},
             {field : 'message', title: '', width: 30, align : 'left', formatter: function(value, row, index, field){
                 return '<i class="error-info glyphicon glyphicon-alert" data-info="' + value + '"></i>'
             }}
@@ -812,25 +830,31 @@ function editTd(target) {
 function toEditErrorData(data) {
     var haveError = false;
     $(data).each(function(index, item) {
+        if(item.message === '电话已被注册'){
+            setDarkRow(index);
+        }
         for(var key in item) {
             if(key === 'id' || key === 'message') continue;
+            var dataTdIndex = findTdIndexByFieldName(key);
             if(item[key] === '') {
-                var dataTdIndex = findTdIndexByFieldName(key);
                 editTd(findTdByRC(index, dataTdIndex));
                 haveError = true;
-                return ;
+                continue;
             }
             if(key === 'mobile' && item[key] && !Validate.regPhone(item[key])) {
-                var dataTdIndex = findTdIndexByFieldName(key);
                 editTd(findTdByRC(index, dataTdIndex));
                 haveError = true;
-                return ;
+                continue;
             }
             if(key === 'idcard' && item[key] && item[key].length < 18) {
-                var dataTdIndex = findTdIndexByFieldName(key);
                 editTd(findTdByRC(index, dataTdIndex));
                 haveError = true;
-                return ;
+                continue;
+            }
+            if(key === 'salary' && item[key] && !Validate.isMoney(item[key]+ '')) {
+                editTd(findTdByRC(index, dataTdIndex));
+                haveError = true;
+                continue;
             }
         }
     });
@@ -875,4 +899,8 @@ function unEdit(input) {
     var index = tdDom.parent().attr('data-index');
     var fieldName = getFieldNameByColumnIndex(tdDom.index());
     importExcelData[index][fieldName] = input.val();
+}
+
+function setDarkRow(index) {
+    $($('#updat_import_table tbody tr')[index]).addClass('exists');
 }

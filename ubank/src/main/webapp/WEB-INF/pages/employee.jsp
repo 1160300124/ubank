@@ -3,24 +3,24 @@
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 <!-- 公司页 -->
 <div class="page-content">
-    <div class="col-md-12">
-        <div class="col-md-3">
-            公司<select class="combobox form-control" name="company" id="emp_select_copy"></select>
-        </div>
-        <div class="col-md-3">
-            部门<select class="combobox form-control" name="dept" id="emp_select_dept_copy"></select>
-        </div>
-        <button onclick="" type="button" class="btn btn-default">
-            <span class="fa icon-edit" aria-hidden="true"></span>搜索
-        </button>
-        <button onclick="EmployeeFun.activetion()" type="button" class="btn btn-default">
-            <span class="fa icon-edit" aria-hidden="true"></span>已激活
-        </button>
-        <button onclick="EmployeeFun.inactivated()" type="button" class="btn btn-default">
-            <span class="fa icon-edit" aria-hidden="true"></span>未激活
-        </button>
+    <form class="form-horizontal" role="form" id="record_form">
+        <div class="col-md-12">
+            <label class="col-sm-1 control-label">公司</label>
+            <div class="col-sm-2">
+                <select class="combobox form-control" name="company" id="emp_select_copy"></select>
+            </div>
+            <button onclick="" type="button" class="btn btn-default">
+                <span class="fa icon-search" aria-hidden="true"></span>搜索
+            </button>
+            <button onclick="EmployeeFun.activetion()" type="button" class="btn btn-default">
+                已激活
+            </button>
+            <button onclick="EmployeeFun.inactivated()" type="button" class="btn btn-default">
+                未激活
+            </button>
 
-    </div>
+        </div>
+    </form>
     <%--工具栏--%>
     <div id="employee_Toolbar" class="btn-group">
         <button  onclick="EmployeeFun.openAdd()" type="button" class="btn btn-default">
@@ -150,18 +150,22 @@
                 </div>
                 <div class="modal-body" style="padding: 20px;">
                     <div class="import-step import-step-one">
-                        <form id="import_employee_form" enctype="multipart/form-data">
-                            <a class="file-upload-button" href="javascript:;" target="_blank">
-                                选择文件
-                                <input id="employee_upload_file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
-                            </a>
-                        </form>
+                        <h3 class="align-center">
+                            XXX公司员工导入
+                        </h3>
+                        <a class="file-upload-button" href="javascript:;" target="_blank">
+                            选择文件
+                            <input id="employee_upload_file" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
+                        </a>
                         <div class="import-file-name">
 
                         </div>
-                        <div class="import-tip" style="text-align:center;">（请<a href="../model/model.xls">下载模板</a>文件，上传说明<span>?</span>）</div>
+                        <div class="import-tip" style="text-align:center;">（请<a href="../model/model.xls">下载模板</a>文件，上传说明<span class="import-help">?</span>）</div>
                     </div>
                     <div class="import-step import-step-two" style="display:none;">
+                        <h3 class="align-center">
+                            XXX公司员工导入
+                        </h3>
                         <img src="../images/loading.gif" alt="">
                         <br/>
                         正在导入员工请稍等，马上好。
@@ -197,5 +201,11 @@
     </div><!-- /.modal -->
 
 </div>
+<style>
+    .exists{
+        background-color: #a1a2a1 !important;
+        color: #fff;
+    }
+</style>
 <script src="<%=request.getContextPath()%>/js/employee.js" type="text/javascript"></script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>
