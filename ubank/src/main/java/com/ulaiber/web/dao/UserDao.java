@@ -3,8 +3,10 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.*;
+import org.apache.ibatis.annotations.Param;
+
 import com.ulaiber.web.model.Bank;
+import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Menu;
 import com.ulaiber.web.model.SecondAccountAO;
 import com.ulaiber.web.model.User;
@@ -210,4 +212,30 @@ public interface UserDao {
      * @return Company
      */
     List<Company> getCompanyByNum(Map<String, Object> numbers);
+    
+    /**
+     * 工资调整页面的列表
+     * @param search 关键字
+     * @param offset 多少天开始
+     * @param limit  每页多少条
+     * @return List<User> 
+     */
+    List<User> getUsersForSalaryChange(@Param("search") String search, @Param("companyNum") String companyNum, @Param("deptNum") String deptNum,
+    		@Param("offset") int offset, @Param("limit") int limit, @Param("type") String type);
+    
+    /**
+     * 工资调整页面的列表总记录数
+     * @param search 关键字
+     * @return int
+     */
+    int getTotalForSalaryChange(@Param("search") String search, @Param("companyNum") String companyNum, @Param("deptNum") String deptNum,
+    		@Param("type") String type);
+    
+    /**
+     * 更新工资
+     * @param userId
+     * @param salaries
+     * @return
+     */
+    int updateSalaryByUserId(@Param("userId") long userId, @Param("salaries") double salaries);
 }

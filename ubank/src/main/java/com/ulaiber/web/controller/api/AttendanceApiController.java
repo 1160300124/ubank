@@ -174,6 +174,18 @@ public class AttendanceApiController extends BaseController {
 			Attendance record = records.size() == 0 ? null : records.get(0);
 			if (leaveRecord != null){
 				data = message1(leaveRecord, record, date, clockOnTime, clockOffTime, rule, data);
+			} else {
+				String clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
+				if (rule.getRestFlag() == 0){
+					if (clockOnTime.split(" ")[1].compareTo(rule.getRestStartTime()) < 0){
+						clockMsg = clockOnTime.split(" ")[1] + "~" + rule.getRestStartTime() + "   " + rule.getRestEndTime() + "~" + clockOffTime.split(" ")[1];
+					} else if (clockOnTime.split(" ")[1].compareTo(rule.getRestStartTime()) >= 0 && clockOnTime.split(" ")[1].compareTo(rule.getRestEndTime()) <= 0){
+						clockMsg = rule.getRestEndTime() + "~" + clockOffTime.split(" ")[1];
+					} else if (clockOnTime.split(" ")[1].compareTo(rule.getRestEndTime()) >= 0){
+						clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
+					}
+				}
+				data.put("clockMsg", clockMsg);
 			}			
 			data.put("record", record);
 			info.setData(data);

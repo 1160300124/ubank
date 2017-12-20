@@ -24,6 +24,7 @@
 		<typeAlias alias="SalaryRule" type="com.ulaiber.web.model.salary.SalaryRule" />
 		<typeAlias alias="CutPayment" type="com.ulaiber.web.model.attendance.CutPayment" />
 		<typeAlias alias="Announcement" type="com.ulaiber.web.model.announcement.Announcement" />
+		<typeAlias alias="SalaryChange" type="com.ulaiber.web.model.salary.SalaryChange" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
 
@@ -58,6 +59,7 @@
 		<mapper resource="com/ulaiber/web/mapper/SalaryAuditMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/BanksRootMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/announcement.xml" />
+		<mapper resource="com/ulaiber/web/mapper/salaryChange.xml" />
 	</mappers>
 
 </configuration>  

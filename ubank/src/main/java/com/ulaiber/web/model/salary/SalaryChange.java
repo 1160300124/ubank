@@ -18,12 +18,12 @@ public class SalaryChange {
 	/**
 	 * 操作人ID
 	 */
-	private String operateUserId;
+	private long operateUserId;
 	
 	/**
 	 * 操作人姓名
 	 */
-	private String oprateUserName;
+	private String operateUserName;
 	
 	/**
 	 * 操作时间
@@ -36,20 +36,19 @@ public class SalaryChange {
 	private long userId;
 	
 	/**
+	 * 调之前工资
+	 */
+	private double oldSalary;
+	
+	/**
 	 * 当前工资
 	 */
 	private double currentSalary;
 	
-	
-	/**
-	 * 调之后工资
-	 */
-	private double afterChangeSalary;
-	
 	/**
 	 * 调整幅度
 	 */
-	private String changeRange;
+	private String changePercent;
 	
 	/**
 	 * 工资调整时间
@@ -69,20 +68,20 @@ public class SalaryChange {
 		this.cid = cid;
 	}
 
-	public String getOperateUserId() {
+	public long getOperateUserId() {
 		return operateUserId;
 	}
 
-	public void setOperateUserId(String operateUserId) {
+	public void setOperateUserId(long operateUserId) {
 		this.operateUserId = operateUserId;
 	}
 
-	public String getOprateUserName() {
-		return oprateUserName;
+	public String getOperateUserName() {
+		return operateUserName;
 	}
 
-	public void setOprateUserName(String oprateUserName) {
-		this.oprateUserName = oprateUserName;
+	public void setOperateUserName(String operateUserName) {
+		this.operateUserName = operateUserName;
 	}
 
 	public String getOperateDate() {
@@ -101,6 +100,14 @@ public class SalaryChange {
 		this.userId = userId;
 	}
 
+	public double getOldSalary() {
+		return oldSalary;
+	}
+
+	public void setOldSalary(double oldSalary) {
+		this.oldSalary = oldSalary;
+	}
+
 	public double getCurrentSalary() {
 		return currentSalary;
 	}
@@ -109,20 +116,12 @@ public class SalaryChange {
 		this.currentSalary = currentSalary;
 	}
 
-	public double getAfterChangeSalary() {
-		return afterChangeSalary;
+	public String getChangePercent() {
+		return changePercent;
 	}
 
-	public void setAfterChangeSalary(double afterChangeSalary) {
-		this.afterChangeSalary = afterChangeSalary;
-	}
-
-	public String getChangeRange() {
-		return changeRange;
-	}
-
-	public void setChangeRange(String changeRange) {
-		this.changeRange = changeRange;
+	public void setChangePercent(String changePercent) {
+		this.changePercent = changePercent;
 	}
 
 	public String getChangeDate() {
