@@ -266,9 +266,9 @@ public class ExportExcel {
 
                 int rowstart = xssfSheet.getFirstRowNum();
                 int rowEnd = xssfSheet.getLastRowNum();
-                logger.info("excel总记录数为：" + (rowEnd-1));
+                logger.info("excel总记录数为：" + rowEnd);
                 //将总记录数返回给前台
-                resultMap.put("totalCount",rowEnd - 1);
+                resultMap.put("totalCount",rowEnd);
                 //获取所有行
                 for(int i=rowstart;i<=rowEnd;i++) {
                     logger.info("开始导入第（"+(i+1) +"）条数据");
@@ -341,9 +341,9 @@ public class ExportExcel {
 
                     }
                 }
-                logger.info("导出完毕");
                 resultMap.put("true",TList);
                 resultMap.put("false",FList);
+                logger.info("导出完毕");
             }else if(".xls".equals(path)){
                 logger.info("开始导入excel");
                 POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file.getInputStream());
@@ -352,9 +352,9 @@ public class ExportExcel {
 
                 int rowstart = hssfSheet.getFirstRowNum();
                 int rowEnd = hssfSheet.getLastRowNum();
-                logger.info("excel总记录数为：" + (rowEnd-1));
+                logger.info("excel总记录数为：" + rowEnd);
                 //将总记录数返回给前台
-                resultMap.put("totalCount",rowEnd - 1);
+                resultMap.put("totalCount",rowEnd);
                 for(int i=rowstart;i<=rowEnd;i++) {
                     logger.info("开始导入第（"+(i+1) +"）条数据");
                     HSSFRow row = hssfSheet.getRow(i + 1);
@@ -370,6 +370,10 @@ public class ExportExcel {
                             excelAO.setId(cell.toString());
                             continue;
                         }else if(k == 1){ //判断姓名
+                            if(null == cell){
+                                sb.append("名字不能为空,");
+                                continue;
+                            }
                             if(StringUtil.isEmpty(cell.toString())){
                                 sb.append("名字不能为空,");
                             }
@@ -403,7 +407,11 @@ public class ExportExcel {
                             if(StringUtil.isEmpty(cell)){
                                 sb.append("工资不能为空,");
                             }
-                            excelAO.setSalary(Double.parseDouble(cell.toString()));
+                            try {
+                                excelAO.setSalary(Double.parseDouble(cell.toString()));
+                            }catch(Exception ex){
+                                sb.append("工资格式异常,");
+                            }
                             continue;
                         }else if(k == 6){ //部门
                             if(StringUtil.isEmpty(cell)){
@@ -424,9 +432,9 @@ public class ExportExcel {
 
                     }
                 }
-                logger.info("导出完毕");
                 resultMap.put("true",TList);
                 resultMap.put("false",FList);
+                logger.info("导出完毕");
             }
         }catch (Exception e){
             logger.error("导入excel失败" ,e);

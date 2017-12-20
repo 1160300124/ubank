@@ -583,17 +583,17 @@ var EmployeeFun = {
         $("#import_btn").addClass('disabled');
 
         $.ajaxFileUpload({
-            url: 'importEmployee',
+            url: 'importEmployee?group='+GROUPNUMBER + '&comNum='+COMPANYNUMBER,
             type: 'POST',
             secureuri: false,
             fileElementId: "employee_upload_file",
             dataType: "json",
-            data: {
-                name : $('#employee_upload_file').val(),
-                groupNum : GROUPNUMBER,
-                comNum : COMPANYNUMBER,
-                deptNum : DEPTNUMBER,
-            },
+            data:{picParams:'1sdf '},
+            // data: {
+            //     name : $('#employee_upload_file').val(),
+            //     group : GROUPNUMBER,
+            //     comNum : COMPANYNUMBER
+            // },
             success: function(data) {
                 console.log('success')
                 $("#employee_upload_file").on('change', fileUploadOnChange);
@@ -643,7 +643,7 @@ var EmployeeFun = {
                 rows : JSON.stringify(importExcelData),
                 group : GROUPNUMBER,
                 comNum : COMPANYNUMBER,
-                deptNum : DEPTNUMBER,
+                deptNum : DEPTNUMBER
             },
             success: function(data) {
                 $("#employee_upload_file").on('change', fileUploadOnChange);

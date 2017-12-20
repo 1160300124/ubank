@@ -808,10 +808,9 @@ public class Test {
 //		String result = HttpsUtil.doGet("http://localhost:8080/ubank/api/v1/getAllCount",map);
 //		System.out.println("result is : "+result);
 
-		Integer a = 128;
-		Integer b = 128;
-		System.out.println(a.equals(b));
-
+		String a = "9s999.98";
+		Double num2 = Double.valueOf(a);
+		System.out.println(num2);
 	}
 
 
