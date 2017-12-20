@@ -214,4 +214,71 @@
 			#{number}
 		</foreach>
 	</select>
+	
+	<select id="getUsersForSalaryChange" resultMap="UserMap">
+	    select u.user_id,u.user_name,u.mobile,u.cardNo,u.salaries,u.entryDate,u.leaveDate,r.groupNumber,r.companyNumber companyId,r.dept_number,
+		l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
+		left join tbl_roots r on u.user_id = r.userid
+		left join tbl_roles l on u.role_id = l.role_id
+		left join tbl_departments d on r.dept_number = d.dept_number
+		left join tbl_company c on r.companyNumber = c.companyNumber
+		where u.disabled = '0' and r.disabled = '0' and r.sysflag='1'
+		<if test="companyNum != null and companyNum != ''">
+			and c.companyNumber=#{companyNum}
+		</if>
+		<if test="deptNum != null and deptNum != ''">
+			and d.dept_number=#{deptNum}
+		</if>
+		<if test="type == 1">
+			and u.entryDate != '' and u.entryDate is not null and (u.leaveDate = '' or u.leaveDate is null or u.leaveDate &gt;= curdate())
+		</if>
+		<if test="type == 2">
+			and u.leaveDate != '' and u.leaveDate is not null and u.leaveDate &lt; curdate()
+		</if>
+		<if test="type == 3">
+			and u.salaries is null
+		</if>
+		<if test="type == 4">
+			and u.salaries is not null
+		</if>
+		<if test="search != null and search != ''">
+            and (u.user_name like concat('%',#{search},'%') or u.mobile like concat('%',#{search},'%') or d.name like concat('%',#{search},'%'))
+        </if>
+		limit #{offset},#{limit}
+	</select>
+	
+	<select id="getTotalForSalaryChange" resultType="Integer">
+	    select count(1) from tbl_users u
+		left join tbl_roots r on u.user_id = r.userid
+		left join tbl_roles l on u.role_id = l.role_id
+		left join tbl_departments d on r.dept_number = d.dept_number
+		left join tbl_company c on r.companyNumber = c.companyNumber
+		where u.disabled = '0' and r.disabled = '0' and r.sysflag='1'
+		<if test="companyNum != null and companyNum != ''">
+			and c.companyNumber=#{companyNum}
+		</if>
+		<if test="deptNum != null and deptNum != ''">
+			and d.dept_number=#{deptNum}
+		</if>
+		<if test="type == 1">
+			and u.entryDate != '' and u.entryDate is not null and (u.leaveDate = '' or u.leaveDate is null or u.leaveDate &gt;= curdate())
+		</if>
+		<if test="type == 2">
+			and u.leaveDate != '' and u.leaveDate is not null and u.leaveDate &lt; curdate()
+		</if>
+		<if test="type == 3">
+			and u.salaries is null
+		</if>
+		<if test="type == 4">
+			and u.salaries is not null
+		</if>
+		 <if test="search != null and search != ''">
+            and  (u.user_name like concat('%',#{search},'%') or u.mobile like concat('%',#{search},'%') or d.name like concat('%',#{search},'%'))
+        </if>
+	</select>
+	
+	<update id="updateSalaryByUserId">
+		update tbl_users set salaries=#{salaries} where user_id=#{userId}
+	</update>
+	
 </mapper>

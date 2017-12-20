@@ -380,5 +380,21 @@ public class UserServiceImpl extends BaseService implements UserService {
         return mapper.getSecondAccountByMobile(mobile);
     }
 
+	@Override
+	public List<User> getUsersForSalaryChange(String search, int offset, int limit, String companyNum, String deptNum, String type) {
+		return mapper.getUsersForSalaryChange(search, companyNum, deptNum, offset, limit, type);
+	}
+
+	@Override
+	public int getTotalForSalaryChange(String search, String companyNum, String deptNum, String type) {
+		return mapper.getTotalForSalaryChange(search, companyNum, deptNum, type);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
+	public boolean updateSalaryByUserId(long userId, double salaries) {
+		return mapper.updateSalaryByUserId(userId, salaries) > 0;
+	}
+
 
 }
