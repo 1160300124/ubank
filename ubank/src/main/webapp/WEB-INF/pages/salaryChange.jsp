@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <%@ include file="/WEB-INF/pages/header.jsp" %>
 
 <div class="page-content">
 		<form class="form-horizontal" role="form" id="record_form">
+			<input type="hidden" id="user_id" />
 			<div class="form-group">
 				<label class="col-sm-1 control-label" for="company">公司</label>
 	            <div class="col-sm-2">
@@ -20,53 +21,48 @@
                    	  </select>
 	            </div>
 	            
+	            <label class="col-sm-1 control-label" for="dept"></label>
+	            <div class="col-sm-2">
+	            	<div class="input-group">
+		                  <input class="form-control" id="search" name="search" type="text" placeholder="搜索"/>
+		                  <span class="input-group-addon"><span class="fa icon-search" aria-hidden="true"></span></span>
+	                  </div>
+	            </div>
 			</div>
 			<div class="form-group">
-	            
-	            <label class="col-sm-1 control-label" for=""></label>
-	            <div class="col-sm-8">
-	            	<button type="button" class="btn btn-default" id="btn_all" >
-	            		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;全部&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	            	</button>
-	            	&nbsp;
-	            	<button type="button" class="btn btn-default" id="btn_on_the_job" >
-	            		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	            	</button>
-	            	&nbsp;
-					<button type="button" class="btn btn-default" id="btn_leave_office">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;离职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</button>
-					&nbsp;
-					<button type="button" class="btn btn-default" id="btn_salary_set">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;未定薪&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</button>
-					&nbsp;
-					<button type="button" class="btn btn-default" id="btn_adjustment_salary">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;调薪&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</button>
-					<button type="button" onclick="salaryChangeFun.openAdjustmentSalaryModal()" class="btn btn-default" id="btn_salary_change">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;调薪弹框&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</button>
-					<button type="button" onclick="salaryChangeFun.openPositiveSalaryModal()" class="btn btn-default" id="btn_fixed_salary">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;定薪弹框&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					</button>
-	            </div>
+				<label class="col-sm-1 control-label" for=""></label>
+				<button type="button" class="btn active btn-primary" id="btn_all" value="0">
+	           		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;全部&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	           	</button>
+	           	<button type="button" class="btn btn-default" id="btn_on_the_job" value="1">
+	           		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	           	</button>
+				<button type="button" class="btn btn-default" id="btn_leave_office" value="2">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;离职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</button>
+				<button type="button" class="btn btn-default" id="btn_salary_set" value="3">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;未定薪&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</button>
+				<button type="button" class="btn btn-default" id="btn_salary_change" value="4">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;调薪&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</button>
 			</div>
 		</form>
 		
-		<table id="tb_salary_records" data-toggle="table" data-method="get" data-striped="true" data-sort-order="desc"
-			   data-pagination="true" data-side-pagination="server" data-click-to-select="true"
-			   data-page-size="10" data-page-list="[10,15,20]">
+		<table id="tb_salary_change" data-toggle="table" data-method="get"  data-striped="true" data-sort-order="desc"
+			   data-pagination="true" data-side-pagination="server"
+			   data-click-to-select="true" data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
 			<tr>
 				<th data-checkbox="true"></th>
 				<th data-field="userName">姓名</th>
-				<th data-field="clockDate"  data-width="100px">手机号</th>
-				<th data-field="company.name">公司</th>
-				<th data-field="dept.deptName">部门</th>
-				<th data-field="clockOnDateTime" data-width="100px">入职时间</th>
-				<th data-field="clockOnStatus" data-formatter="clockOnStatusFormatter">任职状态</th>
-				<th data-field="clockOnLocation">基本工资</th>
+				<th data-field="mobile"  data-width="120px">手机号</th>
+				<th data-field="com_name">公司</th>
+				<th data-field="dept_name">部门</th>
+				<th data-field="entryDate" data-width="120px">入职时间</th>
+				<th data-field="leaveDate" data-width="120px">离职时间</th>
+				<th data-field="clockOnStatus" data-formatter="statusFormatter" data-width="120px">任职状态</th>
+				<th data-field="salaries">基本工资</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
 			</thead>
@@ -76,10 +72,10 @@
 </div>
 
 <div id="adjustment_salary_modal" class="modal fade">
-	<div class="modal-dialog" style="min-width:700px;">
+	<div class="modal-dialog" style="width:60%;min-width:700px;max-width: 900px;">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" >调薪</h4>
 			</div>
 			<div class="modal-body flex">
@@ -90,8 +86,8 @@
 						</div>
 						<div class="flex3 employee-info">
 							<div class="status">
-								<span class="on-job">在职</span>
-								<span class="no-job">离职</span>
+								<span class="on-job" style="display:none">在职</span>
+								<span class="no-job" style="display:none">离职</span>
 							</div>
 							<div class="time flex">
 								<div class="flex1 color999 font13">
@@ -147,13 +143,13 @@
 							调薪原因
 						</div>
 						<div class="flex3 align-right">
-							<textarea name="" id="" cols="30" rows="10" class="form-control" style="height: 60px;"></textarea>
+							<textarea name="change_reason" id="change_reason" cols="30" rows="10" class="form-control" style="height: 100px;"></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="flex1 padding10 adjustment-log" style="overflow: auto;max-height:350px;min-width:250px;">
+				<div class="flex1 padding10 adjustment-log" style="overflow: auto;max-height:400px;min-width:350px;">
 					<div style="padding-bottom:10px; border-bottom:1px solid #ccc;">调薪记录</div>
-					<div>
+					<div id="record">
 						<div class="flex align-item-center">
 							<div class="paddingright20 color999">
 								2017-12-15
@@ -180,8 +176,8 @@
 				</div>
 			</div>
 			<div class="modal-footer" style="text-align: center;">
-				<button type="button" onclick="EmployeeFun.import() " class="btn btn-primary">提交</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="add_salary_change">确认</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -202,7 +198,8 @@
 						</div>
 						<div class="flex3 employee-info">
 							<div class="status">
-								<span class="on-job">在职</span>
+								<span class="on-job" style="display:none">在职</span>
+								<span class="no-job" style="display:none">离职</span>
 							</div>
 							<div class="time flex">
 								<div class="flex1 color999 font13">
@@ -224,10 +221,10 @@
 					</div>
 					<div class="flex align-item-center padding10">
 						<div class="flex1">
-							调整基本工资
+							初始薪资
 						</div>
 						<div class="flex3 align-left">
-							<input type="text" id="fixedSalaryText" class="form-control" placeholder="当前基本工资"/>
+							<input type="text" id="fixedSalaryText" class="form-control" placeholder="初始薪资"/>
 							<span class="error-tip"></span>
 						</div>
 					</div>
@@ -259,7 +256,7 @@
 			</div>
 			<div class="modal-footer" style="text-align: center;">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-				<button type="button" onclick="EmployeeFun.import() " class="btn btn-primary">确认添加</button>
+				<button type="button" class="btn btn-primary" id="set_first_salary">确认</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

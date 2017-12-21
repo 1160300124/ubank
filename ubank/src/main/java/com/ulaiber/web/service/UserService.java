@@ -3,7 +3,15 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
-import com.ulaiber.web.model.*;
+import org.apache.ibatis.annotations.Param;
+
+import com.ulaiber.web.model.Bank;
+import com.ulaiber.web.model.BankUsers;
+import com.ulaiber.web.model.Company;
+import com.ulaiber.web.model.Menu;
+import com.ulaiber.web.model.Message;
+import com.ulaiber.web.model.SecondAccountAO;
+import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
 
 public interface UserService {
@@ -215,4 +223,28 @@ public interface UserService {
 	 * @return Company
 	 */
     List<Company> getCompanyByNum(int[] numbers);
+    
+    /**
+     * 工资调整页面的列表
+     * @param search
+     * @param offset
+     * @param limit
+     * @return
+     */
+    List<User> getUsersForSalaryChange(String search, int offset, int limit, String companyNum, String deptNum, String type);
+    
+    /**
+     * 工资调整页面的列表总记录数
+     * @param search 关键字
+     * @return int
+     */
+    int getTotalForSalaryChange(String search, String companyNum, String deptNum, String type);
+    
+    /**
+     * 更新工资
+     * @param userId
+     * @param salaries
+     * @return
+     */
+    boolean updateSalaryByUserId(long userId, double salaries);
 }

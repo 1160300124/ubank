@@ -427,30 +427,20 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 忘记登录密码
-	 * @param mobile
-	 * @param captcha
-	 * @param password
-	 * @param confirm_password
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param mobile 手机号
+	 * @param captcha 验证码
+	 * @param password 密码
+	 * @return ResultInfo
 	 */
 	@RequestMapping(value = "forgetLoginPassword", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo forgetPassword(String mobile, String captcha, String password, String confirm_password,
-			HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo forgetPassword(String mobile, String captcha, String password){
 		logger.debug("forgetLoginPassword start...");
 		ResultInfo retInfo = new ResultInfo();
-		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) || StringUtils.isEmpty(confirm_password)){
+		if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(captcha) || StringUtils.isEmpty(password) ){
 			logger.error("params can not be null.");
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
 			retInfo.setMessage("参数不能为空。");
-			return retInfo;
-		}
-		if (!StringUtils.equals(password, confirm_password)){
-			logger.error("confirmed password and new password do not match.");
-			retInfo.setCode(IConstants.QT_PWD_NOT_MATCH);
-			retInfo.setMessage("新密码与确认密码不一致。");
 			return retInfo;
 		}
 		String cap = captchaMap.get(mobile);
@@ -467,8 +457,7 @@ public class UserController extends BaseController{
 			retInfo.setCode(IConstants.QT_CODE_OK);
 			retInfo.setMessage("找回登录密码成功。");
 			logger.info(mobile + "find login password successed.");
-		}
-		else {
+		}else {
 			retInfo.setCode(IConstants.QT_CODE_ERROR);
 			retInfo.setMessage("找回登录密码失败。");
 			logger.error(mobile + "find login password failed.");
@@ -480,7 +469,6 @@ public class UserController extends BaseController{
 	
 	/**
 	 * 忘记支付密码
-	 * 版本 V0.6
 	 * @param mobile 手机号
 	 * @param captcha 验证码
 	 * @param password 密码

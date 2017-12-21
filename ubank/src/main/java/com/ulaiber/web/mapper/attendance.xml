@@ -94,9 +94,10 @@
 	</select>
 	
 	<select id="getRecordsByDateAndUserId" parameterType="Map" resultMap="AttendanceMap">
-		select user_id,user_name,clock_date,clock_on_datetime,clock_on_status,clock_on_location,clock_on_device,clock_on_remark,clock_off_datetime,clock_off_status,
-		clock_off_location,clock_off_device,clock_off_remark,patchClock_type,patchClock_status,revoke_type from tbl_attendance_records 
-		where user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} order by rid
+		select r.rid,r.user_id,r.user_name,r.clock_date,r.clock_on_datetime,r.clock_on_status,r.clock_on_location,r.clock_on_device,r.clock_on_remark,
+		r.clock_off_datetime,r.clock_off_status,r.clock_off_location,r.clock_off_device,r.clock_off_remark,r.patchClock_type,r.patchClock_status,r.revoke_type
+		from tbl_attendance_records r left join tbl_users u on r.user_id=u.user_id
+		where u.user_id=#{userId} and clock_date&gt;=#{dateBegin} and clock_date&lt;=#{dateEnd} and u.disabled='0' order by r.rid
 	</select>
 
 	<select id="getRecordsByDateAndMobile" parameterType="Map" resultMap="AttendanceMap">

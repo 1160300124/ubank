@@ -606,7 +606,6 @@ var EmployeeFun = {
             secureuri: false,
             fileElementId: "employee_upload_file",
             dataType: "json",
-            // data:{picParams:'1sdf '},
             success: function(data) {
                 $("#employee_upload_file").on('change', fileUploadOnChange);
                 $('.import-step').hide();
