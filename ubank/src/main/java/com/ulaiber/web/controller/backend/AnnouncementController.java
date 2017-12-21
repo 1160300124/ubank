@@ -261,7 +261,6 @@ public class AnnouncementController extends BaseController {
 	
 	/**
 	 * 撤回公告
-	 * @param announcement 公告实体
 	 * @param request request
 	 * @param response response
 	 * @return ResultInfo
@@ -305,8 +304,8 @@ public class AnnouncementController extends BaseController {
 		try {
 			int type = IConstants.NOTICE;
 			String status = "";
-			//暂时不需要内容
-			content = "";
+			content = title;
+			title = "您有一条新的公告消息";
 			String[] CIDS = cid.split(",");
 			for (int i = 0 ; i < CIDS.length; i++){
 				if(!StringUtil.isEmpty(CIDS[i])){
