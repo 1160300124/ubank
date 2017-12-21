@@ -352,7 +352,7 @@
                 files.forEach(function(item) {
                     item.addEventListener('click', function(e) {
                         var target = e.currentTarget;
-                        window.app.previewFile(target.getAttribute('data-preview'), target.getAttribute('data-down'));
+                        window.app.previewFile(target.getAttribute('data-preview'), target.getAttribute('data-down'), target.querySelector('.file-name').innerText, target.querySelector('.file-size').innerText);
                     })
                 })
 
