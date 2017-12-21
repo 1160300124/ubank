@@ -84,7 +84,7 @@
 			</div>
 			<div class="modal-body flex">
 				<div class="flex2">
-					<div class="flex align-item-center padding10">
+					<div class="flex align-item-center">
 						<div class="flex1 employee-name">
 							张晓晓
 						</div>
@@ -94,7 +94,7 @@
 								<span class="no-job">离职</span>
 							</div>
 							<div class="time flex">
-								<div class="flex1 color999">
+								<div class="flex1 color999 font13">
 									入职时间
 								</div>
 								<div class="flex3">
@@ -102,7 +102,7 @@
 								</div>
 							</div>
 							<div class="department flex">
-								<div class="flex1 color999">
+								<div class="flex1 color999 font13">
 									部门
 								</div>
 								<div class="flex3">
@@ -118,9 +118,8 @@
 						<div class="flex1">
 							<span id="oldSalary">1000</span> →
 						</div>
-						<div class="flex2 align-right">
+						<div class="flex2 align-right usr-icon usr-icon-money">
 							<input type="text" id="adjustmentSalaryText" class="form-control" />
-							<span class="error-tip"></span>
 						</div>
 					</div>
 					<div class="flex align-item-center padding10">
@@ -129,7 +128,7 @@
 						</div>
 						<div class="flex1">
 						</div>
-						<div class="flex2 align-right">
+						<div class="flex2 align-right usr-icon usr-icon-edit">
 							<input type="text" id="adjustmentPercent" class="form-control" readonly="readonly">
 						</div>
 					</div>
@@ -139,7 +138,7 @@
 						</div>
 						<div class="flex1">
 						</div>
-						<div class="flex2 align-right">
+						<div class="flex2 align-right usr-icon usr-icon-calender">
 							<input type="text" id="effectTime" class="form-control" />
 						</div>
 					</div>
@@ -156,7 +155,7 @@
 					<div style="padding-bottom:10px; border-bottom:1px solid #ccc;">调薪记录</div>
 					<div>
 						<div class="flex align-item-center">
-							<div class="paddingright20">
+							<div class="paddingright20 color999">
 								2017-12-15
 							</div>
 							<div class="flex1 salary-log">
@@ -167,7 +166,7 @@
 							</div>
 						</div>
 						<div class="flex align-item-center">
-							<div class="paddingright20">
+							<div class="paddingright20 color999">
 								2017-12-15
 							</div>
 							<div class="flex1 salary-log">
@@ -181,8 +180,8 @@
 				</div>
 			</div>
 			<div class="modal-footer" style="text-align: center;">
+				<button type="button" onclick="EmployeeFun.import() " class="btn btn-primary">提交</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-				<button type="button" onclick="EmployeeFun.import() " class="btn btn-primary">确认添加</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -206,7 +205,7 @@
 								<span class="on-job">在职</span>
 							</div>
 							<div class="time flex">
-								<div class="flex1 color999">
+								<div class="flex1 color999 font13">
 									入职时间
 								</div>
 								<div class="flex3">
@@ -214,7 +213,7 @@
 								</div>
 							</div>
 							<div class="department flex">
-								<div class="flex1 color999">
+								<div class="flex1 color999 font13">
 									部门
 								</div>
 								<div class="flex3">
@@ -266,5 +265,41 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<style>
+	.error-money{
+		position: relative;
+	}
+	.error-money::before{
+		content: '请输入正确的金额';
+		position: absolute;
+		left: 0px;
+		top: 100%;
+		color: red;
+	}
+
+	.usr-icon{
+		position: relative;
+    	font-family: 'Glyphicons Halflings';
+	}
+
+	.usr-icon::after{
+		position: absolute;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+
+	.usr-icon-money::after{
+		content: '\00a5';
+	}
+
+	.usr-icon-edit::after{
+		content: '\e065';
+	}
+
+	.usr-icon-calender:after{
+		content: '\e109';
+	}
+</style>
 <script src="<%=request.getContextPath()%>/js/salaryChange.js" type="text/javascript" ></script>
 <%@ include file="/WEB-INF/pages/footer.jsp" %>

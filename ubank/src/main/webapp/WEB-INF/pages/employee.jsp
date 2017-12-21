@@ -151,7 +151,7 @@
                 <div class="modal-body" style="padding: 20px;">
                     <div class="import-step import-step-one">
                         <h3 class="align-center">
-                            XXX公司员工导入
+                            <span class="import-company-name"></span>公司员工导入
                         </h3>
                         <a class="file-upload-button" href="javascript:;" target="_blank">
                             选择文件
@@ -164,7 +164,7 @@
                     </div>
                     <div class="import-step import-step-two" style="display:none;">
                         <h3 class="align-center">
-                            XXX公司员工导入
+                            <span class="import-company-name"></span>公司员工导入
                         </h3>
                         <img src="../images/loading.gif" alt="">
                         <br/>
@@ -174,12 +174,19 @@
                         <i class="glyphicon glyphicon-ok-circle"></i>
                     </div>
                     <div class="import-step import-step-edit" style="display:none;">
-                        <a class="file-upload-button" href="javascript:;" target="_blank" style="margin: 0px 0px 10px 0px;">
-                            重新选择
-                            <input id="employee_upload_file_rechoose" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
-                        </a>
+                        <div class="align-center" style="position: relative;height:40px;line-height:40px;">
+                            <a class="file-upload-button" href="javascript:;" target="_blank" style="margin: 0px 0px 10px 0px;position:absolute;left:0px;top:0px;">
+                                重新选择
+                                <input id="employee_upload_file_rechoose" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
+                            </a>
+                            <span style="font-size:25px;font-weight:700;"><span class="import-company-name"></span>公司员工导入</span>
+                        </div>
+                        <div class="align-center" style="position: relative;height:30px;line-height:30px;">
+                            <div style="position:absolute;left:0px;" id="importFileName">（未知.xlsx）</div>
+                            <span style="color:#666;" id="importResult">一共识别10条，其中成功8条，失败3条</span>
+                        </div>
                         <div>
-                            <table id="updat_import_table"></table>
+                            <table id="updat_import_table" class="import-result"></table>
                         </div>
                     </div>
                 </div>
@@ -205,6 +212,35 @@
     .exists{
         background-color: #a1a2a1 !important;
         color: #fff;
+    }
+
+    .exists-info{
+        color: #a1a2a1;
+    }
+
+    .import-result td:last-child{
+        background-color: #fff;
+    }
+
+    .error-info-exists-tip{
+        background-color: #a1a2a1;
+        color: #fff;
+        padding: 10px;
+        position: absolute;
+        z-index: 9999;
+        transform: translateY(-50%);
+    }
+
+    .error-info-exists-tip::before{
+        content: '';
+        height: 0px;
+        width: 0px;
+        border: 10px solid transparent;
+        border-right: 10px solid #a1a2a1;
+        position: absolute;
+        left: -20px;
+        top: 50%;
+        transform: translateY(-50%);
     }
 </style>
 <script src="<%=request.getContextPath()%>/js/employee.js" type="text/javascript"></script>

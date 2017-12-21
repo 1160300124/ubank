@@ -348,8 +348,7 @@ a:active, a:hover, a:focus, a:visited {
 
 .employee-info .status span{
     display: inline-block;
-    height: 30px;
-    padding: 5px;
+    padding: 3px;
     color: #fff;
     border-radius: 5px;
 }
@@ -359,6 +358,10 @@ a:active, a:hover, a:focus, a:visited {
 }
 .employee-info .status .no-job{
     background-color: #e8583d;
+}
+
+.employee-info>div:not(:first-child){
+    line-height: 30px;
 }
 
 .add-turn-positive-btn{
@@ -432,7 +435,7 @@ a:active, a:hover, a:focus, a:visited {
 }
 
 .danger-input{
-    box-shadow: 0 0 5px red;
+    box-shadow: 0 0 8px red;
     animation: flashInputBorder 1.8s infinite;
 }
 
@@ -440,7 +443,7 @@ a:active, a:hover, a:focus, a:visited {
     padding: 0px !important;
 }
 
-.td-editing>input{
+.td-editing>input:focus {
     box-shadow: 0 0 5px lightskyblue;
 }
 
@@ -448,7 +451,7 @@ a:active, a:hover, a:focus, a:visited {
     0%{
         box-shadow: 0 0 5px red;
     }
-    80%{
+    50%{
         box-shadow: none;
     }
 }
@@ -496,3 +499,6 @@ a:active, a:hover, a:focus, a:visited {
     text-align: center;
 }
 
+.font13{
+    font-size: 13px;
+}

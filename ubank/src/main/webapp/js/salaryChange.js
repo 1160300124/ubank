@@ -98,11 +98,11 @@ window.operateEvents = {
 function validateMoney(e) {
 	if(!Validate.isMoney($(e.currentTarget).val()))
 	{
-		$(e.currentTarget.nextElementSibling).html('请输入合法金额');
+		$(e.currentTarget).parent().addClass('error-money');
 		return false;
 	}
 	else {
-		$(e.currentTarget.nextElementSibling).html('');
+		$(e.currentTarget).parent().removeClass('error-money');
 		return true;
 	}
 }

@@ -345,7 +345,7 @@
 
                 //绑定下载图片按钮事件
                 document.querySelector('.pswp__button--download').addEventListener('touchstart', function(e) {
-                    window.app.downloadImg(gallery.currItem);
+                    window.app.downloadImg(gallery.currItem.src);
                 })
 
                 var files = document.querySelectorAll('#table_preview_attachment tr');
