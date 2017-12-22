@@ -66,6 +66,14 @@
                 td:first-child{
                     width: 50px;
                 }
+
+                .pswp__button--download {
+                    background-position: -1000px -1000px;
+                    position: fixed !important;
+                    right: 10px;
+                    bottom: 10px;
+                    z-index: 9999;
+                }
             </style>
             <link href="<%=request.getContextPath()%>/css/photoswipe/photoswipe.css" rel="stylesheet" />
             <link href="<%=request.getContextPath()%>/css/photoswipe/default-skin/default-skin.css" rel="stylesheet" />
@@ -129,7 +137,7 @@
 
                             <div class="pswp__counter"></div>
 
-                            <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                            <!-- <button class="pswp__button pswp__button--close" title="Close (Esc)"></button> -->
 
                             <button class="pswp__button pswp__button--download" title="download">
                                 <i class="glyphicon glyphicon-download-alt" style="color:#fff;font-size:16px;"></i>
@@ -280,7 +288,7 @@
 
                             // define gallery index (for URL)
                             galleryUID: galleryElement.getAttribute('data-pswp-uid'),
-
+                            closeOnVerticalDrag: false,
                             getThumbBoundsFn: function (index) {
                                 // See Options -> getThumbBoundsFn section of documentation for more info
                                 var thumbnail = galleryElement, // find thumbnail
@@ -323,6 +331,7 @@
                         // Pass data to PhotoSwipe and initialize it
                         gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
                         gallery.init();
+                        window.app.openImgPreview();
                     };
 
                     // loop through all gallery elements and bind events
@@ -369,6 +378,10 @@
                  * */
                 function previewFile(previewUrl, downloadUrl) {
 
+                }
+
+                function closeImgPreview() {
+                    gallery.close();
                 }
             </script>
         </body>
