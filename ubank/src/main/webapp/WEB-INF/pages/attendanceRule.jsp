@@ -41,7 +41,7 @@
 	</table>
 	
 	<!-- 模态框（Modal） -->
-	<div class="modal fade" id="add_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y:auto;">
+	<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y:auto;">
 		<div class="modal-dialog" style="width:60%;min-width:760px;max-width: 900px;">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -51,7 +51,8 @@
 					<h4 class="modal-title" id="myModalLabel">新增考勤规则</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal" role="form" id="add_form">
+					<form class="form-horizontal" role="form" id="form">
+						<input class="form-control" id="rule_id" type="hidden"/>
 						<div class="form-group">
 	                       <label class="col-sm-2 control-label" for="rule_name">规则名称</label>
 	                       <div class="col-sm-8">
@@ -113,7 +114,7 @@
 	                       					
 						<div class="form-group">
 	                        <label class="col-sm-3 control-label" ></label>
-	                        <div class="col-sm-8">
+	                        <div class="col-sm-7">
 								<div style=" color: gray;">
 									休息时段仅对有一个工作时段的工作日（含特殊日期）生效，设置后，工作时长会扣除休息时段部分
 								</div>
@@ -155,6 +156,7 @@
 	                        	<label class="control-label" for="ds_host">1.&nbsp;&nbsp;&nbsp;地点考勤</label>
 	                        	<span style="float:right;">有效范围 &nbsp;&nbsp;
 				                    <select name="" id="bounds" class="form-control form-select">
+				                    	<option value="100">100米</option>
 				                        <option value="300">300米</option>
 				                        <option value="500">500米</option>
 				                        <option value="800">800米</option>
@@ -207,6 +209,13 @@
 	                        	<input class="form-control" id="attendance_people_" type="text" placeholder="请选择参与考勤人员..."/>
 	                        </div>
 	                     </div>
+	                     
+	                     <div class="form-group">
+	                        <label class="col-sm-2 control-label" for="ds_host">无需考勤人员</label>
+	                        <div class="col-sm-8">
+	                        	<input class="form-control" id="attendance_no_people_" type="text" placeholder="请选择无需考勤人员..."/>
+	                        </div>
+	                     </div>
 					    
 					</form>
 
@@ -219,185 +228,6 @@
 		</div>
 	</div>
 	
-	<!-- 模态框（Modal） -->
-	<div class="modal fade" id="edit_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow-y:auto;">
-		<div class="modal-dialog" style="width:60%;min-width:760px;max-width: 900px;">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-						&times;
-					</button>
-					<h4 class="modal-title" id="myModalLabel">修改考勤规则</h4>
-				</div>
-				<div class="modal-body" >
-					<form class="form-horizontal" role="form" id="edit_form">
-						<input class="form-control" id="rule_id" type="hidden"/>
-						<div class="form-group">
-	                       <label class="col-sm-2 control-label" for="rule_name">规则名称</label>
-	                       <div class="col-sm-8">
-	                          <input class="form-control" id="rule_name" type="text" placeholder="请输入..."/>
-	                       </div>
-	                    </div>
-	                    
-						<div class="form-group">
-	                        <label class="col-sm-2 control-label" for="type">考勤类型</label>
-	                        <div class="col-sm-8">
-	                        	<input type="radio" id="attendance1" checked="checked" class="icheck">
-	                        	&nbsp;&nbsp;<label class="control-label" for="type">固定班制</label>
-	                        </div>
-	                     </div>
-	                     
-	                     <div class="form-group">
-                        	<label class="col-sm-3 control-label" style=" color: gray;">工作时段</label>
-                           	<div class="col-sm-3" >
-				            	<div class="input-group date time-picker" id="datetimepicker_start">
-					                <input class="form-control" id="start_time" type="text" placeholder="请选择工作开始时间" style="width:160px;"/>
-					            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-				            	</div>
-				            </div>
-				            <div class="col-sm-1 control-label">一</div>
-							<div class="col-sm-2">
-					            <div class="input-group date time-picker" id="datetimepicker_end">
-					               <input class="form-control" id="end_time" type="text" placeholder="请选择工作结束时间"  style="width:160px;"/>
-					               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-					            </div>
-				            </div>
-	                     </div>
-	                    
-	                    <div class="form-group">
-	                       <label class="col-sm-3 control-label"></label>
-	                       <div class="col-sm-5 control-label">
-		                       <div style="float:left;">
-		                       	  <input tabindex="1" type="checkbox" id="input-rest" class="icheck" checked="checked">
-	                              &nbsp;&nbsp;<label for="input-rest">设置休息时间段</label>
-		                       </div>
-	                       </div>
-	                    </div>
-	                    
-	                    <div class="form-group">
-                        	<label class="col-sm-3 control-label" ></label>
-                           	<div class="col-sm-3" >
-				            	<div class="input-group date time-picker" id="datetimepicker_start">
-					                <input class="form-control" id="rest_start_time" type="text" placeholder="请选择休息开始时间" style="width:160px;"/>
-					            	<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-				            	</div>
-				            </div>
-				            <div class="col-sm-1 control-label">一</div>
-							<div class="col-sm-2">
-					            <div class="input-group date time-picker" id="datetimepicker_end">
-					               <input class="form-control" id="rest_end_time" type="text" placeholder="请选择休息结束时间"  style="width:160px;"/>
-					               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-					            </div>
-				            </div>
-	                    </div>
-	                       					
-						<div class="form-group">
-	                        <label class="col-sm-3 control-label" ></label>
-	                        <div class="col-sm-8">
-								<div style=" color: gray;">
-									休息时段仅对有一个工作时段的工作日（含特殊日期）生效，设置后，工作时长会扣除休息时段部分
-								</div>
-							</div>
-					    </div>
-					    
-					    <div class="form-group">
-                        	<label class="col-sm-3 control-label" style=" color: gray;">工作日</label>
-                        	<div class="col-sm-8 control-label">
-                        		<div style="float:left;">
-                           			<span class="work-day"></span> <a href="javascript:;" id="workDay_setting_edit" >修改</a>
-                        		</div>
-							</div>
-	                     </div>
-	                     
-	                     <div class="form-group">
-                        	<label class="col-sm-3 control-label" ></label>
-                        	<div class="col-sm-8 control-label" >
-	                        	<div style="float:left;">
-	                                <input type="checkbox" checked=“checked” class="icheck" id="freeDay_check">&nbsp;&nbsp;&nbsp;遵循 <a href="javascript:;" onclick="$('#freeDayModal').modal('toggle')">法定节假日</a>
-									<span id="freeDay_check_mesage" style="color:red"></span>
-								</div>
-							</div>
-	                     </div>
-	                     
-	                     <div class="form-group">
-                        	<label class="col-sm-3 control-label" ><a href="javascript:;" id="advanceSetting_edit"><span class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp;高级设置</a></label>
-                        	<div class="col-sm-8 control-label" >
-	                        	<div style="float:left;">
-                                    <li> 允许最早签到时间：上班前<span id="work_before"> 2 </span>小时 </li>
-                                    <li> 允许最晚签到时间：下班后<span id="work_after" > 6 </span>小时 </li>
-	                        	</div>
-							</div>
-	                     </div>
-	                     
-	                     <div class="form-group">
-	                        <label class="col-sm-2 control-label" for="ds_host">考勤位置</label>
-	                        <div class="col-sm-8">
-	                        	<label class="control-label" for="ds_host">1.&nbsp;&nbsp;&nbsp;地点考勤</label>
-	                        	<span style="float:right;">有效范围 &nbsp;&nbsp;
-				                    <select name="" id="bounds" class="form-control form-select">
-				                        <option value="300">300米</option>
-				                        <option value="500">500米</option>
-				                        <option value="800">800米</option>
-				                        <option value="1000">1000米</option>
-				                    </select>
-			                    </span>
-	                        </div>
-	                     </div>
-	                     
-	                     <div class="form-group" style="margin-bottom: 0px;">
-	                        <label class="col-sm-2 control-label" for="ds_host"></label>
-	                        <div class="col-sm-8">
-		                        <div class="attendance-location">
-		                        	<table class="table-location" id="table_attendanceLocation_">
-				                        <tr>
-				                            <td>优融网络科技有限公司</td>
-				                            <td>
-				                                <a href="javascript:;" onclick="$('#attendanceLocationModal').modal('toggle')">修改</a>
-				                                <a href="javascript:;" style="margin-left:20px;">删除</a>
-				                            </td>
-				                        </tr>
-				                        <tr>
-				                            <td>优融网络科技有限公司</td>
-				                            <td>
-				                                <a href="javascript:;" onclick="$('#attendanceLocationModal').modal('toggle')">修改</a>
-				                                <a href="javascript:;" style="margin-left:20px;">删除</a>
-				                            </td>
-				                        </tr>
-			                    	</table>
-		                    	</div>	
-	                        </div>
-	                     </div>
-	                     
-	                     <div class="form-group">
-	                        <label class="col-sm-2 control-label" for="ds_host"></label>
-	                        <div class="col-sm-8">
-	                        <div class="attendance-location">
-	                        	<label class="control-label" for="ds_host"></label>
-								<div class="add-location">
-									<input class="form-control" id="location_type_" type="hidden"/>
-			                        <a href="javascript:;" id="attendance_location_">+&nbsp;&nbsp;添加考勤地点</a>                        
-	                    		</div>
-	                    		</div>
-	                        </div>
-	                     </div>
-	                     
-	                     <div class="form-group">
-	                        <label class="col-sm-2 control-label" for="ds_host">参与考勤人员</label>
-	                        <div class="col-sm-8">
-	                        	<input class="form-control" id="attendance_people__" type="text" placeholder="请选择参与考勤人员..."/>
-	                        </div>
-	                     </div>
-					    
-					</form>
-
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" id="btn_edit_confirm" >确定</button>
-				</div>
-			</div>
-		</div>
-	</div>
 	
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" tabindex="-1" role="dialog" id="workDayModal" aria-hidden="true">
@@ -414,26 +244,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-primary" id="workDayModal_confirm">确定</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    	<!-- 模态框（Modal） -->
-	<div class="modal fade" tabindex="-1" role="dialog" id="workDayModal_edit" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">设置工作日</h4>
-                </div>
-                <div class="modal-body">
-                    <table class="work-day-list">
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="workDayModal_edit_confirm">确定</button>
                 </div>
             </div>
         </div>
@@ -554,75 +364,6 @@
         </div>
     </div>
     
-     <!-- 模态框（Modal） -->
-    <div class="modal fade" tabindex="-1" role="dialog" id="advanceSettingModal_edit" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">高级设置</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="advance-setting">
-                        <div class="setting">
-                           <label for="">允许最早签到时间：上班前</label>
-                            <select class="form-control form-select" id="work_on_before_hours">
-                                <option value="1">1小时</option>
-                                <option value="2">2小时</option>
-                                <option value="3">3小时</option>
-                                <option value="4">4小时</option>
-                                <option value="5">5小时</option>
-                                <option value="6">6小时</option>
-                            </select>
-                        </div>
-                        <div class="setting">
-                            <label for="">允许最晚签到时间：下班后</label>
-                            <select class="form-control form-select" id="work_off_after_hours">
-                                <option value="1">1小时</option>
-                                <option value="2">2小时</option>
-                                <option value="3">3小时</option>
-                                <option value="4">4小时</option>
-                                <option value="5">5小时</option>
-                                <option value="6">6小时</option>
-                                <option value="7">7小时</option>
-                                <option value="8">8小时</option>
-                                <option value="9">9小时</option>
-                                <option value="10">10小时</option>
-                                <option value="11">11小时</option>
-                                <option value="12">12小时</option>
-                            </select>
-                        </div>
-                        <div class="setting">
-                            <span style="color:#ccc;">在选择时间的范围以外不可以打卡</span>
-                        </div>
-
-                        <div class="setting" style="padding-top:20px;margin-top:20px;border-top:1px solid #ededed;">
-                            <input type="checkbox" class="icheck" id="openFlexible">
-                            <label for="openFlexible">开启上班弹性时间</label>
-                            <select class="form-control form-select" name="" id="flexibleTime">
-                                <option value="30">30分钟</option>
-                                <option value="60">60分钟</option>
-                            </select>
-                            
-                        </div>
-                        <div class="setting" style="padding-left:20px;">
-                            <input type="radio" name="flexible" class="icheck" id="shunyan" value="0">
-                            <label for="shunyan">弹性时间内不算迟到，下班时间自动顺延</label>
-                        </div>
-                        <div class="setting" style="padding-left:20px;">
-                            <input type="radio" name="flexible" class="icheck" id="bushunyan" value="1">
-                            <label for="bushunyan">弹性时间内不算迟到，下班时间不顺延</label>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="advanceSetting_edit_confirm" >确定</button>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- 模态框（Modal） -->
     <div class="modal fade" tabindex="-1" role="dialog" id="attendanceLocationModal" aria-hidden="true">
@@ -640,27 +381,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-primary" id="attendanceLocation_confirm">确定</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-        <!-- 模态框（Modal） -->
-    <div class="modal fade" tabindex="-1" role="dialog" id="attendanceLocationModal_edit" aria-hidden="true">
-        <div class="modal-dialog" role="document" style="width:50%;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">修改考勤地点</h4>
-                </div>
-                <div class="modal-body">
-                <iframe id="gaodeMapIframe_edit" name ="gaodeMapIframeName_edit" src="<%=request.getContextPath()%>/gaode.jsp" style="width:100%;height:600px;background-color:#ccc;border:0px">
-                
-                </iframe>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="attendanceLocation_edit_confirm">确定</button>
                 </div>
             </div>
         </div>
@@ -709,7 +429,7 @@
     </div>
     
          <!-- 模态框（Modal） -->
-    <div class="modal fade" tabindex="-1" role="dialog" id="attendancePeopleModal_edit">
+    <div class="modal fade" tabindex="-1" role="dialog" id="attendancePeopleModal_no">
         <div class="modal-dialog" role="document" style="width:40%">
             <div class="modal-content">
                 <div class="modal-header">
@@ -726,9 +446,9 @@
                                     <input type="text" class="form-control search-input" id="people_search_" placeholder="搜索" />
                                 </div>
                                 <div>
-                                    <input type="checkbox"  id="checkAll_edit" />
+                                    <input type="checkbox"  id="checkAll" />
                                     <label for="checkAll">全选</label>
-                                    <ul id="peoplesTree_edit" class="ztree"></ul>
+                                    <ul id="peoplesTree_no" class="ztree"></ul>
                                 </div>
                             </div>
                         </div>
@@ -744,12 +464,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="attendancePeople_edit_confirm">确定</button>
+                    <button type="button" class="btn btn-primary" id="attendancePeople_no_confirm">确定</button>
                 </div>
             </div>
         </div>
     </div>
-	
+    
 </div>
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.core.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery/jquery.ztree.excheck.js" type="text/javascript"></script>

@@ -118,6 +118,11 @@ public class SalaryDetail {
 	private double salaries;
 	
 	/**
+	 * 发工资日期
+	 */
+	private String salaryMonth;
+	
+	/**
 	 * 创建时间
 	 */
 	private String createDate;
@@ -307,6 +312,14 @@ public class SalaryDetail {
 
 	public double getSalaries() {
 		return salaries;
+	}
+
+	public String getSalaryMonth() {
+		return salaryMonth;
+	}
+
+	public void setSalaryMonth(String salaryMonth) {
+		this.salaryMonth = salaryMonth;
 	}
 
 	public void setSalaries(double salaries) {

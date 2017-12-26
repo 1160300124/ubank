@@ -74,17 +74,28 @@ public class SalaryApiController extends BaseController {
 	@ResponseBody
 	public ResultInfo getSalaryDetail(long userId, String month, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
-		if (StringUtils.isEmpty(month)){
-			logger.error("月份不能为空。");
-			info.setCode(IConstants.QT_CODE_ERROR);
-			info.setMessage("月份不能为空。");
-			return info;
-		}
-		
 		try {
 			SalaryDetail detail = detailService.getSalaryDetailByUserIdAndMonth(userId, month);
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setMessage("获取用户工资详细流水成功。");
+			info.setData(detail);
+		} catch (Exception e) {
+			logger.error("getSalaryDetail exception: ", e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("系统内部错误。");
+		}
+
+		return info;
+	}
+	
+	@RequestMapping(value = "getLatestSalaryDetail", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getLatestSalaryDetail(long userId, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		try {
+			SalaryDetail detail = detailService.getLatestDetailByUserId(userId);
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setMessage("获取用户最近工资详细流水成功。");
 			info.setData(detail);
 		} catch (Exception e) {
 			logger.error("getSalaryDetail exception: ", e);

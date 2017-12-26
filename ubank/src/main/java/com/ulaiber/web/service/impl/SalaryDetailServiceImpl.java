@@ -57,16 +57,18 @@ public class SalaryDetailServiceImpl extends BaseService implements SalaryDetail
 
 	@Override
 	public SalaryDetail getSalaryDetailByUserIdAndMonth(long userId, String month) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("userId", userId);
-		params.put("salaryMonth", month);
-		return mapper.getSalaryDetailByUserIdAndMonth(params);
+		return mapper.getSalaryDetailByUserIdAndMonth(userId, month);
 	}
 
 	@Override
 	public List<SalaryDetail> getLatestSalaryDetail(String companyId) {
 		
 		return mapper.getLatestSalaryDetail(companyId);
+	}
+
+	@Override
+	public SalaryDetail getLatestDetailByUserId(long userId) {
+		return mapper.getLatestDetailByUserId(userId);
 	}
 
 

@@ -433,8 +433,9 @@ $(function () {
 			Ewin.alert("请先选择公司");
 			return false;
 		}
-		renderPeople(companyId, companyName);
-		if (flag == 1){
+		if (flag == 0){
+			renderPeople(companyId, companyName);
+		} else if (flag == 1){
 			renderPeople(companyId, companyName);
 			var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
 			zTreeObj.checkAllNodes(false);   //清空tree

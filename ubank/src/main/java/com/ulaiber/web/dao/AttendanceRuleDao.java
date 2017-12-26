@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ulaiber.web.model.Holiday;
-import com.ulaiber.web.model.UserOfRule;
 import com.ulaiber.web.model.attendance.AttendanceRule;
+import com.ulaiber.web.model.attendance.UserOfRule;
 
 /**
  * 考勤规则数据接口
