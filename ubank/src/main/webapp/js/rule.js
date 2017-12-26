@@ -1,3 +1,5 @@
+//0：新增   1：修改
+var flag = 0;
 $(function(){
 
 	$(".time-picker").datetimepicker({  
@@ -102,34 +104,39 @@ $(function(){
 	]
 
 	$("#btn_add").unbind().bind("click", function(){
-		var addModal = $("#add_modal");
-		addModal.find("#add_form")[0].reset();
-		addModal.find('.work-day').empty();
+		//0：新增  1：修改
+		flag = 0;
+		$("#myModalLabel").text("新增考勤规则");attendance_people_
+		$("#form")[0].reset();
+		$('.work-day').empty();
 		$("#table_attendanceLocation").empty();
 		$('.work-day').append('周一&nbsp;&nbsp;&nbsp;周二&nbsp;&nbsp;&nbsp;周三&nbsp;&nbsp;&nbsp;周四&nbsp;&nbsp;&nbsp;周五&nbsp;&nbsp;&nbsp;');
 
 		var advanceSettingModal = $("#advanceSettingModal");
 
-		addModal.find("#work_before").text(" " + 2 + " ");
-		addModal.find("#work_after").text(" " + 6 + " ");
+		$("#work_before").text(" " + 2 + " ");
+		$("#work_after").text(" " + 6 + " ");
 		advanceSettingModal.find('#work_on_before_hours').val("2");
 		advanceSettingModal.find('#work_off_after_hours').val("6");
 		advanceSettingModal.find("#openFlexible").iCheck('uncheck');
 		advanceSettingModal.find("#shunyan").iCheck('uncheck');
 		advanceSettingModal.find("#shunyan").iCheck('uncheck');
 		
-
-		addModal.modal("show");
+		renderPeople();
+		$("#attendancePeopleModal").find('.selected-people-table').html("");
+		$("#attendancePeopleModal_no").find('.selected-people-table').html("");
+		
+		$("#modal").modal("show");
 	});
 
 	$("#btn_add_confirm").unbind().bind("click", function(){
 
 		var params = {};
 
-		var addModal = $("#add_modal");
-		var ruleName = addModal.find("#rule_name").val();
-		var startTime = addModal.find("#start_time").val();
-		var endTime = addModal.find("#end_time").val();
+		var modal = $("#modal");
+		var ruleName = modal.find("#rule_name").val();
+		var startTime = modal.find("#start_time").val();
+		var endTime = modal.find("#end_time").val();
 		if (ruleName == null || ruleName == "" || ruleName == undefined || ruleName.length > 40){
 			Ewin.alert("规则名称长度40个字符以内。");
 			return false;
@@ -147,9 +154,9 @@ $(function(){
 		params.clockOnTime = startTime;
 		params.clockOffTime = endTime;
 
-		var isRestChecked = addModal.find("#input-rest").prop("checked");
-		var restStartTime = addModal.find("#rest_start_time").val();
-		var resteEndTime = addModal.find("#rest_end_time").val();
+		var isRestChecked = modal.find("#input-rest").prop("checked");
+		var restStartTime = modal.find("#rest_start_time").val();
+		var resteEndTime = modal.find("#rest_end_time").val();
 		params.restFlag = isRestChecked ? 0 : 1;
 		if (isRestChecked){
 			if (restStartTime == null || restStartTime == "" || restStartTime == undefined){
@@ -167,7 +174,7 @@ $(function(){
 		var workday = $(".work-day").html().replace(/&nbsp;&nbsp;&nbsp;/g, ",");
 		params.workday = workday.substring(0, workday.length-1);
 
-		var isWorkChecked = addModal.find("#freeDay_check").prop("checked");
+		var isWorkChecked = modal.find("#freeDay_check").prop("checked");
 		params.holidayFlag = isWorkChecked ? 0 : 1;
 
 		var settingModal = $("#advanceSettingModal");
@@ -182,8 +189,8 @@ $(function(){
 		}
 		params.flexibleFlag = flexibleFlag;
 
-		var workOnBeforeHours = addModal.find("#work_before").text().trim();
-		var workOffAfterHours = addModal.find("#work_after").text().trim();
+		var workOnBeforeHours = modal.find("#work_before").text().trim();
+		var workOffAfterHours = modal.find("#work_after").text().trim();
 		params.clockOnAdvanceHours = workOnBeforeHours;
 		params.clockOffDelayHours = workOffAfterHours;
 
@@ -208,7 +215,72 @@ $(function(){
 		var bounds = $("#bounds").val();
 		params.clockBounds = bounds;
 		
-		var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
+		var tree = getDataFormTree("peoplesTree");
+		if (!tree){
+			return false;
+		} else {
+			params.ruleData = tree.data;
+			params.ruleCount = tree.count;
+		}
+		var tree_no = getDataFormTree("peoplesTree_no");
+		params.noRuleData = tree_no.data;
+		params.noRuleCount = tree_no.count;
+		//0 新增  1 修改
+		if (flag == 0){
+			$.ajax({
+				url : "addRule",
+				type: "post",
+				data : params,
+				async : true, 
+				dataType : "json",
+				success : function(data, status) {
+					var code = data['code'];
+					if (code == 1000) {
+						modal.modal("hide");
+						$("#tb_rules").bootstrapTable("refresh");
+						Ewin.alert("新增成功。");
+						
+					}else{
+						Ewin.alert(data['message']);
+					}
+				},
+				error : function(data, status, e) {
+					Ewin.alert("系统内部错误！");
+				}
+			});
+			
+		} else if (flag == 1){
+			var rid = $("#rule_id").val();
+			params.rid = rid;
+			$.ajax({
+				url : "updateRule",
+				type: "post",
+				data : params,
+				async : true, 
+				dataType : "json",
+				success : function(data, status) {
+					var code = data['code'];
+					if (code == 1000) {
+						modal.modal("hide");
+						$("#tb_rules").bootstrapTable("refresh");
+						Ewin.alert("修改成功。");
+
+					}else{
+						Ewin.alert(data['message']);
+					}
+				},
+				error : function(data, status, e) {
+					Ewin.alert("系统内部错误！");
+				}
+			});
+		}
+		
+
+	});
+	
+	function getDataFormTree(treeId){
+		var tree = {};
+		var zTreeObj = $.fn.zTree.getZTreeObj(treeId);
 	    var selectedPeoples = zTreeObj.getCheckedNodes(true);
 	    var count = 0;
 	    var result = "";
@@ -246,202 +318,24 @@ $(function(){
 	        count = count + 1;
 	    });
 	    
-	    if (count <= 0){
-	    	Ewin.alert("请选择参与考勤人员");
-	    	return false;
+	    if (treeId == "peoplesTree"){
+	    	if (count <= 0){
+	    		Ewin.alert("请选择参与考勤人员");
+	    		return false;
+	    	}
 	    }
-	    params.data = result.substring(0, result.length - 1);;
-		params.counts = count;
-		
-
-		$.ajax({
-			url : "addRules",
-			type: "post",
-			data : params,
-			async : true, 
-			dataType : "json",
-			success : function(data, status) {
-				var code = data['code'];
-				if (code == 1000) {
-					addModal.modal("hide");
-					$("#tb_rules").bootstrapTable("refresh");
-					Ewin.alert("新增成功。");
-
-				}else{
-					Ewin.alert(data['message']);
-				}
-			},
-			error : function(data, status, e) {
-				Ewin.alert("系统内部错误！");
-			}
-		});
-
-
-
-	});
-
-	
-	$("#btn_edit_confirm").unbind().bind("click", function(){
-		
-		var params = {};
-
-		var editModal = $("#edit_modal");
-		var ruleId = editModal.find("#rule_id").val();
-		var ruleName = editModal.find("#rule_name").val();
-		var startTime = editModal.find("#start_time").val();
-		var endTime = editModal.find("#end_time").val();
-		if (ruleName == null || ruleName == "" || ruleName == undefined || ruleName.length > 40){
-			Ewin.alert("规则名称长度40个字符以内。");
-			return false;
-		}
-		if (startTime == null || startTime == "" || startTime == undefined){
-			Ewin.alert("请选择工作开始时间。");
-			return false;
-		}
-		if (endTime == null || endTime == "" || endTime == undefined){
-			Ewin.alert("请选择工作结束时间。");
-			return false;
-		}
-
-		params.rid = ruleId;
-		params.ruleName = ruleName;
-		params.clockOnTime = startTime;
-		params.clockOffTime = endTime;
-
-		var isRestChecked = editModal.find("#input-rest").prop("checked");
-		var restStartTime = editModal.find("#rest_start_time").val();
-		var resteEndTime = editModal.find("#rest_end_time").val();
-		params.restFlag = isRestChecked ? 0 : 1;
-		if (isRestChecked){
-			if (restStartTime == null || restStartTime == "" || restStartTime == undefined){
-				Ewin.alert("请选择休息开始时间。");
-				return false;
-			}
-			if (resteEndTime == null || resteEndTime == "" || resteEndTime == undefined){
-				Ewin.alert("请选择休息结束时间。");
-				return false;
-			}
-			params.restStartTime = restStartTime;
-			params.restEndTime = resteEndTime;
-		}
-
-		var workday = editModal.find(".work-day").html().replace(/&nbsp;&nbsp;&nbsp;/g, ",");
-		params.workday = workday.substring(0, workday.length-1);
-
-		var isWorkChecked = editModal.find("#freeDay_check").prop("checked");
-		params.holidayFlag = isWorkChecked ? 0 : 1;
-
-		var settingModal = $("#advanceSettingModal_edit");
-		var isOpenFlexible = settingModal.find("#openFlexible").prop("checked");
-		var flexibleTime = 0;
-		var flexibleFlag = isOpenFlexible ? 0 : 1;
-		if (isOpenFlexible){
-			flexibleTime = settingModal.find("#flexibleTime").val();
-			postponeFlag = settingModal.find("input[type='radio']:checked").val();
-			params.flexibleTime = flexibleTime;
-			params.postponeFlag = postponeFlag;
-		}
-		params.flexibleFlag = flexibleFlag;
-
-		var workOnBeforeHours = editModal.find("#work_before").text().trim();
-		var workOffAfterHours = editModal.find("#work_after").text().trim();
-		params.clockOnAdvanceHours = workOnBeforeHours;
-		params.clockOffDelayHours = workOffAfterHours;
-
-		var table = document.getElementById("table_attendanceLocation_");
-		if (table.rows.length <= 0){
-			Ewin.alert("请添加考勤地点。");
-			return false;
-		}
-		var clockLocation = "";
-		var longit_latit = "";
-		for (var i = 0; i < table.rows.length; i++){
-			clockLocation += table.rows[i].cells[0].innerHTML + ",";
-			longit_latit += table.rows[i].cells[1].innerHTML + "|";
-		}
-		if (clockLocation == "" || longit_latit == ""){
-			Ewin.alert("请添加考勤地点。");
-			return false;
-		}
-		params.longit_latit = longit_latit.substring(0, longit_latit.length - 1);
-		params.clockLocation = clockLocation.substring(0, clockLocation.length - 1);
-
-		var bounds = editModal.find("#bounds").val();
-		params.clockBounds = bounds;
-		
-		var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree_edit");
-	    var selectedPeoples = zTreeObj.getCheckedNodes(true);
-	    var count = 0;
-	    var result = "";
-	    $(selectedPeoples).each(function(index,item){
-	        if (item.isParent) {
-	        	var deptChildrenNodes = item.children;
-	        	var deptNodes = "";
-	        	if (deptChildrenNodes) {
-	                for (var i = 0; i < deptChildrenNodes.length; i++) {
-	                	var nodes = "";
-	                	if (deptChildrenNodes[i].isParent){
-	                		var childrenNodes = deptChildrenNodes[i].children;
-	                		for (var j = 0; j < childrenNodes.length; j++){
-	                			if (childrenNodes[j].checked){
-	                				nodes += childrenNodes[j].id + ",";
-	                			}
-	                		}
-	                		if (nodes == "" || nodes == null){
-	                			continue;
-	                		}
-	                		deptNodes += deptChildrenNodes[i].id + "_" + nodes.substring(0, nodes.length - 1) + "-";
-	                		
-	                	}
-	                	
-	                }
-	            }
-	        	
-	        	if (deptNodes == "" || deptNodes == null){
-	        		return;
-	        	}
-	        	
-		    	result += item.id + "=" + deptNodes.substring(0, deptNodes.length - 1) + "|";
-		        return;
-	        }
-	        count = count + 1;
-	    });
-	    
-	    if (count <= 0){
-	    	Ewin.alert("请选择参与考勤人员");
-	    	return false;
+	    if (result == ""){
+	    	tree.data = "";
+	    } else {
+	    	tree.data = result.substring(0, result.length - 1);;
 	    }
-	    params.data = result.substring(0, result.length - 1);;
-		params.counts = count;
-		
-		$.ajax({
-			url : "updateRule",
-			type: "post",
-			data : params,
-			async : true, 
-			dataType : "json",
-			success : function(data, status) {
-				var code = data['code'];
-				if (code == 1000) {
-					editModal.modal("hide");
-					$("#tb_rules").bootstrapTable("refresh");
-					Ewin.alert("修改成功。");
+	    tree.count = count;
+		return tree;
+	}
 
-				}else{
-					Ewin.alert(data['message']);
-				}
-			},
-			error : function(data, status, e) {
-				Ewin.alert("系统内部错误！");
-			}
-		});
-
-	});
 	
-	
-
 	$("#workDay_setting").unbind().bind("click", function(){
-		var addModal = $("#add_modal");
+		var addModal = $("#modal");
 		var startTime = addModal.find("#start_time").val();
 		var endTime = addModal.find("#end_time").val();
 		if (startTime == null || startTime == "" || startTime == undefined){
@@ -461,28 +355,6 @@ $(function(){
 		workDayModal.modal("show");
 	});
 	
-	$("#workDay_setting_edit").unbind().bind("click", function(){
-		var editModal = $("#edit_modal");
-		var startTime = editModal.find("#start_time").val();
-		var endTime = editModal.find("#end_time").val();
-		if (startTime == null || startTime == "" || startTime == undefined){
-			Ewin.alert("请选择工作开始时间。");
-			return false;
-		}
-		if (endTime == null || endTime == "" || endTime == undefined){
-			Ewin.alert("请选择工作结束时间。");
-			return false;
-		}
-
-		var workDayModal = $("#workDayModal_edit");
-
-		workDayModal.find('.work-day-list').empty();
-		renderWorkDay(startTime, endTime);
-
-		workDayModal.modal("show");
-	});
-
-
 	$("#workDayModal_confirm").unbind().bind("click", function(){
 		var workDayModal = $("#workDayModal");
 		var realWorkDay = workDayModal.find('.work-day-list').find('input[type="checkbox"]')
@@ -496,21 +368,6 @@ $(function(){
 		workDayModal.modal("hide");
 	});
 	
-	$("#workDayModal_edit_confirm").unbind().bind("click", function(){
-		var editWorkDayModal = $("#workDayModal_edit");
-		var realWorkDay = editWorkDayModal.find('.work-day-list').find('input[type="checkbox"]')
-		$("#edit_modal").find('.work-day').empty();
-		$(realWorkDay).each(function (index, item) {
-			if (item.checked){
-				$("#edit_modal").find('.work-day').append(item.value + '&nbsp;&nbsp;&nbsp;')
-			}
-		});
-
-		editWorkDayModal.modal("hide");
-	});
-
-
-
 	$("#freeDay_check").on('ifChecked', function(event){
 		$("#freeDay_check_mesage").html("")
 	}).on('ifUnchecked', function(event){
@@ -526,7 +383,7 @@ $(function(){
 	});
 	
 	$("#advanceSetting").unbind().bind("click", function(){
-		var addModal = $("#add_modal");
+		var addModal = $("#modal");
 		var startTime = addModal.find("#start_time").val();
 		var endTime = addModal.find("#end_time").val();
 		if (startTime == null || startTime == "" || startTime == undefined){
@@ -543,37 +400,22 @@ $(function(){
 		advanceSettingModal.modal("show");
 	});
 
-	
-	$("#advanceSetting_edit").unbind().bind("click", function(){
-		var editModal = $("#edit_modal");
-		var startTime = editModal.find("#start_time").val();
-		var endTime = editModal.find("#end_time").val();
-		if (startTime == null || startTime == "" || startTime == undefined){
-			Ewin.alert("请选择工作开始时间。");
-			return false;
-		}
-		if (endTime == null || endTime == "" || endTime == undefined){
-			Ewin.alert("请选择工作结束时间。");
-			return false;
-		}
-
-		var advanceSettingModal = $("#advanceSettingModal_edit");
-
-		advanceSettingModal.modal("show");
-	});
-	
-	
 	$("#people_search").unbind().bind("input propertychange", function(){
-		
+		var rid = $("#rule_id").val();
 		var search = $("#people_search").val();
-		renderPeople("add", "", search);
+		if (flag == 0){
+			renderPeople("peoplesTree", "", search);
+		}
+		if (flag == 1){
+			renderPeople("peoplesTree_no", rid, search);
+		}
 		
 	});
 	
 	$("#advanceSetting_confirm").unbind().bind("click", function(){
 
 		var settingModal = $("#advanceSettingModal");
-		var addModal = $("#add_modal");
+		var addModal = $("#modal");
 		var startTime = addModal.find("#start_time").val();
 		var endTime = addModal.find("#end_time").val();
 
@@ -625,62 +467,6 @@ $(function(){
 		settingModal.modal("hide");
 	});
 
-	$("#advanceSetting_edit_confirm").unbind().bind("click", function(){
-
-		var settingModal = $("#advanceSettingModal_edit");
-		var editModal = $("#edit_modal");
-		var startTime = editModal.find("#start_time").val();
-		var endTime = editModal.find("#end_time").val();
-
-		if (startTime == null || startTime == "" || startTime == undefined){
-			Ewin.alert("请选择工作开始时间。");
-			settingModal.modal("hide");
-			return false;
-		}
-		if (endTime == null || endTime == "" || endTime == undefined){
-			Ewin.alert("请选择工作结束时间。");
-			settingModal.modal("hide");
-			return false;
-		}
-
-		var workOnBeforeHours = settingModal.find("#work_on_before_hours").val();
-		var workOffAfterHours = settingModal.find("#work_off_after_hours").val();
-
-		var startHours = startTime.split(":")[0];
-		var startMinutes = startTime.split(":")[1];
-		if (parseInt(startHours) - parseInt(workOnBeforeHours) < 0){
-			Ewin.alert("最早签到时间不能大于开始上班时间。");
-			return false;
-		}
-		var hour = parseInt(startHours) - parseInt(workOnBeforeHours);
-		var newStartTime = hour < 10 ? "0" + hour + ":" + startMinutes : hour + ":" + startMinutes;
-
-		var endHours = endTime.split(":")[0];
-		var endMinutes = endTime.split(":")[1];
-		if (parseInt(endHours) + parseInt(workOffAfterHours) >= 24){
-			endHours = parseInt(endHours) + parseInt(workOffAfterHours) - 24;
-			var newEndTime = parseInt(endHours) < 10 ? "0" + parseInt(endHours) + ":" + endMinutes : parseInt(endHours) + ":" + endMinutes;
-			if (newStartTime <= newEndTime){
-				Ewin.alert("最早签到时间和最晚下班时间不能有重叠。");
-				return false;
-			}
-		} 
-
-		var isOpenFlexible = settingModal.find("#openFlexible").prop("checked");
-		var flexibleTime = null;
-		var flexibleFlag = 0;
-		if (isOpenFlexible){
-			flexibleTime = settingModal.find("#flexibleTime").val();
-			flexibleFlag = settingModal.find("input[type='radio']:checked").val();
-		}
-
-		editModal.find("#work_before").text(" " + workOnBeforeHours + " ");
-		editModal.find("#work_after").text(" " + workOffAfterHours + " ");
-
-		settingModal.modal("hide");
-	});
-
-	
 	//设置工作日modal的渲染
 	function renderWorkDay(startTime, endTime) {
 		$(workDay).each(function (index, item) {
@@ -819,11 +605,41 @@ $(function(){
 	
 	$("#attendance_people_").unbind().bind("click", function(){
 		
-		renderPeople("add");
+		var rid = $("#rule_id").val();
+		if (flag == 0){
+//			renderPeople();
+		} else if (flag == 1){
+//			renderPeople(rid);
+			renderSelected("peoplesTree");
+		}
 		$("#people_search").val("");
 		$('#attendancePeopleModal').modal("show");
-
+	});
+	
+	$("#attendance_no_people_").unbind().bind("click", function(){
 		
+		var rid = $("#rule_id").val();
+		if (flag == 0){
+//			renderPeople();
+		} else if (flag == 1){
+//			renderPeople(rid);
+			renderSelected("peoplesTree_no");
+		}
+		
+		$("#people_search_").unbind().bind("input propertychange", function(){
+			var rid = $("#rule_id").val();
+			var search = $("#people_search_").val();
+			if (flag == 0){
+				renderPeople("peoplesTree", "", search);
+			}
+			if (flag == 1){
+				renderPeople("peoplesTree_no", rid, search);
+			}
+			
+		});
+		
+		$("#people_search_").val("");
+		$('#attendancePeopleModal_no').modal("show");
 	});
 
 	$("#attendancePeople_confirm").unbind().bind("click", function(){
@@ -844,6 +660,26 @@ $(function(){
 		$('#attendancePeopleModal').modal("hide");
 
 	});
+	
+	$("#attendancePeople_no_confirm").unbind().bind("click", function(){
+		var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree_no");
+	    var selectedPeoples = zTreeObj.getCheckedNodes(true);
+	    var count = 0;
+	    $(selectedPeoples).each(function(index,item){
+	        if (item.isParent) {
+	        	return;
+	        }
+	        count = count + 1;
+	    })
+	    if (count <= 0){
+	    	Ewin.alert("请选择考勤人员。");
+	    	return false;
+	    }
+		$('#attendance_no_people_').val(count + '人');
+		$('#attendancePeopleModal_no').modal("hide");
+
+	});
+	
 	
     //选择所有员工事件
 	$("#checkAll").unbind().bind("change", function(event){
@@ -887,34 +723,46 @@ function renderSelected(treeId) {
     })
     if (treeId == "peoplesTree"){
         $("#attendancePeopleModal").find('.selected-people-table').html(selectedPeoplesDom);
-    } else if (treeId == "peoplesTree_edit"){
-    	$("#attendancePeopleModal_edit").find('.selected-people-table').html(selectedPeoplesDom);
+    } else if(treeId == "peoplesTree_no"){
+    	 $("#attendancePeopleModal_no").find('.selected-people-table').html(selectedPeoplesDom);
     }
 }
 
 
 //选择部门与人员modal 所有员工渲染
-function renderPeople(flag, rid, search) {
+function renderPeople(treeId, rid, search) {
 	if (rid == undefined){
 		rid = "";
 	}
 	if (search == undefined){
 		search = "";
 	}
+	var type = 0;
+	//0：参与考勤规则  1：不参与考勤规则
+	if (treeId == "peoplesTree"){
+		type = 0;
+	} else if (treeId == "peoplesTree_no"){
+		type = 1;
+	} 
+	
 	$.ajax({
 		url : "getDeptsAndUsers",
 		type: "get",
 		data : {
 			rid : rid,
-			search : search
+			search : search,
+			type : type
 		},
 		async : true, 
 		dataType : "json",
 		success : function(data, status) {
-			if (flag == "add"){
+			if (treeId == "peoplesTree"){
 				$.fn.zTree.init($("#peoplesTree"), setting, data);
-			} else if (flag == "edit") {
-				$.fn.zTree.init($("#peoplesTree_edit"), setting, data);
+			} else if (treeId == "peoplesTree_no"){
+				$.fn.zTree.init($("#peoplesTree_no"), setting, data);
+			} else {
+				$.fn.zTree.init($("#peoplesTree"), setting, data);
+				$.fn.zTree.init($("#peoplesTree_no"), setting, data);
 			}
 		},
 		error : function(data, status, e) {
@@ -928,9 +776,6 @@ function clearMap(){
 	$("#gaodeMapIframe").contents().find("#attendance_addr").val("");
 	$("#gaodeMapIframe").contents().find("#hidden_addr").val("");
 	document.gaodeMapIframeName.map.clearMap();
-	$("#gaodeMapIframe_edit").contents().find("#attendance_addr").val("");
-	$("#gaodeMapIframe_edit").contents().find("#hidden_addr").val("");
-	document.gaodeMapIframeName_edit.map.clearMap();
 }
 
 function updateLocation(trid, modalId){
@@ -983,19 +828,14 @@ function operateFormatter(value, row, index) {
 	        ].join('');
 }
 
-function deleteLoc(rowIndex){
-	var table = document.getElementById("table_attendanceLocation_");
-	table.deleteRow(rowIndex);
-}
-
-
 window.operateEvents = {
 		'click .edit': function (e, value, row, index) {
-			
-			var editModal = $("#edit_modal");
-			editModal.find("#edit_form")[0].reset();
+			flag = 1;
+			var editModal = $("#modal");
+			editModal.find(".modal-title").text("修改考勤规则");
+			editModal.find("#form")[0].reset();
 			editModal.find('.work-day').empty();
-			editModal.find("#table_attendanceLocation_").empty();
+			editModal.find("#table_attendanceLocation").empty();
 			
 			editModal.find("#rule_id").val(row.rid);
 			editModal.find("#rule_name").val(row.ruleName);
@@ -1029,7 +869,7 @@ window.operateEvents = {
 			editModal.find("#work_before").html(" " + row.clockOnAdvanceHours + " ");
 			editModal.find("#work_after").html(" " + row.clockOffDelayHours + " ");
 
-			var edit_setting_modal = $("#advanceSettingModal_edit");
+			var edit_setting_modal = $("#advanceSettingModal");
 			edit_setting_modal.find("#work_on_before_hours").val(row.clockOnAdvanceHours);
 			edit_setting_modal.find("#work_off_after_hours").val(row.clockOffDelayHours);
 			
@@ -1057,7 +897,7 @@ window.operateEvents = {
 			
 			editModal.find("#bounds").val(row.clockBounds);
 			
-			var table = document.getElementById("table_attendanceLocation_");
+			var table = document.getElementById("table_attendanceLocation");
 			var locations = row.clockLocation.split(",");
 			var longit_latits = row.longit_latit.split("|");
 			for (var i in  locations){
@@ -1066,107 +906,16 @@ window.operateEvents = {
 				tr.innerHTML = "<td>" + locations[i] + "</td>" + 
 				"<td style='display:none'>" + longit_latits[i] + "</td>" + 
 				"<td>" + 
-				'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
-				'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
+				'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal\')">修改</a>' +
+				'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal\',\'table_attendanceLocation\')">删除</a>' + 
 				"</td>"; 
 			}
 		    
-		    editModal.find('#attendance_people__').val(row.counts + '人');
+		    editModal.find('#attendance_people_').val(row.ruleCount + '人');
+		    editModal.find('#attendance_no_people_').val(row.noRuleCount + '人');
+		    renderPeople("peoplesTree", row.rid);
+		    renderPeople("peoplesTree_no", row.rid);
 		    
-		    editModal.find("#attendance_people__").unbind().bind("click", function(){
-				
-		    	$("#people_search_").val("");
-				$('#attendancePeopleModal_edit').modal("show");
-				
-			});
-		    
-			$("#attendance_location_").unbind().bind("click", function(){
-				var table = document.getElementById("table_attendanceLocation_");
-				if (table.rows.length >= 3){
-		    		Ewin.alert("考勤地点最多只能添加3个。");
-		    		return false;
-		    	}
-				clearMap();
-				editModal.find("#location_type_").val("-1");
-				$('#attendanceLocationModal_edit').modal("show");
-			});
-		    
-			$("#attendanceLocation_edit_confirm").unbind().bind("click", function(){
-				
-			    var table = document.getElementById("table_attendanceLocation_");
-
-			    var type = editModal.find("#location_type_").val();
-			    var location = $("#gaodeMapIframe_edit").contents().find("#attendance_addr").val();
-			    var longit_latit = $("#gaodeMapIframe_edit").contents().find("#hidden_addr").val();
-			    if (type == "-1"){
-			    	if (table.rows.length >= 3){
-			    		Ewin.alert("考勤地点最多只能添加3个。");
-			    		return false;
-			    	}
-			    	for (var i = 0; i < table.rows.length; i++){
-			    		if (location == table.rows[i].cells[0].innerHTML){
-			    			Ewin.alert("您已经添加了 '" + location + "' ,请不要重复添加。");
-				    		return false;
-			    		}
-			    	}
-			    	//添加行
-			    	var tr = table.insertRow(table.rows.length);
-			    	var rowIndex = tr.rowIndex.toString();
-			    	tr.innerHTML = "<td>" + location + "</td>" + 
-			    	"<td style='display:none'>" + longit_latit + "</td>" + 
-			    	"<td>" + 
-			    	'<a href="javascript:;" onclick="updateLocation(' + rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
-			    	'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
-			    	"</td>"; 
-			    } else {
-			    	var tr = table.rows[type];
-					tr.innerHTML = "<td>" + location + "</td>" + 
-					"<td style='display:none'>" + longit_latit + "</td>" + 
-					"<td>" + 
-					'<a href="javascript:;" onclick="updateLocation('  + tr.rowIndex + ',\'attendanceLocationModal_edit\')">修改</a>' +
-					'<a href="javascript:;" style="margin-left:20px;" onclick="deleteLocation(' + tr.rowIndex + ',\'attendanceLocationModal_edit\',\'table_attendanceLocation_\')">删除</a>' + 
-					"</td>"; 
-			    }
-			    
-				$('#attendanceLocationModal_edit').modal("hide")
-
-			});
-		    
-		    renderPeople("edit", row.rid);
-		    
-		    //选择所有员工事件
-			$("#checkAll_edit").unbind().bind("change", function(event){
-				var checkAll = event.currentTarget;
-				var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree_edit");
-				zTreeObj.checkAllNodes(checkAll.checked);
-		        renderSelected("peoplesTree_edit");
-			});
-			
-			$("#attendancePeople_edit_confirm").unbind().bind("click", function(){
-				var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree_edit");
-			    var selectedPeoples = zTreeObj.getCheckedNodes(true);
-			    var count = 0;
-			    $(selectedPeoples).each(function(index,item){
-			        if (item.isParent) {
-			            return;
-			        }
-			        count = count + 1;
-			    })
-			    if (count <= 0){
-			    	Ewin.alert("请选择考勤人员。");
-			    	return false;
-			    }
-				$('#attendance_people__').val(count + '人');
-				$('#attendancePeopleModal_edit').modal("hide");
-
-			});
-			
-			$("#people_search_").unbind().bind("input propertychange", function(){
-				var search = $("#people_search_").val();
-				renderPeople("edit", row.rid, search);
-				
-			});
-			
 			editModal.modal("show");
 		}
 

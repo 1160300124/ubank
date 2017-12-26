@@ -113,7 +113,17 @@ public class AttendanceRule {
 	/**
 	 * 规则人数
 	 */
-	private int counts;
+	private int ruleCount;
+	
+	/**
+	 * 不需要规则人数
+	 */
+	private int noRuleCount;
+	
+	/**
+	 * 0：需要考勤规则  1：不需要考勤规则  2：既需要也不需要规则(二者都满足时以不需要为准)
+	 */
+	private int type;
 	
 	public long getRid() {
 		return rid;
@@ -275,12 +285,28 @@ public class AttendanceRule {
 		this.clockBounds = clockBounds;
 	}
 
-	public int getCounts() {
-		return counts;
+	public int getRuleCount() {
+		return ruleCount;
 	}
 
-	public void setCounts(int counts) {
-		this.counts = counts;
+	public void setRuleCount(int ruleCount) {
+		this.ruleCount = ruleCount;
+	}
+
+	public int getNoRuleCount() {
+		return noRuleCount;
+	}
+
+	public void setNoRuleCount(int noRuleCount) {
+		this.noRuleCount = noRuleCount;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 }

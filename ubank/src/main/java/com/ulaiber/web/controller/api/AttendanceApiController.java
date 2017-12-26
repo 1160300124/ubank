@@ -76,6 +76,12 @@ public class AttendanceApiController extends BaseController {
 				info.setMessage("用户 {" + userId + "}没有设置考勤规则，请先设置。");
 				return info;
 			}
+			if (rule.getType() != 0){
+				logger.info("用户 {" + userId + "}不参与考勤规则。");
+				info.setCode(IConstants.QT_N0T_IN_ATTENDANCE_RULE);
+				info.setMessage("用户 {" + userId + "}不参与考勤规则。");
+				return info;
+			}
 
 			Map<String, Object> data = service.getRecordsByMonthAndUserId(month, userId, rule);
 			if (null == data){
@@ -114,6 +120,12 @@ public class AttendanceApiController extends BaseController {
 			info.setMessage("用户 {" + userId + "}没有设置考勤规则，请先设置。");
 			return info;
 		}
+		if (rule.getType() != 0){
+			logger.info("用户 {" + userId + "}不参与考勤规则。");
+			info.setCode(IConstants.QT_N0T_IN_ATTENDANCE_RULE);
+			info.setMessage("用户 {" + userId + "}不参与考勤规则。");
+			return info;
+		}
 
 		String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
 //		String datetime = "2017-10-09 02:20";
@@ -122,14 +134,6 @@ public class AttendanceApiController extends BaseController {
 		
 		data.put("clockOnTime", rule.getClockOnTime());
 		data.put("clockOffTime", rule.getClockOffTime());
-		
-		if (StringUtils.equals(today, date)){
-			date = "";
-		}
-		
-		if (StringUtils.isNotEmpty(date)){
-			today = date;
-		} 
 		
 		String clockOnTime= today + " " + rule.getClockOnTime();
 		String clockOffTime = today + " " + rule.getClockOffTime();
@@ -149,6 +153,36 @@ public class AttendanceApiController extends BaseController {
 				}
 			}
 		}
+		
+		//当前时间是哪天
+		data.put("today", today);
+		
+		if (StringUtils.equals(today, date)){
+			date = "";
+		}
+		
+		if (StringUtils.isNotEmpty(date)){
+			today = date;
+			clockOnTime= today + " " + rule.getClockOnTime();
+			clockOffTime = today + " " + rule.getClockOffTime();
+			dateBegin = today + " " + rule.getClockOnStartTime();
+			dateEnd = today + " " + rule.getClockOffEndTime();
+			
+			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				if (time.compareTo(rule.getClockOffEndTime()) <= 0){
+					today = DateTimeUtil.getfutureTime(datetime, -1, 0, 0).split(" ")[0];
+					dateBegin = DateTimeUtil.getfutureTime(dateBegin, -1, 0, 0);
+					clockOnTime = DateTimeUtil.getfutureTime(clockOnTime, -1, 0, 0);
+					clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, -1, 0, 0);
+				} else {
+					dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
+					if (rule.getClockOnTime().compareTo(rule.getClockOffTime()) > 0){
+						clockOffTime = DateTimeUtil.getfutureTime(clockOffTime, 1, 0, 0);
+					}
+				}
+			}
+		} 
+		
 		
 		data.put("clockDate", today);
 		boolean isRestDay = service.isRestDay(today, rule);
@@ -606,6 +640,12 @@ public class AttendanceApiController extends BaseController {
 				info.setMessage("用户  " + userId + " 没有设置考勤规则，请先设置。");
 				return info;
 			}
+			if (rule.getType() != 0){
+				logger.info("用户 {" + userId + "}不参与考勤规则。");
+				info.setCode(IConstants.QT_N0T_IN_ATTENDANCE_RULE);
+				info.setMessage("用户 {" + userId + "}不参与考勤规则。");
+				return info;
+			}
 			
 			String datetime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_MINUTETIME);
 			String today = datetime.split(" ")[0];
@@ -723,6 +763,12 @@ public class AttendanceApiController extends BaseController {
 				logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
 				info.setCode(IConstants.QT_N0_ATTENDANCE_RULE);
 				info.setMessage("用户  " + userId + " 没有设置考勤规则，请先设置。");
+				return info;
+			}
+			if (rule.getType() != 0){
+				logger.info("用户 {" + userId + "}不参与考勤规则。");
+				info.setCode(IConstants.QT_N0T_IN_ATTENDANCE_RULE);
+				info.setMessage("用户 {" + userId + "}不参与考勤规则。");
 				return info;
 			}
 			

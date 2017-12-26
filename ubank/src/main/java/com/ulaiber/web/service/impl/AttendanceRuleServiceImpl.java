@@ -1,21 +1,21 @@
 package com.ulaiber.web.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ulaiber.web.dao.AttendanceRuleDao;
 import com.ulaiber.web.model.Holiday;
-import com.ulaiber.web.model.UserOfRule;
 import com.ulaiber.web.model.attendance.AttendanceRule;
+import com.ulaiber.web.model.attendance.UserOfRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.BaseService;
 
@@ -35,40 +35,78 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean save(AttendanceRule rule, String data) {
-		boolean flag = false;
+	public boolean save(AttendanceRule rule, String ruleData, String noRuleData) {
 		if (dao.save(rule) > 0){
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			String[] companyId_deptId_userIds = data.split("\\|");
+			//不参与考勤的用户集合,如参与考勤的用户id也在此集合内，过滤掉
+			List<String> ids = new ArrayList<String>();
+			//不参与考勤规则的用户
+			if (StringUtils.isNotEmpty(noRuleData)){
+				String[] companyId_deptId_userIds = noRuleData.split("\\|");
+				for (String companyId_deptId_userId : companyId_deptId_userIds) {
+					String companyId = companyId_deptId_userId.split("=")[0];
+					String[] deptId_userIds = companyId_deptId_userId.split("=")[1].split("-");
+					for (String deptId_userId : deptId_userIds){
+						String deptId = deptId_userId.split("_")[0];
+						String[] userIds = deptId_userId.split("_")[1].split(",");
+						for (String id : userIds){
+							ids.add(id);
+							Map<String ,Object> map = new HashMap<String, Object>();
+							map.put("userId", id);
+							map.put("rid", rule.getRid());
+							map.put("deptId", deptId);
+							map.put("companyId", companyId);
+							map.put("type", 1);
+							list.add(map);
+						}
+					}
+
+				}
+			}
+			
+			//参与考勤规则的用户
+			String[] companyId_deptId_userIds = ruleData.split("\\|");
 			for (String companyId_deptId_userId : companyId_deptId_userIds) {
 				String companyId = companyId_deptId_userId.split("=")[0];
 				String[] deptId_userIds = companyId_deptId_userId.split("=")[1].split("-");
 				for (String deptId_userId : deptId_userIds){
 					String deptId = deptId_userId.split("_")[0];
 					String[] userIds = deptId_userId.split("_")[1].split(",");
-					List<String> idList = Arrays.asList(userIds);
-					for (String id : idList){
+					for (String id : userIds){
+						//默认不参与考勤
+						int type = 0;
+						//不需要考勤的用户
+						if (ids.contains(id)){
+							type = 2;
+							for (Map<String, Object> map : list){
+								//从list删除不参与考勤用户，重新添加type=2的用户
+								if (StringUtils.equals(map.get("userId").toString(), id)){
+									list.remove(map);
+									break;
+								}
+							}
+						}
 						Map<String ,Object> map = new HashMap<String, Object>();
 						map.put("userId", id);
 						map.put("rid", rule.getRid());
 						map.put("deptId", deptId);
 						map.put("companyId", companyId);
+						map.put("type", type);
 						list.add(map);
 					}
 				}
 
 			}
 			
-			flag = dao.batchInsertUserOfRule(list) > 0;
+			return dao.batchInsertUserOfRule(list) > 0;
 		}
 
-		return flag;
+		return false;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean update(AttendanceRule rule, String data) {
-		boolean flag = false;
+	public boolean update(AttendanceRule rule, String ruleData, String noRuleData) {
 		if (dao.update(rule)){
 			List<Long> rids = new ArrayList<Long>();
 			rids.add(rule.getRid());
@@ -76,30 +114,70 @@ public class AttendanceRuleServiceImpl extends BaseService implements Attendance
 			dao.deleteUserOfRulesByRids(rids);
 			
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			String[] companyId_deptId_userIds = data.split("\\|");
+			//不需要考勤的用户集合,如需要考勤的用户id也在此集合内，过滤掉
+			List<String> ids = new ArrayList<String>();
+			//不需要考勤规则的用户
+			if (StringUtils.isNotEmpty(noRuleData)){
+				String[] companyId_deptId_userIds = noRuleData.split("\\|");
+				for (String companyId_deptId_userId : companyId_deptId_userIds) {
+					String companyId = companyId_deptId_userId.split("=")[0];
+					String[] deptId_userIds = companyId_deptId_userId.split("=")[1].split("-");
+					for (String deptId_userId : deptId_userIds){
+						String deptId = deptId_userId.split("_")[0];
+						String[] userIds = deptId_userId.split("_")[1].split(",");
+						for (String id : userIds){
+							ids.add(id);
+							Map<String ,Object> map = new HashMap<String, Object>();
+							map.put("userId", id);
+							map.put("rid", rule.getRid());
+							map.put("deptId", deptId);
+							map.put("companyId", companyId);
+							map.put("type", 1);
+							list.add(map);
+						}
+					}
+
+				}
+			}
+			
+			//需要考勤规则的用户
+			String[] companyId_deptId_userIds = ruleData.split("\\|");
 			for (String companyId_deptId_userId : companyId_deptId_userIds) {
 				String companyId = companyId_deptId_userId.split("=")[0];
 				String[] deptId_userIds = companyId_deptId_userId.split("=")[1].split("-");
 				for (String deptId_userId : deptId_userIds){
 					String deptId = deptId_userId.split("_")[0];
 					String[] userIds = deptId_userId.split("_")[1].split(",");
-					List<String> idList = Arrays.asList(userIds);
-					for (String id : idList){
+					for (String id : userIds){
+						//默认不参与考勤
+						int type = 0;
+						//不需要考勤的用户
+						if (ids.contains(id)){
+							type = 2;
+							for (Map<String, Object> map : list){
+								//从list删除不参与考勤用户，重新添加type=2的用户
+								if (StringUtils.equals(map.get("userId").toString(), id)){
+									list.remove(map);
+									break;
+								}
+							}
+						}
 						Map<String ,Object> map = new HashMap<String, Object>();
 						map.put("userId", id);
 						map.put("rid", rule.getRid());
 						map.put("deptId", deptId);
 						map.put("companyId", companyId);
+						map.put("type", type);
 						list.add(map);
 					}
 				}
 
 			}
 			
-			flag = dao.batchInsertUserOfRule(list) > 0;
+			return dao.batchInsertUserOfRule(list) > 0;
 		}
 
-		return flag;
+		return false;
 	}
 
 	@Override

@@ -3,8 +3,8 @@ package com.ulaiber.web.service;
 import java.util.List;
 
 import com.ulaiber.web.model.Holiday;
-import com.ulaiber.web.model.UserOfRule;
 import com.ulaiber.web.model.attendance.AttendanceRule;
+import com.ulaiber.web.model.attendance.UserOfRule;
 
 /** 
  * <一句话概述功能>
@@ -21,14 +21,14 @@ public interface AttendanceRuleService {
 	 * @param rule
 	 * @return
 	 */
-	boolean save(AttendanceRule rule, String data);
+	boolean save(AttendanceRule rule, String ruleData, String noRuleData);
 	
 	/**
 	 * 更新规则
 	 * @param rule
 	 * @return
 	 */
-	boolean update(AttendanceRule rule, String data);
+	boolean update(AttendanceRule rule, String ruleData, String noRuleData);
 	
 	/**
 	 * 根据userId获取考勤规则
