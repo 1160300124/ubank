@@ -95,8 +95,8 @@
 		</form>
 
 	<table id="tb_saraly_configs" data-toggle="table" data-url="" data-method="get" data-striped="true"
-		   data-pagination="false" data-side-pagination="client" data-editable="true"
-		   data-page-size="20" data-page-list="[10,15,20]">
+		   data-pagination="true" data-side-pagination="client" data-editable="true"
+		   data-page-size="15" data-page-list="[10,15,20]">
  		 <thead>
 		<tr>
 			<th data-field="userName" data-edit="false">姓名</th>
