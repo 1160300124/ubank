@@ -134,12 +134,13 @@ public class PermissionController extends BaseController {
                                          @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("groupNumber") String groupNumber) {
         Map<String,Object> map = new HashMap<String,Object>();
         try {
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+//            if(pageSize <= 0){
+//                pageSize = 10;
+//            }
+//            if (pageNum < 0){
+//                pageNum = 0;
+//            }
+            pageNum = (pageNum - 1) * pageSize;
             //获取总数
             int pageTotal = permissionService.getTotal(sysflag,groupNumber);
             List<Group> resultGroup = permissionService.groupQuery(search,pageSize,pageNum,sysflag,groupNumber);
@@ -197,12 +198,13 @@ public class PermissionController extends BaseController {
                                               @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+//            if(pageSize <= 0){
+//                pageSize = 10;
+//            }
+//            if (pageNum < 0){
+//                pageNum = 0;
+//            }
+            pageNum = (pageNum - 1) * pageSize;
             String[] comArr = companyNumber.split(",");
             //获取部门总数
             int deptTotal = permissionService.getDeptTotal(sysflag,comArr);
@@ -445,12 +447,13 @@ public class PermissionController extends BaseController {
                                        @Param("companyNumber") String companyNumber,@Param("sysflag") String sysflag){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+//            if(pageSize <= 0){
+//                pageSize = 10;
+//            }
+//            if (pageNum < 0){
+//                pageNum = 0;
+//            }
+            pageNum = (pageNum - 1) * pageSize;
             //获取公司总数
             int deptTotal = permissionService.getCompanyTotal(sysflag,groupNumber,companyNumber);
             List<Company> list = permissionService.companyQuery(search,pageSize,pageNum,sysflag,groupNumber,companyNumber);
@@ -609,12 +612,13 @@ public class PermissionController extends BaseController {
                                        @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+//            if(pageSize <= 0){
+//                pageSize = 10;
+//            }
+//            if (pageNum < 0){
+//                pageNum = 0;
+//            }
+            pageNum = (pageNum - 1) * pageSize;
             String[] comArr = companyNumber.split(",");
             //获取部门总数
             int empTotal = permissionService.getEmpTotal(sysflag,comArr);
@@ -921,12 +925,13 @@ public class PermissionController extends BaseController {
                                         @Param("pageNum") int pageNum ,@Param("sysflag") String sysflag,@Param("companyNumber") String companyNumber){
         Map<String,Object> map = new HashMap<String,Object>();
         try {
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+//            if(pageSize <= 0){
+//                pageSize = 10;
+//            }
+//            if (pageNum < 0){
+//                pageNum = 0;
+//            }
+            pageNum = (pageNum - 1) * pageSize;
             //获取角色总数
             int empTotal = permissionService.getRoleTotal(sysflag,companyNumber);
             String[] comArr = companyNumber.split(",");

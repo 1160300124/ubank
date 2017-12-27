@@ -17,6 +17,7 @@ import com.ulaiber.web.model.ShangHaiAcount.SHAccDetail;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import com.ulaiber.web.quartz.ReadFile;
+import com.ulaiber.web.test.TripleDes;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -234,7 +235,7 @@ public class Test {
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
-		map.put("mark","0");
+		map.put("mark","1");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
@@ -814,6 +815,20 @@ public class Test {
 	}
 
 
+	@org.junit.Test
+	public void encry() throws IOException {
+//		String fileAllNameZip = "/Users/emacs/Desktop/C19_BANKOUTORINPR_ZFHT_201711201015.zip.ret"; // 待解密的压缩文件完整路径
+//		String fileAllNameTxt = "/Users/emacs/Desktop/xxxxxx.txt"; // 解密后的文件完整路径
+//		String key = "182e8a57b4f6139b3a5de9g4";//加密key
+//		TripleDes.makeUnZipfile(fileAllNameZip, fileAllNameTxt, key);
+
+		//132e8a57b4f6139b3a5de9g4
+//		String fileAllNameZip = "/Users/emacs/Desktop/aaa.zip";//加密后的文件完整路径
+//		String fileName = "aaa.txt";//待加密文件名
+//		String fileAllName = "D:/filedes/aaa.txt";//待加密文件完整路径
+//		String key = "182e8a57b4f6139b3a5de9g4";//加密key
+//		TripleDes.makeZipfile(fileAllNameZip, fileName, fileAllName, key);
+	}
 
 
 }

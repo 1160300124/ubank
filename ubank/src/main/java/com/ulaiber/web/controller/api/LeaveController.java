@@ -530,21 +530,21 @@ public class LeaveController extends BaseController {
                 return resultInfo;
             }
             int count = 0;
-            if(pageNum == 1){
-                pageNum = 0;
-            }
-            if(pageSize == 0){
-                pageSize = 20;
-            }
             //0 待审批，1 已审批
             if(mark.equals("0")){
+                if(pageNum == 1){
+                    pageNum = 0;
+                }
+                if(pageSize == 0){
+                    pageSize = 20;
+                }
                 List<Map<String,Object>> list = new ArrayList<>();
                 Map<String,Object> resultMap = new HashMap<>();
-                while (count < 10){
+                while (count < pageSize){
                     //根据申请记录编号获取待审批人
                     List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId,pageNum,pageSize);
                     if(auList.size() > 0 ){
-                        Map<String,Object> auditMap = Audit(userId,auList,pageNum,count);
+                        Map<String,Object> auditMap = Audit(userId,auList,pageNum,pageSize,count);
                         List<Map<String,Object>> auditList = (List<Map<String, Object>>) auditMap.get("item");
                         pageNum = (int) auditMap.get("pageNum");
                         count  = (auditMap.get("count") != "" ? (int) auditMap.get("count") : 0);
@@ -568,6 +568,7 @@ public class LeaveController extends BaseController {
                 logger.info("查询待审批数据成功");
                 return resultInfo;
             }else if(mark.equals("1")){
+                pageNum = (pageNum - 1)*pageSize;
                 //根据申请记录编号获取已审批人
                 List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId,pageNum,pageSize);
                 List<Map<String,Object>> list = new ArrayList<>();
@@ -577,16 +578,16 @@ public class LeaveController extends BaseController {
                         ids[i] = Integer.parseInt(auditorList.get(i).getRecordNo());
                     }
                     List<ApplyForVO> applyList = leaveService.queryAlreadRecord(ids);
+                    //获取已审批记录
+                    if(applyList.size() <= 0){
+                        resultInfo.setCode(IConstants.QT_CODE_OK);
+                        resultInfo.setMessage("当前用户没有已审批记录");
+                        resultInfo.setData(list);
+                        logger.info("查询已审批数据成功");
+                        return resultInfo;
+                    }
                     for (int i = 0; i < applyList.size(); i++){
                         ApplyForVO applyForVO = applyList.get(i);
-                        //获取已审批记录
-                        if(StringUtil.isEmpty(applyForVO)){
-                            resultInfo.setCode(IConstants.QT_CODE_OK);
-                            resultInfo.setMessage("当前用户没有已审批记录");
-                            resultInfo.setData(list);
-                            logger.info("查询已审批数据成功");
-                            return resultInfo;
-                        }
                         Map<String ,Object> map = new HashMap<>();
                         map.put("id" , applyForVO.getId());
                         map.put("userid" , applyForVO.getUserid());
@@ -675,12 +676,12 @@ public class LeaveController extends BaseController {
      * @param count 有效数据个数
      * @return  Map<String,Object>
      */
-    public Map<String,Object> Audit (String userId,List<LeaveAudit> auList,int pageNum,int count){
+    public Map<String,Object> Audit (String userId,List<LeaveAudit> auList,int pageNum,int pageSize,int count){
         List<Map<String,Object>> list = new ArrayList<>();
         Map<String,Object> resultMap = new HashMap<>();
         try {
             for (int i = 0 ; i < auList.size() ; i++){
-                if (count >= 10){
+                if (count >= pageSize){
                     break;
                 }
                 pageNum += 1;
@@ -690,7 +691,9 @@ public class LeaveController extends BaseController {
                 ApplyForVO applyForVO = leaveService.queryPeningRecord(id,userId);
                 if(StringUtil.isEmpty(applyForVO)){
                     resultMap.put("item",list);
-                    return resultMap;
+                    resultMap.put("count",count);
+                    continue;
+                    //return resultMap;
                 }
                 Map<String ,Object> map = new HashMap<>();
                 map.put("id" , applyForVO.getId());
@@ -959,12 +962,13 @@ public class LeaveController extends BaseController {
                 logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
                 return resultInfo;
             }
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+//            if(pageSize <= 0){
+//                pageSize = 10;
+//            }
+//            if (pageNum < 0){
+//                pageNum = 0;
+//            }
+            pageNum = (pageNum - 1) * pageSize;
             // true 表示数据已同步完成； false 表示还有数据需要同步；
             boolean flag = false;
             // 最新的日期

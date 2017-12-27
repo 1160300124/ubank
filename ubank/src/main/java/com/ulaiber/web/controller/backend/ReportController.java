@@ -159,12 +159,13 @@ public class ReportController extends BaseController {
     public Map<String,Object> leaveQuery(LeaveReportVO leaveReportVO, @Param("pageSize") int pageSize,
                                          @Param("sysflag") String sysflag, @Param("pageNum") int pageNum,
                                          @Param("groupNumber") String groupNumber,@Param("companyNumber") String companyNumber){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> map = new HashMap<>();
         int total = reportService.getLeaveCount(sysflag,groupNumber,pageNum,pageSize); //获取申请记录总数
         if(total <= 0){
@@ -237,12 +238,13 @@ public class ReportController extends BaseController {
     public Map<String,Object>  reimQuery(LeaveReportVO leaveReportVO, @Param("pageSize") int pageSize,
                                          @Param("sysflag") String sysflag, @Param("pageNum") int pageNum,
                                          @Param("groupNumber") String groupNumber,@Param("companyNumber") String companyNumber){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> resultMap = new HashMap<>();
         //获取报销记录总数
         int count = reportService.getReimCount(sysflag,groupNumber,pageNum,pageSize);
