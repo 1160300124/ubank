@@ -671,10 +671,6 @@ $(function(){
 	        }
 	        count = count + 1;
 	    })
-	    if (count <= 0){
-	    	Ewin.alert("请选择考勤人员。");
-	    	return false;
-	    }
 		$('#attendance_no_people_').val(count + '人');
 		$('#attendancePeopleModal_no').modal("hide");
 
