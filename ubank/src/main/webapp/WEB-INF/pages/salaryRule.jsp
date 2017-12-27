@@ -226,6 +226,10 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -247,6 +251,20 @@
                                         </td>
                                         <td>
                                             <select name="" id="noclock_unit" class="form-control">
+                                                <option value="0">元</option>
+                                                <option value="1">天</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            	旷工/半天
+                                        </td>
+                                        <td>
+                                            <input type="text" id="half_noclock_cut" class="form-control">
+                                        </td>
+                                        <td>
+                                            <select name="" id="half_noclock_unit" class="form-control">
                                                 <option value="0">元</option>
                                                 <option value="1">天</option>
                                             </select>

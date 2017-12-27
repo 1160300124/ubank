@@ -303,12 +303,13 @@ public class BanksController extends BaseController {
     @RequestMapping(value = "queryHeadquarters", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> queryHeadquarters(@Param("search") String search,@Param("pageSize") int pageSize, @Param("pageNum") int pageNum ){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> map = new HashMap<String,Object>();
         //获取总行数量
         int totalCount = banksRootService.getHeadquartersCount();
@@ -387,12 +388,13 @@ public class BanksController extends BaseController {
     @ResponseBody
     public Map<String,Object> queryBranchs(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
                                           @Param("type") String type,@Param("bankNo") int bankNo ){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> map = new HashMap<String,Object>();
         //获取分行数量
         int totalCount = banksRootService.getbranchCount(type,bankNo);
@@ -493,12 +495,13 @@ public class BanksController extends BaseController {
     @ResponseBody
     public Map<String,Object> queryBranchsChildren(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
                                                    @Param("type") String type,@Param("bankNo") int bankNo ){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> map = new HashMap<String,Object>();
         //获取分行数量
         int totalCount = banksRootService.getBranchChilCount(type,bankNo);
@@ -619,12 +622,13 @@ public class BanksController extends BaseController {
     @ResponseBody
     public Map<String,Object> queryBankUsers(@Param("search") String search,@Param("pageSize") int pageSize,@Param("pageNum") int pageNum,
                                              @Param("type") String type,@Param("bankNo") int bankNo,@Param("name") String name,@Param("mobile") String mobile){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> map = new HashMap<String,Object>();
         //获取银行用户数量
         int totalCount = banksRootService.getBankUsersCount(type,bankNo);
@@ -943,12 +947,13 @@ public class BanksController extends BaseController {
     @ResponseBody
     public Map<String,Object> queryBusiness(int pageSize, int pageNum, String type, int bankNo,int roleType
             ,String heaquarters,String branch,String child,String name,String groupName,int number){
-        if(pageSize <= 0){
-            pageSize = 10;
-        }
-        if (pageNum < 0){
-            pageNum = 0;
-        }
+//        if(pageSize <= 0){
+//            pageSize = 10;
+//        }
+//        if (pageNum < 0){
+//            pageNum = 0;
+//        }
+        pageNum = (pageNum - 1) * pageSize;
         Map<String,Object> map = new HashMap<String,Object>();
         //获取业务数量
         int totalCount = banksRootService.getBusinessCount(type,roleType,bankNo,number);

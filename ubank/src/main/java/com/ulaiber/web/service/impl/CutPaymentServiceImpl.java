@@ -97,6 +97,10 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				logger.error("用户 {" + user.getId() + "}没有设置考勤规则，请先设置。");
 				continue;
 			}
+			if (attRule.getType() != 0){
+				logger.error("用户 {" + user.getId() + "}不参与考勤规则。");
+				continue;
+			}
 			//应工作天数
 			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
 			if (workdays == null){
