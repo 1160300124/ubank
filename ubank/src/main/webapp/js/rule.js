@@ -400,18 +400,6 @@ $(function(){
 		advanceSettingModal.modal("show");
 	});
 
-	$("#people_search").unbind().bind("input propertychange", function(){
-		var rid = $("#rule_id").val();
-		var search = $("#people_search").val();
-		if (flag == 0){
-			renderPeople("peoplesTree", "", search);
-		}
-		if (flag == 1){
-			renderPeople("peoplesTree_no", rid, search);
-		}
-		
-	});
-	
 	$("#advanceSetting_confirm").unbind().bind("click", function(){
 
 		var settingModal = $("#advanceSettingModal");
@@ -626,20 +614,32 @@ $(function(){
 			renderSelected("peoplesTree_no");
 		}
 		
-		$("#people_search_").unbind().bind("input propertychange", function(){
-			var rid = $("#rule_id").val();
-			var search = $("#people_search_").val();
-			if (flag == 0){
-				renderPeople("peoplesTree", "", search);
-			}
-			if (flag == 1){
-				renderPeople("peoplesTree_no", rid, search);
-			}
-			
-		});
-		
 		$("#people_search_").val("");
 		$('#attendancePeopleModal_no').modal("show");
+	});
+	
+	$("#people_search").unbind().bind("input propertychange", function(){
+		var rid = $("#rule_id").val();
+		var search = $("#people_search").val();
+		if (flag == 0){
+			renderPeople("peoplesTree", "", search);
+		}
+		if (flag == 1){
+			renderPeople("peoplesTree", rid, search);
+		}
+		
+	});
+	
+	$("#people_search_").unbind().bind("input propertychange", function(){
+		var rid = $("#rule_id").val();
+		var search = $("#people_search_").val();
+		if (flag == 0){
+			renderPeople("peoplesTree_no", "", search);
+		}
+		if (flag == 1){
+			renderPeople("peoplesTree_no", rid, search);
+		}
+		
 	});
 
 	$("#attendancePeople_confirm").unbind().bind("click", function(){
@@ -671,10 +671,6 @@ $(function(){
 	        }
 	        count = count + 1;
 	    })
-	    if (count <= 0){
-	    	Ewin.alert("请选择考勤人员。");
-	    	return false;
-	    }
 		$('#attendance_no_people_').val(count + '人');
 		$('#attendancePeopleModal_no').modal("hide");
 

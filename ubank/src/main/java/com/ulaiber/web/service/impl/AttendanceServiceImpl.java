@@ -522,11 +522,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		//当天
 		String currentDay = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
 		//0 正常   1异常(迟到，早退) 2未打卡  3休息日  4请假
-		int type = 3;
 		//获取指定月份的所有天数集合(如果是当月则只返回当前日期之前的天数)
 		List<String> days = DateTimeUtil.getDaysFromMonth(month, true);
 		for (String day : days){
-//			records.put(day, type);
 			//指定月份不能大于当前月份
 			if (month.compareTo(currentMonth) > 0){
 				continue;
@@ -932,6 +930,50 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		count += (Integer)map.get("noClockCount");
 
 		return count;
+	}
+
+	@Override
+	public double getDaysByDate(String startDate, String startType, String endDate, String endType,
+			AttendanceRule rule) {
+		double leave_day = 0;
+		List<String> days = DateTimeUtil.getDaysFromDate(startDate, endDate);
+		//0：上半天   1：下半天
+		if (days.size() == 1){
+			if (StringUtils.equals(startType, "0") && StringUtils.equals(endType, "0")){
+				leave_day = 0.5;
+			} else if (StringUtils.equals(startType, "0") && StringUtils.equals(endType, "1")){
+				leave_day = 1.0;
+			} else if (StringUtils.equals(startType, "1") && StringUtils.equals(endType, "1")){
+				leave_day = 0.5;
+			}
+		} else if (days.size() >= 2){
+			for (String day : days){
+				if (isRestDay(day, rule)){
+					continue;
+				}
+				//请假第一天
+				if (StringUtils.equals(day, startDate)){
+					if (StringUtils.equals(startType, "0")){
+						leave_day += 1.0;
+					}
+					else if (StringUtils.equals(startType, "1")){
+						leave_day += 0.5;
+					}
+				//请假最后一天
+				} else if (StringUtils.equals(day, endDate)){
+					if (StringUtils.equals(endType, "0")){
+						leave_day += 0.5;
+					}
+					else if (StringUtils.equals(endType, "1")){
+						leave_day += 1.0;
+					}
+				//请假中间
+				} else {
+					leave_day += 1.0;
+				}
+			}
+		}
+		return leave_day;
 	}
 	
 }
