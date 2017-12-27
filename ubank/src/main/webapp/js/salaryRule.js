@@ -86,6 +86,8 @@ $(function(){
     	params.forgetClockCutUnit = $("#forgetclock_unit").val();
     	params.noClockCutPayment = $("#noclock_cut").val();
     	params.noClockCutUnit = $("#noclock_unit").val();
+    	params.half_noClockCutPayment = $("#half_noclock_cut").val();
+    	params.half_noClockCutUnit = $("#noclock_unit").val();
     	var lateRules = "";   //迟到规则
     	var earlyLeaveRules = ""; //早退规则
     	$("#late_table tbody tr").each(function(index,item){
@@ -315,7 +317,13 @@ function validateAttendance(obj, flag){
 	}
 	if ($("#noclock_cut").val() != "" ){
 		if (!/^([1-9]\d{0,3}|0)(\.\d{0,1})?$/.test($("#noclock_cut").val())){
-			Ewin.alert("旷工扣除格式不正确，范围0~9999.9");
+			Ewin.alert("旷工/天扣除格式不正确，范围0~9999.9");
+			return false;
+		}
+	}
+	if ($("#half_noclock_cut").val() != "" ){
+		if (!/^([1-9]\d{0,3}|0)(\.\d{0,1})?$/.test($("#noclock_cut").val())){
+			Ewin.alert("旷工/半天扣除格式不正确，范围0~9999.9");
 			return false;
 		}
 	}
