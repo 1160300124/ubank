@@ -96,14 +96,24 @@ public class SalaryRule {
 	private int forgetClockCutUnit;
 	
 	/**
-	 * 旷工扣款
+	 * 旷工/天扣款
 	 */
 	private double noClockCutPayment;
 	
 	/**
-	 * 旷工扣款单位 0：元  1：天
+	 * 旷工/天扣款单位 0：元  1：天
 	 */
 	private int noClockCutUnit;
+	
+	/**
+	 * 旷工/半天扣款
+	 */
+	private double half_noClockCutPayment;
+	
+	/**
+	 * 旷工/半天扣款单位 0：元  1：天
+	 */
+	private int half_noClockCutUnit;
 
 	public long getRid() {
 		return rid;
@@ -255,6 +265,22 @@ public class SalaryRule {
 
 	public void setNoClockCutUnit(int noClockCutUnit) {
 		this.noClockCutUnit = noClockCutUnit;
+	}
+
+	public double getHalf_noClockCutPayment() {
+		return half_noClockCutPayment;
+	}
+
+	public void setHalf_noClockCutPayment(double half_noClockCutPayment) {
+		this.half_noClockCutPayment = half_noClockCutPayment;
+	}
+
+	public int getHalf_noClockCutUnit() {
+		return half_noClockCutUnit;
+	}
+
+	public void setHalf_noClockCutUnit(int half_noClockCutUnit) {
+		this.half_noClockCutUnit = half_noClockCutUnit;
 	}
 	
 }

@@ -168,9 +168,8 @@ public class AttendanceRuleController extends BaseController {
 							}
 							if (checkNodeUserIds.contains(user.getId())){
 								userMap.put("checked", true);
-								//部门和公司下面有已选用户时才展开
+								//部门和公司下面有已选用户时才勾选
 								deptMap.put("checked", true);
-								deptMap.put("open", true); //根节点展开
 								companyMap.put("checked", true);
 							}
 							list.add(userMap);
@@ -181,10 +180,7 @@ public class AttendanceRuleController extends BaseController {
 					deptMap.put("name", dept.getName());
 					deptMap.put("children" , list);
 					deptMap.put("isParent", true);//设置根节点为父节点
-					//新增时全部展开
-					if (StringUtils.isEmpty(rid)){
-						deptMap.put("open", true); //根节点展开
-					}
+					deptMap.put("open", true); //根节点展开
 					deptTree.add(deptMap);
 				}
 				

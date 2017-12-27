@@ -827,4 +827,47 @@ public class AttendanceApiController extends BaseController {
 		return info;
 	}
 	
+	/**
+	 * 获取请假时长
+	 * @param userId    用户id
+	 * @param startDate 开始日期  yyyy-MM-dd
+	 * @param startType 0：上半天   1：下半天
+	 * @param endDate   结束日期  yyyy-MM-dd
+	 * @param endType   0：上半天   1：下半天
+	 * @param request   request
+	 * @param response  response
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "getDaysByDate", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getDaysByDate(Long userId, String startDate, String startType, String endDate, String endType, HttpServletRequest request, HttpServletResponse response){
+		logger.debug("getHoursByDateAndMobile start...");
+		ResultInfo info = new ResultInfo();
+		if (userId == null || StringUtils.isEmpty(startDate) || StringUtils.isEmpty(startType) || StringUtils.isEmpty(endDate) || StringUtils.isEmpty(endType)){
+			logger.error("参数不能为空。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数不能为空。");
+			return info;
+		}
+		if (startDate.compareTo(endDate) > 0){
+			logger.error("请假开始时间不能大于结束时间。");
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("请假开始时间不能大于结束时间。");
+			return info;
+		}
+		
+		AttendanceRule rule = ruleService.getRuleByUserId(userId);
+		if (null == rule){
+			logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
+			info.setCode(IConstants.QT_N0_ATTENDANCE_RULE);
+			info.setMessage("用户  " + userId + " 没有设置考勤规则，请先设置。");
+			return info;
+		}
+		double leave_day = service.getDaysByDate(startDate, startType, endDate, endType, rule);
+		info.setCode(IConstants.QT_CODE_OK);
+		info.setData(leave_day);
+		logger.debug("getHoursByDateAndMobile end...");
+		return info;
+	}
+	
 }
