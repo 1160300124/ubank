@@ -598,4 +598,38 @@ window.operateEvents = {
 		}
 };
 
-
+function addFileChange(){
+	var file = $('#lefile').val();
+	if (file == null || file == "" || file == undefined){
+		Ewin.alert("请上传excel！");
+		return false;
+	}
+	$("#btn_salary_upload").attr("disabled", true);
+	
+	$.ajaxFileUpload({
+		url : "importSalaryList",
+		type: "post",
+		secureuri : false,
+		fileElementId : "lefile",
+		dataType : "json",
+		data : {
+			companyId : "20047"
+		},
+		success : function(data, status) {
+			$("#btn_salary_upload").attr("disabled", false);
+			data = $.parseJSON(data.replace(/<.*?>/ig,""));
+			var code = data['code'];
+			if (code == 1000) {
+				$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
+			}else{
+				Ewin.alert("上传失败！" + data['message']);
+			}
+		},
+		error : function(data, status, e) {
+			Ewin.alert("上传发生异常");
+		}
+	})
+	$('#lefile').val("");
+	$("#btn_salary_upload").attr("disabled", false);
+	return false;
+}

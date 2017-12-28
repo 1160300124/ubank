@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AttendanceRuleDao;
@@ -39,6 +40,7 @@ import com.ulaiber.web.service.SalaryAuditService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.ExcelUtil;
 import com.ulaiber.web.utils.MathUtil;
 import com.ulaiber.web.utils.SPDBUtil;
 import com.ulaiber.web.utils.UUIDGenerator;
@@ -401,6 +403,17 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			return detailDao.batchUpdateStatusBySid(salary.getDetails()) > 0;
 		}
 		return false;
+	}
+	
+	@Override
+	public List<SalaryDetail> importSalaryList(MultipartFile file, String companyId) throws Exception{
+		List<User> users = userService.getUsersByComNum(companyId, "");
+		List<String> cardNoList = new ArrayList<String>();
+		for (User user : users){
+			cardNoList.add(user.getCardNo());
+		}
+		List<SalaryDetail> details = ExcelUtil.readExcel(file, cardNoList);
+		return details;
 	}
 
 }
