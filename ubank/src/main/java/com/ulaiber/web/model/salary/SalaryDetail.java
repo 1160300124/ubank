@@ -18,6 +18,11 @@ public class SalaryDetail {
 	private String sid;
 	
 	/**
+	 * excel序号
+	 */
+	private int eid;
+	
+	/**
 	 * 收款人ID
 	 */
 	private long userId;
@@ -148,6 +153,14 @@ public class SalaryDetail {
 
 	public void setDid(String did) {
 		this.did = did;
+	}
+
+	public int getEid() {
+		return eid;
+	}
+
+	public void setEid(int eid) {
+		this.eid = eid;
 	}
 
 	public String getSid() {
