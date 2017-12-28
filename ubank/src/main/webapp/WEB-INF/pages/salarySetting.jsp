@@ -56,6 +56,10 @@
 <!-- 	            	<button type="button" class="btn btn-default" id="btn_import_latest_salary" >
 	            		<span class="fa " aria-hidden="true"></span>导入最近工资表
 	            	</button> -->
+	            	<input id="lefile" name="lefile" type="file" style="display:none" onchange="return addFileChange();">  
+		       		<button id="btn_salary_upload" type="button" class="btn btn-default" onclick="$('input[id=lefile]').click();">
+					    <span class="fa icon-folder-open" aria-hidden="true">点击上传</span>
+					</button>
 	            </div>
 	            
 			</div>
