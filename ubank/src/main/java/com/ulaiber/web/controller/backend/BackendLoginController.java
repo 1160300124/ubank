@@ -53,7 +53,16 @@ public class BackendLoginController extends BaseController {
 		return "login";
 	}
 
-
+	/**
+	 * 跳转集团系统后台首页
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("index")
+	public String index(HttpServletRequest request, HttpServletResponse response){
+		return "index";
+	}
 	
 	@RequestMapping("test")
 	public String test(HttpServletRequest request, HttpServletResponse response){
