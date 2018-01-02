@@ -496,16 +496,24 @@ public class Test {
 
 	//上海银行二类户账户明细状态
 	@org.junit.Test
-	public void accDetail() throws URISyntaxException {
+	public void accDetail() {
 		AccDetailVO vo = new AccDetailVO();
 		vo.setSubAcctNo("623185009300012892");
 		vo.setCurrency("156");
 		vo.setBeginDt("20171101");
-		vo.setEndDt("20171128");
-		vo.setPageSize(1000);
+		vo.setEndDt("20171228");
+		vo.setPageSize(3);
 		vo.setSkipRecord(1);
 		SHAccountDetail.queryDetail(vo);
-
+//		Map<String,Object> map = new HashMap<String,Object>();
+//		map.put("SubAcctNo","623185009300012892");
+//		map.put("Currency","156");
+//		map.put("BeginDt","20171101");
+//		map.put("EndDt","20171228");
+//		map.put("PageSize",1000);
+//		map.put("SkipRecord",1);
+//		String result = HttpsUtil.doPost("https://localhost:8080/ubank/api/v1/TradingDetail",map);
+//		System.out.print(result);
 	}
 
 	//获取账单详情
@@ -515,7 +523,7 @@ public class Test {
 		map.put("SubAcctNo","623185009300012892");
 		map.put("RqUID","40");
 		map.put("trading",1);
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingDetail",map);
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/AccDetail",map);
 		System.out.print(result);
 	}
 

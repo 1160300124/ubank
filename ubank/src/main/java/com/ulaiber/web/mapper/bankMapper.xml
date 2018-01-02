@@ -154,4 +154,9 @@
 	<select id="queryActiveStatus" parameterType="String" resultType="String">
 		SELECT freeze FROM tbl_secondAccount where SubAcctNo = #{subAccNo}
 	</select>
+
+	<!--查询该记录是否已存在转账记录表中-->
+	<select id="queryTransfer" parameterType="String" resultType="com.ulaiber.web.model.Transfer">
+		select SubAcctNo,RqUID FROM tbl_transfer where RqUID = #{rqUID}
+	</select>
 </mapper>
