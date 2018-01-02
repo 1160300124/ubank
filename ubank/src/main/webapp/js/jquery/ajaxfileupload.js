@@ -39,15 +39,15 @@ jQuery.extend({
 		jQuery(oldElement).attr('id', fileId);
 		jQuery(oldElement).before(newElement);
 		jQuery(oldElement).appendTo(form);
-		//set attributes
-		jQuery(form).css('position', 'absolute');
-		jQuery(form).css('top', '-1200px');
-		jQuery(form).css('left', '-1200px');
 		if (data) { 
 			for (var i in data) { 
 				$('<input type="hidden" name="' + i + '" value="' + data[i] + '" />').appendTo(form);
 			} 
 		}
+		//set attributes
+		jQuery(form).css('position', 'absolute');
+		jQuery(form).css('top', '-1200px');
+		jQuery(form).css('left', '-1200px');
 		jQuery(form).appendTo('body');  
 		return form;
 	},

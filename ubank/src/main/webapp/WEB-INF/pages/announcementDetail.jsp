@@ -63,7 +63,7 @@
                 table{
                     width: 100%;
                 }
-                td:first-child{
+                #table_preview_attachment td:first-child{
                     width: 50px;
                 }
 
