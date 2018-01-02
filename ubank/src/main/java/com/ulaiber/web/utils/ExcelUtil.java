@@ -189,15 +189,15 @@ public class ExcelUtil {
 					XSSFRow xssfRow = xssfSheet.getRow(rowNum);  
 					if (xssfRow != null){  
 						//第一行是表头，跳过
-						//0姓名  1身份证号码  2税前工资  3补贴	4奖金  5考勤扣款  6请假扣款  7加班费  8社保缴纳  9公积金  10个税起征点  11个人所得税  12其他扣款  13应发工资
 						if (rowNum == 0){
 							continue;
 						}
-						//读取列，从第一列开始  
 						SalaryDetail detail = new SalaryDetail();
 						detail.setEid(rowNum + 1);
 
 						StringBuffer sb = new StringBuffer();
+						//读取列，从第一列开始  
+						//0姓名  1身份证号码  2税前工资  3补贴	4奖金  5考勤扣款  6请假扣款  7加班费  8社保缴纳  9公积金  10个税起征点  11个人所得税  12其他扣款  13应发工资
 						if (StringUtils.isEmpty(getXValue(xssfRow.getCell(0)))){
 							sb.append("姓名不能为空,");
 						}
@@ -305,15 +305,15 @@ public class ExcelUtil {
 					HSSFRow hssfRow = hssfSheet.getRow(rowNum);
 					if (hssfRow != null){
 						//第一行是表头，跳过
-						//0姓名  1身份证号码  2税前工资  3补贴	4奖金  5考勤扣款  6请假扣款  7加班费  8社保缴纳  9公积金  10个税起征点  11个人所得税  12其他扣款  13应发工资
 						if (rowNum == 0){
 							continue;
 						}
-						//读取列，从第一列开始  
 						SalaryDetail detail = new SalaryDetail();
 						detail.setEid(rowNum + 1);
 
 						StringBuffer sb = new StringBuffer();
+						//读取列，从第一列开始  
+						//0姓名  1身份证号码  2税前工资  3补贴	4奖金  5考勤扣款  6请假扣款  7加班费  8社保缴纳  9公积金  10个税起征点  11个人所得税  12其他扣款  13应发工资
 						if (StringUtils.isEmpty(getHValue(hssfRow.getCell(0)))){
 							sb.append("姓名不能为空,");
 						}
@@ -322,9 +322,13 @@ public class ExcelUtil {
 						if (StringUtils.isEmpty(getHValue(hssfRow.getCell(1)))){
 							sb.append("身份证号码不能为空,");
 						} else {
-							cardNoSet.add(getHValue(hssfRow.getCell(1)));
-							if (cardNoSet.contains(getHValue(hssfRow.getCell(1)))){
-								sb.append("该条记录重复了,");
+							if (!cardNoList.contains(getHValue(hssfRow.getCell(1)))){
+								sb.append("没有对应员工,");
+							} else {
+								cardNoSet.add(getHValue(hssfRow.getCell(1)));
+								if (cardNoSet.contains(getHValue(hssfRow.getCell(1)))){
+									sb.append("该条记录重复了,");
+								}
 							}
 						}
 						detail.setCardNo(getHValue(hssfRow.getCell(1)));
