@@ -103,9 +103,9 @@ public interface AttendanceService {
 	 * @param startDate yyyy-MM-dd
 	 * @param endDate   yyyy-MM-dd 
 	 * @param rule
-	 * @return
+	 * @return Map<String, Object>
 	 */
-	double getDaysByDate(String startDate, String startType, String endDate, String endType, AttendanceRule rule);
+	Map<String, Object> getDaysByDate(String startDate, String startType, String endDate, String endType, AttendanceRule rule);
 	
 	/**
 	 * 补卡
