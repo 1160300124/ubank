@@ -933,9 +933,11 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 	}
 
 	@Override
-	public double getDaysByDate(String startDate, String startType, String endDate, String endType,
+	public Map<String, Object> getDaysByDate(String startDate, String startType, String endDate, String endType,
 			AttendanceRule rule) {
+		Map<String, Object> data = new HashMap<String, Object>();
 		double leave_day = 0;
+		int restDay = 0;
 		List<String> days = DateTimeUtil.getDaysFromDate(startDate, endDate);
 		//0：上半天   1：下半天
 		if (days.size() == 1){
@@ -949,6 +951,7 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 		} else if (days.size() >= 2){
 			for (String day : days){
 				if (isRestDay(day, rule)){
+					restDay++;
 					continue;
 				}
 				//请假第一天
@@ -973,7 +976,9 @@ public class AttendanceServiceImpl extends BaseService implements AttendanceServ
 				}
 			}
 		}
-		return leave_day;
+		data.put("leaveDay", leave_day);
+		data.put("restDay", restDay);
+		return data;
 	}
 	
 }

@@ -863,9 +863,9 @@ public class AttendanceApiController extends BaseController {
 			info.setMessage("用户  " + userId + " 没有设置考勤规则，请先设置。");
 			return info;
 		}
-		double leave_day = service.getDaysByDate(startDate, startType, endDate, endType, rule);
+		Map<String, Object> data = service.getDaysByDate(startDate, startType, endDate, endType, rule);
 		info.setCode(IConstants.QT_CODE_OK);
-		info.setData(leave_day);
+		info.setData(data);
 		logger.debug("getHoursByDateAndMobile end...");
 		return info;
 	}
