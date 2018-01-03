@@ -12,15 +12,19 @@
 	<typeAliases>
 		<typeAlias alias="User" type="com.ulaiber.web.model.User" />
 		<typeAlias alias="Bank" type="com.ulaiber.web.model.Bank" />
-		<typeAlias alias="Salary" type="com.ulaiber.web.model.Salary" />
-		<typeAlias alias="SalaryDetail" type="com.ulaiber.web.model.SalaryDetail" />
+		<typeAlias alias="Salary" type="com.ulaiber.web.model.salary.Salary" />
+		<typeAlias alias="SalaryDetail" type="com.ulaiber.web.model.salary.SalaryDetail" />
 		<typeAlias alias="ThirdUrl" type="com.ulaiber.web.model.ThirdUrl" />
 		<typeAlias alias="Category" type="com.ulaiber.web.model.Category" />
 		<typeAlias alias="Module" type="com.ulaiber.web.model.Module" />
 		<typeAlias alias="Banner" type="com.ulaiber.web.model.Banner" />
-		<typeAlias alias="Attendance" type="com.ulaiber.web.model.Attendance" />
-		<typeAlias alias="AttendanceRule" type="com.ulaiber.web.model.AttendanceRule" />
-		<typeAlias alias="AttendanceStatistic" type="com.ulaiber.web.model.AttendanceStatistic" />
+		<typeAlias alias="Attendance" type="com.ulaiber.web.model.attendance.Attendance" />
+		<typeAlias alias="AttendanceRule" type="com.ulaiber.web.model.attendance.AttendanceRule" />
+		<typeAlias alias="AttendanceStatistic" type="com.ulaiber.web.model.attendance.AttendanceStatistic" />
+		<typeAlias alias="SalaryRule" type="com.ulaiber.web.model.salary.SalaryRule" />
+		<typeAlias alias="CutPayment" type="com.ulaiber.web.model.attendance.CutPayment" />
+		<typeAlias alias="Announcement" type="com.ulaiber.web.model.announcement.Announcement" />
+		<typeAlias alias="SalaryChange" type="com.ulaiber.web.model.salary.SalaryChange" />
 	</typeAliases>
 	<!-- 实体接口映射资源 -->
 
@@ -45,6 +49,8 @@
 		<mapper resource="com/ulaiber/web/mapper/attendance.xml" />
 		<mapper resource="com/ulaiber/web/mapper/attendanceRule.xml" />
 		<mapper resource="com/ulaiber/web/mapper/attendanceStatistic.xml" />
+		<mapper resource="com/ulaiber/web/mapper/salaryRuleMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/cutPayment.xml" />
 		<mapper resource="com/ulaiber/web/mapper/leaveMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/leaveAuditMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/ReportMapper.xml" />
@@ -52,6 +58,8 @@
 		<mapper resource="com/ulaiber/web/mapper/reimbursementMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/SalaryAuditMapper.xml" />
 		<mapper resource="com/ulaiber/web/mapper/BanksRootMapper.xml" />
+		<mapper resource="com/ulaiber/web/mapper/announcement.xml" />
+		<mapper resource="com/ulaiber/web/mapper/salaryChange.xml" />
 	</mappers>
 
 </configuration>  

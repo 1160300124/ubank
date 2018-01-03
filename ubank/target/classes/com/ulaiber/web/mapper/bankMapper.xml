@@ -13,12 +13,12 @@
     	<id column="bankNo" property="bankNo" jdbcType="VARCHAR" />
     	<result column="bankName" property="bankName" jdbcType="VARCHAR" />
    </resultMap>
-  
-	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+
+	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->
 	<select id="getBankByBankNo" parameterType="String" resultMap="BankMap">
-		select * from tbl_banks where bankNo=#{bankNo}
+		select bankNo,name as bankName,type,number from tbl_bindBank where bankNo=#{bankNo}
 	</select>
-	
+
 	<select id="getAllBanks" resultMap="BankMap">
 		select * from tbl_banks
 	</select>
@@ -35,4 +35,123 @@
 			#{idsArr}
 		</foreach>
 	</delete>
+
+	<!--获取公司绑定的银行信息-->
+	<select id="getBankByCode" parameterType="String" resultType="com.ulaiber.web.model.BankAccount" >
+		select distinct b.bankNumber from tbl_company a left join tbl_bankAccount b on a.companyNumber = b.companyNumber
+			where a.code = #{code}
+	</select>
+
+	<!--根据银行编号获取银行信息-->
+	<select id="queryBanksByNumber" parameterType="String" resultType="com.ulaiber.web.model.Bank">
+		select b.bankNo,a.type,b.name as bankName,b.icon from tbl_banks a
+		inner join tbl_bindBank b on a.type = b.type
+			where a.bankNo = #{bankNumber} order by convert(name using gbk)
+	</select>
+
+	<!--删除原绑定银行卡-->
+	<update id="deleteOriginCart" parameterType="Map">
+		UPDATE tbl_userToBank SET disabled = 1 where userid = #{userid} and bankCardNo = #{originCart}
+	</update>
+
+	<!--根据二类户账号ID和银行卡号查询二类户信息-->
+	<select id="querySecondAccount" parameterType="Map" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		select a.*,b.cardNo as IdNo,b.reserve_mobile as ReservedPhone,c.bankCardNo as BindCardNo,c.bankNo from tbl_secondAccount a
+		left join tbl_users b on a.userid = b.user_id
+		left join tbl_userToBank c on a.userid = c.userid
+		where c.disabled = 0 and  a.SubAcctNo = #{SubAcctNo}
+	</select>
+
+	<!--根据用户ID获取对应公司的邀请码-->
+	<select id="getCodeByuserid" parameterType="Long" resultType="String" >
+		select distinct b.code from tbl_roots a
+		left join tbl_company b on a.companyNumber = b.companyNumber
+		 where a.userid = #{userid} and a.disabled ='0'
+	</select>
+
+	<!--更新二类账户余额-->
+	<update id="updateSecondAcc" parameterType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount" >
+		update tbl_secondAccount set EarningsYesterday = #{EarningsYesterday} , AvaiBal = #{AvaiBal},AvaiFundShare = #{AvaiFundShare} , FundShare = #{FundShare},
+				WorkingBal = #{WorkingBal} where SubAcctNo = #{subAcctNo}
+	</update>
+
+	<!--根据二类账户号查询账户余额-->
+	<select id="queryAccount" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		select * FROM tbl_secondAccount WHERE SubAcctNo =#{subAcctNo}
+	</select>
+
+	<!--新增提现记录-->
+	<insert id="insertWithdraw" parameterType="com.ulaiber.web.model.ShangHaiAcount.Withdraw">
+		INSERT INTO tbl_withdraw(userid,SubAcctNo,RqUID,bankNo,BindCardNo,Amount,BizDate,Currency,TheirRef,
+		    Purpose,Attach,MemoInfo,type,CreateDate,updateTime,status,trading,sortTime)
+			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{bankNo},#{BindCardNo},#{Amount},#{BizDate},#{Currency},
+			    #{TheirRef},#{Purpose},#{Attach},#{MemoInfo},#{type},#{CreateDate},#{updateTime},#{status},#{trading},#{sortTime})
+	</insert>
+
+	<!--根据二类账户查询账单-->
+	<select id="queryWithdraw" parameterType="Map" resultType="com.ulaiber.web.model.Bill">
+		select x.* from (
+			select a.SubAcctNo,a.amount,a.trading ,a.status as tradingStatus,a.CreateDate,a.updateTime,
+				c.bankCardNo,d.name as bankName,a.RqUID,a.sortTime  from tbl_withdraw a
+			    left join tbl_userToBank c on a.userid = c.userid
+			    left join tbl_bindBank d on a.bankNo = d.bankNo
+			    where c.disabled = 0 and a.SubAcctNo = #{SubAcctNo}
+			union all
+			select b.SubAcctNo,b.amount,b.trading ,b.status as tradingStatus,b.BizDate as CreateDate,b.BizTime as updateTime,null as bankCardNo ,
+				null as bankName,b.RqUID,null as sortTime from tbl_transfer b
+				where b.SubAcctNo = #{SubAcctNo}
+		) x ORDER BY x.sortTime DESC limit #{pageNum},#{pageSize}
+	</select>
+
+    <!--更新交易记录-->
+    <update id="updateWithdraw" parameterType="Map">
+        UPDATE tbl_withdraw SET status = ${status},updateTime = #{date},sortTime = #{sortTime}
+         	WHERE RqUID = #{rqUID}
+    </update>
+
+	<!--根据流水号查询交易详情-->
+	<select id="queryWithdrawByRqUID" parameterType="String" resultType="com.ulaiber.web.model.BillDetail">
+		select b.user_name as username,a.RqUID,a.Amount,a.BindCardNo,a.CreateDate,a.updateTime,a.TheirRef as remark,
+			 a.status as tradingStatus ,d.icon from tbl_withdraw a
+			left join tbl_users b on a.userid = b.user_id
+			left join tbl_userToBank c on a.userid = c.userid
+			left join tbl_bindBank d on c.bankNo = d.bankNo
+			where c.disabled = 0 and  a.RqUID =  #{rqUID}
+	</select>
+
+	<!--根据流水号查询工资转入详情-->
+	<select id="querySalariesByRqUID" parameterType="String" resultType="com.ulaiber.web.model.BillDetail">
+		select a.RqUID,b.user_name as username,a.BizDate as CreateDate ,a.BizTime as updateTime,a.status as tradingStatus
+			from tbl_transfer a left join tbl_users b on a.userid = b.user_id
+			where  a.RqUID = #{rqUID}
+	</select>
+
+	<!--根据二类户账号获取CID-->
+	<select id="queryCIdbySub" parameterType="String" resultType="Map">
+		select b.CID,b.user_name from tbl_secondAccount a
+			left join tbl_users b on a.userid = b.user_id
+			where a.SubAcctNo = #{subAcctNo}
+	</select>
+
+	<!-- 更新二类户冻结状态-->
+	<update id="updateAccFreeze" parameterType="Map">
+		UPDATE tbl_secondAccount SET freeze = #{status} WHERE SubAcctNo = #{subAcctNo}
+	</update>
+	
+	<!-- 根据公司编号查询该公司下所有二类户 -->
+	<select id="getSubByCompanyNum" parameterType="String" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		select s.userid,s.SubAcctNo from tbl_secondAccount s
+		join tbl_roots r on s.userid=r.userid where r.disabled ='0' and  r.companyNumber=#{companyNum}
+	</select>
+
+	<!--插入转账记录-->
+	<insert id="insertTransfer" parameterType="com.ulaiber.web.model.Transfer">
+		INSERT INTO tbl_transfer (userid,SubAcctNo,RqUID,Amount,BizTime,BizDate,TheirRef,status,trading)
+			VALUES (#{userId},#{SubAcctNo},#{RqUID},#{Amount},#{BizTime},#{BizDate},#{TheirRef},#{status},#{trading})
+	</insert>
+
+	<!-- 查询二类户激活状态-->
+	<select id="queryActiveStatus" parameterType="String" resultType="String">
+		SELECT freeze FROM tbl_secondAccount where SubAcctNo = #{subAccNo}
+	</select>
 </mapper>
