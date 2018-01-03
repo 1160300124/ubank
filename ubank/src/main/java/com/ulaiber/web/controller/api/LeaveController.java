@@ -82,25 +82,19 @@ public class LeaveController extends BaseController {
             leaveRecord.setCreateDate(date);
             //保存申请记录
             int result = leaveService.saveLeaveRecord(leaveRecord);
-            if(StringUtil.isEmpty(leaveRecord.getUserid())){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage("申请失败");
-                logger.info(">>>>>>>>>>>申请请假失败");
-                return resultInfo;
-            }
             if (result <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage("申请失败");
-                logger.info(">>>>>>>>>>>申请失败");
+                logger.error(">>>>>>>>>>>申请失败");
                 return resultInfo;
             }
-            int result2 = leaveService.saveAditor(leaveRecord);
-            if(result2 <=0 ){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage("申请失败");
-                logger.info(">>>>>>>>>>>保存审批人失败");
-                return resultInfo;
-            }
+//            int result2 = leaveService.saveAditor(leaveRecord);
+//            if(result2 <=0 ){
+//                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+//                resultInfo.setMessage("申请失败");
+//                logger.info(">>>>>>>>>>>保存审批人失败");
+//                return resultInfo;
+//            }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("申请成功");
             logger.info(">>>>>>>>>>>申请请假成功");
@@ -172,6 +166,9 @@ public class LeaveController extends BaseController {
                 if(ls.getType().equals("0")){  //请假记录
                     Map<String,Object> map = new HashMap<>();
                     map.put("leaveType" , ls.getLeaveType());
+                    map.put("startType",ls.getStartType());
+                    map.put("endType",ls.getEndType());
+                    map.put("restDay",ls.getRestDay());
                     resultMap.put("leave" , map);
                 }else if(ls.getType().equals("1")){  //加班记录
                     OvertimeVO overtimeVO = new OvertimeVO();
@@ -608,6 +605,9 @@ public class LeaveController extends BaseController {
                         if(applyForVO.getType().equals("0")){  //请假
                             Map<String,Object> leaveMap = new HashMap<>();
                             leaveMap.put("leaveType",applyForVO.getLeaveType());
+                            leaveMap.put("startType",applyForVO.getStartType());
+                            leaveMap.put("endType",applyForVO.getEndType());
+                            leaveMap.put("restDay",applyForVO.getRestDay());
                             map.put("leave",leaveMap);
                         }else if(applyForVO.getType().equals("1")){  //加班
                             OvertimeVO overtimeVO = new OvertimeVO();
@@ -716,6 +716,9 @@ public class LeaveController extends BaseController {
                 if(applyForVO.getType().equals("0")){  //请假
                     Map<String,Object> leaveMap = new HashMap<>();
                     leaveMap.put("leaveType",applyForVO.getLeaveType());
+                    leaveMap.put("startType",applyForVO.getStartType());
+                    leaveMap.put("endType",applyForVO.getEndType());
+                    leaveMap.put("restDay",applyForVO.getRestDay());
                     map.put("leave",leaveMap);
                 }else if(applyForVO.getType().equals("1")){  //加班
                     OvertimeVO overtimeVO = new OvertimeVO();

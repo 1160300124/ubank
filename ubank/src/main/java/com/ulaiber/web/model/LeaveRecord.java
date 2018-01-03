@@ -12,6 +12,9 @@ public class LeaveRecord implements Serializable{
     private String leaveType;
     private String startDate;
     private String endDate;
+    private String startType;
+    private String endType;
+    private int restDay;
     private float leaveTime;
     private float realLeaveTime; //实际请假时长,如请假的时间段内有销假,则为请假时长(leaveTime)-销假时长
     private String auditor;
@@ -60,6 +63,30 @@ public class LeaveRecord implements Serializable{
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public String getStartType() {
+        return startType;
+    }
+
+    public void setStartType(String startType) {
+        this.startType = startType;
+    }
+
+    public String getEndType() {
+        return endType;
+    }
+
+    public void setEndType(String endType) {
+        this.endType = endType;
+    }
+
+    public int getRestDay() {
+        return restDay;
+    }
+
+    public void setRestDay(int restDay) {
+        this.restDay = restDay;
     }
 
     public float getLeaveTime() {

@@ -12,6 +12,9 @@ public class ApplyForVO implements Serializable{
     private String leaveType;   // 请假类型
     private String startDate;   // 开始时间
     private String endDate;     // 结束时间
+    private String startType;   //开始时间类型。0 上半天 1 下半天
+    private String endType;     //结束时间类型。0 上半天 1 下半天
+    private int restDay;        //节假日休息天数
     private float leaveTime;    // 请假时长
     private String auditor;     // 审批人
     private String reason;      // 原因
@@ -68,6 +71,30 @@ public class ApplyForVO implements Serializable{
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public String getStartType() {
+        return startType;
+    }
+
+    public void setStartType(String startType) {
+        this.startType = startType;
+    }
+
+    public String getEndType() {
+        return endType;
+    }
+
+    public void setEndType(String endType) {
+        this.endType = endType;
+    }
+
+    public int getRestDay() {
+        return restDay;
+    }
+
+    public void setRestDay(int restDay) {
+        this.restDay = restDay;
     }
 
     public float getLeaveTime() {

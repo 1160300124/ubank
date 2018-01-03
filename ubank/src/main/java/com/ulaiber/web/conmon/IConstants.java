@@ -196,10 +196,10 @@ public class IConstants
 	//理财产品参数
 	public static final String ProductCd = "yfyBalFinancing";
 
-	//
+	//服务提供者名称
 	public static final String SPName = "CBIB";
 
-	//
+	//发起渠道号
 	public static final String ChannelId = "YFY";
 
 	//身份证格式不合法

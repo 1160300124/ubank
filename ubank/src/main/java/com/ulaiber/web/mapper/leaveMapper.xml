@@ -15,13 +15,15 @@
 
     <!--申请请假-->
     <insert id="saveLeaveRecord" parameterType="com.ulaiber.web.model.LeaveRecord" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,leaveTime,realLeaveTime,auditor,reason,createDate,status,disable,type)
-            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{leaveTime},#{realLeaveTime},#{auditor},#{reason},#{createDate},'0','0','0')
+        INSERT INTO tbl_leave_record (userid,leaveType,startDate,endDate,startType,endType,restDay,leaveTime,realLeaveTime,
+                  auditor,reason,createDate,status,disable,type)
+            VALUES (#{userid},#{leaveType},#{startDate},#{endDate},#{startType},#{endType},#{restDay},#{leaveTime},#{realLeaveTime},
+                  #{auditor},#{reason},#{createDate},'0','0','0')
     </insert>
 
     <!--查询个人申请记录-->
     <select id="queryApplyRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
-        SELECT  a.id,a.userid,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,
+        SELECT  a.id,a.userid,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.startType,a.endType,a.restDay,
           a.currentAuditor,a.disable,a.type,a.status,b.user_name as username,b.image,d.morning,d.afternoon,d.type as remedyType,d.remedyDate
             FROM tbl_leave_record a left join tbl_overtime_details c on a.id = c.recordNo
                 left join tbl_users b on a.userid = b.user_id
@@ -57,7 +59,7 @@
 
     <!--获取待审批记录-->
     <select id="queryPeningRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
-        select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.currentAuditor,
+        select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.currentAuditor,a.startType,a.endType,a.restDay,
         a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image ,d.morning,d.afternoon,d.remedyDate,d.type as remedyType
          from tbl_leave_record a left join tbl_overtime_details b on a.id = b.recordNo
         left join tbl_users c on a.userid = c.user_id
@@ -68,7 +70,7 @@
 
     <!--获取已审批记录-->
     <select id="queryAlreadRecord" parameterType="Map" resultType="com.ulaiber.web.model.ApplyForVO">
-        select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.currentAuditor,
+        select a.id,a.leaveType,a.startDate,a.endDate,a.leaveTime,a.auditor,a.reason,a.createDate,a.currentAuditor,a.startType,a.endType,a.restDay,
         a.status,a.disable,a.type,b.holiday,b.mode,c.user_name as username ,c.image,d.morning,d.afternoon,d.remedyDate,d.type as remedyType
         from tbl_leave_record a
         left join tbl_overtime_details b on a.id = b.recordNo

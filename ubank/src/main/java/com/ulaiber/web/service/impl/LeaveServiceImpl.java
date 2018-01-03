@@ -37,8 +37,31 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     public int saveLeaveRecord(LeaveRecord leaveRecord) {
     	//初始请假时长和实际请假时长一致，待有销假时实际请假时长=请假时长-销假时长
     	leaveRecord.setRealLeaveTime(leaveRecord.getLeaveTime());
+    	//新增请假记录
         int result = leaveDao.saveLeaveRecord(leaveRecord);
-        return result;
+        if(result == 0){
+            return result;
+        }
+        //新增审批人记录
+        List<Map<String,Object>> list = new ArrayList<>();
+        String[] auditor = leaveRecord.getAuditor().split(",");
+        for (int i = 0; i < auditor.length; i++){
+            Map<String ,Object> map = new HashMap<>();
+            map.put("userid",leaveRecord.getUserid());
+            map.put("recordNo",String.valueOf(leaveRecord.getId()));
+            map.put("auditor",auditor[i]);
+            map.put("auditDate",sdf.format(new Date()));
+            map.put("sort",i+1);
+            list.add(map);
+        }
+        //获取第一个审批人ID
+        int result2 = leaveAuditDao.saveAditor(list);
+        int userid = Integer.parseInt(auditor[0]);
+        String reason = leaveRecord.getReason(); //原因/备注
+        String mark = "0";  //申请类型
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        StringUtil.sendMessage(map2,reason,mark); //消息推送
+        return result2;
     }
     
     @Override

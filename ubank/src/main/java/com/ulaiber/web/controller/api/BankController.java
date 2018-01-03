@@ -366,7 +366,7 @@ public class BankController extends BaseController {
 								//Bill wd = wi.get(i);
 								//if (sd.getTxnBsnId().equals(wd.getRqUID())){
 								if ("提现".contains(sd.getTheirRef())){
-									break;
+									continue;
 								}
 							//}
 							//查询该记录是否已存在转账记录表中
