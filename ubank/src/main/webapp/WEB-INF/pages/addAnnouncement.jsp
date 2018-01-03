@@ -168,7 +168,6 @@
     </div>
 	
 </div>
-</div>
 
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap/summernote.min.js"></script>
