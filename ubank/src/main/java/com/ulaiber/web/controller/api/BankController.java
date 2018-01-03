@@ -360,20 +360,22 @@ public class BankController extends BaseController {
 					List<SHAccDetail> detailList = (List<SHAccDetail>) detail.get("TxnInfo");
 					if(detailList.size() > 0){
 						//判断账户明细中的流水号是否存在数据库中，如果不存在，则将改记录保存到数据库中
-						boolean flag = true;
 						for (int j = 0 ; j < detailList.size() ; j++){
 							SHAccDetail sd = detailList.get(j);
-							for (int i = 0 ; i < wi.size() ; i++){
-								Bill wd = wi.get(i);
-								if (sd.getTxnBsnId().equals(wd.getRqUID())){
-									flag = false;
+							//for (int i = 0 ; i < wi.size() ; i++){
+								//Bill wd = wi.get(i);
+								//if (sd.getTxnBsnId().equals(wd.getRqUID())){
+								if ("提现".contains(sd.getTheirRef())){
 									break;
 								}
-							}
-							if (flag){
+							//}
+							//查询该记录是否已存在转账记录表中
+							String RqUID = sd.getTxnBsnId();
+							Transfer transfer = bankservice.queryTransfer(RqUID);
+							while (StringUtil.isEmpty(transfer)){
 								//插入转账记录
 								Transfer tran = new Transfer();
-		 						tran.setSubAcctNo(SubAcctNo);
+								tran.setSubAcctNo(SubAcctNo);
 								tran.setUserId(userId);
 								tran.setRqUID(sd.getTxnBsnId());
 								tran.setAmount(Double.parseDouble(sd.getTxnAmt()));
@@ -383,6 +385,12 @@ public class BankController extends BaseController {
 								tran.setStatus(1);
 								tran.setTrading(2);
 								int inResult = bankservice.insertTransfer(tran);
+								if(inResult == 0){
+									resultInfo.setCode(IConstants.QT_CODE_ERROR);
+									resultInfo.setMessage("查询账单失败");
+									logger.error("插入转账记录至数据库失败");
+									return resultInfo;
+								}
 							}
 						}
 					}
@@ -448,8 +456,6 @@ public class BankController extends BaseController {
                         status = "0000";
                     }
                 }
-//				JSONArray json = JSONArray.fromObject(wi);
-//				System.out.println(">>>>>>>>>>>json："+ json.toString());
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("查询账单成功");
                 resMap.put("tradingRecord",wi);

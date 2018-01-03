@@ -260,6 +260,32 @@ public class AnnouncementController extends BaseController {
 	}
 	
 	/**
+	 * 获取公告附件
+	 * @param aid 公告ID
+	 * @param request request
+	 * @param response response
+	 * @return ResultInfo
+	 */
+	@RequestMapping(value = "getAttachments", method = RequestMethod.GET)
+	@ResponseBody
+	public ResultInfo getAttachments(long aid, HttpServletRequest request, HttpServletResponse response){
+		ResultInfo info = new ResultInfo();
+		try {
+
+			List<Attachment> list = service.getAttachmentsByAid(aid);
+			info.setCode(IConstants.QT_CODE_OK);
+			info.setData(list);
+		} catch (Exception e) {
+			logger.error("deleteAnnouncement exception:", e);
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("获取附件失败。");
+			return info;
+		}
+
+		return info;
+	}
+	
+	/**
 	 * 撤回公告
 	 * @param request request
 	 * @param response response

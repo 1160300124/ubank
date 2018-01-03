@@ -153,4 +153,11 @@ public interface BankDao {
      * @return ResultInfo
      */
     String queryActiveStatus(String subAccNo);
+
+    /**
+     * 查询该记录是否已存在转账记录表中
+     * @param rqUID 交易流水号
+     * @return Transfer
+     */
+    Transfer queryTransfer(String rqUID);
 }

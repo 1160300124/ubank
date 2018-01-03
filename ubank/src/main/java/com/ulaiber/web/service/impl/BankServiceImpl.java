@@ -192,5 +192,10 @@ public class BankServiceImpl extends BaseService implements BankService {
         return mapper.queryActiveStatus(subAccNo);
     }
 
+    @Override
+    public Transfer queryTransfer(String rqUID) {
+        return mapper.queryTransfer(rqUID);
+    }
+
 
 }
