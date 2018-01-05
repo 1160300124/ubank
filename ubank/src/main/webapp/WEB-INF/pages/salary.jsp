@@ -1,14 +1,53 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%@ include file="/WEB-INF/pages/header.jsp" %>
+<style>
+.select-people .all-people,.selected-people{
+    display: inline-block;
+    width: 48%;
+}
+.selected-people{
+    float: right;
+}
+.people-box{
+    width: 100%;
+    height: 500px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f4f6f9;
+    padding: 10px;
+    overflow-y: auto;
+}
+.search-box{
+    position: relative;
+    height: 55px;
+}
+.search-box .search-icon,.search-input{
+    position: absolute;
+}
+.search-box .search-input{
+    left: 0px;
+    top: 0px;
+    padding-left: 45px;
+}
+.search-box .search-icon{
+    left: 15px;
+    top: 12px;
+    z-index: 10;
+    color: #ccc;
+}
+</style>
 <div class="page-content">
 	<!-- Single button -->
 	<div class="btn-group">
-		<button type="button button-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		制作工资表 <span class="caret"></span>
 		</button>
 		<ul class="dropdown-menu compny-dropdown">
 		</ul>
+		<button id="btn_remove" type="button" class="btn btn-default">
+            <span class="fa icon-remove" aria-hidden="true"></span>删除
+        </button>
 	</div>
 
 	<table id="tb_saraly_records" data-toggle="table" data-url="getSalaries" data-method="get" data-toolbar="#toolbar" data-striped="true"
@@ -18,6 +57,7 @@
 		<tr>
 			<th data-checkbox="true"></th>
 			<th data-field="companyName">公司名称</th>
+			<th data-field="salaryMonth">工资月份</th>
 			<th data-field="salaryDate">发放时间</th>
 			<th data-field="totalNumber">发放人数</th>
 			<th data-field="totalAmount">发放金额</th>
@@ -60,7 +100,7 @@
                 </div>
                 <div class="modal-body" style="padding: 20px;">
 					<div class="step step-1">
-                        <h3 class="align-center margin-bottom-60">
+                        <h3 class="font-bold align-center margin-bottom-60">
 							<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name"></span>
                         </h3>
                         <div class="padding20">
@@ -77,10 +117,11 @@
 						</div>
 					</div>
 					<div class="step step-1-1">
-                        <h3 class="align-center margin-bottom-60">
+                        <h3 class="font-bold align-center margin-bottom-60">
 							<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name"></span>
 						</h3>
-						<div style="width: 200px;margin: 0px auto;">
+						<div class="col-md-10" style="margin: 0px auto;">
+							<div class="col-md-5 align-right font-bold">考勤统计月份</div>
 							<div class="input-group date time-picker" id="datetimepicker_statistic">
 								<input class="form-control" id="statistic_month" type="text" placeholder="请选择统计月份"/>
 								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -93,7 +134,7 @@
                         正在计算工资，请稍等
 					</div>
 					<div class="step step-1-3">
-						<div class="font-larg height-highest margin-bottom-20">
+						<div class="font-bold height-highest margin-bottom-20">
 							<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name color-666" style="margin-right: 20px;"></span>
 							<i class="icon-calendar" aria-hidden="true"></i>考勤计算日期 <span class="attendance-date color-666"></span>
 							
@@ -123,16 +164,16 @@
 						</table>
 					</div>
 					<div class="step step-1-4">
-                        <h3 class="align-center">
+                        <h3 class="font-bold align-center">
 							<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name" style="color:#999;font-weight:300;"></span>
 						</h3>
 						<div class="col-md-12 height-high">
-							<div class="col-md-5 align-right font-larg">工资表名称</div>
-							<div class="col-md-6 align-left font-larg color-666"><span class="attendance-date"></span>月工资表</div>
+							<div class="col-md-5 align-right font-bold">工资表名称</div>
+							<div class="col-md-6 align-left font-bold color-666"><span class="attendance-date"></span>月工资表</div>
 
 						</div>
-						<div class="col-md-12 height-high">
-							<div class="col-md-5 align-right font-larg">工资发放日期</div>
+						<div class="font-bold col-md-12 height-high">
+							<div class="col-md-5 align-right font-bold">工资发放日期</div>
 							<div class="col-md-6 align-left">
 								<div class="input-group date time-picker" id="datetimepicker_pay">
 									<input class="form-control" id="pay_salaries_date" type="text" placeholder="请选择发放时间" />
@@ -140,8 +181,8 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12 height-high">
-							<div class="col-md-5 align-right font-larg">选择工资审批人</div>
+						<div class="font-bold col-md-12 height-high">
+							<div class="col-md-5 align-right font-bold">选择工资审批人</div>
 							<div class="col-md-6 align-left">
 								<input class="form-control" id="choose_people" type="text" placeholder="请选择审批人员" />
 							</div>
@@ -151,7 +192,7 @@
 						<i class="glyphicon glyphicon-time" style="color: #f56b43; font-size: 40px; transform: translateY(8px);"></i>已提交审核
 					</div>
 					<div class="step step-2-1">
-						<h3 class="align-center margin-bottom-60">
+						<h3 class="font-bold align-center margin-bottom-60">
 							<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name"></span>
 						</h3>
 						<div style="width: 200px;margin: 20px auto;">
@@ -170,7 +211,7 @@
                         <div class="import-tip" style="text-align:center;">（请<a href="../model/model.xls">下载模板</a>文件，上传说明<span class="import-help">?</span>）</div>
 					</div>
 					<div class="step step-2-2 align-center">
-						<h3 class="align-center margin-bottom-60">
+						<h3 class="font-bold align-center margin-bottom-60">
 							<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name"></span>
 						</h3>
                         <img src="../images/loading.gif" alt="">
@@ -183,7 +224,7 @@
                                 重新导入
                                 <input id="salary_upload_file_rechoose" type="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" name="file"/>
                             </a>
-                            <h3 class="align-center margin-bottom-60">
+                            <h3 class="font-bold align-center margin-bottom-60">
 								<i class="icon-building" aria-hidden="true"></i><span class="salary-company-name"></span>
 							</h3>
                         </div>

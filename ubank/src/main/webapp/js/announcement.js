@@ -91,12 +91,12 @@ $(function(){
 			return false;
 		}
 		var title = $("#title").val();
-		var body = $('.summernote').summernote('code');
-		if (title == "" || title == null || title == undefined){
-			Ewin.alert("请填写公告标题");
+		if (title == "" || title == null || title == undefined || title.length > 40){
+			Ewin.alert("公告标题不能为空且长度不大于40。");
 			return false;
 		}
-		if (body == "" || body == null || body == undefined){
+		var body = $('.summernote').summernote('code');
+		if (body == "<p><br></p>"){
 			Ewin.alert("请填写公告正文");
 			return false;
 		}
