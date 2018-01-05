@@ -502,17 +502,18 @@ public class Test {
 		vo.setCurrency("156");
 		vo.setBeginDt("20171101");
 		vo.setEndDt("20171228");
-		vo.setPageSize(3);
-		vo.setSkipRecord(1);
-		SHAccountDetail.queryDetail(vo);
+		vo.setPageSize(20);
+		vo.setSkipRecord(120);
+		ResultInfo infoDetails = SHAccountDetail.queryDetail(vo);
+		//(String SubAcctNo,ResultInfo infoDetails,int userId,String type,int pageNum,int pageSize
 //		Map<String,Object> map = new HashMap<String,Object>();
 //		map.put("SubAcctNo","623185009300012892");
-//		map.put("Currency","156");
-//		map.put("BeginDt","20171101");
-//		map.put("EndDt","20171228");
-//		map.put("PageSize",1000);
-//		map.put("SkipRecord",1);
-//		String result = HttpsUtil.doPost("https://localhost:8080/ubank/api/v1/TradingDetail",map);
+//		map.put("infoDetails",infoDetails);
+//		map.put("userId",482);
+//		map.put("type","0");
+//		map.put("pageNum",1);
+//		map.put("pageSize",10);
+//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
 //		System.out.print(result);
 	}
 

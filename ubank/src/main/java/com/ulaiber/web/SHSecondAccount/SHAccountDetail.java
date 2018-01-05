@@ -125,11 +125,21 @@ public class SHAccountDetail {
                     if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnRef"))){
                         sortList.add("TxnRef=" + recordEles.elementTextTrim("TxnRef"));
                     }
-                    sortList.add("TheirRef=" + recordEles.elementTextTrim("TheirRef"));
-                    sortList.add("FlowCode=" + recordEles.elementTextTrim("FlowCode"));
-                    sortList.add("TxnAmt=" + recordEles.elementTextTrim("TxnAmt"));
-                    sortList.add("TxnDate=" + recordEles.elementTextTrim("TxnDate"));
-                    sortList.add("TxnTime=" + recordEles.elementTextTrim("TxnTime"));
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TheirRef"))){
+                        sortList.add("TheirRef=" + recordEles.elementTextTrim("TheirRef"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("FlowCode"))){
+                        sortList.add("FlowCode=" + recordEles.elementTextTrim("FlowCode"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnAmt"))){
+                        sortList.add("TxnAmt=" + recordEles.elementTextTrim("TxnAmt"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnDate"))){
+                        sortList.add("TxnDate=" + recordEles.elementTextTrim("TxnDate"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnTime"))){
+                        sortList.add("TxnTime=" + recordEles.elementTextTrim("TxnTime"));
+                    }
                     list.add(accDetail);
                 }
                 rsMap.put("TxnInfo",list);
