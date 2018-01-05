@@ -276,7 +276,7 @@ public class AnnouncementController extends BaseController {
 			info.setCode(IConstants.QT_CODE_OK);
 			info.setData(list);
 		} catch (Exception e) {
-			logger.error("deleteAnnouncement exception:", e);
+			logger.error("getAttachments exception:", e);
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("获取附件失败。");
 			return info;

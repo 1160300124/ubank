@@ -45,24 +45,6 @@ $(function () {
 	$("#salary_upload_file").on('change', fileUploadOnChange);
 	$("#salary_upload_file_rechoose").on('change', fileReUploadOnChange);
 		
-	function fileUploadOnChange(e) {
-
-		if($(e.currentTarget).val() != '') {
-			$(".import-file-name").html('已选择：' + $(e.currentTarget).val());
-			$("#importFileName").html('（' + getFileName($(e.currentTarget).val()) + '）');
-		} else {
-			$(".import-file-name").html('');
-		}
-	}
-
-
-	function fileReUploadOnChange(e) {
-		if($(e.currentTarget).val() != '') {
-			reImportSalaryData();
-			$("#importFileName").html('（' + getFileName($(e.currentTarget).val()) + '）');
-		}
-	}
-
 	loadCompanys();
 	function loadCompanys(){
 		var select = $(".compny-dropdown").html('');
@@ -97,7 +79,7 @@ $(function () {
 		
 	}
 
-	$("#btn_delete").unbind().bind("click", function(){
+	$("#btn_remove").unbind().bind("click", function(){
 
 		//取表格的选中行数据
 		var arrselections = $("#tb_saraly_records").bootstrapTable('getSelections');
@@ -238,6 +220,78 @@ $(function () {
 
 		return false;
 
+	});
+	
+	
+	$("#choose_people").unbind().bind("click", function(){
+		renderPeople(selectCompanyNumber, selectCompanyName);
+		renderSelected("peoplesTree");
+		$("#people_search").val("");
+		$('#peopleModal').modal("show");
+	});
+
+	$("#people_search").unbind().bind("input propertychange", function(){
+		var search = $("#people_search").val();
+		renderPeople(selectCompanyNumber, selectCompanyName, search);
+		
+	});
+
+	$("#people_confirm").unbind().bind("click", function(){
+		var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
+		var selectedPeoples = zTreeObj.getCheckedNodes(true);
+		var count = 0;
+		var nodes = "";
+		var names = "";
+		$(selectedPeoples).each(function(index,item){
+			if (item.isParent) {
+				var deptChildrenNodes = item.children;
+				var deptNodes = "";
+				if (deptChildrenNodes) {
+					for (var i = 0; i < deptChildrenNodes.length; i++) {
+						if (deptChildrenNodes[i].isParent){
+							var childrenNodes = deptChildrenNodes[i].children;
+							for (var j = 0; j < childrenNodes.length; j++){
+								if (childrenNodes[j].checked){
+									nodes += childrenNodes[j].id + ",";
+									names += childrenNodes[j].name + ",";
+								}
+							}
+							if (nodes == "" || nodes == null || names == "" || nodes == null){
+								continue;
+							}
+							deptNodes += deptChildrenNodes[i].id + "_" + nodes.substring(0, nodes.length - 1) + "-";
+							
+						}
+						
+					}
+				}
+				
+				if (deptNodes == "" || deptNodes == null){
+					return;
+				}
+				
+				return;
+			}
+			count = count + 1;
+		});
+		
+		if (count <= 0 || count > 5){
+			Ewin.alert("请选择审批人员,最多5个。");
+			return false;
+		}
+
+		$('#choose_id').val(nodes.substring(0, nodes.length - 1));
+		$('#choose_people').val(names.substring(0, names.length - 1));
+		$('#peopleModal').modal("hide");
+
+	});
+
+	//选择所有员工事件
+	$("#checkAll").unbind().bind("change", function(event){
+		var checkAll = event.currentTarget;
+		var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
+		zTreeObj.checkAllNodes(checkAll.checked);
+	    renderSelected("peoplesTree");
 	});
 
 });
@@ -449,7 +503,7 @@ function showImportResult() {
             })
         }
     });
-    // $("#salary_import_table").bootstrapTable('load', salaryData);
+     $("#salary_import_table").bootstrapTable('load', salaryData);
 
 }
 
@@ -671,85 +725,19 @@ function renderPeople(companyId, companyName, search) {
 	
 }
 
-$("#choose_people").unbind().bind("click", function(){
-	renderPeople(selectCompanyNumber, selectCompanyName);
-	$("#people_search").val("");
-	$('#peopleModal').modal("show");
-});
-
-$("#people_search").unbind().bind("input propertychange", function(){
-	var search = $("#people_search").val();
-	renderPeople(companyId, companyName, search);
-
-	renderPeople(selectCompanyNumber, selectCompanyName);
-	
-});
-
-$("#people_confirm").unbind().bind("click", function(){
-	var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
-	var selectedPeoples = zTreeObj.getCheckedNodes(true);
-	var count = 0;
-	var nodes = "";
-	var names = "";
-	$(selectedPeoples).each(function(index,item){
-		if (item.isParent) {
-			var deptChildrenNodes = item.children;
-			var deptNodes = "";
-			if (deptChildrenNodes) {
-				for (var i = 0; i < deptChildrenNodes.length; i++) {
-					if (deptChildrenNodes[i].isParent){
-						var childrenNodes = deptChildrenNodes[i].children;
-						for (var j = 0; j < childrenNodes.length; j++){
-							if (childrenNodes[j].checked){
-								nodes += childrenNodes[j].id + ",";
-								names += childrenNodes[j].name + ",";
-							}
-						}
-						if (nodes == "" || nodes == null || names == "" || nodes == null){
-							continue;
-						}
-						deptNodes += deptChildrenNodes[i].id + "_" + nodes.substring(0, nodes.length - 1) + "-";
-						
-					}
-					
-				}
-			}
-			
-			if (deptNodes == "" || deptNodes == null){
-				return;
-			}
-			
-			return;
-		}
-		count = count + 1;
-	});
-	
-	if (count <= 0 || count > 5){
-		Ewin.alert("请选择审批人员,最多5个。");
-		return false;
-	}
-
-	$('#choose_id').val(nodes.substring(0, nodes.length - 1));
-	$('#choose_people').val(names.substring(0, names.length - 1));
-	$('#peopleModal').modal("hide");
-
-});
-
-
 var setting = {
-	check: {
-		enable: true,
-		chkStyle: "checkbox",
-	chkboxType: { "Y": "ps", "N": "ps" }
-},
-callback: {
-	onCheck: function (event, treeId, treeNode) {
-		
-		renderSelected(treeId);
-	}
-}
+	    check: {
+	        enable: true,
+	        chkStyle: "checkbox",
+        chkboxType: { "Y": "ps", "N": "ps" }
+    },
+    callback: {
+        onCheck: function (event, treeId, treeNode) {
+            
+            renderSelected(treeId);
+        }
+    }
 };
-
 
 function getFileName(fullPath) {
     var paths =  fullPath.split('\\')
@@ -762,4 +750,21 @@ function goToAudit() {
 		return;
 	}
 	goStep(1, 4);
+}
+
+function fileUploadOnChange(e) {
+
+	if($(e.currentTarget).val() != '') {
+		$(".import-file-name").html('已选择：' + $(e.currentTarget).val());
+		$("#importFileName").html('（' + getFileName($(e.currentTarget).val()) + '）');
+	} else {
+		$(".import-file-name").html('');
+	}
+}
+
+function fileReUploadOnChange(e) {
+	if($(e.currentTarget).val() != '') {
+		reImportSalaryData();
+		$("#importFileName").html('（' + getFileName($(e.currentTarget).val()) + '）');
+	}
 }

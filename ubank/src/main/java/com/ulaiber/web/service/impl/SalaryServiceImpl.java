@@ -233,15 +233,8 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			if (workdays == null){
 				continue;
 			}
-			String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
-			//每天工作小时数
-			double workHours = DateTimeUtil.gethour(day + " " + attRule.getClockOnTime(), day + " " + attRule.getClockOffTime());
-			if (attRule.getRestFlag() == 0){
-				double restHours = DateTimeUtil.gethour(day + " " + attRule.getRestEndTime(), day + " " + attRule.getRestStartTime());
-				workHours = MathUtil.formatDouble(MathUtil.sub(workHours, restHours), 1);
-			}
-			//小时工资
-			double hourSalaries = MathUtil.div(user.getSalaries(), workdays.size() * workHours);
+			//天工资
+			double daySalaries = MathUtil.div(user.getSalaries(), workdays.size());
 			SalaryDetail detail = new SalaryDetail();
 			detail.setUserId(user.getId());
 			detail.setUserName(user.getUserName());
@@ -261,7 +254,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 				if (user.getId() != Long.parseLong(map.get("userId").toString())){
 					continue;
 				}
-				double cutPayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == map.get("totalTime") ? 0 : (Double)map.get("totalTime")), 1);
+				double cutPayment = MathUtil.formatDouble(MathUtil.mul(daySalaries, null == map.get("totalTime") ? 0 : (Double)map.get("totalTime")), 1);
 				//请假类型. 0 年假，1 事假，2 病假，3 调休，4 婚假，5 产假 ，6 其他
 				String leaveType = map.get("leaveType").toString();
 				switch(leaveType){
@@ -294,7 +287,7 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			double overTimePayment = 0;
 			//0:调休 1:发加班费
 			if (rule.getOvertimeFlag() == 1){
-				overTimePayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == overTimeMap.get(user.getId()) ? 0 : overTimeMap.get(user.getId())), 1);
+				overTimePayment = MathUtil.formatDouble(MathUtil.mul(daySalaries, null == overTimeMap.get(user.getId()) ? 0 : overTimeMap.get(user.getId())), 1);
 			}
 			detail.setOvertimePayment(overTimePayment);
 			//扣除社保公积金等

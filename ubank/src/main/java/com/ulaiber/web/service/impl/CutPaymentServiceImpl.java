@@ -97,10 +97,17 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				logger.error("用户 {" + user.getId() + "}没有设置考勤规则，请先设置。");
 				continue;
 			}
-//			if (attRule.getType() != 0){
-//				logger.error("用户 {" + user.getId() + "}不参与考勤规则。");
-//				continue;
-//			}
+			if (attRule.getType() != 0){
+				Map<String, Object> attCutMap = new HashMap<String, Object>();
+				attCutMap.put("laterCutPayment", 0.0);
+				attCutMap.put("leaveEarlyCutPayment", 0.0);
+				attCutMap.put("forgetClockCutPayment", 0.0);
+				attCutMap.put("noClockCutPayment", 0.0);
+				attCutMap.put("totalCutAmount", 0.0);
+				cutMap.put(user.getId(), attCutMap);
+				logger.error("用户 {" + user.getId() + "}不参与考勤规则。");
+				continue;
+			}
 			//应工作天数
 			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
 			if (workdays == null){
@@ -215,9 +222,15 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 
 			//旷工
 			List<String> noClockWorkdays = ObjUtil.getDiffrent(workdays, realWorkdays);
+			//旷工1天扣款
 			double money = salaryRule.getNoClockCutPayment();
 			if (salaryRule.getNoClockCutUnit() == 1){
 				money =  MathUtil.formatDouble(MathUtil.mul(money, daySalaries) , 1);
+			}
+			//旷工半天扣款
+			double halfMoney = salaryRule.getHalf_noClockCutPayment();
+			if (salaryRule.getHalf_noClockCutUnit() == 1){
+				halfMoney = MathUtil.formatDouble(MathUtil.mul(halfMoney, daySalaries), 1);
 			}
 			for (String noClockDay : noClockWorkdays){
 				//在入职日期之前不算旷工或离职日期之后不算旷工
@@ -226,10 +239,51 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 					continue;
 				}
 				
+				// 0:旷一天工   1：旷半天工
+				int flag = 0;
 				//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
 				LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(user.getId(), noClockDay);
 				if (leaveRecord != null){
-					continue;
+					String startDay = leaveRecord.getStartDate();
+					String endDay = leaveRecord.getEndDate();
+					//请假在同一天
+					if (StringUtils.equals(startDay, noClockDay) && StringUtils.equals(endDay, noClockDay)){
+						//上半天请假
+						if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
+							flag = 1;
+						}
+						//下半天请假
+						else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+							flag = 1;
+						}
+						//全天请假
+						else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+							continue;
+						}
+					//请假开始时间为今天
+					} else if (StringUtils.equals(startDay, noClockDay)){
+						//全天请假
+						if (StringUtils.equals(leaveRecord.getStartType(), "0")){
+							continue;
+						}
+						//下半天请假
+						else if (StringUtils.equals(leaveRecord.getStartType(), "1")){
+							flag = 1;
+						}
+					//请假结束时间为今天
+					} else if (StringUtils.equals(endDay, noClockDay)){
+						//上半天请假
+						if (StringUtils.equals(leaveRecord.getEndType(), "0")){
+							flag = 1;
+						}
+						//全天请假
+						if (StringUtils.equals(leaveRecord.getEndType(), "1")){
+							continue;
+						}
+					//今天在请假开始与结束之间
+					} else if (noClockDay.compareTo(startDay) > 0 && noClockDay.compareTo(endDay) < 0){
+						continue;
+					}
 				}
 				CutPayment cut = new CutPayment();
 				cut.setUserId(user.getId());
@@ -243,9 +297,15 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				company.setName(user.getCom_name());
 				cut.setCompany(company);
 				cut.setCutDate(noClockDay);
-				cut.setCutType("3");
-				cut.setCutReason(noClockDay + "：旷工");
-				cut.setCutMoney(money);	
+				if (flag == 0){
+					cut.setCutType("3");
+					cut.setCutReason(noClockDay + "：旷工1天");
+					cut.setCutMoney(money);	
+				} else if (flag == 1){
+					cut.setCutType("4");
+					cut.setCutReason(noClockDay + "：旷工半天");
+					cut.setCutMoney(halfMoney);	
+				}
 				noClockCutAmount += money;
 				totalCutAmount += money;
 				cutPayments.add(cut);
