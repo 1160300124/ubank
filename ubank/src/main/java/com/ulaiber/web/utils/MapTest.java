@@ -65,18 +65,18 @@ public class MapTest {
 //      String response = HttpsUtil.doPost1(apiUrl, params);
 //      System.out.println(response);
         
-//        String apiUrl = "http://127.0.0.1:8080/ubank/api/v1/clock";
-//        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
-//        params.put("mobile", "15919477086");
-//        params.put("longitude", "113.944173");
-//        params.put("latitude", "22.538667");
-//        params.put("isOutClock", true);
-//        params.put("remark", "出差啊啊啊");
-////        params.put("revokeType", "0");
-//        params.put("location", "深圳市优融网络科技有限公司M-10");
-//        params.put("device", "android-8.0土豪金版");
-//        String response = HttpsUtil.doPostSSL(apiUrl, params);
-//        System.out.println(response);
+        String apiUrl = "http://127.0.0.1:8080/ubank/api/v1/clock";
+        Map<String, Object> params = new HashMap<String, Object>();//请求参数集合
+        params.put("userId", 336);
+        params.put("longitude", "113.944173");
+        params.put("latitude", "22.538667");
+        params.put("isOutClock", false);
+        params.put("remark", "出差啊啊啊");
+        params.put("revokeType", "0");
+        params.put("location", "深圳市优融网络科技有限公司M-10");
+        params.put("device", "android-8.0土豪金版");
+        String response = HttpsUtil.doPostSSL(apiUrl, params);
+        System.out.println(response);
         
 //        String apiUrl2 = "http://localhost:8080/ubank/api/v1/getClockInfo";
 //        Map<String, Object> params2 = new HashMap<String, Object>();//请求参数集合
@@ -131,6 +131,7 @@ public class MapTest {
 //			}
 //			System.out.println(sql);
 //		}
+        
     }
     
     /**  

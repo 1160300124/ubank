@@ -350,7 +350,7 @@ function calcSalary(){
 			goStep(1, 3, 1300);
 			if (code == 1000) {
 				Ewin.alert("导入员工信息成功！");
-				salaryData = data['data'];
+				salaryData = data['data'].details;
 
 				$('#tb_saraly_configs_copy').on('post-body.bs.table', tableLoadSuceess);
 				$('#tb_saraly_configs_copy').bootstrapTable("load", salaryData);
@@ -401,8 +401,8 @@ function reImportSalaryData() {
 			data = $.parseJSON(data.replace(/<.*?>/ig,""));
 			var code = data['code'];
 			if (code == 1000) {
-				salaryData = data['data'];
-				// renderImportResult(salaryData);
+				salaryData = data['data'].details;
+				renderImportResult(data['data']);
 				showImportResult();
 			}else{
 				Ewin.alert("上传失败！" + data['message']);
@@ -443,8 +443,8 @@ function importSalaryData() {
 			data = $.parseJSON(data.replace(/<.*?>/ig,""));
 			var code = data['code'];
 			if (code == 1000) {
-				salaryData = data['data'];
-				// renderImportResult(salaryData);
+				salaryData = data['data'].details;
+				renderImportResult(data['data']);
 				showImportResult();
 			}else{
 				Ewin.alert("上传失败！" + data['message']);
@@ -521,7 +521,7 @@ function showErrorInfo(e) {
 }
 
 function renderImportResult(importData) {
-    $("#importResult").html("一共识别" + importData.data.totalCount + "条，成功导入" + importData.data.sucCount + "条，失败" + importData.data.failCount + "条。其中" + importData.data.alreadySign + "条是已注册");    
+    $("#importResult").html("一共识别" + (importData.successCount + importData.failCount) + "条，其中" + importData.successCount + "条正确，" + importData.failCount + "条有误" );    
 }
 
 /**

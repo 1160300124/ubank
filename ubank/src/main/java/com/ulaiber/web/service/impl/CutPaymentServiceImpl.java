@@ -88,14 +88,75 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 		List<Attendance> list = attDao.getStatistis(params);
 		//获取公司的工资规则
 		SalaryRule salaryRule = salaryRuleDao.getSalaryRuleByCompanyId(companyId);
+		//事假，病假，年假，调休，婚假，产假，其他
+		String[] leaveCutRule = salaryRule.getLeaveCutPayment().split(",");
+		//分组查询用户的请假扣款
+		List<Map<String, Object>> leaveList = leaveDao.getTotalTimeByCompanyNumAndMonth(companyId, "0", salaryMonth);
+		//分组查询用户的加班费
+		List<Map<String, Object>> overTimeList = leaveDao.getTotalTimeByCompanyNumAndMonth(companyId, "1", salaryMonth);
+		Map<Long, Double> overTimeMap = new HashMap<Long, Double>();
+		for (Map<String, Object> map : overTimeList){
+			overTimeMap.put(Long.parseLong(map.get("userId").toString()), (Double)map.get("totalTime"));
+		}
+		//无考勤规则人员ID集合
+		List<Long> userIds = new ArrayList<Long>();
 		//获取公司的所有用户
 		List<User> users = userService.getUsersByComNum(companyId, null);
 		for (User user : users){
 			//考勤规则
 			AttendanceRule attRule = ruleDao.getRuleByUserId(user.getId());
 			if (null == attRule){
+				userIds.add(user.getId());
 				logger.error("用户 {" + user.getId() + "}没有设置考勤规则，请先设置。");
 				continue;
+			}
+			
+			//应工作天数
+			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
+			if (workdays == null){
+				logger.error("用户 {" + user.getId() + "}应工作天数为null。");
+				continue;
+			}
+			//天工资
+			double daySalaries = MathUtil.div(user.getSalaries(), workdays.size());
+			double leaveCutPayment = 0;
+			for (Map<String, Object> map : leaveList){
+				if (user.getId() != Long.parseLong(map.get("userId").toString())){
+					continue;
+				}
+				double cutPayment = MathUtil.formatDouble(MathUtil.mul(daySalaries, null == map.get("totalTime") ? 0 : (Double)map.get("totalTime")), 1);
+				//请假类型. 0 年假，1 事假，2 病假，3 调休，4 婚假，5 产假 ，6 其他
+				String leaveType = map.get("leaveType").toString();
+				switch(leaveType){
+					case "0" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[2]) / 100), 1);
+						break;
+					case "1" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[0]) / 100), 1);
+						break;
+					case "2" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[1]) / 100), 1);
+						break;
+					case "3" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[3]) / 100), 1);
+						break;
+					case "4" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[4]) / 100), 1);
+						break;
+					case "5" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[5]) / 100), 1);
+						break;
+					case "6" : 
+						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[6]) / 100), 1);
+						break;
+				}
+				leaveCutPayment += cutPayment;
+				
+			}
+			double overTimePayment = 0;
+			//0:调休 1:发加班费
+			if (salaryRule.getOvertimeFlag() == 1){
+				overTimePayment = MathUtil.formatDouble(MathUtil.mul(daySalaries, null == overTimeMap.get(user.getId()) ? 0 : overTimeMap.get(user.getId())), 1);
 			}
 			if (attRule.getType() != 0){
 				Map<String, Object> attCutMap = new HashMap<String, Object>();
@@ -104,15 +165,13 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				attCutMap.put("forgetClockCutPayment", 0.0);
 				attCutMap.put("noClockCutPayment", 0.0);
 				attCutMap.put("totalCutAmount", 0.0);
+				attCutMap.put("leaveCutPayment", leaveCutPayment);
+				attCutMap.put("overTimePayment", overTimePayment);
 				cutMap.put(user.getId(), attCutMap);
-				logger.error("用户 {" + user.getId() + "}不参与考勤规则。");
+				logger.info("用户 {" + user.getId() + "}不参与考勤规则。");
 				continue;
 			}
-			//应工作天数
-			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
-			if (workdays == null){
-				continue;
-			}
+
 			//扣款总金额
 			double totalCutAmount = 0;
 			//忘打卡扣款
@@ -123,13 +182,11 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 			double leaveEarlyCutAmount = 0;
 			//旷工扣款
 			double noClockCutAmount = 0;
-			//天工资
-			double daySalaries = MathUtil.div(user.getSalaries(), workdays.size());
 			//实际工作天数
 			List<String> realWorkdays = new ArrayList<String>();
 			//忘打卡次数
 			int forgetClockCount = 0;
-			//cutType扣款类型 0：迟到  1：早退  2：未打卡  3：旷工  4：请假
+			//cutType扣款类型 0：迟到  1：早退  2：未打卡  3：旷1天工  4：旷半天工  5：请假
 			for (Attendance att : list){
 				//内层循环过滤掉id不同的数据 ||过滤掉上班，下班都没打卡或打卡日期不在应工作天之内的数据
 				if (user.getId() != att.getUserId() || !workdays.contains(att.getClockDate())
@@ -242,46 +299,52 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 				// 0:旷一天工   1：旷半天工
 				int flag = 0;
 				//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
-				LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate(user.getId(), noClockDay);
-				if (leaveRecord != null){
-					String startDay = leaveRecord.getStartDate();
-					String endDay = leaveRecord.getEndDate();
-					//请假在同一天
-					if (StringUtils.equals(startDay, noClockDay) && StringUtils.equals(endDay, noClockDay)){
-						//上半天请假
-						if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
-							flag = 1;
-						}
-						//下半天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
-							flag = 1;
-						}
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+				List<LeaveRecord> leaveRecords = leaveDao.getLeaveRecordByUserIdAndDate(user.getId(), noClockDay);
+				if (leaveRecords != null && leaveRecords.size() > 0){
+					if (leaveRecords.size() == 1){
+						LeaveRecord leaveRecord = leaveRecords.get(0);
+						String startDay = leaveRecord.getStartDate();
+						String endDay = leaveRecord.getEndDate();
+						//请假在同一天
+						if (StringUtils.equals(startDay, noClockDay) && StringUtils.equals(endDay, noClockDay)){
+							//上半天请假
+							if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
+								flag = 1;
+							}
+							//下半天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+								flag = 1;
+							}
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+								continue;
+							}
+							//请假开始时间为今天
+						} else if (StringUtils.equals(startDay, noClockDay)){
+							//全天请假
+							if (StringUtils.equals(leaveRecord.getStartType(), "0")){
+								continue;
+							}
+							//下半天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "1")){
+								flag = 1;
+							}
+							//请假结束时间为今天
+						} else if (StringUtils.equals(endDay, noClockDay)){
+							//上半天请假
+							if (StringUtils.equals(leaveRecord.getEndType(), "0")){
+								flag = 1;
+							}
+							//全天请假
+							if (StringUtils.equals(leaveRecord.getEndType(), "1")){
+								continue;
+							}
+							//今天在请假开始与结束之间
+						} else if (noClockDay.compareTo(startDay) > 0 && noClockDay.compareTo(endDay) < 0){
 							continue;
 						}
-					//请假开始时间为今天
-					} else if (StringUtils.equals(startDay, noClockDay)){
-						//全天请假
-						if (StringUtils.equals(leaveRecord.getStartType(), "0")){
-							continue;
-						}
-						//下半天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "1")){
-							flag = 1;
-						}
-					//请假结束时间为今天
-					} else if (StringUtils.equals(endDay, noClockDay)){
-						//上半天请假
-						if (StringUtils.equals(leaveRecord.getEndType(), "0")){
-							flag = 1;
-						}
-						//全天请假
-						if (StringUtils.equals(leaveRecord.getEndType(), "1")){
-							continue;
-						}
-					//今天在请假开始与结束之间
-					} else if (noClockDay.compareTo(startDay) > 0 && noClockDay.compareTo(endDay) < 0){
+					}
+					if (leaveRecords.size() == 2){
 						continue;
 					}
 				}
@@ -317,11 +380,14 @@ public class CutPaymentServiceImpl extends BaseService implements CutPaymentServ
 			attCutMap.put("forgetClockCutPayment", MathUtil.formatDouble(forgetClockCutAmount, 1));
 			attCutMap.put("noClockCutPayment", MathUtil.formatDouble(noClockCutAmount, 1));
 			attCutMap.put("totalCutAmount", MathUtil.formatDouble(totalCutAmount, 1));
+			attCutMap.put("leaveCutPayment", leaveCutPayment);
+			attCutMap.put("overTimePayment", overTimePayment);
 			cutMap.put(user.getId(), attCutMap);
 		}
 		
 		data.put("data", cutPayments);
 		data.put("money", cutMap);
+		data.put("noRuleUserIds", userIds);
 		return data;
 	}
 	

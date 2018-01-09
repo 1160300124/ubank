@@ -1,21 +1,32 @@
 package com.ulaiber.web.service.impl;
 
-import com.ulaiber.web.conmon.IConstants;
-import com.ulaiber.web.dao.LeaveAuditDao;
-import com.ulaiber.web.dao.LeaveDao;
-import com.ulaiber.web.model.*;
-import com.ulaiber.web.service.BaseService;
-import com.ulaiber.web.service.LeaveService;
-import com.ulaiber.web.utils.PushtoSingle;
-import com.ulaiber.web.utils.StringUtil;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.dao.LeaveAuditDao;
+import com.ulaiber.web.dao.LeaveDao;
+import com.ulaiber.web.model.ApplyForVO;
+import com.ulaiber.web.model.AuditData;
+import com.ulaiber.web.model.AuditVO;
+import com.ulaiber.web.model.LeaveAudit;
+import com.ulaiber.web.model.LeaveRecord;
+import com.ulaiber.web.model.Remedy;
+import com.ulaiber.web.model.User;
+import com.ulaiber.web.service.BaseService;
+import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.utils.PushtoSingle;
+import com.ulaiber.web.utils.StringUtil;
 
 /**
  * 申请请假业务实现类
@@ -340,11 +351,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
 
 	@Override
 	public List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(String companyNum, String type, String month) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("companyNum", companyNum);
-		params.put("type", type);
-		params.put("month", month);
-		return leaveDao.getTotalTimeByCompanyNumAndMonth(params);
+		return leaveDao.getTotalTimeByCompanyNumAndMonth(companyNum, type, month);
 	}
 
     @Override
@@ -363,14 +370,14 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
         return leaveDao.getLeaveAuditorCount(userId);
     }
 
-    @Override
-	public LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date) {
-		return leaveDao.getLeaveRecordByMobileAndDate(mobile, date);
+	@Override
+	public List<LeaveRecord> getLeaveRecordByUserIdAndDate(long userId, String date) {
+		return leaveDao.getLeaveRecordByUserIdAndDate(userId, date);
 	}
 
 	@Override
-	public LeaveRecord getLeaveRecordByUserIdAndDate(long userId, String date) {
-		return leaveDao.getLeaveRecordByUserIdAndDate(userId, date);
+	public List<LeaveRecord> getLeaveRecordByUserIdAndDate2(long userId, String startDate, String endDate) {
+		return leaveDao.getLeaveRecordByUserIdAndDate2(userId, startDate, endDate);
 	}
 
 }
