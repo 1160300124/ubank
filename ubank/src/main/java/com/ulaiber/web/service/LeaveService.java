@@ -58,10 +58,10 @@ public interface LeaveService {
     
     List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(String companyNum, String type, String month); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长 
     
-    LeaveRecord getLeaveRecordByUserIdAndDate(long userId, String date); //查询用户指定日期是否有审批通过的请假记录
+    List<LeaveRecord> getLeaveRecordByUserIdAndDate(long userId, String date); //查询用户指定日期是否有审批通过的请假记录
     
-    LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date); //查询用户指定日期是否有审批通过的请假记录
-
+    List<LeaveRecord> getLeaveRecordByUserIdAndDate2(long userId, String startDate, String endDate); //查询用户指定日期段是否有审批通过的请假记录
+    
     LeaveRecord queryApplyStatus(String recordNo);  //根据审批状态获取申请记录状态
 
     int getLeaveRecordCount(long userId); //获取个人申请记录数量

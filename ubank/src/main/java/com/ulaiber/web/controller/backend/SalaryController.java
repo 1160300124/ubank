@@ -274,9 +274,9 @@ public class SalaryController extends BaseController {
 		}
 		
 		try {
-			List<SalaryDetail> details = service.importUserInfo(companyNum, salaryMonth);
+			Map<String, Object> data = service.importUserInfo(companyNum, salaryMonth);
 			info.setCode(IConstants.QT_CODE_OK);
-			info.setData(details);
+			info.setData(data);
 		} catch (Exception e) {
 			logger.info("获取用户信息失败。" , e);
 			info.setCode(IConstants.QT_CODE_ERROR);
@@ -408,9 +408,9 @@ public class SalaryController extends BaseController {
         			// 如果名称不为“”,说明该文件存在，否则说明该文件不存在
         			if (fileName.trim() != "") {
         				logger.info("upload file name: " + fileName.trim());
-        				List<SalaryDetail> details = service.importSalaryList(file, companyId);
+        				Map<String, Object> data = service.importSalaryList(file, companyId);
         				
-        				retInfo.setData(details);
+        				retInfo.setData(data);
         				retInfo.setCode(IConstants.QT_CODE_OK);
         			}
         		}

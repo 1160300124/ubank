@@ -76,9 +76,9 @@ public interface SalaryService {
 	 * 导入用户信息
 	 * @param companyNum
 	 * @param salaryMonth
-	 * @return List<SalaryDetail>
+	 * @return Map<String, Object>
 	 */
-	List<SalaryDetail> importUserInfo(String companyNum,String salaryMonth);
+	Map<String, Object> importUserInfo(String companyNum,String salaryMonth);
 	
 	/**
 	 * 代发工资
@@ -97,7 +97,7 @@ public interface SalaryService {
 	 * 导入工资表
 	 * @param file  MultipartFile
 	 * @param companyId companyId
-	 * @return List<SalaryDetail>
+	 * @return Map<String, Object>
 	 */
-	public List<SalaryDetail> importSalaryList(MultipartFile file, String companyId) throws Exception;
+	public Map<String, Object> importSalaryList(MultipartFile file, String companyId) throws Exception;
 }
