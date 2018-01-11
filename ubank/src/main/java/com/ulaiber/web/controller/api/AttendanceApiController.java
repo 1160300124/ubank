@@ -265,105 +265,107 @@ public class AttendanceApiController extends BaseController {
 		
 		// 0:上半天请假   1:下半天请假   2:全天请假
 		int flag = -1;
-		if (leaveRecords != null && leaveRecords.size() > 0){
-			if (leaveRecords.size() == 1){
-				LeaveRecord leaveRecord = leaveRecords.get(0);
-				String startDay = leaveRecord.getStartDate();
-				String endDay = leaveRecord.getEndDate();
-				//请假在同一天
-				if (StringUtils.equals(startDay, today) && StringUtils.equals(endDay, today)){
-					//是否有休息时段
-					if (rule.getRestFlag() == 0){
-						String restStartTime = today + " " + rule.getRestStartTime();
-						String restEndTime = today + " " + rule.getRestEndTime();
-						//上半天请假
-						if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
-							clockOnTime = restEndTime;
-							flag = 0;
+		if (record == null || record != null && !StringUtils.equals(record.getRevokeType(), "1")){
+			if (leaveRecords != null && leaveRecords.size() > 0){
+				if (leaveRecords.size() == 1){
+					LeaveRecord leaveRecord = leaveRecords.get(0);
+					String startDay = leaveRecord.getStartDate();
+					String endDay = leaveRecord.getEndDate();
+					//请假在同一天
+					if (StringUtils.equals(startDay, today) && StringUtils.equals(endDay, today)){
+						//是否有休息时段
+						if (rule.getRestFlag() == 0){
+							String restStartTime = today + " " + rule.getRestStartTime();
+							String restEndTime = today + " " + rule.getRestEndTime();
+							//上半天请假
+							if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
+								clockOnTime = restEndTime;
+								flag = 0;
+							}
+							//下半天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+								clockOffTime = restStartTime;
+								flag = 1;
+							}
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+								flag = 2;
+							}
+						} else {
+							//每天工作分钟数
+							int workMinutes = DateTimeUtil.getminute(clockOnTime, clockOffTime);
+							String middleTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, workMinutes / 2);
+							//上半天请假
+							if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
+								clockOnTime = middleTime;
+								flag = 0;
+							}
+							//下半天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+								clockOffTime = middleTime;
+								flag = 1;
+							}
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
+								flag = 2;
+							}
 						}
-						//下半天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
-							clockOffTime = restStartTime;
-							flag = 1;
+						//请假开始时间为今天
+					} else if (StringUtils.equals(startDay, today)){
+						//是否有休息时段
+						if (rule.getRestFlag() == 0){
+							String restStartTime = today + " " + rule.getRestStartTime();
+							//下半天请假
+							if (StringUtils.equals(leaveRecord.getStartType(), "1")){
+								clockOffTime = restStartTime;
+								flag = 1;
+							}						
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "0")){
+								flag = 2;
+							}
+							
+						} else {
+							//每天工作分钟数
+							int workMinutes = DateTimeUtil.getminute(clockOnTime, clockOffTime);
+							String middleTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, workMinutes / 2);
+							//下半天请假
+							if (StringUtils.equals(leaveRecord.getStartType(), "1")){
+								clockOffTime = middleTime;
+								flag = 1;
+							}
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getStartType(), "0")){
+								flag = 2;
+							}
 						}
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
-							flag = 2;
-						}
-					} else {
-						//每天工作分钟数
-						int workMinutes = DateTimeUtil.getminute(clockOnTime, clockOffTime);
-						String middleTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, workMinutes / 2);
-						//上半天请假
-						if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "0")){
-							clockOnTime = middleTime;
-							flag = 0;
-						}
-						//下半天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "1") && StringUtils.equals(leaveRecord.getEndType(), "1")){
-							clockOffTime = middleTime;
-							flag = 1;
-						}
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "0") && StringUtils.equals(leaveRecord.getEndType(), "1")){
-							flag = 2;
-						}
-					}
-					//请假开始时间为今天
-				} else if (StringUtils.equals(startDay, today)){
-					//是否有休息时段
-					if (rule.getRestFlag() == 0){
-						String restStartTime = today + " " + rule.getRestStartTime();
-						//下半天请假
-						if (StringUtils.equals(leaveRecord.getStartType(), "1")){
-							clockOffTime = restStartTime;
-							flag = 1;
-						}						
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "0")){
-							flag = 2;
-						}
-						
-					} else {
-						//每天工作分钟数
-						int workMinutes = DateTimeUtil.getminute(clockOnTime, clockOffTime);
-						String middleTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, workMinutes / 2);
-						//下半天请假
-						if (StringUtils.equals(leaveRecord.getStartType(), "1")){
-							clockOffTime = middleTime;
-							flag = 1;
-						}
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getStartType(), "0")){
-							flag = 2;
-						}
-					}
-					//请假结束时间为今天
-				} else if (StringUtils.equals(endDay, today)){
-					//是否有休息时段
-					if (rule.getRestFlag() == 0){
-						String restEndTime = today + " " + rule.getRestEndTime();
-						//上半天请假
-						if (StringUtils.equals(leaveRecord.getEndType(), "0")){
-							clockOnTime = restEndTime;
-							flag = 0;
-						}
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getEndType(), "1")){
-							flag = 2;
-						}
-					} else {
-						//每天工作分钟数
-						int workMinutes = DateTimeUtil.getminute(clockOnTime, clockOffTime);
-						String middleTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, workMinutes / 2);
-						//上半天请假
-						if (StringUtils.equals(leaveRecord.getEndType(), "0")){
-							clockOnTime = middleTime;
-							flag = 0;
-						}
-						//全天请假
-						else if (StringUtils.equals(leaveRecord.getEndType(), "1")){
-							flag = 2;
+						//请假结束时间为今天
+					} else if (StringUtils.equals(endDay, today)){
+						//是否有休息时段
+						if (rule.getRestFlag() == 0){
+							String restEndTime = today + " " + rule.getRestEndTime();
+							//上半天请假
+							if (StringUtils.equals(leaveRecord.getEndType(), "0")){
+								clockOnTime = restEndTime;
+								flag = 0;
+							}
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getEndType(), "1")){
+								flag = 2;
+							}
+						} else {
+							//每天工作分钟数
+							int workMinutes = DateTimeUtil.getminute(clockOnTime, clockOffTime);
+							String middleTime = DateTimeUtil.getfutureTime(clockOnTime, 0, 0, workMinutes / 2);
+							//上半天请假
+							if (StringUtils.equals(leaveRecord.getEndType(), "0")){
+								clockOnTime = middleTime;
+								flag = 0;
+							}
+							//全天请假
+							else if (StringUtils.equals(leaveRecord.getEndType(), "1")){
+								flag = 2;
+							}
 						}
 					}
 				}

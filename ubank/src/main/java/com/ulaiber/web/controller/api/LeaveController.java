@@ -81,7 +81,7 @@ public class LeaveController extends BaseController {
      * @param leaveRecord
      * @return ResultInfo
      */
-    @RequestMapping(value = "applyForLeave", method = RequestMethod.GET)
+    @RequestMapping(value = "applyForLeave", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo applyForLeave( LeaveRecord leaveRecord){
         logger.info(">>>>>>>>>>>开始保存申请请假记录");
