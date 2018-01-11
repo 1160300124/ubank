@@ -370,14 +370,15 @@ public class AttendanceApiController extends BaseController {
 			}
 		}
 		
+		data.put("leaveType", flag);
 		String clockMsg = "";
 		// 0:上半天请假   1:下半天请假   2:全天请假
 		if (flag == 0){
-			clockMsg = "上半天请假  " + clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
+			clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
 		} else if (flag == 1){
-			clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1] + "  下半天请假";
+			clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
 		} else if (flag == 2){
-			clockMsg = "全天请假";
+			clockMsg = "";
 		} else {
 			if (rule.getRestFlag() == 0){
 				if (clockOnTime.split(" ")[1].compareTo(rule.getRestStartTime()) < 0 && clockOffTime.split(" ")[1].compareTo(rule.getRestEndTime()) > 0){
@@ -625,14 +626,15 @@ public class AttendanceApiController extends BaseController {
 		
 		data.put("clockOnTime", clockOnTime.split(" ")[1]);
 		data.put("clockOffTime", clockOffTime.split(" ")[1]);
+		data.put("leaveType", flag);
 		String clockMsg = "";
 		// 0:上半天请假   1:下半天请假   2:全天请假
 		if (flag == 0){
-			clockMsg = "上半天请假  " + clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
+			clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
 		} else if (flag == 1){
-			clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1] + "  下半天请假";
+			clockMsg = clockOnTime.split(" ")[1] + "~" + clockOffTime.split(" ")[1];
 		} else if (flag == 2){
-			clockMsg = "全天请假";
+			clockMsg = "";
 		} else {
 			if (rule.getRestFlag() == 0){
 				if (clockOnTime.split(" ")[1].compareTo(rule.getRestStartTime()) < 0 && clockOffTime.split(" ")[1].compareTo(rule.getRestEndTime()) > 0){

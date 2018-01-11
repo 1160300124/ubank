@@ -81,7 +81,7 @@ public class LeaveController extends BaseController {
      * @param leaveRecord
      * @return ResultInfo
      */
-    @RequestMapping(value = "applyForLeave", method = RequestMethod.POST)
+    @RequestMapping(value = "applyForLeave", method = RequestMethod.GET)
     @ResponseBody
     public ResultInfo applyForLeave( LeaveRecord leaveRecord){
         logger.info(">>>>>>>>>>>开始保存申请请假记录");
@@ -95,15 +95,15 @@ public class LeaveController extends BaseController {
             		String endDay = dbRecord.getEndDate();
             		String startType = dbRecord.getStartType();
             		String endType = dbRecord.getEndType();
-            		if (StringUtils.equals(leaveRecord.getStartDate(), startDay) && StringUtils.equals(leaveRecord.getEndDate(), endDay)){
-            			if (StringUtils.equals(leaveRecord.getStartType(), startType) || StringUtils.equals(leaveRecord.getEndType(), endType)){
+            		if (leaveRecord.getStartDate().compareTo(startDay) <= 0 && leaveRecord.getEndDate().compareTo(startDay) == 0){
+            			if (StringUtils.equals(leaveRecord.getEndType(), "1") || StringUtils.equals(startType, "0")){
             				resultInfo.setCode(IConstants.QT_CODE_ERROR);
             				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
             				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
             				return resultInfo;
             			}
-            		} else if (StringUtils.equals(leaveRecord.getStartDate(), startDay) || StringUtils.equals(leaveRecord.getEndDate(), startDay)
-            				|| StringUtils.equals(leaveRecord.getStartDate(), endDay) || StringUtils.equals(leaveRecord.getEndDate(), endDay)){
+            		}
+            		else if (StringUtils.equals(leaveRecord.getStartDate(), startDay) && StringUtils.equals(leaveRecord.getEndDate(), endDay)){
             			if (StringUtils.equals(leaveRecord.getStartType(), startType) || StringUtils.equals(leaveRecord.getEndType(), endType)){
             				resultInfo.setCode(IConstants.QT_CODE_ERROR);
             				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
@@ -111,11 +111,20 @@ public class LeaveController extends BaseController {
             				return resultInfo;
             			}
             		} else if(leaveRecord.getStartDate().compareTo(startDay) < 0 && leaveRecord.getEndDate().compareTo(startDay) > 0
+            				|| leaveRecord.getStartDate().compareTo(startDay) >= 0 && leaveRecord.getEndDate().compareTo(endDay) <= 0
             				|| leaveRecord.getStartDate().compareTo(endDay) < 0 && leaveRecord.getEndDate().compareTo(endDay) > 0){
             			resultInfo.setCode(IConstants.QT_CODE_ERROR);
             			resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
             			logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
             			return resultInfo;
+            		}
+            		else if (leaveRecord.getStartDate().compareTo(endDay) == 0 && leaveRecord.getEndDate().compareTo(endDay) >= 0){
+            			if (StringUtils.equals(endType, "1") || StringUtils.equals(leaveRecord.getStartType(), "0")){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
             		}
             	} else {
             		resultInfo.setCode(IConstants.QT_CODE_ERROR);
