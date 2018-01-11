@@ -369,6 +369,9 @@ public class AttendanceApiController extends BaseController {
 						}
 					}
 				}
+				if (leaveRecords.size() == 2){
+					flag = 2;
+				}
 			}
 		}
 		
