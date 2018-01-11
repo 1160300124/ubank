@@ -89,7 +89,8 @@ public class AnnouncementApiController extends BaseController {
      * @param str  
      * @return String  
      */  
-    public static String filterHtml(String str) {   
+    public static String filterHtml(String str) {
+    	str = str.replaceAll("&nbsp;", "");
         Pattern pattern = Pattern.compile("<([^>]*)>");   
         Matcher matcher = pattern.matcher(str);   
         StringBuffer sb = new StringBuffer();   
