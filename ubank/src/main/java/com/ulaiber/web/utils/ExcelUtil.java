@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -136,7 +138,7 @@ public class ExcelUtil {
 	 * @return 
 	 * @throws IOException  
 	 */  
-	public static List<SalaryDetail> readExcel(MultipartFile file, List<String> cardNoList) throws IOException {  
+	public static Map<String, Object> readExcel(MultipartFile file, List<String> cardNoList) throws IOException {  
 		if (file==null || ExcelUtil.EMPTY.equals(file.getOriginalFilename().trim())){  
 			return null;  
 		} else {  
@@ -162,13 +164,14 @@ public class ExcelUtil {
 	 * @return 
 	 * @throws IOException  
 	 */  
-	private static List<SalaryDetail> readXlsx(MultipartFile file, List<String> cardNoList){ 
+	private static Map<String, Object> readXlsx(MultipartFile file, List<String> cardNoList){ 
+		Map<String, Object> data = new HashMap<String, Object>();
 		//EXCEL工资表集合
 		List<SalaryDetail> details = new ArrayList<SalaryDetail>();
 		//EXCEL工资表错误集合
-		List<SalaryDetail> falseDetails = new ArrayList<SalaryDetail>();
+		List<SalaryDetail> failDetails = new ArrayList<SalaryDetail>();
 		//EXCEL工资表正确集合
-		List<SalaryDetail> trueDetails = new ArrayList<SalaryDetail>();
+		List<SalaryDetail> successDetails = new ArrayList<SalaryDetail>();
 		//身份证集合
 		Set<String> cardNoSet = new HashSet<String>();
 		// IO流读取文件  
@@ -184,8 +187,8 @@ public class ExcelUtil {
 				if(xssfSheet == null){  
 					continue;  
 				}  
-				//读取Row,从第2行开始  
-				for(int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++){  
+				//读取Row,从第1行开始  
+				for(int rowNum = 0; rowNum <= xssfSheet.getLastRowNum(); rowNum++){  
 					XSSFRow xssfRow = xssfSheet.getRow(rowNum);  
 					if (xssfRow != null){  
 						//第一行是表头，跳过
@@ -244,9 +247,9 @@ public class ExcelUtil {
 						detail.setElseCutPayment(StringUtils.isEmpty(getXValue(xssfRow.getCell(12))) ? 0 : Double.valueOf(getXValue(xssfRow.getCell(12))));
 
 						if (sb.length() == 0){
-							trueDetails.add(detail);
+							successDetails.add(detail);
 						} else {
-							falseDetails.add(detail);
+							failDetails.add(detail);
 						}
 					}  
 				}  
@@ -264,10 +267,12 @@ public class ExcelUtil {
 			}  
 		}  
 		
-		details.addAll(falseDetails);
-		details.addAll(trueDetails);
-		return details;
-
+		details.addAll(failDetails);
+		details.addAll(successDetails);
+		data.put("details", details);
+		data.put("failCount", failDetails.size());
+		data.put("successCount", successDetails.size());
+		return data;
 	}
 
 	/** 
@@ -278,13 +283,14 @@ public class ExcelUtil {
 	 * @return 
 	 * @throws IOException  
 	 */  
-	private static List<SalaryDetail> readXls(MultipartFile file, List<String> cardNoList){
+	private static Map<String, Object> readXls(MultipartFile file, List<String> cardNoList){
+		Map<String, Object> data = new HashMap<String, Object>();
 		//EXCEL工资表集合
 		List<SalaryDetail> details = new ArrayList<SalaryDetail>();
 		//EXCEL工资表错误集合
-		List<SalaryDetail> falseDetails = new ArrayList<SalaryDetail>();
+		List<SalaryDetail> failDetails = new ArrayList<SalaryDetail>();
 		//EXCEL工资表正确集合
-		List<SalaryDetail> trueDetails = new ArrayList<SalaryDetail>();
+		List<SalaryDetail> successDetails = new ArrayList<SalaryDetail>();
 		//身份证集合
 		Set<String> cardNoSet = new HashSet<String>();
 		// IO流读取文件  
@@ -300,7 +306,7 @@ public class ExcelUtil {
 				if(hssfSheet == null){  
 					continue;  
 				}  
-				//读取Row,从第2行开始
+				//读取Row,从第1行开始
 				for (int rowNum = 0; rowNum <= hssfSheet.getLastRowNum(); rowNum++){  
 					HSSFRow hssfRow = hssfSheet.getRow(rowNum);
 					if (hssfRow != null){
@@ -360,9 +366,9 @@ public class ExcelUtil {
 						detail.setElseCutPayment(StringUtils.isEmpty(getHValue(hssfRow.getCell(12))) ? 0 : Double.valueOf(getHValue(hssfRow.getCell(12))));
 						
 						if (sb.length() == 0){
-							trueDetails.add(detail);
+							successDetails.add(detail);
 						} else {
-							falseDetails.add(detail);
+							failDetails.add(detail);
 						}
 					}                     
 				}  
@@ -380,9 +386,12 @@ public class ExcelUtil {
 			}  
 		}  
 		
-		details.addAll(falseDetails);
-		details.addAll(trueDetails);
-		return details; 
+		details.addAll(failDetails);
+		details.addAll(successDetails);
+		data.put("details", details);
+		data.put("failCount", failDetails.size());
+		data.put("successCount", successDetails.size());
+		return data; 
 	}  
 
 }

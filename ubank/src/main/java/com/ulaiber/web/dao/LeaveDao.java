@@ -49,18 +49,16 @@ public interface LeaveDao {
 
     Remedy getRemedyRecordByUserId(int recordNo); //根据记录Id查询补卡信息
     
-    List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(Map<String, Object> params); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长
+    List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(@Param("companyNum") String companyNum, @Param("type") String type, @Param("month") String month); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长
     
     Double getTotalTimeByUserId(@Param("userId") long userId, @Param("month") String date); //获取某个月份某人的审批通过的请假的总时长
     
-    Double getTotalTimeByMobile(@Param("mobile") String mobile, @Param("month") String date);//获取某个月份某人的审批通过的请假的总时长
-    
     int updateRealLeaveTime(@Param("userId") long userId,@Param("time") double time, @Param("today") String date);//更新实际请假时长
     
-    LeaveRecord getLeaveRecordByUserIdAndDate(@Param("userId") long userId, @Param("today") String date); //查询用户指定日期是否有审批通过的请假记录
+    List<LeaveRecord> getLeaveRecordByUserIdAndDate(@Param("userId") long userId, @Param("date") String date); //查询用户指定日期是否有审批通过的请假记录
     
-    LeaveRecord getLeaveRecordByMobileAndDate(@Param("mobile") String mobile, @Param("today") String date); //查询用户指定日期是否有审批通过的请假记录
-
+    List<LeaveRecord> getLeaveRecordByUserIdAndDate2(@Param("userId") long userId, @Param("startDate") String startDate, @Param("endDate") String endDate); //查询用户指定日期段是否有审批通过的请假记录
+    
     LeaveRecord queryApplyStatus(int recordNo); //根据审批状态获取申请记录状态
 
     int getLeaveRecordCount(long userId); //获取个人申请记录数量

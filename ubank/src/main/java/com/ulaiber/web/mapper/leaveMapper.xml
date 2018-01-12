@@ -169,28 +169,22 @@
 		select sum(realLeaveTime) totalTime from tbl_leave_record where type='0' and status='1' and disable='0' and locate(#{month},startDate)>0 and userId=#{userId}
 	</select>
 	
-		<!--获取某个月份某人的审批通过的请假的总时长  -->
-    <select id="getTotalTimeByMobile" resultType="Double">
-    	select sum(realLeaveTime) totalTime from tbl_leave_record r join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and r.type='0'
-    	and r.status='1' and r.disable='0' and locate(#{month},r.startDate)>0
-	</select>
-		
 	<!-- 更新实际请假时长 -->
 	<update id="updateRealLeaveTime">
 		update tbl_leave_record set realLeaveTime=realLeaveTime-#{time} where userId=#{userId} and type='0' and status='1' and disable='0' 
 		and startDate&lt;=#{today} and endDate&gt;=#{today}
 	</update>
 	
-	<!-- 查询用户指定日期是否有审批通过的请假记录 -->
+	<!-- 查询用户指定日期审批通过的请假记录 -->
 	<select id="getLeaveRecordByUserIdAndDate" resultMap="LeaveRecordMap">
 		select userId,leaveType,startDate,endDate,leaveTime,realLeaveTime,startType,endType from tbl_leave_record where userId=#{userId} and type='0' and status='1' and disable='0' 
-		and startDate&lt;=#{today} and endDate&gt;=#{today}
+		and startDate&lt;=#{date} and endDate&gt;=#{date}
 	</select>
 	
-	<!-- 查询用户指定日期是否有审批通过的请假记录 -->
-	<select id="getLeaveRecordByMobileAndDate" resultMap="LeaveRecordMap">
-		select userId,leaveType,startDate,endDate,leaveTime,realLeaveTime,startType,endType from tbl_leave_record r join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and r.type='0' 
-		and r.status='1' and r.disable='0' and startDate&lt;=#{today} and endDate&gt;=#{today}
+	<!-- 查询用户指定日期段是否有审批通过的请假记录 -->
+	<select id="getLeaveRecordByUserIdAndDate2" resultMap="LeaveRecordMap">
+		select userId,leaveType,startDate,endDate,leaveTime,realLeaveTime,startType,endType from tbl_leave_record where userId=#{userId} and type='0' and disable='0' and status&lt;'2'
+		and (startDate&lt;=#{startDate} and endDate&gt;=#{startDate} or startDate&gt;=#{startDate} and endDate&lt;=#{endDate} or startDate&lt;=#{endDate} and endDate&gt;=#{endDate})
 	</select>
 	
     <!--根据审批状态获取申请记录状态-->

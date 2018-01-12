@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ulaiber.web.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +36,14 @@ import com.ulaiber.web.model.SynchronizationData;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.WorkAuditRecordVO;
 import com.ulaiber.web.model.attendance.AttendancePatchClock;
+import com.ulaiber.web.model.attendance.AttendanceRule;
+import com.ulaiber.web.service.AnnouncementService;
+import com.ulaiber.web.service.AttendanceRuleService;
+import com.ulaiber.web.service.AttendanceService;
+import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.service.ReimbursementService;
+import com.ulaiber.web.service.SalaryAuditService;
+import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.StringUtil;
 
 /**
@@ -65,7 +73,8 @@ public class LeaveController extends BaseController {
     @Autowired
     private AnnouncementService service;
 
-
+    @Autowired
+    private AttendanceRuleService ruleService;
 
     /**
      * 申请请假
@@ -78,7 +87,53 @@ public class LeaveController extends BaseController {
         logger.info(">>>>>>>>>>>开始保存申请请假记录");
         ResultInfo resultInfo = new ResultInfo();
         try {
-            String date = sdf.format(new Date());
+        	List<LeaveRecord> dbRecords = leaveService.getLeaveRecordByUserIdAndDate2(Long.parseLong(leaveRecord.getUserid()), leaveRecord.getStartDate(), leaveRecord.getEndDate());
+            if (dbRecords != null && dbRecords.size() > 0){
+            	if (dbRecords.size() == 1){
+            		LeaveRecord dbRecord = dbRecords.get(0);
+            		String startDay = dbRecord.getStartDate();
+            		String endDay = dbRecord.getEndDate();
+            		String startType = dbRecord.getStartType();
+            		String endType = dbRecord.getEndType();
+            		if (leaveRecord.getStartDate().compareTo(startDay) < 0 && leaveRecord.getEndDate().compareTo(startDay) == 0){
+            			if (StringUtils.equals(leaveRecord.getEndType(), "1") || StringUtils.equals(startType, "0")){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
+            		} else if (StringUtils.equals(leaveRecord.getStartDate(), startDay) && StringUtils.equals(leaveRecord.getEndDate(), startDay)
+            				|| StringUtils.equals(leaveRecord.getStartDate(), startDay) && StringUtils.equals(leaveRecord.getEndDate(), endDay)
+            				|| StringUtils.equals(leaveRecord.getStartDate(), endDay) && StringUtils.equals(leaveRecord.getEndDate(), endDay)){
+            			if (StringUtils.equals(leaveRecord.getStartType(), startType) || StringUtils.equals(leaveRecord.getEndType(), endType)){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
+            		} else if(leaveRecord.getStartDate().compareTo(startDay) < 0 && leaveRecord.getEndDate().compareTo(startDay) > 0
+            				|| leaveRecord.getStartDate().compareTo(startDay) >= 0 && leaveRecord.getEndDate().compareTo(endDay) <= 0
+            				|| leaveRecord.getStartDate().compareTo(endDay) < 0 && leaveRecord.getEndDate().compareTo(endDay) > 0){
+            			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            			resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            			logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            			return resultInfo;
+            		} else if (leaveRecord.getStartDate().compareTo(endDay) == 0 && leaveRecord.getEndDate().compareTo(endDay) > 0){
+            			if (StringUtils.equals(endType, "1") || StringUtils.equals(leaveRecord.getStartType(), "0")){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
+            		}
+            	} else {
+            		resultInfo.setCode(IConstants.QT_CODE_ERROR);
+        			resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+        			logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+        			return resultInfo;
+            	}
+            }
+        	String date = sdf.format(new Date());
             leaveRecord.setCreateDate(date);
             //保存申请记录
             int result = leaveService.saveLeaveRecord(leaveRecord);
@@ -99,7 +154,7 @@ public class LeaveController extends BaseController {
             resultInfo.setMessage("申请成功");
             logger.info(">>>>>>>>>>>申请请假成功");
         }catch (Exception e){
-            logger.error(">>>>>>>>申请异常信息：" + e);
+            logger.error(">>>>>>>>申请异常信息：", e);
         }
         return resultInfo;
     }
@@ -1166,6 +1221,38 @@ public class LeaveController extends BaseController {
         logger.info(">>>>>>>>>>>开始新增补卡记录");
         ResultInfo resultInfo = new ResultInfo();
         try {
+        	long userId = Long.valueOf(remedy.getUserId());
+        	//考勤规则
+			AttendanceRule rule = ruleService.getRuleByUserId(userId);
+			if (null == rule){
+				logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
+				resultInfo.setCode(IConstants.QT_N0_ATTENDANCE_RULE);
+				resultInfo.setMessage("用户  " + userId + " 没有设置考勤规则，请先设置。");
+				return resultInfo;
+			}
+			if (rule.getType() != 0){
+				logger.info("用户 {" + userId + "}不参与考勤规则。");
+				resultInfo.setCode(IConstants.QT_N0T_IN_ATTENDANCE_RULE);
+				resultInfo.setMessage("用户 {" + userId + "}不参与考勤规则。");
+				return resultInfo;
+			}
+			
+			String today = remedy.getRemedyDate();
+			String dateBegin = today + " " + rule.getClockOnStartTime();
+			String dateEnd = today + " " + rule.getClockOffEndTime();
+			//是否跨天 0：不跨  1：跨天
+			int flag1 = 0;
+			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
+				flag1 = 1;
+			}
+			if (remedy.getMorning() != null && remedy.getMorning().compareTo(dateBegin) < 0 || remedy.getAfternoon() != null && remedy.getAfternoon().compareTo(dateEnd) > 0 ){
+				String msg = flag1 == 0 ? "" : "次日";
+				logger.info("用户 {" + userId + "}补卡申请时间不符合规则，补卡时间应该在" + rule.getClockOnStartTime() + "~" + msg + rule.getClockOffEndTime() + "之间");
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("补卡时间应该在" + rule.getClockOnStartTime() + "~" + msg + rule.getClockOffEndTime() + "之间");
+				return resultInfo;
+			}
             //新增补卡记录
             int result = leaveService.insertRemedy(remedy);
             if(result <= 0){
@@ -1176,7 +1263,6 @@ public class LeaveController extends BaseController {
             }
             //补卡
             AttendancePatchClock apc =  new AttendancePatchClock();
-            long userId = Long.valueOf(remedy.getUserId());
             apc.setUserId(userId);
             apc.setPatchClockDate(remedy.getRemedyDate());
             apc.setPatchClockType(Integer.parseInt(remedy.getType()));

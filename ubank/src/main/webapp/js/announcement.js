@@ -159,8 +159,8 @@ $(function(){
 	    
 	    var table = document.getElementById("table_attachment");
 	    var attachments = new Array();
-	    var attachment = {};
 		for (var i = 0; i < table.rows.length; i++){
+			var attachment = {};
 			attachment.attachment_name = table.rows[i].cells[0].innerHTML;
 			attachment.attachment_type = table.rows[i].cells[1].innerHTML;
 			attachment.attachment_size = table.rows[i].cells[2].innerHTML;

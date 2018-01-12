@@ -106,7 +106,7 @@ $(function(){
 	$("#btn_add").unbind().bind("click", function(){
 		//0：新增  1：修改
 		flag = 0;
-		$("#myModalLabel").text("新增考勤规则");attendance_people_
+		$("#myModalLabel").text("新增考勤规则");
 		$("#form")[0].reset();
 		$('.work-day').empty();
 		$("#table_attendanceLocation").empty();
@@ -205,7 +205,7 @@ $(function(){
 			clockLocation += table.rows[i].cells[0].innerHTML + ",";
 			longit_latit += table.rows[i].cells[1].innerHTML + "|";
 		}
-		if (clockLocation == "" || longit_latit == ""){
+		if (clockLocation == "" || longit_latit == "" || clockLocation == "," || longit_latit == "|"){
 			Ewin.alert("请添加考勤地点。");
 			return false;
 		}
@@ -557,6 +557,10 @@ $(function(){
 	    var type = $("#location_type").val();
 	    var location = $("#gaodeMapIframe").contents().find("#attendance_addr").val();
 	    var longit_latit = $("#gaodeMapIframe").contents().find("#hidden_addr").val();
+	    if (location == "" || longit_latit == ""){
+			Ewin.alert("请添加考勤地点。");
+			return false;
+		}
 	    if (type == "-1"){
 	    	if (table.rows.length >= 3){
 	    		Ewin.alert("考勤地点最多只能添加3个。");
