@@ -42,9 +42,9 @@
   
 	<insert id="save" parameterType="User"  useGeneratedKeys="true" keyProperty="id">
 		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType,
-		 		cardNo, bankNo, bankCardNo, role_id, createTime,entryDate,disabled)
+		 		cardNo, bankNo, bankCardNo, role_id, createTime,updateTime,entryDate,disabled)
 		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile},
-		        	#{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{role_id}, #{createTime},#{createTime},'0')
+		        	#{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{role_id}, #{createTime},#{updateTime},#{createTime},'0')
 	</insert>
 	
 	<update id="update" parameterType="User">

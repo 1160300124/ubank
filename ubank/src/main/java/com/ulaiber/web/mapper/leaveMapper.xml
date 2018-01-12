@@ -111,9 +111,9 @@
         left join tbl_departments c on b.dept_number = c.dept_number
         where  a.user_name is not null and b.companyNumber = #{companyNumber}  and a.disabled = '0'
         <if test='date != "" and date != null'>
-            and  a.createTime > #{date}
+            and  a.updateTime > #{date}
         </if>
-        order by a.createTime limit #{pageNum},#{pageSize}
+        order by a.updateTime limit #{pageNum},#{pageSize}
     </select>
 
     <!--根据日期分页查询删除用户-->
@@ -123,9 +123,9 @@
         left join tbl_departments c on b.dept_number = c.dept_number
         where  a.user_name is not null and b.companyNumber = #{companyNumber}  and a.disabled = '1'
         <if test='date != "" and date != null'>
-            and  a.createTime > #{date}
+            and  a.updateTime > #{date}
         </if>
-        order by a.createTime limit #{pageNum},#{pageSize}
+        order by a.updateTime limit #{pageNum},#{pageSize}
     </select>
 
     <!--修改用户个推CID-->

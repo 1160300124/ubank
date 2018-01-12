@@ -19,14 +19,14 @@
 
     <!--新增员工信息-->
     <insert id="addEmployee" parameterType="com.ulaiber.web.model.User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id ,createTime,entryDate,leaveDate,salaries,disabled)
-            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id},#{createTime},#{entryDate},#{leaveDate},#{salaries},'0')
+        INSERT INTO tbl_users(login_password,mobile,cardType,user_name,cardNo,bankNo,bankCardNo,role_id ,createTime,updateTime,entryDate,leaveDate,salaries,disabled)
+            VALUES (#{login_password},#{mobile},"1",#{userName},#{cardNo},#{bankNo},#{bankCardNo},#{role_id},#{createTime},#{updateTime},#{entryDate},#{leaveDate},#{salaries},'0')
     </insert>
 
     <!--修改员工信息-->
     <update id="editEmp" parameterType="com.ulaiber.web.model.User">
         UPDATE tbl_users set mobile = #{mobile},user_name = #{userName} , cardNo = #{cardNo},entryDate = #{entryDate} , leaveDate = #{leaveDate}
-              ,bankNo = #{bankNo}, bankCardNo = #{bankCardNo},role_id = #{role_id},createTime = #{createTime}
+              ,bankNo = #{bankNo}, bankCardNo = #{bankCardNo},role_id = #{role_id},createTime = #{createTime},updateTime = #{updateTime}
           where user_id = #{id}
     </update>
 
@@ -83,7 +83,7 @@
 
     <!-- 根据员工编号删除对应的员工-->
     <update id="empDelete" parameterType="Map">
-        UPDATE tbl_users set disabled = '1' , createTime = #{date} where user_id in
+        UPDATE tbl_users set disabled = '1' , createTime = #{date},updateTime = #{date} where user_id in
         <foreach collection="number" item="number" open="(" separator="," close=")">
             #{number}
         </foreach>
