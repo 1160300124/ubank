@@ -1014,7 +1014,7 @@ public class LeaveController extends BaseController {
         try {
             //根据日期查询用户总数
             int total = leaveService.getUserTotalByDate(date,companyNumber);
-            if(total <= 0){
+            if(total <= 0 ){
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("暂时没有可更新数据");
                 logger.info("暂时没有可更新数据");
@@ -1022,14 +1022,14 @@ public class LeaveController extends BaseController {
             }
             pageNum = (pageNum - 1) * pageSize;
             // true 表示数据已同步完成； false 表示还有数据需要同步；
-            boolean flag = false;
-            //根据日期分页查询新增的用户
+          // boolean flag = false;
+            //根据日期分页查询新增的用户`
             List<User> userList = leaveService.getUserByDate(date,companyNumber,pageNum,pageSize);
             List<User> delList = leaveService.getDeleteUserByDate(date,companyNumber,pageNum,pageSize);
             Map<String,Object> resultMap = new HashMap<>();
             int pageTotal = userList.size();
-            if(userList.size() == 0){
-                flag = true;
+            if(userList.size() == 0 && delList.size() == 0){
+               // flag = true;
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("同步数据成功");
                 logger.info("同步数据成功");
@@ -1040,11 +1040,14 @@ public class LeaveController extends BaseController {
             //存放删除的数据
             List<SynchronizationData> list2 = new ArrayList<>();
             //如果总数大于分页查询的总数，则表示还有数据
-            if((total - pageTotal) <= 0){
-                flag = true;
+//            if((total - pageTotal) <= 0){
+//                flag = true;
+//            }
+            String lastDate = "";
+            if(userList.size() > 0){
+                // 获取最后那条记录的创建日期
+                lastDate = userList.get(userList.size()-1).getCreateTime();
             }
-            // 获取最后那条记录的创建日期
-            String lastDate = userList.get(userList.size()-1).getCreateTime();
             for (int i = 0 ; i < userList.size() ; i++){
                 User user = userList.get(i);
                 SynchronizationData async = new SynchronizationData();
@@ -1070,7 +1073,7 @@ public class LeaveController extends BaseController {
             resultMap.put("NewAndUpdate" , list);
             resultMap.put("Delete" , list2);
             resultMap.put("LastDate",lastDate);
-            resultMap.put("flag",flag);
+            resultMap.put("flag",true);
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("同步数据成功");
             resultInfo.setData(resultMap);
