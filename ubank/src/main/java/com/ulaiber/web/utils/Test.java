@@ -290,10 +290,10 @@ public class Test {
 	@org.junit.Test
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("date","2017-12-06 14:48:15");
-		map.put("pageNum",1);
+		map.put("date","2018-01-08 14:48:15");
+		map.put("pageNum",2);
 		map.put("pageSize",50);
-		map.put("companyNumber","20047");
+		map.put("companyNumber","20094");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
 		System.out.print(">>>>>>>>同步数据结果为："+result);
 	}

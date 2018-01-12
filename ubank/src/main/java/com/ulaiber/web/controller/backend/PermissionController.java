@@ -653,6 +653,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(500);
             }
         }catch (Exception e){
+            resultInfo.setMessage("删除失败");
+            resultInfo.setCode(500);
             logger.error(">>>>>>>>>>根据员工编号删除对应的员工异常：" ,e);
         }
         return resultInfo;

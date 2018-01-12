@@ -9,7 +9,7 @@
             <div class="col-sm-2">
                 <select class="combobox form-control" name="company" id="emp_select_copy"></select>
             </div>
-            <button onclick="" type="button" class="btn btn-default">
+            <button onclick="EmployeeFun.reload()" type="button" class="btn btn-default">
                 <span class="fa icon-search" aria-hidden="true"></span>搜索
             </button>
             <button onclick="EmployeeFun.activetion()" type="button" class="btn btn-default">
