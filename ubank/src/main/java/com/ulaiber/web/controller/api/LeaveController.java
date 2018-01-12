@@ -962,113 +962,66 @@ public class LeaveController extends BaseController {
             if(total <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("暂时没有可更新数据");
-                logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
+                logger.info("暂时没有可更新数据");
                 return resultInfo;
             }
-//            if(pageSize <= 0){
-//                pageSize = 10;
-//            }
-//            if (pageNum < 0){
-//                pageNum = 0;
-//            }
             pageNum = (pageNum - 1) * pageSize;
             // true 表示数据已同步完成； false 表示还有数据需要同步；
             boolean flag = false;
-            // 最新的日期
-            String lastDate = "";
-            //根据日期分页查询用户
+            //根据日期分页查询新增的用户
             List<User> userList = leaveService.getUserByDate(date,companyNumber,pageNum,pageSize);
+            List<User> delList = leaveService.getDeleteUserByDate(date,companyNumber,pageNum,pageSize);
+            Map<String,Object> resultMap = new HashMap<>();
+            int pageTotal = userList.size();
+            if(userList.size() == 0){
+                flag = true;
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("同步数据成功");
+                logger.info("同步数据成功");
+                return resultInfo;
+            }
             //存放增加或修改的数据
             List<SynchronizationData> list = new ArrayList<>();
             //存放删除的数据
             List<SynchronizationData> list2 = new ArrayList<>();
-            Map<String,Object> resultMap = new HashMap<>();
-            int pageTotal = userList.size();
             //如果总数大于分页查询的总数，则表示还有数据
-            if((total - pageTotal) > 0){
-                if(userList.size() > 0){
-                    // 获取最后那条记录的创建日期
-                    User us = userList.get(userList.size()-1);
-                    lastDate = us.getCreateTime();
-                    for (int i = 0 ; i < userList.size() ; i++){
-                        User user = userList.get(i);
-                        if(user.getDisabled().equals("0")){
-                            SynchronizationData async = new SynchronizationData();
-                            async.setId(userList.get(i).getId());
-                            async.setUsername(userList.get(i).getUserName());
-                            async.setDeptName(userList.get(i).getDept_name());
-                            async.setMobile(userList.get(i).getMobile());
-                            async.setImage(userList.get(i).getImage());
-                            async.setDisabled(userList.get(i).getDisabled());
-                            list.add(async);
-                        }else{
-                            SynchronizationData async = new SynchronizationData();
-                            async.setId(userList.get(i).getId());
-                            async.setUsername(userList.get(i).getUserName());
-                            async.setDeptName(userList.get(i).getDept_name());
-                            async.setMobile(userList.get(i).getMobile());
-                            async.setImage(userList.get(i).getImage());
-                            async.setDisabled(userList.get(i).getDisabled());
-                            list2.add(async);
-
-                        }
-                    }
-                    resultMap.put("NewAndUpdate" , list);
-                    resultMap.put("Delete" , list2);
-                    resultMap.put("LastDate",lastDate);
-                    resultMap.put("flag",flag);
-                    resultInfo.setCode(IConstants.QT_CODE_OK);
-                    resultInfo.setMessage("同步数据成功");
-                    resultInfo.setData(resultMap);
-                    logger.info(">>>>>>>>>>>>>同步数据成功");
-                    return resultInfo;
-                }else{
-                    flag = true;
-                    resultInfo.setCode(IConstants.QT_CODE_OK);
-                    resultInfo.setMessage("同步数据成功");
-                    logger.info(">>>>>>>>>>>>>同步数据成功");
-                    return resultInfo;
-                }
-
-            }else{
+            if((total - pageTotal) <= 0){
                 flag = true;
-                // 获取最后那条记录的创建日期
-                User us = userList.get(userList.size()-1);
-                lastDate = us.getCreateTime();
-                for (int i = 0 ; i < userList.size() ; i++){
-                    User user = userList.get(i);
-                    if(user.getDisabled().equals("0")){
-                        SynchronizationData async = new SynchronizationData();
-                        async.setId(userList.get(i).getId());
-                        async.setUsername(userList.get(i).getUserName());
-                        async.setDeptName(userList.get(i).getDept_name());
-                        async.setMobile(userList.get(i).getMobile());
-                        async.setImage(userList.get(i).getImage());
-                        async.setDisabled(userList.get(i).getDisabled());
-                        list.add(async);
-                    }else{
-                        SynchronizationData async = new SynchronizationData();
-                        async.setId(userList.get(i).getId());
-                        async.setUsername(userList.get(i).getUserName());
-                        async.setDeptName(userList.get(i).getDept_name());
-                        async.setMobile(userList.get(i).getMobile());
-                        async.setImage(userList.get(i).getImage());
-                        async.setDisabled(userList.get(i).getDisabled());
-                        list2.add(async);
-                    }
-                }
-                resultMap.put("NewAndUpdate" , list);
-                resultMap.put("Delete" , list2);
-                resultMap.put("LastDate",lastDate);
-                resultMap.put("flag",flag);
-                resultInfo.setCode(IConstants.QT_CODE_OK);
-                resultInfo.setMessage("同步数据成功");
-                resultInfo.setData(resultMap);
-                logger.info(">>>>>>>>>>>>>同步数据成功");
-
             }
+            // 获取最后那条记录的创建日期
+            String lastDate = userList.get(userList.size()-1).getCreateTime();
+            for (int i = 0 ; i < userList.size() ; i++){
+                User user = userList.get(i);
+                SynchronizationData async = new SynchronizationData();
+                async.setId(userList.get(i).getId());
+                async.setUsername(userList.get(i).getUserName());
+                async.setDeptName(userList.get(i).getDept_name());
+                async.setMobile(userList.get(i).getMobile());
+                async.setImage(userList.get(i).getImage());
+                async.setDisabled(userList.get(i).getDisabled());
+                list.add(async);
+            }
+            for (int i = 0 ; i < delList.size() ; i++){
+                User user = delList.get(i);
+                SynchronizationData async = new SynchronizationData();
+                async.setId(delList.get(i).getId());
+                async.setUsername(delList.get(i).getUserName());
+                async.setDeptName(delList.get(i).getDept_name());
+                async.setMobile(delList.get(i).getMobile());
+                async.setImage(delList.get(i).getImage());
+                async.setDisabled(delList.get(i).getDisabled());
+                list2.add(async);
+            }
+            resultMap.put("NewAndUpdate" , list);
+            resultMap.put("Delete" , list2);
+            resultMap.put("LastDate",lastDate);
+            resultMap.put("flag",flag);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("同步数据成功");
+            resultInfo.setData(resultMap);
+            logger.info("同步数据成功");
         }catch(Exception e){
-            logger.error(">>>>>>>>>>>通讯录数据同步失败：",e);
+            logger.error("通讯录数据同步失败：",e);
         }
         return resultInfo;
     }
@@ -1082,7 +1035,7 @@ public class LeaveController extends BaseController {
     @RequestMapping(value = "getClinetID", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo getClinetID(String userId,String CID){
-        logger.info(">>>>>>>>>>>开始插入个推CID");
+        logger.info("开始插入个推CID");
         ResultInfo resultInfo = new ResultInfo();
         try {
             //修改用户个推CID
@@ -1090,14 +1043,14 @@ public class LeaveController extends BaseController {
             if(result <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage("更新用户个推CID失败");
-                logger.info(">>>>>>>>>>>>>>修改用户CID失败");
+                logger.info("修改用户CID失败");
                 return resultInfo;
             }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("更新用户个推CID成功");
-            logger.info(">>>>>>>>>>>>>>修改用户CID成功");
+            logger.info("修改用户CID成功");
         }catch(Exception e){
-            logger.error(">>>>>>>>>>获取用户个推CID失败：",e);
+            logger.error("获取用户个推CID失败：",e);
 
         }
         return resultInfo;

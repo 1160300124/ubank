@@ -364,6 +364,16 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
+    public List<User> getDeleteUserByDate(String date, String companyNumber, int pageNum, int pageSize) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("date" , date);
+        map.put("companyNumber" , companyNumber);
+        map.put("pageNum" , pageNum);
+        map.put("pageSize" , pageSize);
+        return leaveDao.getDeleteUserByDate(map);
+    }
+
+    @Override
 	public LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date) {
 		return leaveDao.getLeaveRecordByMobileAndDate(mobile, date);
 	}

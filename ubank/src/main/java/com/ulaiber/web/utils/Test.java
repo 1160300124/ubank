@@ -291,7 +291,7 @@ public class Test {
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("date","2017-12-06 14:48:15");
-		map.put("pageNum",0);
+		map.put("pageNum",1);
 		map.put("pageSize",50);
 		map.put("companyNumber","20047");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
@@ -442,7 +442,7 @@ public class Test {
 	//上海银行二类户查余测试
 	@org.junit.Test
 	public void queryBalance(){
-		String str = "623185009300026322";
+		String str = "623185009300012892";
 		SHQueryBalance.queryBalance(str);
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}

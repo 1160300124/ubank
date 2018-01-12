@@ -48,7 +48,7 @@ public interface LeaveService {
 
     int getUserTotalByDate(String date, String companyNumber);  //根据日期查询用户
 
-    List<User> getUserByDate(String date, String companyNumber, int pageNum, int pageSize);  //根据日期分页查询用户
+    List<User> getUserByDate(String date, String companyNumber, int pageNum, int pageSize);  //根据日期分页查询新增用户
 
     int updateUser(String userId, String CID); //修改用户个推CID
 
@@ -68,4 +68,5 @@ public interface LeaveService {
 
     int getLeaveAuditorCount(long userId);  //获取个人审批记录数量
 
+    List<User> getDeleteUserByDate(String date, String companyNumber, int pageNum, int pageSize); //根据日期分页查询删除用户
 }

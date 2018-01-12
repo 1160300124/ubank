@@ -39,7 +39,7 @@ public interface LeaveDao {
 
     int getUserTotalByDate(Map<String, Object> map);  //根据日期查询用户
 
-    List<User> getUserByDate(Map<String, Object> map);  //根据日期分页查询用户
+    List<User> getUserByDate(Map<String, Object> map);  //根据日期分页查询新增用户
 
     int updateUser(Map<String, Object> map); //修改用户个推CID
 
@@ -66,4 +66,6 @@ public interface LeaveDao {
     int getLeaveRecordCount(long userId); //获取个人申请记录数量
 
     int getLeaveAuditorCount(long userId);  //获取个人审批记录数量
+
+    List<User> getDeleteUserByDate(Map<String, Object> map); //根据日期分页查询删除用户
 }

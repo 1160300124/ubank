@@ -104,12 +104,24 @@
 
     </select>
 
-    <!--根据日期分页查询用户-->
+    <!--根据日期分页查询新增用户-->
     <select id="getUserByDate" parameterType="Map" resultType="com.ulaiber.web.model.User">
         select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime,a.mobile  from tbl_users a
         left join tbl_roots b on a.user_id = b.userid
         left join tbl_departments c on b.dept_number = c.dept_number
-        where  a.user_name is not null and b.companyNumber = #{companyNumber}
+        where  a.user_name is not null and b.companyNumber = #{companyNumber}  and a.disabled = '0'
+        <if test='date != "" and date != null'>
+            and  a.createTime > #{date}
+        </if>
+        order by a.createTime limit #{pageNum},#{pageSize}
+    </select>
+
+    <!--根据日期分页查询删除用户-->
+    <select id="getDeleteUserByDate" parameterType="Map" resultType="com.ulaiber.web.model.User">
+        select a.user_id as id,a.user_name as userName,a.image,a.disabled,c.name as dept_name,a.createTime,a.mobile  from tbl_users a
+        left join tbl_roots b on a.user_id = b.userid
+        left join tbl_departments c on b.dept_number = c.dept_number
+        where  a.user_name is not null and b.companyNumber = #{companyNumber}  and a.disabled = '1'
         <if test='date != "" and date != null'>
             and  a.createTime > #{date}
         </if>
