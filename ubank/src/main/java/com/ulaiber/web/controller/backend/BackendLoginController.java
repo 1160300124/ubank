@@ -95,6 +95,12 @@ public class BackendLoginController extends BaseController {
 				retInfo.setMessage("user not exists.");
 				return retInfo;
 			}
+			//判断用户是否有权限登录后台系统
+			if(dbuser.getRole_id() == 0){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("您是普通员工没有后台管理权限");
+				return retInfo;
+			}
 			
 			if (!MD5Util.validatePwd(user.getLogin_password(), dbuser.getLogin_password())){
 				logger.error("用户名或密码错误。");

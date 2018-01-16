@@ -358,7 +358,7 @@ public class Test {
 	@org.junit.Test
 	public void getDetails(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("mobile","18503036209");
+		map.put("mobile","15611111111");
 		map.put("SubAcctNo","");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getUserInfo",map);
 		System.out.print(">>>>>>>>结果为："+result);
