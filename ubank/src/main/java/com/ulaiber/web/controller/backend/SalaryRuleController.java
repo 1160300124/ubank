@@ -60,6 +60,20 @@ public class SalaryRuleController extends BaseController {
 	public ResultInfo saveSalaryRule(@RequestBody SalaryRule salaryRule, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo(); 
 		try {
+			String[] companyIds = salaryRule.getCompanyId().split(",");
+			if (companyIds == null || companyIds.length == 0){
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("请选择公司。");
+				logger.info("请选择公司。");
+				return info;
+			}
+			boolean isExist = service.getCountByCompanyId(companyIds);
+			if (isExist){
+				info.setCode(IConstants.QT_CODE_ERROR);
+				info.setMessage("所选的公司中已存在工资规则。");
+				logger.info("所选的公司中已存在工资规则。");
+				return info;
+			}
 			User user = (User)getUserFromSession(request);
 			salaryRule.setOperateName(user.getUserName());
 			boolean flag = service.save(salaryRule);
@@ -72,8 +86,6 @@ public class SalaryRuleController extends BaseController {
 				info.setMessage("新增工资规则失败。");
 				logger.info("新增工资规则失败。");
 			}
-			
-			
 		} catch (Exception e) {
 			logger.error("saveSalaryRule exception", e);
 			info.setCode(IConstants.QT_CODE_ERROR);
