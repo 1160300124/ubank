@@ -39,7 +39,7 @@
 			no_clock_cut_unit,half_no_clock_cut_payment,half_no_clock_cut_unit)
 		values(#{salaryRuleName},#{operateName}, #{createTime},#{updateTime},#{companyId},#{companyName},#{overtimeFlag},#{socialInsurance},#{publicAccumulationFunds},
 			#{taxThreshold},#{laterCutPayment},#{leaveEarlyCutPayment},#{leaveCutPayment},#{allowForgetClockCount},#{forgetClockCutPayment},#{forgetClockCutUnit},
-			#{noClockCutPayment},#{noClockCutUnit},#{half_noClockCutPayment},{half_noClockCutUnit}) 
+			#{noClockCutPayment},#{noClockCutUnit},#{half_noClockCutPayment},#{half_noClockCutUnit}) 
 	</insert>
 	
 	<select id="getSalaryRules" parameterType="Map" resultMap="SalaryRuleMap">
@@ -73,5 +73,11 @@
 		select * from tbl_salaries_rules where find_in_set(#{companyId}, companyId) > 0
 	</select>
 	
+	<select id="getCountByCompanyId" parameterType="String" resultType="Integer">
+		select count(1) from tbl_salaries_rules where 
+		<foreach collection="array" index="index" item="item" open="" separator="or" close="">   
+	        find_in_set(#{item}, companyId) > 0   
+	    </foreach>  
+	</select>
 	
 </mapper>

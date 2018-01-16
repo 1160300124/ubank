@@ -424,7 +424,6 @@ function operateFormatter(value, row, index) {
 window.operateEvents = {
 		'click .edit': function (e, value, row, index) {
 			//标识。 0 表示新增操作，1 表示修改操作
-			console.log(row)
 	        flag = 1;
 	        var editmodal = $("#salaryRule_config_modal");
 	        editmodal.find("#salaryRuleName").val(row.salaryRuleName);
@@ -463,6 +462,8 @@ window.operateEvents = {
 	        $("#forgetclock_unit").val(row.forgetClockCutUnit);
 	        $("#noclock_cut").val(row.noClockCutPayment);
 	        $("#noclock_unit").val(row.noClockCutUnit);
+	        $("#half_noclock_cut").val(row.half_noClockCutPayment);
+	        $("#half_noclock_unit").val(row.half_noClockCutUnit);
 	        
 	        var leaveCuts = row.leaveCutPayment.split(",");
 	    	$("#personalLeave").val(leaveCuts[0]);
@@ -500,6 +501,8 @@ var SalarySettingFun = {
         $("#forgetclock_unit").val("0");
         $("#noclock_cut").val("");
         $("#noclock_unit").val("0");
+        $("#half_noclock_cut").val("");
+        $("#half_noclock_unit").val("0");
     	$("#personalLeave").val("100");
     	$("#sickLeave").val("50");
     	$("#annualLeave").val("0");

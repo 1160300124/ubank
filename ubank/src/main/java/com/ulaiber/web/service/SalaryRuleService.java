@@ -44,4 +44,11 @@ public interface SalaryRuleService {
 	 */
 	boolean updateSalaryRuleByRid(SalaryRule salaryRule);
 	
+	/**
+	 * 查询公司是否已有工资规则
+	 * @param companyIds
+	 * @return
+	 */
+	boolean getCountByCompanyId(String[] companyIds);
+	
 }
