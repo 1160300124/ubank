@@ -51,5 +51,12 @@ public interface SalaryRuleDao {
 	 * @return
 	 */
 	SalaryRule getSalaryRuleByCompanyId(String companyId);
+	
+	/**
+	 * 查询公司是否已有工资规则
+	 * @param companyIds
+	 * @return
+	 */
+	int getCountByCompanyId(String[] companyIds);
 
 }

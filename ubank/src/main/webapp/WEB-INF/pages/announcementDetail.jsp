@@ -93,7 +93,7 @@
                 附件：
                 <table id="table_preview_attachment">
                     <c:forEach items="${attachments}" var="attachment">
-                        <tr data-down="${attachment.attachment_path}" data-preview="http://dcsapi.com/?k=262732077&url=${attachment.attachment_path}">
+                        <tr data-down="${attachment.attachment_path}" data-preview="http://dcsapi.com/?k=280337625&url=${attachment.attachment_path}">
                             <td>
                                 <div class="file-icon">
                                     <img src="<%=request.getContextPath()%>/images/pdf.png" alt="">
