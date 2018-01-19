@@ -89,9 +89,16 @@
 	<select id="getDetailsBySid" parameterType="String" resultMap="SalaryDetailMap">
 		select * from tbl_salaries_detail where sid=#{sid}
 	</select>
-	
-	<select id="getSalaryDetailByUserIdAndMonth" parameterType="Map" resultMap="SalaryDetailMap">
-		select d.* from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId} and s.salary_month=#{salaryMonth}
+
+	<select id="getSalaryDetailByUserIdAndMonth" resultMap="SalaryDetailMap">
+		select d.userId, d.userName, d.cardNo, d.pre_tax_salaries, d.bonuses, d.subsidies, d.attendance_cut_payment, 
+        d.later_cut_payment, d.leave_early_cut_payment, d.forget_clock_cut_payment, d.no_clock_cut_payment, d.askForLeave_cut_payment,
+        d.overtime_payment, d.socialInsurance, d.publicAccumulationFunds, d.taxThreshold, d.personalIncomeTax, d.else_cut_payment, d.salaries, s.salary_month salaryMonth
+		from tbl_salaries s,tbl_salaries_detail d where s.sid = d.sid and d.userId=#{userId} 
+		<if test="salaryMonth != null and salaryMonth != ''">
+			and s.salary_month=#{salaryMonth}
+		</if>
+		order by s.salary_month desc limit 1
 	</select>
 	
 	<select id="getTotalBySid" resultType="Integer">

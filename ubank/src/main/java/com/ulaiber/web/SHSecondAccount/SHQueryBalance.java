@@ -137,7 +137,7 @@ public class SHQueryBalance {
                 resultMap.put("status",sa.getStatusCode());
                 resultMap.put("secondAccount",sa);
                 resultInfo.setData(resultMap);
-                logger.error(">>>>>>>>>>查询上海银行二类户余额失败,状态为：" + sa.getStatusCode() + ",信息为：" + sa.getServerStatusCode());
+                logger.error(">>>>>>>>>>查询上海银行二类户余额失败,状态为：" + sa.getStatusCode() +  ",信息为：" + sa.getServerStatusCode());
                 return resultInfo;
             }
             rsMap.put("SubAcctNo",sa.getSubAcctNo());

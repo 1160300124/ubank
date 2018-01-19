@@ -367,6 +367,7 @@ public class BanksRootServiceImpl extends BaseService implements BanksRootServic
         String pwd= MD5Util.getEncryptedPwd(password);
         user.setLogin_password(pwd);
         user.setCreateTime(date);
+        user.setUpdateTime(date);
         user.setGroupNumber(String.valueOf(group.getGroupNumber()));
         user.setCompanyNumber(String.valueOf(company.getCompanyNumber()));
         user.setRole_id(roles.getRole_id());

@@ -44,7 +44,7 @@ public class CutPayment {
 	private String cutDate;
 	
 	/**
-	 * 扣款类型 0：迟到  1：早退  2：未打卡  3：旷工  4：请假
+	 * 扣款类型 0：迟到  1：早退  2：未打卡  3：旷1天工  4：旷半天工 5：请假
 	 */
 	private String cutType;
 	

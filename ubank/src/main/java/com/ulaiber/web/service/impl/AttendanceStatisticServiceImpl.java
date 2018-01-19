@@ -161,8 +161,8 @@ public class AttendanceStatisticServiceImpl extends BaseService implements Atten
 			List<String> leaveDays = new ArrayList<String>();
 			for (String day : days){
 				//查询当天是否有审批通过的请假记录,如果有请假记录则不为旷工
-				LeaveRecord leaveRecord = leaveDao.getLeaveRecordByUserIdAndDate((Long)user.get("user_id"), day);
-				if (leaveRecord == null){
+				List<LeaveRecord> leaveRecords = leaveDao.getLeaveRecordByUserIdAndDate((Long)user.get("user_id"), day);
+				if (leaveRecords == null || leaveRecords.size() == 0){
 					noClockWorkdays.add(day);
 					continue;
 				}

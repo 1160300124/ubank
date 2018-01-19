@@ -87,6 +87,9 @@ public class User implements Serializable {
 	//添加时间
 	private String createTime;
 
+	//修改时间
+	private String updateTime;
+
 	//过期时间
 	private String expiredTime;
 
@@ -423,5 +426,12 @@ public class User implements Serializable {
 	public void setSalaries(double salaries) {
 		this.salaries = salaries;
 	}
-	
+
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
 }

@@ -91,12 +91,12 @@ $(function(){
 			return false;
 		}
 		var title = $("#title").val();
-		var body = $('.summernote').summernote('code');
-		if (title == "" || title == null || title == undefined){
-			Ewin.alert("请填写公告标题");
+		if (title == "" || title == null || title == undefined || title.length > 40){
+			Ewin.alert("公告标题不能为空且长度不大于40。");
 			return false;
 		}
-		if (body == "" || body == null || body == undefined){
+		var body = $('.summernote').summernote('code');
+		if (body == "<p><br></p>"){
 			Ewin.alert("请填写公告正文");
 			return false;
 		}
@@ -159,8 +159,8 @@ $(function(){
 	    
 	    var table = document.getElementById("table_attachment");
 	    var attachments = new Array();
-	    var attachment = {};
 		for (var i = 0; i < table.rows.length; i++){
+			var attachment = {};
 			attachment.attachment_name = table.rows[i].cells[0].innerHTML;
 			attachment.attachment_type = table.rows[i].cells[1].innerHTML;
 			attachment.attachment_size = table.rows[i].cells[2].innerHTML;
@@ -440,6 +440,15 @@ function addFileChange(){
 		Ewin.alert("请上传图标！");
 		return false;
 	}
+	var objFile = document.getElementById("lefile");
+	var fileName = objFile.files[0].name;
+	var table = document.getElementById("table_attachment");
+	for (var i = 0; i < table.rows.length; i++){
+		if (fileName == table.rows[i].cells[0].innerHTML){
+			Ewin.alert("您已经上传了'" + fileName + "'，请不要重复上传。");
+			return false;
+		}
+	}
 	$("#btn_attachment_upload").attr("disabled", true);
 	
 	$.ajaxFileUpload({
@@ -475,6 +484,7 @@ function addFileChange(){
 		}
 	})
 	
+	$('#lefile').val("");
 	$("#btn_attachment_upload").attr("disabled", false);
 	return false;
 }
@@ -495,14 +505,49 @@ function deleteAttachment(trid, tableId){
 
 function operateFormatter(value, row, index) {
 	return [
-	        '<a class="edit"  href="javascript:void(0)" title="编辑">编辑</a>&nbsp;&nbsp;&nbsp;',
+	        '<a class="view"  href="javascript:void(0)" title="查看">查看</a>&nbsp;&nbsp;&nbsp;',
 	        '<a class="remove"  href="javascript:void(0)" title="撤回">撤回</a>'
 	        ].join('');
 }
 
 window.operateEvents = {
-		'click .edit': function (e, value, row, index) {
+		'click .view': function (e, value, row, index) {
 			
+			$("#previewModal").find(".title").html(row.announceTitle);
+			$("#previewModal").find(".time").html(row.companyName + "&nbsp;&nbsp;&nbsp;" + row.createTime);
+			$("#previewModal").find(".content").html(row.announceBody);
+			$("#table_preview_attachment").empty();
+			$.ajax({
+				url : "getAttachments",
+				type: "get",
+				data : {
+					aid : row.aid
+				},
+				async : true, 
+				dataType : "json",
+				success : function(data, status) {
+					var code = data['code'];
+					if (code == 1000) {
+						var rows = data['data'];
+						var previewtable = document.getElementById("table_preview_attachment");
+						for (var i = 0; i < rows.length; i++){
+							var tr = previewtable.insertRow(previewtable.rows.length);
+							tr.innerHTML = "<td><div class='file-icon'> <img src='../images/pdf.png'></div></td>" + 
+							"<td><div class='file-info'>" + 
+							'<div class="file-name">' + rows[i].attachment_name + '</div>' + 
+                            '<div class="file-size">'  + rows[i].attachment_size + '</div>' + 
+							"</div></td>";
+						}
+					}else{
+						Ewin.alert(data['message']);
+					}
+				},
+				error : function(data, status, e) {
+					Ewin.alert("系统内部错误！");
+				}
+			});
+			
+			$("#previewModal").modal("show");
 		},
 		'click .remove': function (e, value, row, index) {
 			

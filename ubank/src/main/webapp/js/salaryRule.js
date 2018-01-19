@@ -86,6 +86,8 @@ $(function(){
     	params.forgetClockCutUnit = $("#forgetclock_unit").val();
     	params.noClockCutPayment = $("#noclock_cut").val();
     	params.noClockCutUnit = $("#noclock_unit").val();
+    	params.half_noClockCutPayment = $("#half_noclock_cut").val();
+    	params.half_noClockCutUnit = $("#noclock_unit").val();
     	var lateRules = "";   //迟到规则
     	var earlyLeaveRules = ""; //早退规则
     	$("#late_table tbody tr").each(function(index,item){
@@ -315,7 +317,13 @@ function validateAttendance(obj, flag){
 	}
 	if ($("#noclock_cut").val() != "" ){
 		if (!/^([1-9]\d{0,3}|0)(\.\d{0,1})?$/.test($("#noclock_cut").val())){
-			Ewin.alert("旷工扣除格式不正确，范围0~9999.9");
+			Ewin.alert("旷工/天扣除格式不正确，范围0~9999.9");
+			return false;
+		}
+	}
+	if ($("#half_noclock_cut").val() != "" ){
+		if (!/^([1-9]\d{0,3}|0)(\.\d{0,1})?$/.test($("#noclock_cut").val())){
+			Ewin.alert("旷工/半天扣除格式不正确，范围0~9999.9");
 			return false;
 		}
 	}
@@ -416,7 +424,6 @@ function operateFormatter(value, row, index) {
 window.operateEvents = {
 		'click .edit': function (e, value, row, index) {
 			//标识。 0 表示新增操作，1 表示修改操作
-			console.log(row)
 	        flag = 1;
 	        var editmodal = $("#salaryRule_config_modal");
 	        editmodal.find("#salaryRuleName").val(row.salaryRuleName);
@@ -455,6 +462,8 @@ window.operateEvents = {
 	        $("#forgetclock_unit").val(row.forgetClockCutUnit);
 	        $("#noclock_cut").val(row.noClockCutPayment);
 	        $("#noclock_unit").val(row.noClockCutUnit);
+	        $("#half_noclock_cut").val(row.half_noClockCutPayment);
+	        $("#half_noclock_unit").val(row.half_noClockCutUnit);
 	        
 	        var leaveCuts = row.leaveCutPayment.split(",");
 	    	$("#personalLeave").val(leaveCuts[0]);
@@ -492,6 +501,8 @@ var SalarySettingFun = {
         $("#forgetclock_unit").val("0");
         $("#noclock_cut").val("");
         $("#noclock_unit").val("0");
+        $("#half_noclock_cut").val("");
+        $("#half_noclock_unit").val("0");
     	$("#personalLeave").val("100");
     	$("#sickLeave").val("50");
     	$("#annualLeave").val("0");

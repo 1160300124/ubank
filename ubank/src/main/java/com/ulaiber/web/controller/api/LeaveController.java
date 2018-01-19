@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ulaiber.web.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +36,14 @@ import com.ulaiber.web.model.SynchronizationData;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.WorkAuditRecordVO;
 import com.ulaiber.web.model.attendance.AttendancePatchClock;
+import com.ulaiber.web.model.attendance.AttendanceRule;
+import com.ulaiber.web.service.AnnouncementService;
+import com.ulaiber.web.service.AttendanceRuleService;
+import com.ulaiber.web.service.AttendanceService;
+import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.service.ReimbursementService;
+import com.ulaiber.web.service.SalaryAuditService;
+import com.ulaiber.web.utils.DateTimeUtil;
 import com.ulaiber.web.utils.StringUtil;
 
 /**
@@ -65,7 +73,8 @@ public class LeaveController extends BaseController {
     @Autowired
     private AnnouncementService service;
 
-
+    @Autowired
+    private AttendanceRuleService ruleService;
 
     /**
      * 申请请假
@@ -78,34 +87,74 @@ public class LeaveController extends BaseController {
         logger.info(">>>>>>>>>>>开始保存申请请假记录");
         ResultInfo resultInfo = new ResultInfo();
         try {
-            String date = sdf.format(new Date());
+        	List<LeaveRecord> dbRecords = leaveService.getLeaveRecordByUserIdAndDate2(Long.parseLong(leaveRecord.getUserid()), leaveRecord.getStartDate(), leaveRecord.getEndDate());
+            if (dbRecords != null && dbRecords.size() > 0){
+            	if (dbRecords.size() == 1){
+            		LeaveRecord dbRecord = dbRecords.get(0);
+            		String startDay = dbRecord.getStartDate();
+            		String endDay = dbRecord.getEndDate();
+            		String startType = dbRecord.getStartType();
+            		String endType = dbRecord.getEndType();
+            		if (leaveRecord.getStartDate().compareTo(startDay) < 0 && leaveRecord.getEndDate().compareTo(startDay) == 0){
+            			if (StringUtils.equals(leaveRecord.getEndType(), "1") || StringUtils.equals(startType, "0")){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
+            		} else if (StringUtils.equals(leaveRecord.getStartDate(), startDay) && StringUtils.equals(leaveRecord.getEndDate(), startDay)
+            				|| StringUtils.equals(leaveRecord.getStartDate(), startDay) && StringUtils.equals(leaveRecord.getEndDate(), endDay)
+            				|| StringUtils.equals(leaveRecord.getStartDate(), endDay) && StringUtils.equals(leaveRecord.getEndDate(), endDay)){
+            			if (StringUtils.equals(leaveRecord.getStartType(), startType) || StringUtils.equals(leaveRecord.getEndType(), endType)){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
+            		} else if(leaveRecord.getStartDate().compareTo(startDay) < 0 && leaveRecord.getEndDate().compareTo(startDay) > 0
+            				|| leaveRecord.getStartDate().compareTo(startDay) >= 0 && leaveRecord.getEndDate().compareTo(endDay) <= 0
+            				|| leaveRecord.getStartDate().compareTo(endDay) < 0 && leaveRecord.getEndDate().compareTo(endDay) > 0){
+            			resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            			resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            			logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            			return resultInfo;
+            		} else if (leaveRecord.getStartDate().compareTo(endDay) == 0 && leaveRecord.getEndDate().compareTo(endDay) > 0){
+            			if (StringUtils.equals(endType, "1") || StringUtils.equals(leaveRecord.getStartType(), "0")){
+            				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+            				resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+            				logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+            				return resultInfo;
+            			}
+            		}
+            	} else {
+            		resultInfo.setCode(IConstants.QT_CODE_ERROR);
+        			resultInfo.setMessage("该时段已存在请假申请，请重新填写请假时段。");
+        			logger.error(">>>>>>>>>>>该时段已存在请假申请，请重新填写请假时段。");
+        			return resultInfo;
+            	}
+            }
+        	String date = sdf.format(new Date());
             leaveRecord.setCreateDate(date);
             //保存申请记录
             int result = leaveService.saveLeaveRecord(leaveRecord);
-            if(StringUtil.isEmpty(leaveRecord.getUserid())){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage("申请失败");
-                logger.info(">>>>>>>>>>>申请请假失败");
-                return resultInfo;
-            }
             if (result <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage("申请失败");
-                logger.info(">>>>>>>>>>>申请失败");
+                logger.error(">>>>>>>>>>>申请失败");
                 return resultInfo;
             }
-            int result2 = leaveService.saveAditor(leaveRecord);
-            if(result2 <=0 ){
-                resultInfo.setCode(IConstants.QT_CODE_ERROR);
-                resultInfo.setMessage("申请失败");
-                logger.info(">>>>>>>>>>>保存审批人失败");
-                return resultInfo;
-            }
+//            int result2 = leaveService.saveAditor(leaveRecord);
+//            if(result2 <=0 ){
+//                resultInfo.setCode(IConstants.QT_CODE_ERROR);
+//                resultInfo.setMessage("申请失败");
+//                logger.info(">>>>>>>>>>>保存审批人失败");
+//                return resultInfo;
+//            }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("申请成功");
             logger.info(">>>>>>>>>>>申请请假成功");
         }catch (Exception e){
-            logger.error(">>>>>>>>申请异常信息：" + e);
+            logger.error(">>>>>>>>申请异常信息：", e);
         }
         return resultInfo;
     }
@@ -172,6 +221,9 @@ public class LeaveController extends BaseController {
                 if(ls.getType().equals("0")){  //请假记录
                     Map<String,Object> map = new HashMap<>();
                     map.put("leaveType" , ls.getLeaveType());
+                    map.put("startType",ls.getStartType());
+                    map.put("endType",ls.getEndType());
+                    map.put("restDay",ls.getRestDay());
                     resultMap.put("leave" , map);
                 }else if(ls.getType().equals("1")){  //加班记录
                     OvertimeVO overtimeVO = new OvertimeVO();
@@ -530,21 +582,21 @@ public class LeaveController extends BaseController {
                 return resultInfo;
             }
             int count = 0;
-            if(pageNum == 1){
-                pageNum = 0;
-            }
-            if(pageSize == 0){
-                pageSize = 20;
-            }
             //0 待审批，1 已审批
             if(mark.equals("0")){
+                if(pageNum == 1){
+                    pageNum = 0;
+                }
+                if(pageSize == 0){
+                    pageSize = 20;
+                }
                 List<Map<String,Object>> list = new ArrayList<>();
                 Map<String,Object> resultMap = new HashMap<>();
-                while (count < 10){
+                while (count < pageSize){
                     //根据申请记录编号获取待审批人
                     List<LeaveAudit> auList = leaveService.getAuditorByUserId(userId,pageNum,pageSize);
                     if(auList.size() > 0 ){
-                        Map<String,Object> auditMap = Audit(userId,auList,pageNum,count);
+                        Map<String,Object> auditMap = Audit(userId,auList,pageNum,pageSize,count);
                         List<Map<String,Object>> auditList = (List<Map<String, Object>>) auditMap.get("item");
                         pageNum = (int) auditMap.get("pageNum");
                         count  = (auditMap.get("count") != "" ? (int) auditMap.get("count") : 0);
@@ -568,6 +620,7 @@ public class LeaveController extends BaseController {
                 logger.info("查询待审批数据成功");
                 return resultInfo;
             }else if(mark.equals("1")){
+                pageNum = (pageNum - 1)*pageSize;
                 //根据申请记录编号获取已审批人
                 List<LeaveAudit> auditorList = leaveService.queryAuditorByUserId(userId,pageNum,pageSize);
                 List<Map<String,Object>> list = new ArrayList<>();
@@ -577,16 +630,16 @@ public class LeaveController extends BaseController {
                         ids[i] = Integer.parseInt(auditorList.get(i).getRecordNo());
                     }
                     List<ApplyForVO> applyList = leaveService.queryAlreadRecord(ids);
+                    //获取已审批记录
+                    if(applyList.size() <= 0){
+                        resultInfo.setCode(IConstants.QT_CODE_OK);
+                        resultInfo.setMessage("当前用户没有已审批记录");
+                        resultInfo.setData(list);
+                        logger.info("查询已审批数据成功");
+                        return resultInfo;
+                    }
                     for (int i = 0; i < applyList.size(); i++){
                         ApplyForVO applyForVO = applyList.get(i);
-                        //获取已审批记录
-                        if(StringUtil.isEmpty(applyForVO)){
-                            resultInfo.setCode(IConstants.QT_CODE_OK);
-                            resultInfo.setMessage("当前用户没有已审批记录");
-                            resultInfo.setData(list);
-                            logger.info("查询已审批数据成功");
-                            return resultInfo;
-                        }
                         Map<String ,Object> map = new HashMap<>();
                         map.put("id" , applyForVO.getId());
                         map.put("userid" , applyForVO.getUserid());
@@ -607,6 +660,9 @@ public class LeaveController extends BaseController {
                         if(applyForVO.getType().equals("0")){  //请假
                             Map<String,Object> leaveMap = new HashMap<>();
                             leaveMap.put("leaveType",applyForVO.getLeaveType());
+                            leaveMap.put("startType",applyForVO.getStartType());
+                            leaveMap.put("endType",applyForVO.getEndType());
+                            leaveMap.put("restDay",applyForVO.getRestDay());
                             map.put("leave",leaveMap);
                         }else if(applyForVO.getType().equals("1")){  //加班
                             OvertimeVO overtimeVO = new OvertimeVO();
@@ -675,12 +731,12 @@ public class LeaveController extends BaseController {
      * @param count 有效数据个数
      * @return  Map<String,Object>
      */
-    public Map<String,Object> Audit (String userId,List<LeaveAudit> auList,int pageNum,int count){
+    public Map<String,Object> Audit (String userId,List<LeaveAudit> auList,int pageNum,int pageSize,int count){
         List<Map<String,Object>> list = new ArrayList<>();
         Map<String,Object> resultMap = new HashMap<>();
         try {
             for (int i = 0 ; i < auList.size() ; i++){
-                if (count >= 10){
+                if (count >= pageSize){
                     break;
                 }
                 pageNum += 1;
@@ -690,7 +746,9 @@ public class LeaveController extends BaseController {
                 ApplyForVO applyForVO = leaveService.queryPeningRecord(id,userId);
                 if(StringUtil.isEmpty(applyForVO)){
                     resultMap.put("item",list);
-                    return resultMap;
+                    resultMap.put("count",count);
+                    continue;
+                    //return resultMap;
                 }
                 Map<String ,Object> map = new HashMap<>();
                 map.put("id" , applyForVO.getId());
@@ -713,6 +771,9 @@ public class LeaveController extends BaseController {
                 if(applyForVO.getType().equals("0")){  //请假
                     Map<String,Object> leaveMap = new HashMap<>();
                     leaveMap.put("leaveType",applyForVO.getLeaveType());
+                    leaveMap.put("startType",applyForVO.getStartType());
+                    leaveMap.put("endType",applyForVO.getEndType());
+                    leaveMap.put("restDay",applyForVO.getRestDay());
                     map.put("leave",leaveMap);
                 }else if(applyForVO.getType().equals("1")){  //加班
                     OvertimeVO overtimeVO = new OvertimeVO();
@@ -953,115 +1014,72 @@ public class LeaveController extends BaseController {
         try {
             //根据日期查询用户总数
             int total = leaveService.getUserTotalByDate(date,companyNumber);
-            if(total <= 0){
+            if(total <= 0 ){
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("暂时没有可更新数据");
-                logger.info(">>>>>>>>>>>>>暂时没有可更新数据");
+                logger.info("暂时没有可更新数据");
                 return resultInfo;
             }
-            if(pageSize <= 0){
-                pageSize = 10;
-            }
-            if (pageNum < 0){
-                pageNum = 0;
-            }
+            pageNum = (pageNum - 1) * pageSize;
             // true 表示数据已同步完成； false 表示还有数据需要同步；
-            boolean flag = false;
-            // 最新的日期
-            String lastDate = "";
-            //根据日期分页查询用户
+          // boolean flag = false;
+            //根据日期分页查询新增的用户`
             List<User> userList = leaveService.getUserByDate(date,companyNumber,pageNum,pageSize);
+            List<User> delList = leaveService.getDeleteUserByDate(date,companyNumber,pageNum,pageSize);
+            Map<String,Object> resultMap = new HashMap<>();
+            int pageTotal = userList.size();
+            if(userList.size() == 0 && delList.size() == 0){
+               // flag = true;
+                resultInfo.setCode(IConstants.QT_CODE_OK);
+                resultInfo.setMessage("同步数据成功");
+                logger.info("同步数据成功");
+                return resultInfo;
+            }
             //存放增加或修改的数据
             List<SynchronizationData> list = new ArrayList<>();
             //存放删除的数据
             List<SynchronizationData> list2 = new ArrayList<>();
-            Map<String,Object> resultMap = new HashMap<>();
-            int pageTotal = userList.size();
             //如果总数大于分页查询的总数，则表示还有数据
-            if((total - pageTotal) > 0){
-                if(userList.size() > 0){
-                    // 获取最后那条记录的创建日期
-                    User us = userList.get(userList.size()-1);
-                    lastDate = us.getCreateTime();
-                    for (int i = 0 ; i < userList.size() ; i++){
-                        User user = userList.get(i);
-                        if(user.getDisabled().equals("0")){
-                            SynchronizationData async = new SynchronizationData();
-                            async.setId(userList.get(i).getId());
-                            async.setUsername(userList.get(i).getUserName());
-                            async.setDeptName(userList.get(i).getDept_name());
-                            async.setMobile(userList.get(i).getMobile());
-                            async.setImage(userList.get(i).getImage());
-                            async.setDisabled(userList.get(i).getDisabled());
-                            list.add(async);
-                        }else{
-                            SynchronizationData async = new SynchronizationData();
-                            async.setId(userList.get(i).getId());
-                            async.setUsername(userList.get(i).getUserName());
-                            async.setDeptName(userList.get(i).getDept_name());
-                            async.setMobile(userList.get(i).getMobile());
-                            async.setImage(userList.get(i).getImage());
-                            async.setDisabled(userList.get(i).getDisabled());
-                            list2.add(async);
-
-                        }
-                    }
-                    resultMap.put("NewAndUpdate" , list);
-                    resultMap.put("Delete" , list2);
-                    resultMap.put("LastDate",lastDate);
-                    resultMap.put("flag",flag);
-                    resultInfo.setCode(IConstants.QT_CODE_OK);
-                    resultInfo.setMessage("同步数据成功");
-                    resultInfo.setData(resultMap);
-                    logger.info(">>>>>>>>>>>>>同步数据成功");
-                    return resultInfo;
-                }else{
-                    flag = true;
-                    resultInfo.setCode(IConstants.QT_CODE_OK);
-                    resultInfo.setMessage("同步数据成功");
-                    logger.info(">>>>>>>>>>>>>同步数据成功");
-                    return resultInfo;
-                }
-
-            }else{
-                flag = true;
+//            if((total - pageTotal) <= 0){
+//                flag = true;
+//            }
+            String lastDate = "";
+            if(userList.size() > 0){
                 // 获取最后那条记录的创建日期
-                User us = userList.get(userList.size()-1);
-                lastDate = us.getCreateTime();
-                for (int i = 0 ; i < userList.size() ; i++){
-                    User user = userList.get(i);
-                    if(user.getDisabled().equals("0")){
-                        SynchronizationData async = new SynchronizationData();
-                        async.setId(userList.get(i).getId());
-                        async.setUsername(userList.get(i).getUserName());
-                        async.setDeptName(userList.get(i).getDept_name());
-                        async.setMobile(userList.get(i).getMobile());
-                        async.setImage(userList.get(i).getImage());
-                        async.setDisabled(userList.get(i).getDisabled());
-                        list.add(async);
-                    }else{
-                        SynchronizationData async = new SynchronizationData();
-                        async.setId(userList.get(i).getId());
-                        async.setUsername(userList.get(i).getUserName());
-                        async.setDeptName(userList.get(i).getDept_name());
-                        async.setMobile(userList.get(i).getMobile());
-                        async.setImage(userList.get(i).getImage());
-                        async.setDisabled(userList.get(i).getDisabled());
-                        list2.add(async);
-                    }
-                }
-                resultMap.put("NewAndUpdate" , list);
-                resultMap.put("Delete" , list2);
-                resultMap.put("LastDate",lastDate);
-                resultMap.put("flag",flag);
-                resultInfo.setCode(IConstants.QT_CODE_OK);
-                resultInfo.setMessage("同步数据成功");
-                resultInfo.setData(resultMap);
-                logger.info(">>>>>>>>>>>>>同步数据成功");
-
+                lastDate = userList.get(userList.size()-1).getCreateTime();
             }
+            for (int i = 0 ; i < userList.size() ; i++){
+                User user = userList.get(i);
+                SynchronizationData async = new SynchronizationData();
+                async.setId(userList.get(i).getId());
+                async.setUsername(userList.get(i).getUserName());
+                async.setDeptName(userList.get(i).getDept_name());
+                async.setMobile(userList.get(i).getMobile());
+                async.setImage(userList.get(i).getImage());
+                async.setDisabled(userList.get(i).getDisabled());
+                list.add(async);
+            }
+            for (int i = 0 ; i < delList.size() ; i++){
+                User user = delList.get(i);
+                SynchronizationData async = new SynchronizationData();
+                async.setId(delList.get(i).getId());
+                async.setUsername(delList.get(i).getUserName());
+                async.setDeptName(delList.get(i).getDept_name());
+                async.setMobile(delList.get(i).getMobile());
+                async.setImage(delList.get(i).getImage());
+                async.setDisabled(delList.get(i).getDisabled());
+                list2.add(async);
+            }
+            resultMap.put("NewAndUpdate" , list);
+            resultMap.put("Delete" , list2);
+            resultMap.put("LastDate",lastDate);
+            resultMap.put("flag",true);
+            resultInfo.setCode(IConstants.QT_CODE_OK);
+            resultInfo.setMessage("同步数据成功");
+            resultInfo.setData(resultMap);
+            logger.info("同步数据成功");
         }catch(Exception e){
-            logger.error(">>>>>>>>>>>通讯录数据同步失败：",e);
+            logger.error("通讯录数据同步失败：",e);
         }
         return resultInfo;
     }
@@ -1075,7 +1093,7 @@ public class LeaveController extends BaseController {
     @RequestMapping(value = "getClinetID", method = RequestMethod.POST)
     @ResponseBody
     public ResultInfo getClinetID(String userId,String CID){
-        logger.info(">>>>>>>>>>>开始插入个推CID");
+        logger.info("开始插入个推CID");
         ResultInfo resultInfo = new ResultInfo();
         try {
             //修改用户个推CID
@@ -1083,14 +1101,14 @@ public class LeaveController extends BaseController {
             if(result <= 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage("更新用户个推CID失败");
-                logger.info(">>>>>>>>>>>>>>修改用户CID失败");
+                logger.info("修改用户CID失败");
                 return resultInfo;
             }
             resultInfo.setCode(IConstants.QT_CODE_OK);
             resultInfo.setMessage("更新用户个推CID成功");
-            logger.info(">>>>>>>>>>>>>>修改用户CID成功");
+            logger.info("修改用户CID成功");
         }catch(Exception e){
-            logger.error(">>>>>>>>>>获取用户个推CID失败：",e);
+            logger.error("获取用户个推CID失败：",e);
 
         }
         return resultInfo;
@@ -1206,6 +1224,38 @@ public class LeaveController extends BaseController {
         logger.info(">>>>>>>>>>>开始新增补卡记录");
         ResultInfo resultInfo = new ResultInfo();
         try {
+        	long userId = Long.valueOf(remedy.getUserId());
+        	//考勤规则
+			AttendanceRule rule = ruleService.getRuleByUserId(userId);
+			if (null == rule){
+				logger.error("用户 {" + userId + "}没有设置考勤规则，请先设置。");
+				resultInfo.setCode(IConstants.QT_N0_ATTENDANCE_RULE);
+				resultInfo.setMessage("用户  " + userId + " 没有设置考勤规则，请先设置。");
+				return resultInfo;
+			}
+			if (rule.getType() != 0){
+				logger.info("用户 {" + userId + "}不参与考勤规则。");
+				resultInfo.setCode(IConstants.QT_N0T_IN_ATTENDANCE_RULE);
+				resultInfo.setMessage("用户 {" + userId + "}不参与考勤规则。");
+				return resultInfo;
+			}
+			
+			String today = remedy.getRemedyDate();
+			String dateBegin = today + " " + rule.getClockOnStartTime();
+			String dateEnd = today + " " + rule.getClockOffEndTime();
+			//是否跨天 0：不跨  1：跨天
+			int flag1 = 0;
+			if (rule.getClockOffEndTime().compareTo(rule.getClockOnStartTime()) < 0){
+				dateEnd = DateTimeUtil.getfutureTime(dateEnd, 1, 0, 0);
+				flag1 = 1;
+			}
+			if (remedy.getMorning() != null && remedy.getMorning().compareTo(dateBegin) < 0 || remedy.getAfternoon() != null && remedy.getAfternoon().compareTo(dateEnd) > 0 ){
+				String msg = flag1 == 0 ? "" : "次日";
+				logger.info("用户 {" + userId + "}补卡申请时间不符合规则，补卡时间应该在" + rule.getClockOnStartTime() + "~" + msg + rule.getClockOffEndTime() + "之间");
+				resultInfo.setCode(IConstants.QT_CODE_ERROR);
+				resultInfo.setMessage("补卡时间应该在" + rule.getClockOnStartTime() + "~" + msg + rule.getClockOffEndTime() + "之间");
+				return resultInfo;
+			}
             //新增补卡记录
             int result = leaveService.insertRemedy(remedy);
             if(result <= 0){
@@ -1216,7 +1266,6 @@ public class LeaveController extends BaseController {
             }
             //补卡
             AttendancePatchClock apc =  new AttendancePatchClock();
-            long userId = Long.valueOf(remedy.getUserId());
             apc.setUserId(userId);
             apc.setPatchClockDate(remedy.getRemedyDate());
             apc.setPatchClockType(Integer.parseInt(remedy.getType()));

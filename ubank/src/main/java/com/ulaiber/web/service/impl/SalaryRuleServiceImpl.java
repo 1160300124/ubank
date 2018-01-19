@@ -67,4 +67,9 @@ public class SalaryRuleServiceImpl extends BaseService implements SalaryRuleServ
 		return dao.updateSalaryRuleByRid(salaryRule) > 0;
 	}
 
+	@Override
+	public boolean getCountByCompanyId(String[] companyIds) {
+		return dao.getCountByCompanyId(companyIds) > 0;
+	}
+
 }

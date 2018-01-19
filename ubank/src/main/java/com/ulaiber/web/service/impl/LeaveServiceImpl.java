@@ -1,21 +1,32 @@
 package com.ulaiber.web.service.impl;
 
-import com.ulaiber.web.conmon.IConstants;
-import com.ulaiber.web.dao.LeaveAuditDao;
-import com.ulaiber.web.dao.LeaveDao;
-import com.ulaiber.web.model.*;
-import com.ulaiber.web.service.BaseService;
-import com.ulaiber.web.service.LeaveService;
-import com.ulaiber.web.utils.PushtoSingle;
-import com.ulaiber.web.utils.StringUtil;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.ulaiber.web.conmon.IConstants;
+import com.ulaiber.web.dao.LeaveAuditDao;
+import com.ulaiber.web.dao.LeaveDao;
+import com.ulaiber.web.model.ApplyForVO;
+import com.ulaiber.web.model.AuditData;
+import com.ulaiber.web.model.AuditVO;
+import com.ulaiber.web.model.LeaveAudit;
+import com.ulaiber.web.model.LeaveRecord;
+import com.ulaiber.web.model.Remedy;
+import com.ulaiber.web.model.User;
+import com.ulaiber.web.service.BaseService;
+import com.ulaiber.web.service.LeaveService;
+import com.ulaiber.web.utils.PushtoSingle;
+import com.ulaiber.web.utils.StringUtil;
 
 /**
  * 申请请假业务实现类
@@ -37,8 +48,31 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     public int saveLeaveRecord(LeaveRecord leaveRecord) {
     	//初始请假时长和实际请假时长一致，待有销假时实际请假时长=请假时长-销假时长
     	leaveRecord.setRealLeaveTime(leaveRecord.getLeaveTime());
+    	//新增请假记录
         int result = leaveDao.saveLeaveRecord(leaveRecord);
-        return result;
+        if(result == 0){
+            return result;
+        }
+        //新增审批人记录
+        List<Map<String,Object>> list = new ArrayList<>();
+        String[] auditor = leaveRecord.getAuditor().split(",");
+        for (int i = 0; i < auditor.length; i++){
+            Map<String ,Object> map = new HashMap<>();
+            map.put("userid",leaveRecord.getUserid());
+            map.put("recordNo",String.valueOf(leaveRecord.getId()));
+            map.put("auditor",auditor[i]);
+            map.put("auditDate",sdf.format(new Date()));
+            map.put("sort",i+1);
+            list.add(map);
+        }
+        //获取第一个审批人ID
+        int result2 = leaveAuditDao.saveAditor(list);
+        int userid = Integer.parseInt(auditor[0]);
+        String reason = leaveRecord.getReason(); //原因/备注
+        String mark = "0";  //申请类型
+        Map<String,Object> map2 = leaveAuditDao.queryCIDByUserid(userid);  //查询用户个推CID
+        StringUtil.sendMessage(map2,reason,mark); //消息推送
+        return result2;
     }
     
     @Override
@@ -317,11 +351,7 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
 
 	@Override
 	public List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(String companyNum, String type, String month) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("companyNum", companyNum);
-		params.put("type", type);
-		params.put("month", month);
-		return leaveDao.getTotalTimeByCompanyNumAndMonth(params);
+		return leaveDao.getTotalTimeByCompanyNumAndMonth(companyNum, type, month);
 	}
 
     @Override
@@ -341,13 +371,23 @@ public class LeaveServiceImpl extends BaseService implements LeaveService{
     }
 
     @Override
-	public LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date) {
-		return leaveDao.getLeaveRecordByMobileAndDate(mobile, date);
+    public List<User> getDeleteUserByDate(String date, String companyNumber, int pageNum, int pageSize) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("date" , date);
+        map.put("companyNumber" , companyNumber);
+        map.put("pageNum" , pageNum);
+        map.put("pageSize" , pageSize);
+        return leaveDao.getDeleteUserByDate(map);
+    }
+
+	@Override
+	public List<LeaveRecord> getLeaveRecordByUserIdAndDate(long userId, String date) {
+		return leaveDao.getLeaveRecordByUserIdAndDate(userId, date);
 	}
 
 	@Override
-	public LeaveRecord getLeaveRecordByUserIdAndDate(long userId, String date) {
-		return leaveDao.getLeaveRecordByUserIdAndDate(userId, date);
+	public List<LeaveRecord> getLeaveRecordByUserIdAndDate2(long userId, String startDate, String endDate) {
+		return leaveDao.getLeaveRecordByUserIdAndDate2(userId, startDate, endDate);
 	}
 
 }

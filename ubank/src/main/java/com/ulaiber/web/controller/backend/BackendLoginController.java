@@ -53,7 +53,16 @@ public class BackendLoginController extends BaseController {
 		return "login";
 	}
 
-
+	/**
+	 * 跳转集团系统后台首页
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("index")
+	public String index(HttpServletRequest request, HttpServletResponse response){
+		return "index";
+	}
 	
 	@RequestMapping("test")
 	public String test(HttpServletRequest request, HttpServletResponse response){
@@ -84,6 +93,12 @@ public class BackendLoginController extends BaseController {
 				logger.error("用户名不存在。");
 				retInfo.setCode(IConstants.QT_MOBILE_NOT_EXISTS);
 				retInfo.setMessage("user not exists.");
+				return retInfo;
+			}
+			//判断用户是否有权限登录后台系统
+			if(dbuser.getRole_id() == 0){
+				retInfo.setCode(IConstants.QT_CODE_ERROR);
+				retInfo.setMessage("您是普通员工没有后台管理权限");
 				return retInfo;
 			}
 			

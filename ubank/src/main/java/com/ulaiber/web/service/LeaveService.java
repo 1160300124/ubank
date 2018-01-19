@@ -48,7 +48,7 @@ public interface LeaveService {
 
     int getUserTotalByDate(String date, String companyNumber);  //根据日期查询用户
 
-    List<User> getUserByDate(String date, String companyNumber, int pageNum, int pageSize);  //根据日期分页查询用户
+    List<User> getUserByDate(String date, String companyNumber, int pageNum, int pageSize);  //根据日期分页查询新增用户
 
     int updateUser(String userId, String CID); //修改用户个推CID
 
@@ -58,14 +58,15 @@ public interface LeaveService {
     
     List<Map<String, Object>> getTotalTimeByCompanyNumAndMonth(String companyNum, String type, String month); //获取某个公司某个月份所有人的审批通过的请假或加班的总时长 
     
-    LeaveRecord getLeaveRecordByUserIdAndDate(long userId, String date); //查询用户指定日期是否有审批通过的请假记录
+    List<LeaveRecord> getLeaveRecordByUserIdAndDate(long userId, String date); //查询用户指定日期是否有审批通过的请假记录
     
-    LeaveRecord getLeaveRecordByMobileAndDate(String mobile, String date); //查询用户指定日期是否有审批通过的请假记录
-
+    List<LeaveRecord> getLeaveRecordByUserIdAndDate2(long userId, String startDate, String endDate); //查询用户指定日期段是否有审批通过的请假记录
+    
     LeaveRecord queryApplyStatus(String recordNo);  //根据审批状态获取申请记录状态
 
     int getLeaveRecordCount(long userId); //获取个人申请记录数量
 
     int getLeaveAuditorCount(long userId);  //获取个人审批记录数量
 
+    List<User> getDeleteUserByDate(String date, String companyNumber, int pageNum, int pageSize); //根据日期分页查询删除用户
 }

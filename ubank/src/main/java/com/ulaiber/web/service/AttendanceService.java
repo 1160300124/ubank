@@ -99,6 +99,15 @@ public interface AttendanceService {
 	double getHoursByDate(String startDateTime, String endDateTime, AttendanceRule rule);
 	
 	/**
+	 * 获取一段时间内的工作小时数
+	 * @param startDate yyyy-MM-dd
+	 * @param endDate   yyyy-MM-dd 
+	 * @param rule
+	 * @return Map<String, Object>
+	 */
+	Map<String, Object> getDaysByDate(String startDate, String startType, String endDate, String endType, AttendanceRule rule);
+	
+	/**
 	 * 补卡
 	 * @param params
 	 * @return

@@ -1,4 +1,4 @@
-package com.ulaiber.web.model;
+package com.ulaiber.web.model.attendance;
 
 /** 
  * 用户-考勤规则
@@ -29,6 +29,11 @@ public class UserOfRule {
 	 * 公司id
 	 */
 	private int companyId;
+	
+	/**
+	 * 0：需要考勤规则  1：不需要考勤规则  2：既需要也不需要规则(二者都满足时以不需要为准)
+	 */
+	private int type;
 
 	public long getUserId() {
 		return userId;
@@ -60,6 +65,14 @@ public class UserOfRule {
 
 	public void setCompanyId(int companyId) {
 		this.companyId = companyId;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 }

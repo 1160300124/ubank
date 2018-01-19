@@ -79,6 +79,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 	public int save(User user, String code) {
 		user.setRole_id(0);
 		user.setCreateTime(DateTimeUtil.date2Str(new Date()));
+		user.setUpdateTime(DateTimeUtil.date2Str(new Date()));
 		user.setLogin_password(MD5Util.getEncryptedPwd(user.getLogin_password()));
 		//user.setPay_password(MD5Util.getEncryptedPwd(user.getPay_password()));
 		//新增用户

@@ -28,30 +28,32 @@
 		<result column="longit_latit" property="longit_latit" jdbcType="VARCHAR" />    	
     	<result column="clock_location" property="clockLocation" jdbcType="VARCHAR" />
     	<result column="clock_bounds" property="clockBounds" jdbcType="INTEGER" />
-    	<result column="user_or_rule_counts" property="counts" jdbcType="INTEGER" />
+    	<result column="rule_count" property="ruleCount" jdbcType="INTEGER" />
+    	<result column="no_rule_count" property="noRuleCount" jdbcType="INTEGER" />
    </resultMap>
   
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="AttendanceRule" useGeneratedKeys="true" keyProperty="rid">
 		insert into tbl_attendance_rules(rule_name,clock_on_time,clock_off_time,clock_on_advance_hours,clock_on_start_time,clock_off_delay_hours,clock_off_end_time,
-			rest_flag,rest_start_time,rest_end_time,workday,holiday_flag,flexible_time,flexible_flag,postpone_flag,longit_latit,clock_location,clock_bounds,user_or_rule_counts)
-		values(#{ruleName}, #{clockOnTime}, #{clockOffTime}, #{clockOnAdvanceHours}, #{clockOnStartTime}, #{clockOffDelayHours}, #{clockOffEndTime}, #{restFlag}, #{restStartTime},
-			#{restEndTime}, #{workday}, #{holidayFlag}, #{flexibleTime}, #{flexibleFlag}, #{postponeFlag}, #{longit_latit}, #{clockLocation}, #{clockBounds},#{counts}) 
+			rest_flag,rest_start_time,rest_end_time,workday,holiday_flag,flexible_time,flexible_flag,postpone_flag,longit_latit,clock_location,clock_bounds,rule_count,no_rule_count)
+		values(#{ruleName},#{clockOnTime},#{clockOffTime},#{clockOnAdvanceHours},#{clockOnStartTime},#{clockOffDelayHours},#{clockOffEndTime},#{restFlag},#{restStartTime},
+			#{restEndTime},#{workday},#{holidayFlag},#{flexibleTime},#{flexibleFlag},#{postponeFlag},#{longit_latit},#{clockLocation},#{clockBounds},#{ruleCount},#{noRuleCount}) 
 	</insert>
 	
 	<update id="update" parameterType="AttendanceRule">
 		update tbl_attendance_rules set rule_name=#{ruleName},clock_on_time=#{clockOnTime},clock_off_time=#{clockOffTime},clock_on_advance_hours=#{clockOnAdvanceHours},
-			clock_on_start_time=#{clockOnStartTime},clock_off_delay_hours=#{clockOffDelayHours},clock_off_end_time=#{clockOffEndTime},rest_flag=#{restFlag},rest_start_time=#{restStartTime},
-			rest_end_time=#{restEndTime},workday=#{workday},holiday_flag=#{holidayFlag},flexible_time=#{flexibleTime},flexible_flag= #{flexibleFlag},
-			postpone_flag=#{postponeFlag},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clockBounds},user_or_rule_counts=#{counts} where rid=#{rid}
+			clock_on_start_time=#{clockOnStartTime},clock_off_delay_hours=#{clockOffDelayHours},clock_off_end_time=#{clockOffEndTime},rest_flag=#{restFlag},
+			rest_start_time=#{restStartTime},rest_end_time=#{restEndTime},workday=#{workday},holiday_flag=#{holidayFlag},flexible_time=#{flexibleTime},
+			flexible_flag= #{flexibleFlag},postpone_flag=#{postponeFlag},longit_latit=#{longit_latit},clock_location=#{clockLocation},clock_bounds=#{clockBounds},
+			rule_count=#{ruleCount},no_rule_count=#{noRuleCount} where rid=#{rid}
 	</update>
 	
 	<select id="getRuleByUserId" parameterType="Long" resultMap="AttendanceRuleMap">
-		select a.* from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid where r.userid=#{userId}
+		select a.*, r.type from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid where r.userid=#{userId}
 	</select>
 	
 	<select id="getRuleByMobile" parameterType="String" resultMap="AttendanceRuleMap">
-		select a.* from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid left join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and u.disabled='0'
+		select a.*,r.type from tbl_attendance_rules a left join tbl_users_of_rules r on a.rid=r.rid left join tbl_users u on r.userid=u.user_id where u.mobile=#{mobile} and u.disabled='0'
 	</select>
 	
 	<select id="getRules" parameterType="Map" resultMap="AttendanceRuleMap">
@@ -67,9 +69,9 @@
 	</select>
 	
 	<insert id="batchInsertUserOfRule" parameterType="java.util.List">
-		insert into tbl_users_of_rules(userId,rid,deptId,companyId) values
+		insert into tbl_users_of_rules(userId,rid,deptId,companyId,type) values
 		<foreach collection ="list" item="ur" index= "index" separator =",">
-             (#{ur.userId}, #{ur.rid}, #{ur.deptId}, #{ur.companyId})
+             (#{ur.userId}, #{ur.rid}, #{ur.deptId}, #{ur.companyId}, #{ur.type})
         </foreach >
 	</insert>
 	
@@ -94,11 +96,11 @@
 	    </foreach>  
 	</delete>
 	
-	<select id="getUserIdsByRid" parameterType="Integer" resultType="com.ulaiber.web.model.UserOfRule">
+	<select id="getUserIdsByRid" parameterType="Integer" resultType="com.ulaiber.web.model.attendance.UserOfRule">
 		select * from tbl_users_of_rules r join tbl_users u on r.userid=u.user_id where u.disabled='0' and rid=#{rid}
 	</select>
 	
-	<select id="getUserIdsByComId" parameterType="Integer" resultType="com.ulaiber.web.model.UserOfRule">
+	<select id="getUserIdsByComId" parameterType="Integer" resultType="com.ulaiber.web.model.attendance.UserOfRule">
 		select * from tbl_users_of_rules where companyId=#{companyId}
 	</select>
 	

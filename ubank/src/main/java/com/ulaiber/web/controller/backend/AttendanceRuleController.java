@@ -24,8 +24,8 @@ import com.ulaiber.web.model.Company;
 import com.ulaiber.web.model.Departments;
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.User;
-import com.ulaiber.web.model.UserOfRule;
 import com.ulaiber.web.model.attendance.AttendanceRule;
+import com.ulaiber.web.model.attendance.UserOfRule;
 import com.ulaiber.web.service.AttendanceRuleService;
 import com.ulaiber.web.service.PermissionService;
 import com.ulaiber.web.service.UserService;
@@ -72,11 +72,16 @@ public class AttendanceRuleController extends BaseController {
 		return data;
 	}
 	
-	@RequestMapping(value = "addRules", method = RequestMethod.POST)
+	@RequestMapping(value = "addRule", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo addRules(AttendanceRule rule, String data, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo addRule(AttendanceRule rule, String ruleData, String noRuleData, HttpServletRequest request, HttpServletResponse response){
 		ResultInfo info = new ResultInfo();
-		
+		logger.debug("addRule start...");
+		if (!ObjUtil.notEmpty(rule) || StringUtils.isEmpty(ruleData)){
+			info.setCode(IConstants.QT_CODE_ERROR);
+			info.setMessage("参数为空！");
+			return info;
+		}
 		String daytime = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
 		String clockOnStartTime = DateTimeUtil.getfutureTime(daytime + " " + rule.getClockOnTime(), 0, -rule.getClockOnAdvanceHours(), 0).split(" ")[1];
 		String clockOffEndTime = DateTimeUtil.getfutureTime(daytime + " " + rule.getClockOffTime(), 0, rule.getClockOffDelayHours(), 0).split(" ")[1];
@@ -85,7 +90,7 @@ public class AttendanceRuleController extends BaseController {
 		
 		try {
 			
-			if (service.save(rule, data)){
+			if (service.save(rule, ruleData, noRuleData)){
 				logger.info("新增考勤规则成功。");
 				info.setCode(IConstants.QT_CODE_OK);
 				info.setMessage("新增考勤规则成功。");
@@ -95,16 +100,25 @@ public class AttendanceRuleController extends BaseController {
 				info.setMessage("新增考勤规则失败。");
 			}
 		} catch (Exception e) {
-			logger.error("addRules exception: " , e);
+			logger.error("addRule exception: " , e);
 		}
 		
 		
 		return info;
 	}
 	
+	/**
+	 * 查询公司，部门，用户用来渲染树
+	 * @param rid  规则id
+	 * @param search  搜索关键字
+	 * @param type  0：需要考勤规则  1：不需要考勤规则  2：既需要也不需要规则(二者都满足时以不需要为准)
+	 * @param request   request
+	 * @param response  response
+	 * @return
+	 */
 	@RequestMapping(value = "getDeptsAndUsers", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map<String, Object>> getDeptsAndUsers(String rid, String search, HttpServletRequest request, HttpServletResponse response){
+	public List<Map<String, Object>> getDeptsAndUsers(String rid, String search, String type, HttpServletRequest request, HttpServletResponse response){
 		
 		User conuser = getUserFromSession(request);
 		List<Map<String, Object>> companyTree = new ArrayList<Map<String, Object>>();
@@ -118,19 +132,28 @@ public class AttendanceRuleController extends BaseController {
 			}
 			for (Company company : companys){
 				List<UserOfRule> uofs = service.getUserIdsByComId(company.getCompanyNumber());
+				//不能勾选的用户集合
 				List<Long> chkDisabledUserIds = new ArrayList<Long>();
+				//已勾选的用户集合
 				List<Long> checkNodeUserIds = new ArrayList<Long>();
+				//可勾选的用户集合
+				List<Long> userIds = new ArrayList<Long>();
 				for (UserOfRule uof : uofs){
 					chkDisabledUserIds.add(uof.getUserId());
 					if (StringUtils.equals(uof.getRid() + "", rid)){
-						checkNodeUserIds.add(uof.getUserId());
+						userIds.add(uof.getUserId());
+						if (StringUtils.equals(uof.getType() + "", type) || StringUtils.equals(uof.getType() + "", "2")){
+							checkNodeUserIds.add(uof.getUserId());
+						}
 					}
 				}
 				List<Departments> depts = permissionService.getDeptByCom(company.getCompanyNumber() + "");
 				List<User> users = userService.getUsersByComNum(company.getCompanyNumber() + "", search);
 				
+				Map<String, Object> companyMap = new HashMap<String, Object>();
 				List<Map<String, Object>> deptTree = new ArrayList<Map<String, Object>>();
 				for (Departments dept : depts){
+					Map<String, Object> deptMap = new HashMap<String, Object>();
 					List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 					for (User user : users){
 						if (StringUtils.equals(dept.getDept_number(), user.getDept_number())){
@@ -140,31 +163,33 @@ public class AttendanceRuleController extends BaseController {
 							if (chkDisabledUserIds.contains(user.getId())){
 								userMap.put("chkDisabled", true);
 							}
-							if (checkNodeUserIds.contains(user.getId())){
+							if (userIds.contains(user.getId())){
 								userMap.put("chkDisabled", false);
+							}
+							if (checkNodeUserIds.contains(user.getId())){
 								userMap.put("checked", true);
+								//部门和公司下面有已选用户时才勾选
+								deptMap.put("checked", true);
+								companyMap.put("checked", true);
 							}
 							list.add(userMap);
 						}
 					}
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("id", dept.getDept_number());
-					map.put("name", dept.getName());
-					map.put("checked", true);
-					map.put("children" , list);
-					map.put("isParent", true);//设置根节点为父节点
-					map.put("open", true); //根节点展开
-					deptTree.add(map);
+					
+					deptMap.put("id", dept.getDept_number());
+					deptMap.put("name", dept.getName());
+					deptMap.put("children" , list);
+					deptMap.put("isParent", true);//设置根节点为父节点
+					deptMap.put("open", true); //根节点展开
+					deptTree.add(deptMap);
 				}
 				
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("id", company.getCompanyNumber());
-				map.put("name", company.getName());
-				map.put("checked", true);
-				map.put("children" , deptTree);
-				map.put("isParent", true);//设置根节点为父节点
-				map.put("open", true); //根节点展开
-				companyTree.add(map);
+				companyMap.put("id", company.getCompanyNumber());
+				companyMap.put("name", company.getName());
+				companyMap.put("children" , deptTree);
+				companyMap.put("isParent", true);//设置根节点为父节点
+				companyMap.put("open", true); //根节点展开
+				companyTree.add(companyMap);
 			}
 		} catch (Exception e) {
 			logger.error("getDeptsAndUsers exception:", e);
@@ -198,11 +223,11 @@ public class AttendanceRuleController extends BaseController {
 	
 	@RequestMapping(value = "updateRule", method = RequestMethod.POST)
 	@ResponseBody
-	public ResultInfo updateRule(AttendanceRule rule, String data, HttpServletRequest request, HttpServletResponse response){
+	public ResultInfo updateRule(AttendanceRule rule, String ruleData, String noRuleData, HttpServletRequest request, HttpServletResponse response){
 		
 		logger.debug("updateRule start...");
 		ResultInfo info = new ResultInfo();
-		if (!ObjUtil.notEmpty(rule) || StringUtils.isEmpty(data)){
+		if (!ObjUtil.notEmpty(rule) || StringUtils.isEmpty(ruleData)){
 			info.setCode(IConstants.QT_CODE_ERROR);
 			info.setMessage("参数为空！");
 			return info;
@@ -215,8 +240,7 @@ public class AttendanceRuleController extends BaseController {
 		rule.setClockOffEndTime(clockOffEndTime);
 		
 		try {
-
-			boolean flag = service.update(rule, data);
+			boolean flag = service.update(rule, ruleData, noRuleData);
 			if (flag){
 				info.setCode(IConstants.QT_CODE_OK);
 				info.setMessage("修改成功");;

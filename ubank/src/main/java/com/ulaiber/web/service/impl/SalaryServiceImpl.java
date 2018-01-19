@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.dao.AttendanceRuleDao;
@@ -26,19 +27,17 @@ import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.SalaryAuditVO;
 import com.ulaiber.web.model.User;
 import com.ulaiber.web.model.ShangHaiAcount.SecondAcount;
-import com.ulaiber.web.model.attendance.AttendanceRule;
 import com.ulaiber.web.model.attendance.CutPayment;
 import com.ulaiber.web.model.salary.Salary;
 import com.ulaiber.web.model.salary.SalaryDetail;
 import com.ulaiber.web.model.salary.SalaryRule;
-import com.ulaiber.web.service.AttendanceStatisticService;
 import com.ulaiber.web.service.BaseService;
 import com.ulaiber.web.service.CutPaymentService;
-import com.ulaiber.web.service.LeaveService;
 import com.ulaiber.web.service.SalaryAuditService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
+import com.ulaiber.web.utils.ExcelUtil;
 import com.ulaiber.web.utils.MathUtil;
 import com.ulaiber.web.utils.SPDBUtil;
 import com.ulaiber.web.utils.UUIDGenerator;
@@ -76,12 +75,6 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	
 	@Autowired
 	private CutPaymentService cutService;
-	
-	@Autowired
-	private LeaveService leaveService;
-	
-	@Autowired
-	private AttendanceStatisticService statisticService;
 	
 	@Autowired
     private SalaryAuditService salaryAuditService;
@@ -200,46 +193,18 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(rollbackFor = Exception.class, readOnly = false, propagation = Propagation.REQUIRED)
-	public List<SalaryDetail> importUserInfo(String companyNum, String salaryMonth) {
+	public Map<String, Object> importUserInfo(String companyNum, String salaryMonth) {
+		Map<String, Object> data = new HashMap<String, Object>();
 		List<SalaryDetail> details = new ArrayList<SalaryDetail>();
 		//获取公司的工资规则
 		SalaryRule rule = ruleDao.getSalaryRuleByCompanyId(companyNum);
-		//事假，病假，年假，调休，婚假，产假，其他
-		String[] leaveCutRule = rule.getLeaveCutPayment().split(",");
 		//获取扣款详细和总金额
 		Map<String, Object> cutMap = cutService.getCutPaymentMessage(companyNum, salaryMonth);
 		//扣款总金额Map,key为userId,value为总金额
 		Map<Long, Object> cutMoneyMap = (Map<Long, Object>)cutMap.get("money");
-		//分组查询用户的请假扣款
-		List<Map<String, Object>> leaveList = leaveService.getTotalTimeByCompanyNumAndMonth(companyNum, "0", salaryMonth);
-		//分组查询用户的加班费
-		List<Map<String, Object>> overTimeList = leaveService.getTotalTimeByCompanyNumAndMonth(companyNum, "1", salaryMonth);
-		Map<Long, Double> overTimeMap = new HashMap<Long, Double>();
-		for (Map<String, Object> map : overTimeList){
-			overTimeMap.put(Long.parseLong(map.get("userId").toString()), (Double)map.get("totalTime"));
-		}
 		//获取公司用户
 		List<User> users = userService.getUsersByComNum(companyNum, null);
 		for (User user : users){
-			AttendanceRule attRule = attRuleDao.getRuleByUserId(user.getId());
-			if (null == attRule){
-				logger.error("用户 {" + user.getId() + "}没有设置考勤规则，请先设置。");
-				continue;
-			}
-			//应工作天数
-			List<String> workdays = statisticService.getWorkdaysForDate(attRule, DateTimeUtil.getMonthBegin(salaryMonth), DateTimeUtil.getMonthEnd(salaryMonth));
-			if (workdays == null){
-				continue;
-			}
-			String day = DateTimeUtil.date2Str(new Date(), DateTimeUtil.DATE_FORMAT_DAYTIME);
-			//每天工作小时数
-			double workHours = DateTimeUtil.gethour(day + " " + attRule.getClockOnTime(), day + " " + attRule.getClockOffTime());
-			if (attRule.getRestFlag() == 0){
-				double restHours = DateTimeUtil.gethour(day + " " + attRule.getRestEndTime(), day + " " + attRule.getRestStartTime());
-				workHours = MathUtil.formatDouble(MathUtil.sub(workHours, restHours), 1);
-			}
-			//小时工资
-			double hourSalaries = MathUtil.div(user.getSalaries(), workdays.size() * workHours);
 			SalaryDetail detail = new SalaryDetail();
 			detail.setUserId(user.getId());
 			detail.setUserName(user.getUserName());
@@ -249,52 +214,17 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			detail.setPublicAccumulationFunds(rule.getPublicAccumulationFunds());
 			detail.setTaxThreshold(rule.getTaxThreshold());
 			Map<String, Object> attCutPayment = (Map<String, Object>)cutMoneyMap.get(user.getId());
+			//无考勤规则人员跳过
+			if (null == attCutPayment){
+				continue;
+			}
 			detail.setTotalCutPayment((Double)attCutPayment.get("totalCutAmount"));
 			detail.setLaterCutPayment((Double)attCutPayment.get("leaveEarlyCutPayment"));
 			detail.setLeaveEarlyCutPayment((Double)attCutPayment.get("forgetClockCutPayment"));
 			detail.setForgetClockCutPayment((Double)attCutPayment.get("laterCutPayment"));
 			detail.setNoClockCutPayment((Double)attCutPayment.get("noClockCutPayment"));
-			double leaveCutPayment = 0;
-			for (Map<String, Object> map : leaveList){
-				if (user.getId() != Long.parseLong(map.get("userId").toString())){
-					continue;
-				}
-				double cutPayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == map.get("totalTime") ? 0 : (Double)map.get("totalTime")), 1);
-				//请假类型. 0 年假，1 事假，2 病假，3 调休，4 婚假，5 产假 ，6 其他
-				String leaveType = map.get("leaveType").toString();
-				switch(leaveType){
-					case "0" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[2]) / 100), 1);
-						break;
-					case "1" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[0]) / 100), 1);
-						break;
-					case "2" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[1]) / 100), 1);
-						break;
-					case "3" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[3]) / 100), 1);
-						break;
-					case "4" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[4]) / 100), 1);
-						break;
-					case "5" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[5]) / 100), 1);
-						break;
-					case "6" : 
-						cutPayment =  MathUtil.formatDouble(MathUtil.mul(cutPayment, Double.parseDouble(leaveCutRule[6]) / 100), 1);
-						break;
-				}
-				leaveCutPayment += cutPayment;
-				
-			}
-			detail.setAskForLeaveCutPayment(leaveCutPayment);
-			double overTimePayment = 0;
-			//0:调休 1:发加班费
-			if (rule.getOvertimeFlag() == 1){
-				overTimePayment = MathUtil.formatDouble(MathUtil.mul(hourSalaries, null == overTimeMap.get(user.getId()) ? 0 : overTimeMap.get(user.getId())), 1);
-			}
-			detail.setOvertimePayment(overTimePayment);
+			detail.setAskForLeaveCutPayment((Double)attCutPayment.get("leaveCutPayment"));
+			detail.setOvertimePayment((Double)attCutPayment.get("overTimePayment"));
 			//扣除社保公积金等
 			double preSalary = detail.getPreTaxSalaries() - detail.getTotalCutPayment() - detail.getAskForLeaveCutPayment() + detail.getOvertimePayment()
 							- detail.getSocialInsurance() - detail.getPublicAccumulationFunds();
@@ -304,7 +234,11 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			detail.setSalaries(salaries < 0 ? 0 : salaries);
 			details.add(detail);
 		}
-		return details;
+		
+		List<Long> userIds = (List<Long>)cutMap.get("noRuleUserIds");
+		data.put("noRuleUserIds", userIds.size());
+		data.put("details", details);
+		return data;
 	}
 	
 	/**
@@ -401,6 +335,17 @@ public class SalaryServiceImpl extends BaseService implements SalaryService {
 			return detailDao.batchUpdateStatusBySid(salary.getDetails()) > 0;
 		}
 		return false;
+	}
+	
+	@Override
+	public Map<String, Object> importSalaryList(MultipartFile file, String companyId) throws Exception{
+		List<User> users = userService.getUsersByComNum(companyId, "");
+		List<String> cardNoList = new ArrayList<String>();
+		for (User user : users){
+			cardNoList.add(user.getCardNo());
+		}
+		Map<String, Object> data = ExcelUtil.readExcel(file, cardNoList);
+		return data;
 	}
 
 }

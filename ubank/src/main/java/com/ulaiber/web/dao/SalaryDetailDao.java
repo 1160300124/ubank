@@ -3,6 +3,8 @@ package com.ulaiber.web.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ulaiber.web.model.salary.SalaryDetail;
 
 /**
@@ -66,9 +68,17 @@ public interface SalaryDetailDao {
     /**
      * 根据id和月份获取用户的工资详细
      * @param userId
+     * @param month
      * @return
      */
-    SalaryDetail getSalaryDetailByUserIdAndMonth(Map<String, Object> params);
+    SalaryDetail getSalaryDetailByUserIdAndMonth(@Param("userId") long userId, @Param("salaryMonth") String month);
+    
+    /**
+     * 获取用户最近的一条工资纤细
+     * @param userId
+     * @return
+     */
+    SalaryDetail getLatestDetailByUserId(long userId);
     
     /**
      * 获取最近一个月的工资表详细

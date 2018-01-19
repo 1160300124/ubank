@@ -3,6 +3,8 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ulaiber.web.model.ResultInfo;
 import com.ulaiber.web.model.salary.Salary;
 import com.ulaiber.web.model.salary.SalaryDetail;
@@ -74,9 +76,9 @@ public interface SalaryService {
 	 * 导入用户信息
 	 * @param companyNum
 	 * @param salaryMonth
-	 * @return List<SalaryDetail>
+	 * @return Map<String, Object>
 	 */
-	List<SalaryDetail> importUserInfo(String companyNum,String salaryMonth);
+	Map<String, Object> importUserInfo(String companyNum,String salaryMonth);
 	
 	/**
 	 * 代发工资
@@ -90,4 +92,12 @@ public interface SalaryService {
 	 * @return boolean
 	 */
 	boolean updateStatusBySid(Salary salary);
+	
+	/**
+	 * 导入工资表
+	 * @param file  MultipartFile
+	 * @param companyId companyId
+	 * @return Map<String, Object>
+	 */
+	public Map<String, Object> importSalaryList(MultipartFile file, String companyId) throws Exception;
 }

@@ -1,7 +1,9 @@
 package com.ulaiber.web.controller.backend;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ulaiber.web.conmon.IConstants;
 import com.ulaiber.web.controller.BaseController;
@@ -30,7 +34,7 @@ import com.ulaiber.web.service.SalaryDetailService;
 import com.ulaiber.web.service.SalaryService;
 import com.ulaiber.web.service.UserService;
 import com.ulaiber.web.utils.DateTimeUtil;
-import com.ulaiber.web.utils.SPDBUtil;
+import com.ulaiber.web.utils.ExcelUtil;
 
 /** 
  * 工资控制器
@@ -270,9 +274,9 @@ public class SalaryController extends BaseController {
 		}
 		
 		try {
-			List<SalaryDetail> details = service.importUserInfo(companyNum, salaryMonth);
+			Map<String, Object> data = service.importUserInfo(companyNum, salaryMonth);
 			info.setCode(IConstants.QT_CODE_OK);
-			info.setData(details);
+			info.setData(data);
 		} catch (Exception e) {
 			logger.info("获取用户信息失败。" , e);
 			info.setCode(IConstants.QT_CODE_ERROR);
@@ -373,6 +377,53 @@ public class SalaryController extends BaseController {
     	}
 
     	return tree;
+    }
+    
+    /**
+     * 导入工资表
+     * @param companyId 公司id
+     * @param multiRequest MultipartHttpServletRequest
+     * @param request   HttpServletRequest
+     * @param response  HttpServletResponse
+     * @return ResultInfo
+     */
+	@RequestMapping(value = "importSalaryList", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultInfo importSalaryList(String companyId, MultipartHttpServletRequest multiRequest, HttpServletRequest request, HttpServletResponse response){
+    	
+    	ResultInfo retInfo = new ResultInfo(IConstants.QT_CODE_ERROR, "");
+    	try {
+    		// 取得request中的所有文件名
+        	Iterator<String> iter = multiRequest.getFileNames();
+        	while (iter.hasNext()) {
+        		// 取得上传文件
+        		MultipartFile file = multiRequest.getFile(iter.next());
+        		if (file != null) {
+        			// 取得当前上传文件的文件名称
+        			String fileName = file.getOriginalFilename();
+        			if (!fileName.endsWith(ExcelUtil.OFFICE_EXCEL_2003_POSTFIX) && !fileName.endsWith(ExcelUtil.OFFICE_EXCEL_2010_POSTFIX)){
+        				retInfo.setMessage("请上传xls文件或xlsx文件！");
+        				return retInfo;
+        			}
+        			// 如果名称不为“”,说明该文件存在，否则说明该文件不存在
+        			if (fileName.trim() != "") {
+        				logger.info("upload file name: " + fileName.trim());
+        				Map<String, Object> data = service.importSalaryList(file, companyId);
+        				
+        				retInfo.setData(data);
+        				retInfo.setCode(IConstants.QT_CODE_OK);
+        			}
+        		}
+        	}
+    	} catch (IOException e) {
+    		logger.error("upload file failed:" , e);
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+		} catch (Exception e) {
+			logger.error("upload file failed:" , e);
+			retInfo.setCode(IConstants.QT_CODE_ERROR);
+		}
+    	
+        return retInfo;
     }
 	
 }

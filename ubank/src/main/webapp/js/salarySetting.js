@@ -1,5 +1,8 @@
 //0 新增工资表  1 修改工资表
 var flag = 0;
+var selectCompanyNumber = null;
+var selectCompanyName = null;
+
 $(function () {
 	$("#datetimepicker_statistic").datetimepicker({  
 		format: 'yyyy-mm',  
@@ -24,8 +27,7 @@ $(function () {
 	
 	loadCompanys();
 	function loadCompanys(){
-		var select = $("#company_select").empty();
-		select.append("<option value=''>请选择公司</option>");
+		var select = $(".compny-dropdown").html('');
 		
 		$.ajax({
 			url : "getCompanys",
@@ -39,10 +41,15 @@ $(function () {
                 }
 				
 				for (var i in data){
-					var option = "<option value='" + data[i].companyNumber + "'>" + data[i].name + "</option>";
+					var option = '<li><a href="#" class="company-drop-item" data-number="' + data[i].companyNumber + '">' + data[i].name + '</a></li>';
 					select.append(option);
 				}
-				$("#company_select").val(companyId);
+				$('.company-drop-item').on('click', function(e) {
+					selectCompanyNumber = $(e.currentTarget).attr('data-number');
+					selectCompanyName = $(e.currentTarget).html();
+					$("#salary_create_modal").modal('show');
+					goStep(1);
+				});
 			},
 			error : function(data, status, e) {
 				Ewin.alert("系统内部错误！");
@@ -88,54 +95,6 @@ $(function () {
 		});
 	}
 	
-	function tableLoadSuceess(){
-		var table = $('#tb_saraly_configs');
-		var isEdit = table.bootstrapTable('getEditStatus')
-		if (isEdit){
-			$('#tb_saraly_configs').bootstrapTable('cancelEditAll');
-//		    $('#tb_saraly_configs').bootstrapTable('removeRow', 0);
-		}
-		table.bootstrapTable('prepend',{
-			'id':0,
-			'userName': '快速批量设置',
-			'cardNo': '-',
-			'preTaxSalaries': '-',
-			'bonuses': 0,
-			'subsidies': 0,
-			'attendanceCutPayment': '-',
-			'askForLeaveCutPayment': '-',
-			'overtimePayment': '-',
-			'socialInsurance': 0,
-			'publicAccumulationFunds': 0,
-			'taxThreshold': 0,
-			'personalIncomeTax': '-',
-			'elseCutPayment': 0,
-			'salaries': '-',
-		});
-		table.bootstrapTable('editAll');
-
-		var firstRow = table.find('tbody').children()[0];
-		var inputs = $(firstRow).find('input');
-		var selects = $(firstRow).find('select');
-		inputs.on('keyup', function(e){
-			var tdIndex = $(this).parent().parent().index();
-			var value = this.value;
-			table.find('tbody').children().each(function(index, row){
-				if (index !== 0){
-					$($(row).children()[tdIndex]).find('input[type="text"]').val(value);
-				}
-			})
-		});
-		selects.on('change', function(e){
-			var tdIndex = $(this).parent().index();
-			var value = this.value;
-			table.find('tbody').children().each(function(index, row){
-				if (index !== 0){
-					$($(row).children()[tdIndex]).find('select').val(value);
-				}
-			})
-		});
-	}
 	
 	//点击选中列，判断checkbox选中与取消选中
 	$('#tb_saraly_configs').on('click-cell.bs.table', function (e, field, value, row, $element){
@@ -144,77 +103,8 @@ $(function () {
 	
 	
 	
-	$("#btn_import_user_info").unbind().bind("click", function(){
-		var select = $("#company_select").val();
-		if (select == "" || select == null || select == undefined){
-			Ewin.alert("请先选择公司");
-			return false;
-		}
-		var month = $("#statistic_month").val();
-		if (month == "" || month == null || month == undefined){
-			Ewin.alert("请先选择考勤统计月份");
-			return false;
-		}
+	$("#btn_import_user_info").unbind().bind("click", calcSalary);
 
-		var allDatas = $('#tb_saraly_configs').bootstrapTable('getData');
-		if (allDatas.length > 0){
-			Ewin.confirm({ message: "确定要覆盖工资表信息吗？" }).on(function (e) {
-				if (!e) {
-					return;
-				}
-				$.ajax({
-					url : "importUserInfo",
-					type: "post",
-					data : {
-						companyNum : select,
-						salaryMonth : month
-					},
-					async : true, 
-					dataType : "json",
-					success : function(data, status) {
-						var code = data['code'];
-						if (code == 1000) {
-							Ewin.alert("导入员工信息成功！");
-							$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
-							tableLoadSuceess();
-						}else{
-							Ewin.alert("导入员工信息失败！" + data['message']);
-						}
-					},
-					error : function(data, status, e) {
-						Ewin.alert("系统内部错误！");
-					}
-				});
-			});
-			
-		} else {
-			$.ajax({
-				url : "importUserInfo",
-				type: "post",
-				data : {
-					companyNum : select,
-					salaryMonth : month
-				},
-				async : true, 
-				dataType : "json",
-				success : function(data, status) {
-					var code = data['code'];
-					if (code == 1000) {
-						Ewin.alert("导入员工信息成功！");
-						$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
-						tableLoadSuceess();
-					}else{
-						Ewin.alert("导入员工信息失败！" + data['message']);
-					}
-				},
-				error : function(data, status, e) {
-					Ewin.alert("系统内部错误！");
-				}
-			});
-		}
-
-	});
-	
 	$("#btn_import_latest_salary").unbind().bind("click", function(){
 		var select = $("#company_select").val();
 		if (select == "" || select == null || select == undefined){
@@ -433,8 +323,9 @@ $(function () {
 			Ewin.alert("请先选择公司");
 			return false;
 		}
-		renderPeople(companyId, companyName);
-		if (flag == 1){
+		if (flag == 0){
+			renderPeople(companyId, companyName);
+		} else if (flag == 1){
 			renderPeople(companyId, companyName);
 			var zTreeObj = $.fn.zTree.getZTreeObj("peoplesTree");
 			zTreeObj.checkAllNodes(false);   //清空tree
@@ -597,4 +488,135 @@ window.operateEvents = {
 		}
 };
 
+function addFileChange(){
+	var file = $('#lefile').val();
+	if (file == null || file == "" || file == undefined){
+		Ewin.alert("请上传excel！");
+		return false;
+	}
+	$("#btn_salary_upload").attr("disabled", true);
+	
+	$.ajaxFileUpload({
+		url : "importSalaryList",
+		type: "post",
+		secureuri : false,
+		fileElementId : "lefile",
+		dataType : "json",
+		data : {
+			companyId : "20047"
+		},
+		success : function(data, status) {
+			$("#btn_salary_upload").attr("disabled", false);
+			data = $.parseJSON(data.replace(/<.*?>/ig,""));
+			var code = data['code'];
+			if (code == 1000) {
+				$('#tb_saraly_configs').bootstrapTable("load", data["data"]);
+			}else{
+				Ewin.alert("上传失败！" + data['message']);
+			}
+		},
+		error : function(data, status, e) {
+			Ewin.alert("上传发生异常");
+		}
+	})
+	$('#lefile').val("");
+	$("#btn_salary_upload").attr("disabled", false);
+	return false;
+}
 
+function goStep(stepNumber, secondStepNumber, width) {
+
+	$('.step').hide();
+	$('.step-' + stepNumber +(secondStepNumber ? '-' + secondStepNumber : '')).show();
+	$('#salary_create_modal .modal-dialog').css('width', width ? width + 'px' : '');
+}
+function calcSalary(){
+	goStep(1, 2)
+	// var select = $("#company_select").val();
+	// if (select == "" || select == null || select == undefined){
+	// 	Ewin.alert("请先选择公司");
+	// 	return false;
+	// }
+	var month = $("#statistic_month").val();
+	// if (month == "" || month == null || month == undefined){
+	// 	Ewin.alert("请先选择考勤统计月份");
+	// 	return false;
+	// }
+
+
+	$.ajax({
+		url : "importUserInfo",
+		type: "post",
+		data : {
+			companyNum : selectCompanyNumber,
+			salaryMonth : month
+		},
+		async : true, 
+		dataType : "json",
+		success : function(data, status) {
+			var code = data['code'];
+			goStep(1, 3, 1300);
+			if (code == 1000) {
+				Ewin.alert("导入员工信息成功！");
+				$('#tb_saraly_configs_copy').on('post-body.bs.table', tableLoadSuceess);
+				$('#tb_saraly_configs_copy').bootstrapTable("load", data["data"]);
+							
+				$('#tb_saraly_configs_copy').bootstrapTable('prepend',{
+					'id':0,
+					'userName': '快速批量设置',
+					'cardNo': '-',
+					'preTaxSalaries': '-',
+					'bonuses': 0,
+					'subsidies': 0,
+					'attendanceCutPayment': '-',
+					'askForLeaveCutPayment': '-',
+					'overtimePayment': '-',
+					'socialInsurance': 0,
+					'publicAccumulationFunds': 0,
+					'taxThreshold': 0,
+					'personalIncomeTax': '-',
+					'elseCutPayment': 0,
+					'salaries': '-',
+				});
+			}else{
+				Ewin.alert("导入员工信息失败！" + data['message']);
+			}
+		},
+		error : function(data, status, e) {
+			Ewin.alert("系统内部错误！");
+		}
+	});
+}
+
+function tableLoadSuceess(){
+	console.log('a');
+	var table = $('#tb_saraly_configs_copy');
+	var isEdit = table.bootstrapTable('getEditStatus')
+	if (isEdit){
+		$('#tb_saraly_configs_copy').bootstrapTable('cancelEditAll');
+//		    $('#tb_saraly_configs').bootstrapTable('removeRow', 0);
+	}
+	table.bootstrapTable('editAll');
+
+	var firstRow = table.find('tbody').children()[0];
+	var inputs = $(firstRow).find('input');
+	var selects = $(firstRow).find('select');
+	inputs.on('keyup', function(e){
+		var tdIndex = $(this).parent().parent().index();
+		var value = this.value;
+		table.find('tbody').children().each(function(index, row){
+			if (index !== 0){
+				$($(row).children()[tdIndex]).find('input[type="text"]').val(value);
+			}
+		})
+	});
+	selects.on('change', function(e){
+		var tdIndex = $(this).parent().index();
+		var value = this.value;
+		table.find('tbody').children().each(function(index, row){
+			if (index !== 0){
+				$($(row).children()[tdIndex]).find('select').val(value);
+			}
+		})
+	});
+}

@@ -526,6 +526,7 @@ public class PermissionController extends BaseController {
     public ResultInfo addEmployee(User user,@Param("flag") String flag,@Param("pwd") String pwd){
         ResultInfo resultInfo = new ResultInfo();
         try {
+            String date = sdf.format(new Date());
             if(flag.equals("0")){  //新增
                 String userName = user.getUserName();
                 String mobile = user.getMobile();
@@ -551,8 +552,8 @@ public class PermissionController extends BaseController {
                 }
                 String password = MD5Util.getEncryptedPwd(pwd);
                 user.setLogin_password(password);
-                String date = sdf.format(new Date());
                 user.setCreateTime(date);
+                user.setUpdateTime(date);
                 int result = permissionService.addEmployee(user);
                 if(result > 0){
                     //设置用户ID
@@ -571,6 +572,7 @@ public class PermissionController extends BaseController {
                     resultInfo.setCode(500);
                 }
             }else{
+                user.setUpdateTime(date);
                 //修改员工信息
                 int emp = permissionService.editEmp(user);
                 if(emp <= 0){
@@ -651,6 +653,8 @@ public class PermissionController extends BaseController {
                 resultInfo.setCode(500);
             }
         }catch (Exception e){
+            resultInfo.setMessage("删除失败");
+            resultInfo.setCode(500);
             logger.error(">>>>>>>>>>根据员工编号删除对应的员工异常：" ,e);
         }
         return resultInfo;

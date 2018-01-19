@@ -502,3 +502,56 @@ a:active, a:hover, a:focus, a:visited {
 .font13{
     font-size: 13px;
 }
+
+.font-largest{
+    font-size: 30px;
+}
+
+.font-larg {
+    font-size: 22px;
+}
+
+.font-bold {
+    font-size: 18px;
+}
+
+.font-middle {
+    font-size: 14px;
+}
+
+.font-small {
+    font-size: 11px;
+}
+
+.height-highest {
+    height: 60px;
+    line-height: 60px;
+}
+.height-high {
+    height: 45px;
+    line-height: 45px;
+}
+.height-middle {
+    height: 30px;
+    line-height: 30px;
+}
+
+.color-666 {
+    color: #666;
+}
+
+.color-333 {
+    color: #333;
+}
+
+.color-999 {
+    color: #999;
+}
+
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+.margin-bottom-60 {
+    margin-bottom: 20px;
+}

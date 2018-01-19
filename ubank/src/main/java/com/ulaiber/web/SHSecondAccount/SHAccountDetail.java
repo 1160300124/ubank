@@ -112,20 +112,34 @@ public class SHAccountDetail {
                 while (info.hasNext()){
                     Element recordEles = (Element) info.next();
                     SHAccDetail accDetail = new SHAccDetail();
-                    accDetail.setTheirRef(recordEles.elementTextTrim("TheirRef"));      //主机流水号
+                    accDetail.setTheirRef(recordEles.elementTextTrim("TheirRef"));      //交易摘要
                     accDetail.setFlowCode(recordEles.elementTextTrim("FlowCode"));    //交易代码
                     accDetail.setTxnAmt(recordEles.elementTextTrim("TxnAmt"));        //交易金额
                     accDetail.setTxnBsnId(recordEles.elementTextTrim("TxnBsnId"));    //业务流水号
                     accDetail.setTxnDate(recordEles.elementTextTrim("TxnDate"));      //交易日期
-                    accDetail.setTxnRef(recordEles.elementTextTrim("TxnRef"));      //交易摘要
                     accDetail.setTxnTime(recordEles.elementTextTrim("TxnTime"));      //交易时间
-                    sortList.add("TheirRef=" + recordEles.elementTextTrim("TheirRef"));
-                    sortList.add("FlowCode=" + recordEles.elementTextTrim("FlowCode"));
-                    sortList.add("TxnAmt=" + recordEles.elementTextTrim("TxnAmt"));
-                    sortList.add("TxnBsnId=" + recordEles.elementTextTrim("TxnBsnId"));
-                    sortList.add("TxnDate=" + recordEles.elementTextTrim("TxnDate"));
-                    sortList.add("TxnRef=" + recordEles.elementTextTrim("TxnRef"));
-                    sortList.add("TxnTime=" + recordEles.elementTextTrim("TxnTime"));
+                    accDetail.setTxnRef(recordEles.elementTextTrim("TxnRef"));      //主机流水号
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnBsnId"))){
+                        sortList.add("TxnBsnId=" + recordEles.elementTextTrim("TxnBsnId"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnRef"))){
+                        sortList.add("TxnRef=" + recordEles.elementTextTrim("TxnRef"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TheirRef"))){
+                        sortList.add("TheirRef=" + recordEles.elementTextTrim("TheirRef"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("FlowCode"))){
+                        sortList.add("FlowCode=" + recordEles.elementTextTrim("FlowCode"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnAmt"))){
+                        sortList.add("TxnAmt=" + recordEles.elementTextTrim("TxnAmt"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnDate"))){
+                        sortList.add("TxnDate=" + recordEles.elementTextTrim("TxnDate"));
+                    }
+                    if(!StringUtil.isEmpty(recordEles.elementTextTrim("TxnTime"))){
+                        sortList.add("TxnTime=" + recordEles.elementTextTrim("TxnTime"));
+                    }
                     list.add(accDetail);
                 }
                 rsMap.put("TxnInfo",list);
@@ -157,7 +171,7 @@ public class SHAccountDetail {
             logger.info(">>>>>>>>>>开始验签");
             //验签Signature
             int verifyRet = SvsVerify.verify(signDataStr.getBytes("GBK"),resultSign,publicKey);
-            if(verifyRet != 0){
+             if(verifyRet != 0){
                 resultInfo.setCode(IConstants.QT_CODE_ERROR);
                 resultInfo.setMessage((String) rsMap.get("ServerStatusCode"));
                 resultMap.put("status",rsMap.get("StatusCode"));

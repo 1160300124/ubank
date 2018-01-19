@@ -63,7 +63,7 @@
                 table{
                     width: 100%;
                 }
-                td:first-child{
+                #table_preview_attachment td:first-child{
                     width: 50px;
                 }
 
@@ -80,6 +80,7 @@
             <link href="<%=request.getContextPath()%>/css/font-awesome/font-awesome.min.css" rel="stylesheet" />
             <link href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 
+            <script src="<%=request.getContextPath()%>/js/jquery/zepto.min.js" type="text/javascript" ></script>
             <script src="<%=request.getContextPath()%>/js/photoswipe/photoswipe.min.js" type="text/javascript" ></script>
             <script src="<%=request.getContextPath()%>/js/photoswipe/photoswipe-ui-default.min.js" type="text/javascript" ></script>
         </head>
@@ -92,7 +93,7 @@
                 附件：
                 <table id="table_preview_attachment">
                     <c:forEach items="${attachments}" var="attachment">
-                        <tr data-down="${attachment.attachment_path}" data-preview="http://dcsapi.com/?k=262732077&url=${attachment.attachment_path}">
+                        <tr data-down="${attachment.attachment_path}" data-preview="http://dcsapi.com/?k=280337625&url=${attachment.attachment_path}">
                             <td>
                                 <div class="file-icon">
                                     <img src="<%=request.getContextPath()%>/images/pdf.png" alt="">
@@ -179,7 +180,7 @@
             </div>
 
             <script type="text/javascript">
-                var imgs = document.querySelectorAll('.content img');
+                var imgs = $('.content img');
                 var gallery = null;
 
                 var initPhotoSwipeFromDOM = function (gallerySelector) {
@@ -188,13 +189,13 @@
                     // (children of gallerySelector)
                     var parseThumbnailElements = function (el) {
                         var items = [];
-                        imgs.forEach(function (item, index) {
+                        $(imgs).each(function (index, item) {
                             items.push({
                                 src: item.src,
                                 w: item.width,
                                 h: item.height
                             })
-                            item.setAttribute('index', index);
+                            $(item).attr('index', index);
                         })
 
                         return items;
@@ -277,7 +278,7 @@
                     };
 
                     var openPhotoSwipe = function (index, galleryElement, disableAnimation, fromURL) {
-                        var pswpElement = document.querySelectorAll('.pswp')[0],
+                        var pswpElement = $('.pswp')[0],
                             options,
                             items;
 
@@ -338,7 +339,7 @@
                     var galleryElements = document.querySelectorAll(gallerySelector);
 
                     for (var i = 0, l = galleryElements.length; i < l; i++) {
-                        galleryElements[i].setAttribute('data-pswp-uid', i + 1);
+                        $(galleryElements[i]).attr('data-pswp-uid', i + 1);
                         galleryElements[i].onclick = onThumbnailsClick;
                     }
 
@@ -353,13 +354,13 @@
                 initPhotoSwipeFromDOM('.content img');
 
                 //绑定下载图片按钮事件
-                document.querySelector('.pswp__button--download').addEventListener('touchstart', function(e) {
+                $('.pswp__button--download').on('touchstart', function(e) {
                     window.app.downloadImg(gallery.currItem.src);
                 })
 
-                var files = document.querySelectorAll('#table_preview_attachment tr');
-                files.forEach(function(item) {
-                    item.addEventListener('click', function(e) {
+                var files = $('#table_preview_attachment tr');
+                $(files).each(function(index, item) {
+                    $(item).on('click', function(e) {
                         var target = e.currentTarget;
                         window.app.previewFile(target.getAttribute('data-preview'), target.getAttribute('data-down'), target.querySelector('.file-name').innerText, target.querySelector('.file-size').innerText);
                     })

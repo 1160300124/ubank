@@ -629,9 +629,6 @@ var EmployeeFun = {
                 $("#employee_upload_file").on('change', fileUploadOnChange);
                 $('.import-step').hide();
                 $('.import-step-one').show();
-                console.log(error);
-                console.log(b);
-                console.log(c);
             }
         })
     },

@@ -250,6 +250,19 @@ public class DateTimeUtil {
 		calendar.add(Calendar.MINUTE, minute);
 		return date2Str(calendar.getTime(), DATE_FORMAT_MINUTETIME);
 	}
+	
+	/**
+	 * 根据指定日期和月份求日期
+	 * @param strdate yyyy-MM
+	 * @param month   yyyy-MM
+	 * @return
+	 */
+	public static String getfutureTime(String strdate, int month){
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(str2Date(strdate, DATE_FORMAT_MONTHTIME));
+		calendar.add(Calendar.MONTH, month); //把日期往前减少一月，若想把日期向后推一月则将负数改为正数
+		return date2Str(calendar.getTime(), DATE_FORMAT_MONTHTIME);
+	}
 
 	/**
 	 * 查看指定日期是星期几
@@ -338,40 +351,82 @@ public class DateTimeUtil {
 		String beginDay = dateBegin.substring(dateBegin.lastIndexOf("-") + 1, dateBegin.length());
 		String endMonth = dateEnd.substring(0, dateEnd.lastIndexOf("-"));
 		String endDay = dateEnd.substring(dateEnd.lastIndexOf("-") + 1, dateEnd.length());
-		if (beginMonth.equals(endMonth)){
-			for (int i = Integer.parseInt(beginDay); i <= Integer.parseInt(endDay); i++){
-				String day = "";
-				if (i < 10){
-					day = beginMonth + "-0" + i;
-				} else {
-					day = beginMonth + "-" + i;
+		List<String> months = getMonthBetween(beginMonth, endMonth);
+		for (String month : months){
+			//同一个月
+			if (month.equals(beginMonth) && month.equals(endMonth)){
+				for (int i = Integer.parseInt(beginDay); i <= Integer.parseInt(endDay); i++){
+					String day = "";
+					if (i < 10){
+						day = beginMonth + "-0" + i;
+					} else {
+						day = beginMonth + "-" + i;
+					}
+					days.add(day);
 				}
-				days.add(day);
-			}
-		} else {
-			int num = getNumFromMonth(beginMonth);
-			for (int i = Integer.parseInt(beginDay); i <= num; i++){
-				String day = "";
-				if (i < 10){
-					day = beginMonth + "-0" + i;
-				} else {
-					day = beginMonth + "-" + i;
+			} else {
+				//相邻的两个月
+				if (month.equals(beginMonth)){
+					int num = getNumFromMonth(beginMonth);
+					for (int i = Integer.parseInt(beginDay); i <= num; i++){
+						String day = "";
+						if (i < 10){
+							day = beginMonth + "-0" + i;
+						} else {
+							day = beginMonth + "-" + i;
+						}
+						days.add(day);
+					}
 				}
-				days.add(day);
-			}
-			for (int i = 1; i <= Integer.parseInt(endDay); i++){
-				String day = "";
-				if (i < 10){
-					day = endMonth + "-0" + i;
-				} else {
-					day = endMonth + "-" + i;
+				if (month.equals(endMonth)){
+					for (int i = 1; i <= Integer.parseInt(endDay); i++){
+						String day = "";
+						if (i < 10){
+							day = endMonth + "-0" + i;
+						} else {
+							day = endMonth + "-" + i;
+						}
+						days.add(day);
+					}
 				}
-				days.add(day);
-			}
+				//在开始月份和结束月份之间
+				if(month.compareTo(beginMonth) > 0 && month.compareTo(endMonth) < 0) {
+					List<String> monthDays = getDaysFromMonth(month, true);
+					days.addAll(monthDays);
+				}
+			} 
 		}
 
 		return days;
 	}
+	
+	public static void main(String[] args) {
+		System.out.println(getDaysFromDate("2017-02-28", "2017-03-03"));
+	}
+	
+	/**
+	 * 获取两个日期之间的所有月份
+	 * @param minDate  yyyy-MM
+	 * @param maxDate  yyyy-MM
+	 * @return List<String>
+	 */
+	public static List<String> getMonthBetween(String minDate, String maxDate) {
+	    ArrayList<String> result = new ArrayList<String>();
+	    Calendar min = Calendar.getInstance();
+	    Calendar max = Calendar.getInstance();
+
+	    min.setTime(str2Date(minDate, DATE_FORMAT_MONTHTIME));
+	    min.set(min.get(Calendar.YEAR), min.get(Calendar.MONTH), 1);
+
+	    max.setTime(str2Date(maxDate, DATE_FORMAT_MONTHTIME));
+	    max.set(max.get(Calendar.YEAR), max.get(Calendar.MONTH), 2);
+	    Calendar curr = min;
+	    while (curr.before(max)) {
+	    	result.add(date2Str(curr.getTime(), DATE_FORMAT_MONTHTIME));
+	    	curr.add(Calendar.MONTH, 1);
+	    }
+	    return result;
+	  }
 
 	/**
 	 * 获得时间段的分钟数

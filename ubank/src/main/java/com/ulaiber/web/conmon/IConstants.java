@@ -75,6 +75,9 @@ public class IConstants
     //在请全天假的返回码
     public final static int QT_IN_LEAVE_WHOLE_DAY = 4008;
     
+    //不参与考勤规则返回码
+    public final static int QT_N0T_IN_ATTENDANCE_RULE = 4009;
+    
     //休息日
     public final static int QT_REST_DAY = 4004;
 
@@ -193,10 +196,10 @@ public class IConstants
 	//理财产品参数
 	public static final String ProductCd = "yfyBalFinancing";
 
-	//
+	//服务提供者名称
 	public static final String SPName = "CBIB";
 
-	//
+	//发起渠道号
 	public static final String ChannelId = "YFY";
 
 	//身份证格式不合法

@@ -67,9 +67,11 @@ public class AnnouncementServiceImpl extends BaseService implements Announcement
 	@Override
 	public void send(List<Long> userIds, long aid, String title) throws Exception {
 		List<String> CIDs = userDao.queryCIDsByIds(userIds);
+		String content = title;
+		title = "您有一条新的公告消息";
 		for (String CID : CIDs){
 			if(StringUtils.isNotEmpty(CID)){
-				PushtoSingle.singlePush(CID, IConstants.NOTICE, "", title, aid, "");
+				PushtoSingle.singlePush(CID, IConstants.NOTICE, content, title, aid, "");
 			}
 		}
 		

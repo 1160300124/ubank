@@ -3,13 +3,13 @@ $(function () {
 	function validate(){
 		var mobile = $("#mobile").val();
 		if(mobile == "" || mobile.length == 0){
-			$(".form-error").text("手机号不能为空！");
+			$(".form-error").text("手机号不能为空");
 			return false;
 		}
 	    //检查密码
 		var pwd = $("#password").val();
 		if(pwd == "" || pwd.length==0){
-			$(".form-error").text("密码不能为空！");	
+			$(".form-error").text("密码不能为空");
 			return false;
 		}
 	
@@ -36,13 +36,14 @@ $(function () {
                     var code = data['code'];
                     if (code == 1000) {
                         window.location = "index";
-
+                    }else if(code == 1010){
+                        $(".form-error").text("您是普通员工没有后台管理权限");
                     }else{
-                        $(".form-error").text("手机号或密码错误！");
+                        $(".form-error").text("手机号或密码错误");
                     }
                 },
                 error : function(data, status, e) {
-                    $(".form-error").text("系统内部错误！");
+                    $(".form-error").text("系统内部错误");
                 }
             });
         }

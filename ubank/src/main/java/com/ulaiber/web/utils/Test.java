@@ -17,6 +17,7 @@ import com.ulaiber.web.model.ShangHaiAcount.SHAccDetail;
 import com.ulaiber.web.model.ShangHaiAcount.SHChangeCard;
 import com.ulaiber.web.model.ShangHaiAcount.Withdraw;
 import com.ulaiber.web.quartz.ReadFile;
+import com.ulaiber.web.test.TripleDes;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -234,7 +235,7 @@ public class Test {
 	public void queryAuditRecord(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("userId","359");
-		map.put("mark","0");
+		map.put("mark","1");
 		map.put("pageNum",1);
 		map.put("pageSize",20);
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/queryAuditRecord",map);
@@ -289,10 +290,10 @@ public class Test {
 	@org.junit.Test
 	public void synchronizationData(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("date","2017-12-06 14:48:15");
-		map.put("pageNum",0);
+		map.put("date","2018-01-08 14:48:15");
+		map.put("pageNum",2);
 		map.put("pageSize",50);
-		map.put("companyNumber","20047");
+		map.put("companyNumber","20094");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/synchronizationData",map);
 		System.out.print(">>>>>>>>同步数据结果为："+result);
 	}
@@ -357,7 +358,7 @@ public class Test {
 	@org.junit.Test
 	public void getDetails(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("mobile","18503036209");
+		map.put("mobile","15611111111");
 		map.put("SubAcctNo","");
 		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/getUserInfo",map);
 		System.out.print(">>>>>>>>结果为："+result);
@@ -441,7 +442,7 @@ public class Test {
 	//上海银行二类户查余测试
 	@org.junit.Test
 	public void queryBalance(){
-		String str = "623185009300026322";
+		String str = "623185009300012892";
 		SHQueryBalance.queryBalance(str);
 		//System.out.println(">>>>>>>>>申请二类户结果为：" + result);
 	}
@@ -495,16 +496,25 @@ public class Test {
 
 	//上海银行二类户账户明细状态
 	@org.junit.Test
-	public void accDetail() throws URISyntaxException {
+	public void accDetail() {
 		AccDetailVO vo = new AccDetailVO();
 		vo.setSubAcctNo("623185009300012892");
 		vo.setCurrency("156");
 		vo.setBeginDt("20171101");
-		vo.setEndDt("20171128");
-		vo.setPageSize(1000);
-		vo.setSkipRecord(1);
-		SHAccountDetail.queryDetail(vo);
-
+		vo.setEndDt("20171228");
+		vo.setPageSize(20);
+		vo.setSkipRecord(120);
+		ResultInfo infoDetails = SHAccountDetail.queryDetail(vo);
+		//(String SubAcctNo,ResultInfo infoDetails,int userId,String type,int pageNum,int pageSize
+//		Map<String,Object> map = new HashMap<String,Object>();
+//		map.put("SubAcctNo","623185009300012892");
+//		map.put("infoDetails",infoDetails);
+//		map.put("userId",482);
+//		map.put("type","0");
+//		map.put("pageNum",1);
+//		map.put("pageSize",10);
+//		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingQuery",map);
+//		System.out.print(result);
 	}
 
 	//获取账单详情
@@ -514,7 +524,7 @@ public class Test {
 		map.put("SubAcctNo","623185009300012892");
 		map.put("RqUID","40");
 		map.put("trading",1);
-		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/TradingDetail",map);
+		String result = HttpsUtil.doPost("http://localhost:8080/ubank/api/v1/AccDetail",map);
 		System.out.print(result);
 	}
 
@@ -814,6 +824,20 @@ public class Test {
 	}
 
 
+	@org.junit.Test
+	public void encry() throws IOException {
+//		String fileAllNameZip = "/Users/emacs/Desktop/C19_BANKOUTORINPR_ZFHT_201711201015.zip.ret"; // 待解密的压缩文件完整路径
+//		String fileAllNameTxt = "/Users/emacs/Desktop/xxxxxx.txt"; // 解密后的文件完整路径
+//		String key = "182e8a57b4f6139b3a5de9g4";//加密key
+//		TripleDes.makeUnZipfile(fileAllNameZip, fileAllNameTxt, key);
+
+		//132e8a57b4f6139b3a5de9g4
+//		String fileAllNameZip = "/Users/emacs/Desktop/aaa.zip";//加密后的文件完整路径
+//		String fileName = "aaa.txt";//待加密文件名
+//		String fileAllName = "D:/filedes/aaa.txt";//待加密文件完整路径
+//		String key = "182e8a57b4f6139b3a5de9g4";//加密key
+//		TripleDes.makeZipfile(fileAllNameZip, fileName, fileAllName, key);
+	}
 
 
 }

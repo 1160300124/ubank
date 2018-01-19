@@ -335,9 +335,7 @@ public class BankController extends BaseController {
 		if("0".equals(type)){  //上海银行二类户
             try {
                 pageNum = (pageNum - 1) * pageSize;
-				/**
-				 * 查询账户明细
-				 */
+				//查询账户明细
 				vo.setPageSize(pageSize);
 				vo.setSkipRecord(pageNum);
 				vo.setSubAcctNo(SubAcctNo);
@@ -360,20 +358,25 @@ public class BankController extends BaseController {
 					List<SHAccDetail> detailList = (List<SHAccDetail>) detail.get("TxnInfo");
 					if(detailList.size() > 0){
 						//判断账户明细中的流水号是否存在数据库中，如果不存在，则将改记录保存到数据库中
-						boolean flag = true;
 						for (int j = 0 ; j < detailList.size() ; j++){
 							SHAccDetail sd = detailList.get(j);
-							for (int i = 0 ; i < wi.size() ; i++){
-								Bill wd = wi.get(i);
-								if (sd.getTxnBsnId().equals(wd.getRqUID())){
-									flag = false;
-									break;
-								}
+							if(StringUtil.isEmpty(sd.getTheirRef())){
+								continue;
 							}
-							if (flag){
+							if (sd.getTheirRef().contains("提现")){
+								continue;
+							}
+							//查询该记录是否已存在转账记录表中
+							if(StringUtil.isEmpty(sd.getTxnBsnId())){
+								continue;
+							}
+							String RqUID = sd.getTxnBsnId();
+							Transfer transfer = bankservice.queryTransfer(RqUID);
+							//logger.info("查询第"+(j+1)+"条记录是否已存在转账记录表中，二类户为："+ transfer.getSubAcctNo());
+							if (StringUtil.isEmpty(transfer)){
 								//插入转账记录
 								Transfer tran = new Transfer();
-		 						tran.setSubAcctNo(SubAcctNo);
+								tran.setSubAcctNo(SubAcctNo);
 								tran.setUserId(userId);
 								tran.setRqUID(sd.getTxnBsnId());
 								tran.setAmount(Double.parseDouble(sd.getTxnAmt()));
@@ -383,6 +386,12 @@ public class BankController extends BaseController {
 								tran.setStatus(1);
 								tran.setTrading(2);
 								int inResult = bankservice.insertTransfer(tran);
+								if(inResult == 0){
+									resultInfo.setCode(IConstants.QT_CODE_ERROR);
+									resultInfo.setMessage("查询账单失败");
+									logger.error("插入转账记录至数据库失败");
+									return resultInfo;
+								}
 							}
 						}
 					}
@@ -448,8 +457,6 @@ public class BankController extends BaseController {
                         status = "0000";
                     }
                 }
-//				JSONArray json = JSONArray.fromObject(wi);
-//				System.out.println(">>>>>>>>>>>json："+ json.toString());
                 resultInfo.setCode(IConstants.QT_CODE_OK);
                 resultInfo.setMessage("查询账单成功");
                 resMap.put("tradingRecord",wi);

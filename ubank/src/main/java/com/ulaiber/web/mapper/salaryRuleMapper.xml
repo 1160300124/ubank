@@ -28,15 +28,18 @@
 		<result column="forget_clock_cut_unit" property="forgetClockCutUnit" jdbcType="INTEGER" />
 		<result column="no_clock_cut_payment" property="noClockCutPayment" jdbcType="DOUBLE" />
 		<result column="no_clock_cut_unit" property="noClockCutUnit" jdbcType="INTEGER" />
+		<result column="half_no_clock_cut_payment" property="half_noClockCutPayment" jdbcType="DOUBLE" />
+		<result column="half_no_clock_cut_unit" property="half_noClockCutUnit" jdbcType="INTEGER" />
    </resultMap>
    
 	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<insert id="save" parameterType="SalaryRule" useGeneratedKeys="true" keyProperty="rid">
 		insert into tbl_salaries_rules(salaryRuleName,operateName,createTime,updateTime,companyId,companyName,overtime_flag,socialInsurance,publicAccumulationFunds,taxThreshold,
-		laterCutPayment,leaveEarlyCutPayment,leaveCutPayment,allow_forget_clock_count,forget_clock_cut_payment,forget_clock_cut_unit,no_clock_cut_payment,no_clock_cut_unit)
+			laterCutPayment,leaveEarlyCutPayment,leaveCutPayment,allow_forget_clock_count,forget_clock_cut_payment,forget_clock_cut_unit,no_clock_cut_payment,
+			no_clock_cut_unit,half_no_clock_cut_payment,half_no_clock_cut_unit)
 		values(#{salaryRuleName},#{operateName}, #{createTime},#{updateTime},#{companyId},#{companyName},#{overtimeFlag},#{socialInsurance},#{publicAccumulationFunds},
-		#{taxThreshold},#{laterCutPayment},#{leaveEarlyCutPayment},#{leaveCutPayment},#{allowForgetClockCount},#{forgetClockCutPayment},#{forgetClockCutUnit},
-		#{noClockCutPayment},#{noClockCutUnit}) 
+			#{taxThreshold},#{laterCutPayment},#{leaveEarlyCutPayment},#{leaveCutPayment},#{allowForgetClockCount},#{forgetClockCutPayment},#{forgetClockCutUnit},
+			#{noClockCutPayment},#{noClockCutUnit},#{half_noClockCutPayment},#{half_noClockCutUnit}) 
 	</insert>
 	
 	<select id="getSalaryRules" parameterType="Map" resultMap="SalaryRuleMap">
@@ -62,13 +65,19 @@
 		update tbl_salaries_rules set salaryRuleName=#{salaryRuleName},operateName=#{operateName},updateTime=#{updateTime},companyId=#{companyId},companyName=#{companyName},
 		overtime_flag=#{overtimeFlag},socialInsurance=#{socialInsurance},publicAccumulationFunds=#{publicAccumulationFunds},taxThreshold=#{taxThreshold},
 		laterCutPayment=#{laterCutPayment},leaveEarlyCutPayment=#{leaveEarlyCutPayment},leaveCutPayment=#{leaveCutPayment},allow_forget_clock_count=#{allowForgetClockCount},
-		forget_clock_cut_payment=#{forgetClockCutPayment},forget_clock_cut_unit=#{forgetClockCutUnit},no_clock_cut_payment=#{noClockCutPayment},no_clock_cut_unit=#{noClockCutUnit}
-		where rid=#{rid}
+		forget_clock_cut_payment=#{forgetClockCutPayment},forget_clock_cut_unit=#{forgetClockCutUnit},no_clock_cut_payment=#{noClockCutPayment},no_clock_cut_unit=#{noClockCutUnit},
+		half_no_clock_cut_payment=#{half_noClockCutPayment},half_no_clock_cut_unit=#{half_noClockCutUnit} where rid=#{rid}
 	</update>
 	
 	<select id="getSalaryRuleByCompanyId" parameterType="String" resultMap="SalaryRuleMap">
 		select * from tbl_salaries_rules where find_in_set(#{companyId}, companyId) > 0
 	</select>
 	
+	<select id="getCountByCompanyId" parameterType="String" resultType="Integer">
+		select count(1) from tbl_salaries_rules where 
+		<foreach collection="array" index="index" item="item" open="" separator="or" close="">   
+	        find_in_set(#{item}, companyId) > 0   
+	    </foreach>  
+	</select>
 	
 </mapper>

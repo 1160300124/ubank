@@ -41,8 +41,10 @@
    </resultMap>
   
 	<insert id="save" parameterType="User"  useGeneratedKeys="true" keyProperty="id">
-		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType, cardNo, bankNo, bankCardNo, secondBankCardNo, role_id, createTime,disabled)
-		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile}, #{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{secondBankCardNo}, #{role_id}, #{createTime},'0')
+		insert into tbl_users(user_name, login_password, pay_password, mobile, reserve_mobile, cardType,
+		 		cardNo, bankNo, bankCardNo, role_id, createTime,entryDate,disabled)
+		       values(#{userName}, #{login_password}, #{pay_password}, #{mobile}, #{reserve_mobile},
+		        	#{cardType}, #{cardNo}, #{bank.bankNo}, #{bankCardNo}, #{role_id}, #{createTime},#{createTime},'0')
 	</insert>
 	
 	<update id="update" parameterType="User">
@@ -68,15 +70,21 @@
 	<select id="getUserByTicketAndToken" parameterType="User" resultMap="UserMap">
 		select user_id,user_name,mobile from tbl_users where disabled = '0' and login_ticket=#{login_ticket} and access_token=#{access_token}
 	</select>
+
+	<!--更新用户信息-->
+	<update id="updateUserInfo" parameterType="com.ulaiber.web.model.User" >
+		UPDATE tbl_users SET cardNo = #{cardNo},reserve_mobile = #{reserve_mobile},user_name =#{userName} where user_id = #{id}
+	</update>
 	
 	 <!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
 	<select id="getUserByMobile" parameterType="String" resultMap="UserMap">
-		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
+		select u.*,r.groupNumber,r.companyNumber as companyId,r.dept_number,l.companyNumber,
+		  r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
 		left join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
 		left join tbl_departments d on r.dept_number = d.dept_number
 		left join tbl_company c on r.companyNumber = c.companyNumber
-		where disabled = '0' and u.mobile=#{mobile}
+		where u.disabled = '0' and r.disabled ='0' and u.mobile=#{mobile}
 	</select>
 	
 	<select id="findAll" resultMap="UserMap">
@@ -88,22 +96,30 @@
 		LEFT join tbl_roots b on a.user_id = b.userid
 		left join tbl_roles c on a.role_id = c.role_id
 		left join tbl_company e on b.companyNumber = e.companyNumber
-		where disabled = '0' and a.user_name = #{userName}
+		where disabled = '0' and b.disabled ='0' and a.user_name = #{userName}
 	</select>
 	
-	<select id="getUserById" resultMap="UserMap">
-		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
+	<select id="getUserById" parameterType="Long" resultMap="UserMap">
+		select u.*,r.groupNumber,r.companyNumber companyId,r.dept_number,
+		l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
 		left join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
 		left join tbl_departments d on r.dept_number = d.dept_number
 		left join tbl_company c on r.companyNumber = c.companyNumber
-		where disabled = '0' and u.user_id = #{userId}
+		where u.disabled = '0' and r.disabled ='0' and  u.user_id = #{userId}
 	</select>
+	
+    <select id="queryCIDsByIds" parameterType="java.util.List" resultType="String">
+        select CID from tbl_users where user_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
-	<!--获取系统所有菜单-->
+	<!--获取集团系统所有菜单-->
 	 <select id="getAllMenuByUser" resultType="com.ulaiber.web.model.Menu" parameterType="Map">
 		 select a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
-		where 1=1
+		where type = 0
 		 <!--如果当前角色为运维人员，则显示所有菜单-->
 		<if test="sysflag != 0">
 			and a.code in( select b.menuNumber from tbl_users a  left join tbl_roleMenu b on a.role_id = b.role_id
@@ -112,23 +128,157 @@
 
 	 </select>
 
-	<!--获取系统所有菜单-->
+	<!--获取集团系统所有菜单-->
 	<select id="getAllMenu" resultType="com.ulaiber.web.model.Menu" parameterType="Map">
 		select distinct a.id,a.name,a.url,a.code,a.father,a.icon,a.sorting from tbl_menu a
-			left join tbl_roleMenu b on a.code = b.menuNumber where 1=1
+			left join tbl_roleMenu b on a.code = b.menuNumber where  type = 0
 		<if test='sysflag == "1"'>
 			and b.role_id = #{roleid}
 		</if>
 	</select>
 	
 	<select id="getUsersByComNum" parameterType="Map" resultMap="UserMap">
-		select u.user_id,u.user_name,r.groupNumber,r.dept_number,r.companyNumber,r.sysflag from tbl_users u
+		select u.user_id,u.user_name,u.cardNo,u.salaries,r.groupNumber,r.dept_number,r.companyNumber,r.sysflag from tbl_users u
 		LEFT join tbl_roots r on u.user_id = r.userid
 		left join tbl_roles l on u.role_id = l.role_id
-		where u.disabled = '0' and r.companyNumber = #{comNum}
+		where u.disabled = '0' and r.disabled ='0' and  r.companyNumber = #{comNum}
 		<if test="search != null and search != ''">
 			and u.user_name like concat('%',#{search},'%')
 		</if>
 	</select>
+
+	<!--新增二类账户信息-->
+	<insert id="insertSecondAccount" parameterType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount" >
+		INSERT INTO tbl_secondAccount (userid,EacctNo,CustName,SubAcctNo,CoopCustNo,ProductCd,Sign,FundCode
+				,AcctOpenResult,AcctOpenDesc,FundAcctOpenResult,FundAcctOpenDesc,FundAcct,FundTxnAcct,disabled,createDate,freeze)
+			VALUES (#{userid},#{EacctNo},#{CustName},#{SubAcctNo},#{CoopCustNo},#{ProductCd},#{Sign},#{FundCode},
+			#{AcctOpenResult},#{AcctOpenDesc},#{FundAcctOpenResult},#{FundAcctOpenDesc},#{FundAcct},#{FundTxnAcct},0,#{createDate},'0')
+	</insert>
+
+	<!--根据公司编号查询绑定的银行-->
+	<select id="queryBankByCompay" parameterType="int" resultType="com.ulaiber.web.model.Bank">
+		select DISTINCT a.* from tbl_banks a
+			left join tbl_bankAccount b on a.bankNo = b.bankNumber
+			left join tbl_company c on b.companyNumber = b.companyNumber
+			where c.companyNumber = #{companyNumber}
+	</select>
+
+	<!--获取二类帐户信息-->
+	<select id="getSecondAccountByUserId" parameterType="int" resultType="com.ulaiber.web.model.SecondAccountAO">
+		SELECT a.*,b.bankNo,b.bankCardNo,d.name as bankName,d.type  FROM tbl_secondAccount a
+		left join tbl_userToBank b on a.userid = b.userid
+		left join tbl_bindBank d on b.bankNo = d.bankNo
+			where b.disabled = 0 and a.userid = #{userid}
+	</select>
+
+	<!--新增用户绑定银行卡信息-->
+	<insert id="insertUserToBank" parameterType="Map" >
+		INSERT INTO tbl_userToBank (userid,bankNo,bankCardNo,disabled,type)
+			VALUES (#{userid},#{bankNo},#{bankCardNo},0,#{type})
+	</insert>
+
+	<!--查询用户是否已注册二类账户-->
+	<select id="findSecondAcc" parameterType="int" resultType="com.ulaiber.web.model.ShangHaiAcount.SecondAcount">
+		SELECT userid FROM tbl_secondAccount where userid = #{id}
+	</select>
+
+	<!-- 根据电话获取二类帐户信息-->
+	<select id="getSecondAccountByMobile" parameterType="int" resultType="com.ulaiber.web.model.SecondAccountAO">
+		SELECT a.*,b.bankNo,b.bankCardNo,d.name as bankName,d.type FROM tbl_secondAccount a
+			left join tbl_userToBank b on a.userid = b.userid
+			left join tbl_users c on a.userid = c.user_id
+			left join tbl_bindBank d on b.bankNo = d.bankNo
+			where b.disabled = 0 and c.mobile = #{mobile}
+	</select>
+
+
+	<!--根据用户ID修改银行卡预留电话-->
+	<update id="modifyReserveMobile" parameterType="Map">
+		update tbl_users set reserve_mobile = #{newReserveMobile} where user_id = #{userid}
+	</update>
+
+	<!--修改密码-->
+	<update id="modifyPwd" parameterType="Map">
+		UPDATE tbl_users SET  login_password = #{password} where mobile = #{mobile}
+	</update>
+
+	<!--上传头像-->
+	<update id="uploadIcon" parameterType="Map" >
+		UPDATE tbl_users SET image = #{image} where user_id = #{userId}
+	</update>
+
+	<!--根据公司编号获取公司信息-->
+	<select id="getCompanyByNum" parameterType="Map" resultType="com.ulaiber.web.model.Company">
+		SELECT companyNumber,name from tbl_company where companyNumber in
+		<foreach collection="numbers" item="number" open="(" separator="," close=")">
+			#{number}
+		</foreach>
+	</select>
+	
+	<select id="getUsersForSalaryChange" resultMap="UserMap">
+	    select u.user_id,u.user_name,u.mobile,u.cardNo,u.salaries,u.entryDate,u.leaveDate,r.groupNumber,r.companyNumber companyId,r.dept_number,
+		l.companyNumber,r.sysflag,d.name dept_name,c.name as com_name from tbl_users u
+		left join tbl_roots r on u.user_id = r.userid
+		left join tbl_roles l on u.role_id = l.role_id
+		left join tbl_departments d on r.dept_number = d.dept_number
+		left join tbl_company c on r.companyNumber = c.companyNumber
+		where u.disabled = '0' and r.disabled = '0' and r.sysflag='1'
+		<if test="companyNum != null and companyNum != ''">
+			and c.companyNumber=#{companyNum}
+		</if>
+		<if test="deptNum != null and deptNum != ''">
+			and d.dept_number=#{deptNum}
+		</if>
+		<if test="type == 1">
+			and u.entryDate != '' and u.entryDate is not null and (u.leaveDate = '' or u.leaveDate is null or u.leaveDate &gt;= curdate())
+		</if>
+		<if test="type == 2">
+			and u.leaveDate != '' and u.leaveDate is not null and u.leaveDate &lt; curdate()
+		</if>
+		<if test="type == 3">
+			and u.salaries is null
+		</if>
+		<if test="type == 4">
+			and u.salaries is not null
+		</if>
+		<if test="search != null and search != ''">
+            and (u.user_name like concat('%',#{search},'%') or u.mobile like concat('%',#{search},'%') or d.name like concat('%',#{search},'%'))
+        </if>
+		limit #{offset},#{limit}
+	</select>
+	
+	<select id="getTotalForSalaryChange" resultType="Integer">
+	    select count(1) from tbl_users u
+		left join tbl_roots r on u.user_id = r.userid
+		left join tbl_roles l on u.role_id = l.role_id
+		left join tbl_departments d on r.dept_number = d.dept_number
+		left join tbl_company c on r.companyNumber = c.companyNumber
+		where u.disabled = '0' and r.disabled = '0' and r.sysflag='1'
+		<if test="companyNum != null and companyNum != ''">
+			and c.companyNumber=#{companyNum}
+		</if>
+		<if test="deptNum != null and deptNum != ''">
+			and d.dept_number=#{deptNum}
+		</if>
+		<if test="type == 1">
+			and u.entryDate != '' and u.entryDate is not null and (u.leaveDate = '' or u.leaveDate is null or u.leaveDate &gt;= curdate())
+		</if>
+		<if test="type == 2">
+			and u.leaveDate != '' and u.leaveDate is not null and u.leaveDate &lt; curdate()
+		</if>
+		<if test="type == 3">
+			and u.salaries is null
+		</if>
+		<if test="type == 4">
+			and u.salaries is not null
+		</if>
+		 <if test="search != null and search != ''">
+            and  (u.user_name like concat('%',#{search},'%') or u.mobile like concat('%',#{search},'%') or d.name like concat('%',#{search},'%'))
+        </if>
+	</select>
+	
+	<update id="updateSalaryByUserId">
+		update tbl_users set salaries=#{salaries} where user_id=#{userId}
+	</update>
 	
 </mapper>

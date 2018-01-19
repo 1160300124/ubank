@@ -1,7 +1,10 @@
 package com.ulaiber.web.test;
 
+import com.ulaiber.web.SHSecondAccount.EncryDecryUtils;
 import com.ulaiber.web.utils.BCrypt;
 import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  * 测试类
@@ -22,4 +25,10 @@ public class TestBCrypt {
         String hash = "6700e28167adc46e61422ddbabea87e9";
         System.out.println(">>>>>>decrypt before : "+BCrypt.checkpw(pwd, hash));
     }
+
+    @Test
+    public void unZip() throws IOException {
+        EncryDecryUtils.unZip("/Users/emacs/Desktop/ruby.zip","/Users/emacs/Desktop/test");
+    }
+
 }

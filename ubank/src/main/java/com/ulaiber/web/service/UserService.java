@@ -3,8 +3,6 @@ package com.ulaiber.web.service;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ulaiber.web.model.Bank;
 import com.ulaiber.web.model.BankUsers;
 import com.ulaiber.web.model.Company;

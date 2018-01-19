@@ -19,13 +19,15 @@
 			   data-click-to-select="true"
 			   data-page-size="10" data-page-list="[10,15,20]">
 			<thead>
-			<th data-checkbox="true"></th>
+			<tr>
+				<th data-checkbox="true"></th>
 				<th data-field="salaryRuleName">规则名称</th>
 				<th data-field="companyName">适配公司</th>
 				<th data-field="socialInsurance">社保缴纳金额</th>
 				<th data-field="publicAccumulationFunds">公积金缴纳金额</th>
 				<th data-field="taxThreshold">个税起征点</th>
-				<th data-field="updateTime" data-width="160px">修改时间</th>
+				<th data-field="createTime" data-width="160px">创建时间</th>
+				<th data-field="updateTime" data-width="160px">最近修改时间</th>
 				<th data-field="operateName">修改人</th>
 				<th data-formatter="operateFormatter" data-events="operateEvents">操作栏</th>
 			</tr>
@@ -56,16 +58,6 @@
                               <label class="col-sm-3 control-label" for="exampleInputName2">选择公司</label>
                               <div class="col-sm-6">
                                   <select class="selectpicker show-tick form-control" multiple data-live-search="true" data-size="20" id="company_select" >
-                                  		<option value="0">苹果</option>
-                                        <option value="1">菠萝</option>
-                                        <option value="2">香蕉</option>
-                                        <option value="3">火龙果</option>
-                                        <option value="4">梨子</option>
-                                        <option value="5">草莓</option>
-                                        <option value="6">哈密瓜</option>
-                                        <option value="7">椰子</option>
-                                        <option value="8">猕猴桃</option>
-                                        <option value="9">桃子</option>
                                   </select>
                               </div>
                           </div>
@@ -226,6 +218,10 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -247,6 +243,20 @@
                                         </td>
                                         <td>
                                             <select name="" id="noclock_unit" class="form-control">
+                                                <option value="0">元</option>
+                                                <option value="1">天</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            	旷工/半天
+                                        </td>
+                                        <td>
+                                            <input type="text" id="half_noclock_cut" class="form-control">
+                                        </td>
+                                        <td>
+                                            <select name="" id="half_noclock_unit" class="form-control">
                                                 <option value="0">元</option>
                                                 <option value="1">天</option>
                                             </select>
